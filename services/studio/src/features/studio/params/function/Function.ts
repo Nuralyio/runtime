@@ -1,10 +1,8 @@
 import { customElement, property, query, state } from "lit/decorators.js";
-import { css, html, LitElement, type TemplateResult } from "lit";
-import "@nuralyui/canvas";
-// import "@studio/panels/log-panel/LogPanel.ts"; // Ensure the log-panel component is imported
+import { css, html, LitElement } from "lit";
 import { LogPanel } from '../../panels/log-panel/LogPanel.ts';
 import { updateFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/update-function-handler.ts';
-import { getVar, setVar } from '../../../../features/runtime/redux/store/context.ts';
+import { setVar } from '../../../../features/runtime/redux/store/context.ts';
 import { styleMap } from "lit/directives/style-map.js";
 import { invokeFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/invoke-function-handler.ts';
 import { ButtonTheme } from '../../core/utils/common-editor-theme.ts';
@@ -12,8 +10,10 @@ import { buildFunctionHandler } from '../../../../features/runtime/redux/handler
 import { deployFunctionHandler } from '../../../../features/runtime/redux/handlers/functions/deploy-function-handler.ts';
 import { ExecuteInstance } from '../../../runtime/state/runtime-context';
 
-// debounce.ts
-export function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
+/**
+ * Debounce utility function
+ */
+function debounce<F extends (...args: any[]) => void>(func: F, wait: number): F {
   let timeout: number | undefined;
   return function(this: any, ...args: any[]) {
     clearTimeout(timeout);
@@ -30,116 +30,136 @@ export class FunctionContent extends LitElement {
   private logPanel!: LogPanel;
 
   @state()
-  payload: any = {};
+  private payload: any = {};
 
-  @state()
-  private codeEditorLoaded = false;
-
-  // Debounce delay in milliseconds
-  private debounceDelay = 1000;
-
-  // Create a debounced version of handleCodeChange
+  private readonly debounceDelay = 1000;
   private debouncedHandleCodeChange = debounce(this.handleCodeChange.bind(this), this.debounceDelay);
 
-  override async connectedCallback() {
-    super.connectedCallback();
-    await this.loadCodeEditor();
-  }
-
-  /**
-   * Lazy load the CodeEditor component
-   */
-  private async loadCodeEditor() {
-    try {
-      // await import("@shared/ui/components/advanced/CodeEditor/CodeEditor");
-      this.codeEditorLoaded = true;
-      this.requestUpdate();
-    } catch (error) {
-      console.error("Failed to load CodeEditor component:", error);
-    }
-  }
-
   static styles = css`
-      :host {
-          height: 90vh;
-          display: flex;
-          flex-direction: column;
-          font-family: Arial, sans-serif;
-      }
+    :host {
+      height: 100%;
+      width: calc(100vw - 650px);
+      display: flex;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+    }
 
-      .content {
-          flex: 1;
-          overflow: auto;
-          background: white;
-      }
+    .content {
+      flex: 1;
+      overflow: auto;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
 
-      .buttons {
-        margin-bottom: 4px;
-      }
+    .content code-editor {
+      flex: 1;
+      min-height: 0;
+    }
 
-      .buttons nr-button {
-          margin-right: 8px;
-      }
+    .buttons {
+      margin-bottom: 4px;
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex-shrink: 0;
+      align-items: center;
+    }
 
-      /* Remove log-related styles as they are now in log-panel */
+    .buttons nr-button {
+      margin-right: 0;
+    }
+
+    .buttons nr-dropdown {
+      display: inline-flex;
+    }
+
+    log-panel {
+      max-height: 200px;
+      flex-shrink: 0;
+    }
   `;
 
   /**
-   * Handle button clicks to add log entries.
-   * @param action The action performed.
+   * Handle action button clicks (Build, Deploy)
    */
-  private async handleAction(action: string) {
-    // Exemple : Ajout d'une entrée de log en texte brut
+  private async handleAction(action: "Build" | "Deploy") {
     this.logPanel.addLogEntry(`⚡ ${action} action triggered.`);
     setVar("global", "currentFunctionInvoke", true);
 
-    // Exemple : Ajout d'une entrée de log enrichie
-    switch (action) {
-      case "Deploy":
-        this.logPanel.addLogEntry("🚀 Deploying function ...");
-        await deployFunctionHandler(this.detail.uuid);
-        this.logPanel.addLogEntry("✅ Function deployed!");
-
-        break;
-      case "Build":
-        this.logPanel.addLogEntry("🏗️ Building function ...");
-        await buildFunctionHandler(this.detail.uuid);
-        this.logPanel.addLogEntry("✅ Function built!");
-
-        break;
-      // default:
-      //   this.logPanel.addLogEntry("⚠️ Unknown action.");
+    try {
+      switch (action) {
+        case "Deploy":
+          this.logPanel.addLogEntry("🚀 Deploying function ...");
+          await deployFunctionHandler(this.detail.uuid);
+          this.logPanel.addLogEntry("✅ Function deployed!");
+          break;
+        case "Build":
+          this.logPanel.addLogEntry("🏗️ Building function ...");
+          await buildFunctionHandler(this.detail.uuid);
+          this.logPanel.addLogEntry("✅ Function built!");
+          break;
+      }
+    } catch (error: any) {
+      this.logPanel.addLogEntry(`❌ ${action} failed: ${error.message || error}`);
     }
-}
+  }
 
   /**
-   * Handle code changes to add log entries.
-   * This method is debounced to prevent excessive calls.
-   * @param value The new code value.
+   * Handle code changes (debounced)
    */
   private async handleCodeChange(value: string) {
-    (value)
-    // Adding a rich HTML log entry with syntax highlighting or other features
-    const richEntry: TemplateResult = html`<strong>Code updated:</strong> <code>${value}</code>`;
-    const currentFunction = ExecuteInstance.Vars.studio_functions.find((item: any) => item.id === this.detail.uuid);
+    const currentFunction = ExecuteInstance.Vars.studio_functions?.find(
+      (item: any) => item.id === this.detail.uuid
+    );
 
-    if (currentFunction) {
-      currentFunction.handler = value;
-      this.logPanel.addLogEntry("💾 Saving function ...");
-
-      try {
-        const result = await updateFunctionHandler(currentFunction);
-        if (result.ok) {
-          this.logPanel.addLogEntry("✅ Saved successfully.");
-        } else {
-          this.logPanel.addLogEntry("❌ Error saving function");
-        }
-      } catch (error: any) {
-        console.error("⚠️ Error saving function:", error);
-        this.logPanel.addLogEntry(`❌ Error saving function: ${error.message || error}`);
-      }
-    } else {
+    if (!currentFunction) {
       this.logPanel.addLogEntry("🚨 Error: Function not found.");
+      return;
+    }
+
+    currentFunction.handler = value;
+    this.logPanel.addLogEntry("💾 Saving function ...");
+
+    try {
+      const result = await updateFunctionHandler(currentFunction);
+      if (result.ok) {
+        this.logPanel.addLogEntry("✅ Saved successfully.");
+      } else {
+        this.logPanel.addLogEntry("❌ Error saving function");
+      }
+    } catch (error: any) {
+      console.error("Error saving function:", error);
+      this.logPanel.addLogEntry(`❌ Error saving function: ${error.message || error}`);
+    }
+  }
+
+  /**
+   * Handle invoke function submission
+   */
+  private handleInvoke() {
+    this.logPanel.addLogEntry("⚡ Invoking function ...");
+    invokeFunctionHandler(this.detail.uuid, this.payload)
+      .then(async (result) => {
+        const text = await result.text();
+        this.logPanel.addLogEntry(`✅ Result: ${text}`);
+      })
+      .catch((err) => {
+        this.logPanel.addLogEntry(`❌ Error: ${err.message || err}`);
+      });
+  }
+
+  /**
+   * Handle payload editor changes
+   */
+  private handlePayloadChange(event: CustomEvent) {
+    const { detail: { value } } = event;
+    try {
+      this.payload = JSON.parse(value);
+    } catch {
+      // Invalid JSON, keep previous payload
     }
   }
 
@@ -148,84 +168,56 @@ export class FunctionContent extends LitElement {
       <div class="content">
         <div class="buttons">
           <nr-button
-            style=${styleMap({
-              ...ButtonTheme
-            })
-            }
-            .iconPosition="${"right"}" .icon="${["hammer"]}" @click=${() => this.handleAction("Build")}>
+            style=${styleMap(ButtonTheme)}
+            .iconPosition=${"right"}
+            .icon=${["hammer"]}
+            @click=${() => this.handleAction("Build")}>
             Build
           </nr-button>
           <nr-button
-            style=${styleMap({
-              ...ButtonTheme
-            })
-            }
-            .iconPosition="${"right"}" .icon="${["paper-plane"]}" @click=${() => this.handleAction("Deploy")}>
+            style=${styleMap(ButtonTheme)}
+            .iconPosition=${"right"}
+            .icon=${["paper-plane"]}
+            @click=${() => this.handleAction("Deploy")}>
             Deploy
           </nr-button>
 
-          <nr-dropdown
-            placeholder="Select an option"
-            .template=${html`
-              <div style="width: 600px; height: 310px; padding: 8px; background: #2d2d2d; border-radius: 4px; padding-bottom: 50px;">
-                ${this.codeEditorLoaded ? html`
-                  <code-editor
-                    theme="vs"
-                    @change=${(event: CustomEvent) => {
-                      const {
-                        detail: { value }
-                      } = event;
-                      this.payload = JSON.parse(value);
-                    }}
-                    .code=${`
-{
-    "data": "Hello World"
-}
-          `}
-                    language="json">
-                  </code-editor>
-                ` : html`<div>Loading editor...</div>`}
-                <nr-button
-                  style=${styleMap({
-                    ...ButtonTheme,
-                    "--nuraly-button-margin-y": "10px"
-                  })}
-                  .icon=${["bug"]}
-                  @click=${() => {
-                    window.dispatchEvent(new CustomEvent("add-log", { detail: { result: "invoking function ..." } }));
-                    invokeFunctionHandler(getVar("global", "currentFunction").value.id, this.payload )
-                      .then(async (result) => {
-                        const _result = await result.text();
-                        window.dispatchEvent(new CustomEvent("add-log", { detail: { result: _result } }));
-                      });
-                  }}>Submit
-                </nr-button>
-              </div>
-            `}>
+          <nr-dropdown trigger="click" min-width="620px" max-height="400px">
             <nr-button
-              style=${styleMap({
-                ...ButtonTheme
-              })
-              }
-              .iconPosition="${"right"}" .icon="${["drafting-compass"]}"
-              @click=${() => this.handleAction("Invoke")}>
+              slot="trigger"
+              style=${styleMap(ButtonTheme)}
+              .iconPosition=${"right"}
+              .icon=${["drafting-compass"]}>
               Invoke
             </nr-button>
+            <div slot="content" style="width: 600px; padding: 12px; background: #fff; border-radius: 4px;">
+              <div style="margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #333;">Payload (JSON)</div>
+              <code-editor
+                style="height: 200px; width: 100%; display: block; border: 1px solid #e0e0e0; border-radius: 4px;"
+                theme="vs"
+                @change=${this.handlePayloadChange}
+                .code=${`{\n    "data": "Hello World"\n}`}
+                language="json">
+              </code-editor>
+              <nr-button
+                style=${styleMap({ ...ButtonTheme, "margin-top": "12px" })}
+                .icon=${["bug"]}
+                @click=${this.handleInvoke}>
+                Submit
+              </nr-button>
+            </div>
           </nr-dropdown>
         </div>
-        ${this.codeEditorLoaded ? html`
-          <code-editor
-            theme="vs"
-            @change=${(event: CustomEvent) => {
-              const {
-                detail: { value }
-              } = event;
-              this.debouncedHandleCodeChange(value);
-            }}
-            .code=${this.detail?.handler}
-            language="javascript">
-          </code-editor>
-        ` : html`<div>Loading editor...</div>`}
+
+        <code-editor
+          theme="vs"
+          @change=${(event: CustomEvent) => {
+            const { detail: { value } } = event;
+            this.debouncedHandleCodeChange(value);
+          }}
+          .code=${this.detail?.handler}
+          language="javascript">
+        </code-editor>
       </div>
       <log-panel></log-panel>
     `;
