@@ -79,7 +79,9 @@ export const defaultMicroAppDataLoader: MicroAppDataLoader = {
    */
   async loadComponents(appUuid: string): Promise<ComponentsLoadResult> {
     try {
-      const response = await fetch(`/api/components/application/${appUuid}`);
+      const response = await fetch(`/api/components/application/${appUuid}`, {
+        credentials: 'include'
+      });
 
       if (!response.ok) {
         return {
@@ -117,7 +119,9 @@ export const defaultMicroAppDataLoader: MicroAppDataLoader = {
    */
   async loadPages(appUuid: string): Promise<PagesLoadResult> {
     try {
-      const response = await fetch(`/api/pages/application/${appUuid}`);
+      const response = await fetch(`/api/pages/application/${appUuid}`, {
+        credentials: 'include'
+      });
 
       if (!response.ok) {
         return {
