@@ -53,3 +53,4 @@ import "../components/ui/components/inputs/Form/Form";
 import "../components/ui/components/utility/ValidationRules/ValidationRules";
 import "../components/ui/components/utility/BorderManager/BorderManager";
 import "../components/ui/components/utility/AccessRoles/AccessRoles";
+import "../components/ui/components/studio/FunctionsPanel/FunctionsPanel";

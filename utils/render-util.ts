@@ -55,6 +55,7 @@ const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isV
 const validationRulesTemplate = (props: any, isViewMode: boolean)  => html`<validation-rules-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></validation-rules-display>`;
 const borderManagerTemplate = (props: any, isViewMode: boolean)  => html`<border-manager-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></border-manager-display>`;
 const accessRolesTemplate = (props: any, isViewMode: boolean)  => html`<access-roles-display .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></access-roles-display>`;
+const functionsPanelTemplate = (props: any, isViewMode: boolean)  => html`<functions-panel></functions-panel>`;
 const invokeFunctionTemplate = (props: any, isViewMode: boolean)  => html`
   <invoke-function-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></invoke-function-block>
 `;
@@ -175,6 +176,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
         return borderManagerTemplate(commonProps, isViewMode);
     case ComponentType.AccessRoles:
         return accessRolesTemplate(commonProps, isViewMode);
+    case ComponentType.FunctionsPanel:
+        return functionsPanelTemplate(commonProps, isViewMode);
     default:
       return html``;
   }
