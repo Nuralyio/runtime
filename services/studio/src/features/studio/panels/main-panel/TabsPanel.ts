@@ -16,9 +16,25 @@ import { setCurrentEditorTab } from '../../../runtime/redux/actions/editor/setCu
 export class TabsPanel extends LitElement {
   static override styles = [
     css`
-           
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+      }
 
-        `
+      nr-tabs {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      nr-tabs::part(content) {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+    `
   ];
   @state()
   activeTab = 0;
@@ -64,9 +80,10 @@ export class TabsPanel extends LitElement {
                 id: tab.id,
                 label: tab.label,
                 content: html`
-                                <editor-interactive-panel>
+                                <!-- <editor-interactive-panel> -->
                                     <function-page .detail=${tab.detail}></function-page>
-                                </editor-interactive-panel>`
+                                <!-- </editor-interactive-panel> -->
+                                `
               });
               break;
             case "files":
@@ -104,16 +121,16 @@ export class TabsPanel extends LitElement {
       });
 
       if (editorState.currentTab) {
-        const tabindex = editorState.tabs.findIndex((tab: any) => tab.id === editorState.currentTab.id);
-        if (tabindex > 0) {
+        // Find the tab index in editableTabs (not editorState.tabs) since they may differ
+        const tabindex = this.editableTabs.findIndex((tab: any) => tab.id === editorState.currentTab.id);
+        if (tabindex >= 0) {
           this.activeTab = tabindex;
-          // Ensure the activeTab index is updated if needed
-          this.requestUpdate();
         }
       }
 
       // Trigger a re-render with the updated tabs
       this.editableTabs = [...this.editableTabs];
+      this.requestUpdate();
       });
     }, 0);
   }
