@@ -172,19 +172,34 @@ public class PermissionInterceptor implements ContainerRequestFilter {
     }
 
     /**
-     * Check if resource allows anonymous access.
+     * Check if resource allows anonymous access using the check-anonymous endpoint.
      */
     private boolean checkAnonymousAccess(RequiresPermission permissionAnno, ContainerRequestContext requestContext) {
         try {
-            PermissionCheckRequest checkRequest = PermissionCheckRequest.builder()
-                    .permissionType(permissionAnno.permissionType())
-                    .resourceType(permissionAnno.resourceType())
-                    .resourceId(resolvePlaceholder(permissionAnno.resourceId(), requestContext))
-                    .granteeType(GranteeType.ANONYMOUS)
-                    .anonymous(true)
-                    .build();
+            String resourceType = permissionAnno.resourceType();
+            String resourceId = resolvePlaceholder(permissionAnno.resourceId(), requestContext);
+            String permissionType = permissionAnno.permissionType();
 
-            return userHasPermission(checkRequest);
+            // Use the check-anonymous endpoint: GET /api/resources/{resourceType}/{resourceId}/check-anonymous?permission={permissionType}
+            String baseUrl = permissionsApiUrl.replace("/permissions/has", "");
+            String url = baseUrl + "/resources/" + resourceType + "/" + resourceId + "/check-anonymous?permission=" + permissionType;
+
+            HttpURLConnection connection = (HttpURLConnection) new java.net.URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == 200) {
+                // Parse JSON response: { allowed: boolean, restricted: boolean, permission: string | null }
+                try (java.io.InputStream is = connection.getInputStream()) {
+                    String response = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                    // Simple JSON parsing - check if "allowed":true exists
+                    return response.contains("\"allowed\":true");
+                }
+            }
+            return false;
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to check anonymous access: " + e.getMessage());
             return false;
