@@ -15,6 +15,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,8 +46,20 @@ public class PermissionInterceptor implements ContainerRequestFilter {
     String permissionsApiUrl;
 
     @Inject
+    @ConfigProperty(name = "permission.api.base-url")
+    String permissionApiBaseUrl;
+
+    @Inject
     @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
     boolean permissionsEnabled;
+
+    @Inject
+    @ConfigProperty(name = "permissions.api.connect-timeout", defaultValue = "5000")
+    int connectTimeout;
+
+    @Inject
+    @ConfigProperty(name = "permissions.api.read-timeout", defaultValue = "5000")
+    int readTimeout;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -180,23 +194,33 @@ public class PermissionInterceptor implements ContainerRequestFilter {
             String resourceId = resolvePlaceholder(permissionAnno.resourceId(), requestContext);
             String permissionType = permissionAnno.permissionType();
 
+            // Validate inputs to prevent injection attacks
+            if (!isValidIdentifier(resourceType) || !isValidIdentifier(resourceId) || !isValidIdentifier(permissionType)) {
+                LOGGER.warning("Invalid characters in permission check parameters");
+                return false;
+            }
+
+            // URL encode all dynamic components to prevent injection attacks
+            String encodedResourceType = URLEncoder.encode(resourceType, StandardCharsets.UTF_8);
+            String encodedResourceId = URLEncoder.encode(resourceId, StandardCharsets.UTF_8);
+            String encodedPermissionType = URLEncoder.encode(permissionType, StandardCharsets.UTF_8);
+
             // Use the check-anonymous endpoint: GET /api/resources/{resourceType}/{resourceId}/check-anonymous?permission={permissionType}
-            String baseUrl = permissionsApiUrl.replace("/permissions/has", "");
-            String url = baseUrl + "/resources/" + resourceType + "/" + resourceId + "/check-anonymous?permission=" + permissionType;
+            String url = permissionApiBaseUrl + "/resources/" + encodedResourceType + "/" + encodedResourceId
+                       + "/check-anonymous?permission=" + encodedPermissionType;
 
             HttpURLConnection connection = (HttpURLConnection) new java.net.URL(url).openConnection();
             connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(connectTimeout);
+            connection.setReadTimeout(readTimeout);
 
             int responseCode = connection.getResponseCode();
 
             if (responseCode == 200) {
-                // Parse JSON response: { allowed: boolean, restricted: boolean, permission: string | null }
+                // Parse JSON response properly using ObjectMapper
                 try (java.io.InputStream is = connection.getInputStream()) {
-                    String response = new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
-                    // Simple JSON parsing - check if "allowed":true exists
-                    return response.contains("\"allowed\":true");
+                    JsonNode json = objectMapper.readTree(is);
+                    return json.has("allowed") && json.get("allowed").asBoolean(false);
                 }
             }
             return false;
@@ -204,6 +228,17 @@ public class PermissionInterceptor implements ContainerRequestFilter {
             LOGGER.log(Level.WARNING, "Failed to check anonymous access: " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Validate that an identifier contains only safe characters.
+     * Allows alphanumeric, hyphens, underscores, and colons (for permission types like "function:build").
+     */
+    private boolean isValidIdentifier(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        return value.matches("^[a-zA-Z0-9_:\\-]+$");
     }
 
     /**
@@ -257,12 +292,12 @@ public class PermissionInterceptor implements ContainerRequestFilter {
                 (HttpURLConnection) new java.net.URL(permissionsApiUrl).openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
         connection.setDoOutput(true);
 
         try (java.io.OutputStream os = connection.getOutputStream()) {
-            byte[] input = payload.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
