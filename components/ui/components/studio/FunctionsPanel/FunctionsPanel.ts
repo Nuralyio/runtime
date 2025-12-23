@@ -24,7 +24,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ExecuteInstance } from '../../../../../state/runtime-context';
 import { openEditorTab, setCurrentEditorTab } from '../../../../../redux/actions/editor';
-import { $editorState } from '../../../../../redux/store/apps';
+import { $editorState, $currentApplication } from '../../../../../redux/store/apps';
 
 // Import nuraly-ui components
 import '@nuralyui/button';
@@ -162,7 +162,16 @@ export class FunctionsPanel extends LitElement {
     this.error = null;
 
     try {
-      const response = await fetch('/api/v1/functions', {
+      const currentApp = $currentApplication.get();
+      const applicationId = currentApp?.uuid;
+
+      // Build URL with optional applicationId filter
+      let url = '/api/v1/functions';
+      if (applicationId) {
+        url += `?applicationId=${encodeURIComponent(applicationId)}`;
+      }
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -201,12 +210,39 @@ export class FunctionsPanel extends LitElement {
   }
 
   /**
+   * Fetch the default handler template from GitHub
+   */
+  private async fetchDefaultTemplate(): Promise<string> {
+    const templateUrl = 'https://raw.githubusercontent.com/Nuralyio/functions-templates/refs/heads/main/v1/deno/2/handler.ts';
+    try {
+      const response = await fetch(templateUrl);
+      if (response.ok) {
+        return await response.text();
+      }
+    } catch (err) {
+      console.warn('Failed to fetch template, using default:', err);
+    }
+    // Fallback default template
+    return `export default async function handler(req: Request): Promise<Response> {
+  return new Response(JSON.stringify({ message: "Hello from Deno!" }), {
+    headers: { "Content-Type": "application/json" }
+  });
+}`;
+  }
+
+  /**
    * Create a new function
    */
   async createFunction() {
     this.creating = true;
 
     try {
+      const currentApp = $currentApplication.get();
+      const applicationId = currentApp?.uuid || null;
+
+      // Fetch default template from GitHub
+      const handler = await this.fetchDefaultTemplate();
+
       const response = await fetch('/api/v1/functions', {
         method: 'POST',
         headers: {
@@ -214,9 +250,12 @@ export class FunctionsPanel extends LitElement {
         },
         credentials: 'include',
         body: JSON.stringify({
-          name: `function_${Date.now()}`,
+          label: `function-${Date.now()}`,
           description: '',
-          runtime: 'javascript'
+          runtime: 'deno',
+          template: 'v1/deno/2',
+          handler,
+          applicationId
         })
       });
 
@@ -282,6 +321,9 @@ export class FunctionsPanel extends LitElement {
    */
   openFunctionInEditor(func: FunctionItem) {
     this.selectedFunctionId = func.id;
+
+    // Set current function in global Vars for permissions panel and other uses
+    ExecuteInstance.VarsProxy.currentFunction = func;
 
     try {
       // Check if tab already exists
