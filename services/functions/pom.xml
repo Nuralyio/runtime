@@ -164,7 +164,7 @@
         <dependency>
             <groupId>com.github.Nuralyio</groupId>
             <artifactId>shared-java-library</artifactId>
-            <version>f5175a3</version>
+            <version>7791ded</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

@@ -89,7 +89,8 @@ public class ContainerManager {
             }
 
             // Build the Docker image
-            String imageName = configuration.RegistryURL + "/" + functionEntity.getLabel().toLowerCase() + "-" + functionEntity.id + ":latest";
+            // Replace underscores with hyphens to comply with Docker/Kubernetes naming conventions
+            String imageName = configuration.RegistryURL + "/" + functionEntity.getLabel().toLowerCase().replace("_", "-") + "-" + functionEntity.id + ":latest";
             String imageId = dockerClient.buildImageCmd()
                     .withDockerfile(tempFunctionDir.resolve("Dockerfile").toFile())
                     .withTags(Set.of(imageName))

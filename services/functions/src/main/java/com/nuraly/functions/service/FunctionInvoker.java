@@ -72,7 +72,9 @@ public class FunctionInvoker {
      * @return The constructed Host header value.
      */
     private String buildHostHeader(FunctionEntity functionEntity) {
-        return functionEntity.getLabel() + "-" + functionEntity.id + "." + configuration.FunctionsDomain;
+        // Replace underscores with hyphens to match Kubernetes naming convention
+        String functionName = functionEntity.getLabel().toLowerCase().replace("_", "-");
+        return functionName + "-" + functionEntity.id + "." + configuration.FunctionsDomain;
     }
 
     /**
@@ -102,6 +104,9 @@ public class FunctionInvoker {
                     continue;
                 }
 
+                if (statusCode == 404) {
+                    throw new HttpResponseException(statusCode, "Function not deployed. Please build and deploy the function first.");
+                }
                 if (statusCode != 200) {
                     throw new HttpResponseException(statusCode, "Failed to invoke function. HTTP status: " + statusCode);
                 }
