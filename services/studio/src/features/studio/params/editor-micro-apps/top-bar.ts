@@ -380,7 +380,7 @@ export default [{
   uuid: "website-name" ,
   name: "website-name",
   application_id: "1",
-  
+
   component_type: "text_label",
   input: {
     value: {
@@ -392,7 +392,13 @@ export default [{
     "font-family": '"Titillium Web", sans-serif',
      "font-weight": "600",
      "--nuraly-label-local-font-size": "15px",
-     "margin-left": "8px"
+     "margin-left": "8px",
+     "cursor": "pointer"
+  },
+  event: {
+    onClick: /* js */`
+      NavigateToUrl('/dashboard');
+    `
   }
 },
 {

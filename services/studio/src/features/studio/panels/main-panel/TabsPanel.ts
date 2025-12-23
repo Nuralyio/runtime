@@ -148,18 +148,32 @@ export class TabsPanel extends LitElement {
        
         size="small"
           .activeTab=${this.activeTab}
-          @removeTab=${(e: CustomEvent) => {
-            const tabToClose = this.editableTabs[e.detail.index];
-            closeEditorTab(tabToClose);
-          this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
-          this.activeTab = e.detail.index-1;
-          setCurrentEditorTab(this.editableTabs[this.activeTab]);
+          @nr-tab-remove=${(e: CustomEvent) => {
+            const tabIndex = e.detail.index;
+            const tabToClose = this.editableTabs[tabIndex];
 
+            if (!tabToClose) {
+              console.error('[TabsPanel] No tab found at index:', tabIndex);
+              return;
+            }
+
+            closeEditorTab(tabToClose);
+            this.editableTabs = [...this.editableTabs.filter((_, index) => index !== tabIndex)];
+
+            // Calculate new active tab
+            const newActiveTab = Math.max(0, tabIndex - 1);
+            this.activeTab = newActiveTab;
+
+            if (this.editableTabs[newActiveTab]) {
+              setCurrentEditorTab(this.editableTabs[newActiveTab]);
+            }
         }}
-          @tabTilteClick=${(e: CustomEvent) => {
-          setCurrentEditorTab($editorState.get().tabs[e.detail.index]);
-        }
-        }
+          @nr-tab-click=${(e: CustomEvent) => {
+            const tabIndex = e.detail.index;
+            if (this.editableTabs[tabIndex]) {
+              setCurrentEditorTab(this.editableTabs[tabIndex]);
+            }
+        }}
           .tabs=${this.editableTabs}
           .editable=${{
           canDeleteTab: this.editableTabs.length !== 1,
