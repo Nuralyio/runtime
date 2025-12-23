@@ -19,4 +19,10 @@ public class FunctionEntity extends PanacheEntity {
     @Lob
     @Column(columnDefinition = "TEXT")
     public String handler;
+
+    @Column(name = "application_id")
+    public String applicationId;
+
+    @Column(name = "created_by")
+    public String createdBy;
 }

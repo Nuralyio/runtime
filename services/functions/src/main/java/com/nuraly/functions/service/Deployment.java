@@ -32,8 +32,9 @@ public class Deployment {
         }
 
         // Préparer le nom de la fonction et l'URL de l'image
-        String functionName = functionEntity.getLabel().toLowerCase() + "-" + functionEntity.id;
-        String imageUrl = configuration.RegistryURL + "/" + functionEntity.getLabel() + "-" + functionEntity.id;
+        // Replace underscores with hyphens to comply with Kubernetes RFC 1123 naming
+        String functionName = functionEntity.getLabel().toLowerCase().replace("_", "-") + "-" + functionEntity.id;
+        String imageUrl = configuration.RegistryURL + "/" + functionEntity.getLabel().toLowerCase().replace("_", "-") + "-" + functionEntity.id;
 
         try {
             // Charger le fichier YAML de la ressource
@@ -104,9 +105,29 @@ public class Deployment {
 
             System.out.println("Knative service '" + functionName + "' created successfully.");
 
-        } catch (ApiException | IOException e) {
+        } catch (ApiException e) {
             System.err.println("Error creating or managing Knative service: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Response code: " + e.getCode());
+            System.err.println("Response body: " + e.getResponseBody());
+            // Parse error message from response body if available
+            String errorMsg = "Deployment failed";
+            if (e.getResponseBody() != null && e.getResponseBody().contains("message")) {
+                try {
+                    // Extract message from JSON response
+                    String body = e.getResponseBody();
+                    int msgStart = body.indexOf("\"message\":\"") + 11;
+                    int msgEnd = body.indexOf("\"", msgStart);
+                    if (msgStart > 10 && msgEnd > msgStart) {
+                        errorMsg = body.substring(msgStart, msgEnd);
+                    }
+                } catch (Exception parseEx) {
+                    errorMsg = "Kubernetes API error: " + e.getCode();
+                }
+            }
+            throw new RuntimeException(errorMsg, e);
+        } catch (IOException e) {
+            System.err.println("IO Error creating or managing Knative service: " + e.getMessage());
+            throw new RuntimeException("Failed to read Knative service configuration: " + e.getMessage(), e);
         }
     }
 }

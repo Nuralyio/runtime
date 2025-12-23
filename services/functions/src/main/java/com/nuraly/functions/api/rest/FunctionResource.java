@@ -26,8 +26,11 @@ import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Path("/api/v1/functions")
@@ -47,18 +50,15 @@ public class FunctionResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @RequiresPermission(
-            permissionType = "read",
-            resourceType = "function",
-            resourceId = "*"
-    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Functions retrieved"),
             @APIResponse(responseCode = "500", description = "Internal server error")
     })
     @Operation(summary = "Retrieve all functions")
-    public RestResponse<List<FunctionDTO>> getFunctions() {
-        List<FunctionDTO> functions = functionService.getFunctions();
+    public RestResponse<List<FunctionDTO>> getFunctions(
+            @HeaderParam("X-USER") String userHeader,
+            @QueryParam("applicationId") String applicationId) {
+        List<FunctionDTO> functions = functionService.getFunctions(applicationId, userHeader);
         return RestResponse.ok(functions);
     }
 
@@ -93,7 +93,23 @@ public class FunctionResource {
             @APIResponse(responseCode = "400", description = "Invalid request payload")
     })
     @Operation(summary = "Create a new function")
-    public RestResponse<FunctionDTO> createFunction(@Valid FunctionDTO functionDTO) {
+    public RestResponse<FunctionDTO> createFunction(
+            @HeaderParam("X-USER") String userHeader,
+            @Valid FunctionDTO functionDTO) {
+        // Set created_by from user header
+        if (userHeader != null && !userHeader.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> user = mapper.readValue(userHeader, Map.class);
+                String userUuid = (String) user.get("uuid");
+                if (userUuid != null) {
+                    functionDTO.setCreatedBy(userUuid);
+                }
+            } catch (Exception e) {
+                // Ignore parsing errors, created_by will be null
+            }
+        }
+
         FunctionDTO createdFunctionDTO = functionService.createFunction(functionDTO);
         return RestResponse.status(RestResponse.Status.CREATED, createdFunctionDTO);
     }
@@ -189,7 +205,8 @@ public class FunctionResource {
     @RequiresPermission(
             permissionType = "execute",
             resourceType = "function",
-            resourceId = "#{functionId}"
+            resourceId = "#{functionId}",
+            allowAnonymous = true
     )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function invoked successfully"),
@@ -213,7 +230,8 @@ public class FunctionResource {
     @RequiresPermission(
             permissionType = "execute",
             resourceType = "function",
-            resourceId = "#{functionId}"
+            resourceId = "#{functionId}",
+            allowAnonymous = true
     )
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponses(value = {

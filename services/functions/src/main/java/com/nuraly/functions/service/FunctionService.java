@@ -5,6 +5,7 @@ import com.nuraly.functions.dto.InvokeRequest;
 import com.nuraly.functions.dto.mapper.FunctionDTOMapper;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.exception.FunctionNotFoundException;
+import com.nuraly.library.permission.PermissionClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -25,9 +26,31 @@ public class FunctionService {
     @Inject
     FunctionInvoker functionInvoker;
 
-    public List<FunctionDTO> getFunctions() {
-        List<FunctionEntity> entities = FunctionEntity.listAll();
-        return functionDTOMapper.toFunctionDTO(entities);
+    @Inject
+    PermissionClient permissionClient;
+
+    public List<FunctionDTO> getFunctions(String applicationId, String userHeader) {
+        List<FunctionEntity> entities;
+        if (applicationId != null && !applicationId.isEmpty()) {
+            entities = FunctionEntity.list("applicationId", applicationId);
+        } else {
+            entities = FunctionEntity.listAll();
+        }
+
+        // Filter by user permission
+        List<String> accessibleIds = permissionClient.getAccessibleResources("function", userHeader);
+
+        // If no permissions found, return empty (user has no access)
+        if (accessibleIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Filter entities by accessible IDs
+        List<FunctionEntity> filteredEntities = entities.stream()
+                .filter(e -> accessibleIds.contains(String.valueOf(e.id)))
+                .toList();
+
+        return functionDTOMapper.toFunctionDTO(filteredEntities);
     }
 
     public FunctionDTO getFunctionById(UUID id) throws FunctionNotFoundException {
@@ -41,6 +64,16 @@ public class FunctionService {
     public FunctionDTO createFunction(FunctionDTO functionDTO) {
         FunctionEntity entity = functionDTOMapper.toEntity(functionDTO);
         entity.persist();
+
+        // Grant creator full permissions on the new function
+        if (functionDTO.getCreatedBy() != null && !functionDTO.getCreatedBy().isEmpty()) {
+            permissionClient.initOwnerPermissions(
+                "function",
+                String.valueOf(entity.id),
+                functionDTO.getCreatedBy()
+            );
+        }
+
         return functionDTOMapper.toFunctionDTO(entity);
     }
 

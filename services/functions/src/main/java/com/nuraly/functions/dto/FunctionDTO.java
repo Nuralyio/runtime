@@ -16,4 +16,6 @@ public class FunctionDTO {
     private String template;
     private String runtime;
     private String handler;
+    private String applicationId;
+    private String createdBy;
 }
