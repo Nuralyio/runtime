@@ -38,7 +38,7 @@ export class FunctionContent extends LitElement {
   static styles = css`
     :host {
       height: 100%;
-      width: calc(100vw - 650px);
+      width: var(--function-page-width, calc(100vw - 650px));
       display: flex;
       flex-direction: column;
       font-family: Arial, sans-serif;
@@ -89,16 +89,23 @@ export class FunctionContent extends LitElement {
     this.logPanel.addLogEntry(`⚡ ${action} action triggered.`);
     setVar("global", "currentFunctionInvoke", true);
 
+    const uuid = this.detail?.uuid;
+    if (!uuid) {
+      this.logPanel.addLogEntry("❌ Unable to perform action: function UUID is missing.");
+      setVar("global", "currentFunctionInvoke", false);
+      return;
+    }
+
     try {
       switch (action) {
         case "Deploy":
           this.logPanel.addLogEntry("🚀 Deploying function ...");
-          await deployFunctionHandler(this.detail.uuid);
+          await deployFunctionHandler(uuid);
           this.logPanel.addLogEntry("✅ Function deployed!");
           break;
         case "Build":
           this.logPanel.addLogEntry("🏗️ Building function ...");
-          await buildFunctionHandler(this.detail.uuid);
+          await buildFunctionHandler(uuid);
           this.logPanel.addLogEntry("✅ Function built!");
           break;
       }
@@ -111,8 +118,14 @@ export class FunctionContent extends LitElement {
    * Handle code changes (debounced)
    */
   private async handleCodeChange(value: string) {
+    const uuid = this.detail?.uuid;
+    if (!uuid) {
+      this.logPanel.addLogEntry("❌ Unable to save: function UUID is missing.");
+      return;
+    }
+
     const currentFunction = ExecuteInstance.Vars.studio_functions?.find(
-      (item: any) => item.id === this.detail.uuid
+      (item: any) => item.id === uuid
     );
 
     if (!currentFunction) {
@@ -140,8 +153,14 @@ export class FunctionContent extends LitElement {
    * Handle invoke function submission
    */
   private handleInvoke() {
+    const uuid = this.detail?.uuid;
+    if (!uuid) {
+      this.logPanel.addLogEntry("❌ Unable to invoke: function UUID is missing.");
+      return;
+    }
+
     this.logPanel.addLogEntry("⚡ Invoking function ...");
-    invokeFunctionHandler(this.detail.uuid, this.payload)
+    invokeFunctionHandler(uuid, this.payload)
       .then(async (result) => {
         const text = await result.text();
         this.logPanel.addLogEntry(`✅ Result: ${text}`);
@@ -158,8 +177,10 @@ export class FunctionContent extends LitElement {
     const { detail: { value } } = event;
     try {
       this.payload = JSON.parse(value);
-    } catch {
-      // Invalid JSON, keep previous payload
+    } catch (error) {
+      // Invalid JSON, keep previous payload but surface the issue
+      console.warn("Invalid JSON payload provided to Function editor. Keeping previous payload.", error);
+      this.logPanel.addLogEntry("⚠️ Invalid JSON payload. Keeping previous valid payload.");
     }
   }
 
@@ -215,7 +236,7 @@ export class FunctionContent extends LitElement {
             const { detail: { value } } = event;
             this.debouncedHandleCodeChange(value);
           }}
-          .code=${this.detail?.handler}
+          .code=${this.detail?.handler ?? ''}
           language="javascript">
         </code-editor>
       </div>
