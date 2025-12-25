@@ -446,8 +446,23 @@ export class ResourcePermissionController extends Controller {
       return { allowed: false, restricted: false, permission: null, pageUuid: null };
     }
 
-    // Check for explicit anonymous permission on this page
-    const hasAnonymousAccess = await this.permissionService.hasAccess(
+    // First, check if the APPLICATION has anonymous access
+    // Application-level anonymous is required for any page to be publicly accessible
+    const appHasAnonymousAccess = await this.permissionService.hasAccess(
+      applicationId,
+      'application',
+      'application:read',
+      undefined,
+      true // isAnonymous
+    );
+
+    if (!appHasAnonymousAccess) {
+      // Application doesn't have anonymous access - page cannot be public
+      return { allowed: false, restricted: true, permission: null, pageUuid: page.uuid };
+    }
+
+    // Application has anonymous access, now check the page
+    const pageHasAnonymousAccess = await this.permissionService.hasAccess(
       page.uuid,
       'page',
       'page:read',
@@ -455,7 +470,7 @@ export class ResourcePermissionController extends Controller {
       true // isAnonymous
     );
 
-    if (hasAnonymousAccess) {
+    if (pageHasAnonymousAccess) {
       return { allowed: true, restricted: false, permission: 'page:read', pageUuid: page.uuid };
     }
 
