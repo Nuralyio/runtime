@@ -66,9 +66,9 @@ public class FunctionResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresPermission(
-            permissionType = "read",
-            resourceType = "function",
-            resourceId = "#{id}"
+        permissionType = "function:read",
+        resourceType = "function",
+        resourceId = "#{id}"
     )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Function retrieved"),
@@ -83,25 +83,22 @@ public class FunctionResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @RequiresPermission(
-            permissionType = "write",
-            resourceType = "function",
-            resourceId = "*"
-    )
     @APIResponses(value = {
             @APIResponse(responseCode = "201", description = "Function created"),
-            @APIResponse(responseCode = "400", description = "Invalid request payload")
+            @APIResponse(responseCode = "400", description = "Invalid request payload"),
+            @APIResponse(responseCode = "403", description = "Permission denied")
     })
     @Operation(summary = "Create a new function")
     public RestResponse<FunctionDTO> createFunction(
             @HeaderParam("X-USER") String userHeader,
             @Valid FunctionDTO functionDTO) {
         // Set created_by from user header
+        String userUuid = null;
         if (userHeader != null && !userHeader.isEmpty()) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 Map<String, Object> user = mapper.readValue(userHeader, Map.class);
-                String userUuid = (String) user.get("uuid");
+                userUuid = (String) user.get("uuid");
                 if (userUuid != null) {
                     functionDTO.setCreatedBy(userUuid);
                 }
@@ -110,7 +107,9 @@ public class FunctionResource {
             }
         }
 
-        FunctionDTO createdFunctionDTO = functionService.createFunction(functionDTO);
+        // Check if user has write permission on the application
+        // Users can create functions in their own applications
+        FunctionDTO createdFunctionDTO = functionService.createFunction(functionDTO, userUuid);
         return RestResponse.status(RestResponse.Status.CREATED, createdFunctionDTO);
     }
 
@@ -119,7 +118,7 @@ public class FunctionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RequiresPermission(
-            permissionType = "write",
+            permissionType = "function:write",
             resourceType = "function",
             resourceId = "#{id}"
     )
@@ -129,7 +128,7 @@ public class FunctionResource {
             @APIResponse(responseCode = "404", description = "Function not found")
     })
     @Operation(summary = "Update an existing function")
-    public RestResponse<FunctionDTO> updateFunction(@RestPath Long id, @Valid FunctionDTO functionDTO) throws FunctionNotFoundException {
+    public RestResponse<FunctionDTO> updateFunction(@RestPath UUID id, @Valid FunctionDTO functionDTO) throws FunctionNotFoundException {
         FunctionDTO updatedFunctionDTO = functionService.updateFunction(id, functionDTO);
         return RestResponse.ok(updatedFunctionDTO);
     }
@@ -137,7 +136,7 @@ public class FunctionResource {
     @DELETE
     @Path("/{id}")
     @RequiresPermission(
-            permissionType = "delete",
+            permissionType = "function:delete",
             resourceType = "function",
             resourceId = "#{id}"
     )
@@ -154,20 +153,19 @@ public class FunctionResource {
     @POST
     @Path("/build/{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @RequiresPermission(
-            permissionType = "function:build",
-            resourceType = "function",
-            resourceId = "#{functionId}"
-    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Docker image build started"),
             @APIResponse(responseCode = "400", description = "Invalid function ID"),
+            @APIResponse(responseCode = "403", description = "Permission denied"),
             @APIResponse(responseCode = "500", description = "Internal server error")
     })
     @Operation(summary = "Build Docker image for a function")
-    public RestResponse<String> buildDockerImage(@PathParam("functionId") Long functionId) {
+    public RestResponse<String> buildDockerImage(
+            @HeaderParam("X-USER") String userHeader,
+            @PathParam("functionId") UUID functionId) {
         try {
-            String imageName = functionService.buildFunctionDockerImage(functionId);
+            String userUuid = extractUserUuid(userHeader);
+            String imageName = functionService.buildFunctionDockerImage(functionId, userUuid);
             return RestResponse.ok("Docker image " + imageName + " build started successfully.");
         } catch (FunctionNotFoundException e) {
             return RestResponse.status(RestResponse.Status.BAD_REQUEST, "Function not found: " + e.getMessage());
@@ -179,20 +177,23 @@ public class FunctionResource {
     @POST
     @Path("/deploy/{functionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @RequiresPermission(
-            permissionType = "function:deploy",
-            resourceType = "function",
-            resourceId = "#{functionId}"
-    )
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Deployment started successfully"),
+            @APIResponse(responseCode = "403", description = "Permission denied"),
+            @APIResponse(responseCode = "404", description = "Function not found"),
             @APIResponse(responseCode = "500", description = "Internal server error")
     })
     @Operation(summary = "Deploy a function")
-    public RestResponse<String> deployFunction(@PathParam("functionId") Long functionId) {
+    public RestResponse<String> deployFunction(
+            @HeaderParam("X-USER") String userHeader,
+            @PathParam("functionId") UUID functionId) {
         try {
-            deployment.deploy(functionId);
+            String userUuid = extractUserUuid(userHeader);
+            // Uses function:deploy permission with role-based inheritance
+            functionService.deployFunction(functionId, userUuid);
             return RestResponse.ok("Deployment started successfully.");
+        } catch (FunctionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND, "Function not found: " + e.getMessage());
         } catch (Exception e) {
             return RestResponse.status(RestResponse.Status.INTERNAL_SERVER_ERROR, "Failed to start deployment: " + e.getMessage());
         }
@@ -203,7 +204,7 @@ public class FunctionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RequiresPermission(
-            permissionType = "execute",
+            permissionType = "function:execute",
             resourceType = "function",
             resourceId = "#{functionId}",
             allowAnonymous = true
@@ -214,7 +215,7 @@ public class FunctionResource {
             @APIResponse(responseCode = "500", description = "Internal server error")
     })
     @Operation(summary = "Invoke a function")
-    public RestResponse<String> postInvokeFunction(@PathParam("functionId") Long functionId, @Valid InvokeRequest request) {
+    public RestResponse<String> postInvokeFunction(@PathParam("functionId") UUID functionId, @Valid InvokeRequest request) {
         try {
             String result = functionService.invokeFunction(functionId, request);
             return RestResponse.ok(result);
@@ -228,7 +229,7 @@ public class FunctionResource {
     @GET
     @Path("/invoke/{functionId}")
     @RequiresPermission(
-            permissionType = "execute",
+            permissionType = "function:execute",
             resourceType = "function",
             resourceId = "#{functionId}",
             allowAnonymous = true
@@ -241,7 +242,7 @@ public class FunctionResource {
     })
     @Operation(summary = "Get the result of a function invocation with dynamic query parameters")
     public RestResponse<String> getInvokeFunction(
-            @PathParam("functionId") Long functionId,
+            @PathParam("functionId") UUID functionId,
             @Context UriInfo uriInfo
     ) {
         try {
@@ -260,6 +261,22 @@ public class FunctionResource {
             return RestResponse.status(RestResponse.Status.NOT_FOUND, "Function not found: " + e.getMessage());
         } catch (Exception e) {
             return RestResponse.status(RestResponse.Status.INTERNAL_SERVER_ERROR, "Failed to retrieve invocation result: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Extract user UUID from X-USER header.
+     */
+    private String extractUserUuid(String userHeader) {
+        if (userHeader == null || userHeader.isEmpty()) {
+            return null;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> user = mapper.readValue(userHeader, Map.class);
+            return (String) user.get("uuid");
+        } catch (Exception e) {
+            return null;
         }
     }
 }

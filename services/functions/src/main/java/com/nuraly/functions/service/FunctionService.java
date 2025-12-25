@@ -5,7 +5,9 @@ import com.nuraly.functions.dto.InvokeRequest;
 import com.nuraly.functions.dto.mapper.FunctionDTOMapper;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.exception.FunctionNotFoundException;
+import com.nuraly.library.permission.PermissionCheckRequest;
 import com.nuraly.library.permission.PermissionClient;
+import com.nuraly.library.permission.PermissionDeniedException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,9 @@ public class FunctionService {
 
     @Inject
     FunctionInvoker functionInvoker;
+
+    @Inject
+    Deployment deployment;
 
     @Inject
     PermissionClient permissionClient;
@@ -62,6 +67,27 @@ public class FunctionService {
     }
 
     public FunctionDTO createFunction(FunctionDTO functionDTO) {
+        return createFunction(functionDTO, null);
+    }
+
+    public FunctionDTO createFunction(FunctionDTO functionDTO, String userUuid) {
+        // Check if user has write permission on the application
+        String applicationId = functionDTO.getApplicationId();
+        if (applicationId != null && !applicationId.isEmpty() && userUuid != null && !userUuid.isEmpty()) {
+            PermissionCheckRequest checkRequest = PermissionCheckRequest.builder()
+                    .userId(userUuid)
+                    .permissionType("application:write")
+                    .resourceType("application")
+                    .resourceId(applicationId)
+                    .build();
+
+            if (!permissionClient.hasPermission(checkRequest)) {
+                throw new PermissionDeniedException(
+                    "Permission denied: application:write on application [" + applicationId + "]"
+                );
+            }
+        }
+
         FunctionEntity entity = functionDTOMapper.toEntity(functionDTO);
         entity.persist();
 
@@ -77,7 +103,7 @@ public class FunctionService {
         return functionDTOMapper.toFunctionDTO(entity);
     }
 
-    public FunctionDTO updateFunction(Long id, FunctionDTO functionDTO) throws FunctionNotFoundException {
+    public FunctionDTO updateFunction(UUID id, FunctionDTO functionDTO) throws FunctionNotFoundException {
         FunctionEntity entity = FunctionEntity.findById(id);
         if (entity == null) {
             throw new FunctionNotFoundException("Function not found with id: " + id);
@@ -99,22 +125,112 @@ public class FunctionService {
     }
 
     /**
-     * Builds a Docker image for the specified function by its ID.
+     * Check if user has permission on a function.
+     * For authenticated users, permission is verified by the gateway.
+     * For anonymous users, checks via the /check-anonymous endpoint.
      *
-     * @param functionId The ID of the function to build the Docker image for.
-     * @return The image name if the build is successful.
-     * @throws FunctionNotFoundException If no function is found with the given ID.
-     * @throws Exception If an error occurs while building the Docker image.
+     * @param functionId The ID of the function
+     * @param userUuid The user's UUID (null or empty for anonymous)
+     * @param permissionType The permission type to check (e.g., "function:execute")
+     * @param allowAnonymous Whether anonymous access is allowed for this endpoint
+     * @throws FunctionNotFoundException If the function is not found
+     * @throws PermissionDeniedException If access is denied
      */
-    public String buildFunctionDockerImage(Long functionId) throws FunctionNotFoundException, Exception {
+    public void checkFunctionPermission(UUID functionId, String userUuid, String permissionType, boolean allowAnonymous)
+            throws FunctionNotFoundException, PermissionDeniedException {
+
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
         }
 
+        // Check if user is anonymous
+        boolean isAnonymous = (userUuid == null || userUuid.isEmpty());
+
+        if (isAnonymous) {
+            if (!allowAnonymous) {
+                throw new PermissionDeniedException("Authentication required");
+            }
+            // Anonymous access check is handled by the permission interceptor
+            // via the @RequiresPermission annotation with allowAnonymous=true
+        }
+
+        // For authenticated users, owner check for convenience
+        if (userUuid != null && userUuid.equals(functionEntity.createdBy)) {
+            return; // Owner has all permissions
+        }
+
+        // Permission check is handled by the interceptor via @RequiresPermission annotation
+    }
+
+    /**
+     * Check if user has permission on a function (authenticated users only).
+     *
+     * @param functionId The ID of the function
+     * @param userUuid The user's UUID
+     * @throws FunctionNotFoundException If the function is not found
+     * @throws PermissionDeniedException If authentication is required
+     */
+    public void checkFunctionPermission(UUID functionId, String userUuid)
+            throws FunctionNotFoundException, PermissionDeniedException {
+        checkFunctionPermission(functionId, userUuid, "function:read", false);
+    }
+
+    /**
+     * Check if user is the owner of a function.
+     *
+     * @param functionId The ID of the function
+     * @param userUuid The user's UUID
+     * @return true if user is the owner
+     * @throws FunctionNotFoundException If the function is not found
+     */
+    public boolean isOwner(UUID functionId, String userUuid) throws FunctionNotFoundException {
+        if (userUuid == null || userUuid.isEmpty()) {
+            return false;
+        }
+
+        FunctionEntity functionEntity = FunctionEntity.findById(functionId);
+        if (functionEntity == null) {
+            throw new FunctionNotFoundException("Function not found with id: " + functionId);
+        }
+
+        return userUuid.equals(functionEntity.createdBy);
+    }
+
+    /**
+     * Builds a Docker image for the specified function by its ID.
+     * Permission is verified by the gateway.
+     *
+     * @param functionId The ID of the function to build the Docker image for.
+     * @param userUuid The user's UUID.
+     * @return The image name if the build is successful.
+     * @throws FunctionNotFoundException If no function is found with the given ID.
+     * @throws PermissionDeniedException If authentication is required.
+     * @throws Exception If an error occurs while building the Docker image.
+     */
+    public String buildFunctionDockerImage(UUID functionId, String userUuid) throws FunctionNotFoundException, PermissionDeniedException, Exception {
+        checkFunctionPermission(functionId, userUuid);
+
+        FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         return containerManager.buildDockerImage(functionEntity);
     }
-    public String invokeFunction(Long functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
+
+    /**
+     * Deploy a function.
+     * Permission is verified by the gateway.
+     *
+     * @param functionId The ID of the function to deploy.
+     * @param userUuid The user's UUID.
+     * @throws FunctionNotFoundException If no function is found with the given ID.
+     * @throws PermissionDeniedException If authentication is required.
+     */
+    public void deployFunction(UUID functionId, String userUuid)
+            throws FunctionNotFoundException, PermissionDeniedException, Exception {
+        checkFunctionPermission(functionId, userUuid);
+
+        deployment.deploy(functionId);
+    }
+    public String invokeFunction(UUID functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
