@@ -1,5 +1,5 @@
 export type GranteeType = 'user' | 'role' | 'public' | 'anonymous';
-export type PermissionType = 'read' | 'write' | 'delete' | 'share';
+export type PermissionType = 'read' | 'write' | 'delete' | 'share' | 'execute';
 
 export class ResourcePermission {
   id?: number;

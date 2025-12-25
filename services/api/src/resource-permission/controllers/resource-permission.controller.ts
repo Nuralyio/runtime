@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Path, Post, Route, Tags, Request } from "tsoa";
+import { Body, Controller, Delete, Get, Path, Post, Query, Route, Tags, Request } from "tsoa";
 import { injectable } from "tsyringe";
 import { ResourcePermission, GranteeType, PermissionType } from "../models/resource-permission";
 import { ResourcePermissionService } from "../services/resource-permission.service";
@@ -336,19 +336,22 @@ export class ResourcePermissionController extends Controller {
   @Get('{resourceType}/{resourceId}/check-anonymous')
   public async checkAnonymousAccess(
     @Path() resourceType: string,
-    @Path() resourceId: string
+    @Path() resourceId: string,
+    @Query() permission?: PermissionType
   ): Promise<{ allowed: boolean; restricted: boolean; permission: string | null }> {
+    const permissionToCheck = permission || 'read';
+
     // Check for explicit anonymous permission
     const hasAnonymousAccess = await this.permissionService.hasAccess(
       resourceId,
       resourceType,
-      'read',
+      permissionToCheck,
       undefined,
       true // isAnonymous
     );
 
     if (hasAnonymousAccess) {
-      return { allowed: true, restricted: false, permission: 'read' };
+      return { allowed: true, restricted: false, permission: permissionToCheck };
     }
 
     // Pages without explicit anonymous permission are considered "restricted"
@@ -452,6 +455,55 @@ export class ResourcePermissionController extends Controller {
     }
 
     return null;
+  }
+
+  /**
+   * Get list of resource IDs the current user can access.
+   * Used by backend services to filter resources by permission.
+   */
+  @Get('{resourceType}/accessible')
+  public async getAccessibleResources(
+    @Request() request: NRequest,
+    @Path() resourceType: string
+  ): Promise<{ resourceIds: string[] }> {
+    const resourceIds = await this.permissionService.getAccessibleResources(
+      resourceType,
+      'read',
+      request.user?.uuid,
+      !request.user
+    );
+    return { resourceIds };
+  }
+
+  /**
+   * Initialize owner permissions for a newly created resource.
+   * This is an internal endpoint called by backend services (not protected by permission checks).
+   * Grants the creator full permissions (read, write, delete, execute, share).
+   */
+  @Post('{resourceType}/{resourceId}/init-owner')
+  public async initOwner(
+    @Path() resourceType: string,
+    @Path() resourceId: string,
+    @Body() body: { userId: string }
+  ): Promise<{ success: boolean; permissions: PermissionResponse[] }> {
+    const allPermissions: PermissionType[] = ['read', 'write', 'delete', 'execute', 'share'];
+    const createdPermissions: PermissionResponse[] = [];
+
+    for (const permission of allPermissions) {
+      const perm = await this.permissionService.grantPermission(
+        resourceId,
+        resourceType,
+        body.userId, // grantedBy is the creator themselves
+        {
+          granteeType: 'user',
+          granteeId: body.userId,
+          permission,
+        }
+      );
+      createdPermissions.push(toResponse(perm));
+    }
+
+    return { success: true, permissions: createdPermissions };
   }
 
   /**
