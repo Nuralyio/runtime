@@ -81,6 +81,7 @@ export class ResourcePermissionRepository implements IResourcePermissionReposito
 
   /**
    * Check if a user has access to a resource (via direct permission or public/anonymous)
+   * Permission inheritance: write implies execute
    */
   async hasAccess(
     resourceId: string,
@@ -111,11 +112,19 @@ export class ResourcePermissionRepository implements IResourcePermissionReposito
       });
     }
 
+    // Build permission conditions - check exact permission
+    // Also check write permission if looking for execute (write implies execute)
+    const permissionsToCheck = [permission];
+    if (permission.endsWith(':execute')) {
+      const writePermission = permission.replace(':execute', ':write');
+      permissionsToCheck.push(writePermission);
+    }
+
     const result = await prisma.resourcePermission.findFirst({
       where: {
         resourceId,
         resourceType,
-        permission,
+        permission: { in: permissionsToCheck },
         OR: whereConditions,
         AND: [
           {

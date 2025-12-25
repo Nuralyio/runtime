@@ -80,7 +80,7 @@ export class ResourcePermissionController extends Controller {
         request.user,
         resourceId,
         resourceType,
-        'read'
+        `${resourceType}:read`
       );
 
       if (!canRead) {
@@ -192,7 +192,7 @@ export class ResourcePermissionController extends Controller {
       resourceId,
       resourceType,
       request.user.uuid,
-      body?.permission || 'read'
+      body?.permission || `${resourceType}:read`
     );
 
     return toResponse(permission);
@@ -221,7 +221,9 @@ export class ResourcePermissionController extends Controller {
   }
 
   /**
-   * Allow anonymous access to a resource
+   * Allow anonymous access to a resource.
+   * For applications, this grants all necessary permissions (application:read, page:read, component:read)
+   * to allow anonymous users to view the application's content.
    */
   @Post('{resourceType}/{resourceId}/make-anonymous')
   public async makeAnonymous(
@@ -239,11 +241,35 @@ export class ResourcePermissionController extends Controller {
       );
     }
 
+    // For applications, grant all necessary permissions for anonymous access
+    if (resourceType === 'application') {
+      const permissions = ['application:read', 'page:read', 'component:read'];
+      let lastPermission: ResourcePermission | null = null;
+
+      for (const perm of permissions) {
+        lastPermission = await this.permissionService.allowAnonymous(
+          resourceId,
+          resourceType,
+          request.user.uuid,
+          perm as PermissionType
+        );
+      }
+
+      return toResponse(lastPermission!);
+    }
+
+    // For other resource types, grant single permission
+    // Normalize permission to full format (e.g., 'read' -> 'page:read')
+    let perm = body?.permission || 'read';
+    if (!perm.includes(':')) {
+      perm = `${resourceType}:${perm}`;
+    }
+
     const permission = await this.permissionService.allowAnonymous(
       resourceId,
       resourceType,
       request.user.uuid,
-      body?.permission || 'read'
+      perm
     );
 
     return toResponse(permission);
@@ -337,9 +363,11 @@ export class ResourcePermissionController extends Controller {
   public async checkAnonymousAccess(
     @Path() resourceType: string,
     @Path() resourceId: string,
-    @Query() permission?: PermissionType
+    @Query() permission?: string
   ): Promise<{ allowed: boolean; restricted: boolean; permission: string | null }> {
-    const permissionToCheck = permission || 'read';
+    // Permission format: "function:read", "page:write", etc.
+    // Default to "{resourceType}:read" if not provided
+    const permissionToCheck = permission || `${resourceType}:read`;
 
     // Check for explicit anonymous permission
     const hasAnonymousAccess = await this.permissionService.hasAccess(
@@ -422,13 +450,13 @@ export class ResourcePermissionController extends Controller {
     const hasAnonymousAccess = await this.permissionService.hasAccess(
       page.uuid,
       'page',
-      'read',
+      'page:read',
       undefined,
       true // isAnonymous
     );
 
     if (hasAnonymousAccess) {
-      return { allowed: true, restricted: false, permission: 'read', pageUuid: page.uuid };
+      return { allowed: true, restricted: false, permission: 'page:read', pageUuid: page.uuid };
     }
 
     // Page exists but doesn't have anonymous access - it's restricted
@@ -468,7 +496,7 @@ export class ResourcePermissionController extends Controller {
   ): Promise<{ resourceIds: string[] }> {
     const resourceIds = await this.permissionService.getAccessibleResources(
       resourceType,
-      'read',
+      `${resourceType}:read`,
       request.user?.uuid,
       !request.user
     );
@@ -478,7 +506,7 @@ export class ResourcePermissionController extends Controller {
   /**
    * Initialize owner permissions for a newly created resource.
    * This is an internal endpoint called by backend services (not protected by permission checks).
-   * Grants the creator full permissions (read, write, delete, execute, share).
+   * Grants the creator full permissions (resourceType:read, resourceType:write, etc.).
    */
   @Post('{resourceType}/{resourceId}/init-owner')
   public async initOwner(
@@ -486,10 +514,12 @@ export class ResourcePermissionController extends Controller {
     @Path() resourceId: string,
     @Body() body: { userId: string }
   ): Promise<{ success: boolean; permissions: PermissionResponse[] }> {
-    const allPermissions: PermissionType[] = ['read', 'write', 'delete', 'execute', 'share'];
+    // Use full permission format: "function:read", "page:write", etc.
+    const basePermissions = ['read', 'write', 'delete', 'execute', 'share'];
     const createdPermissions: PermissionResponse[] = [];
 
-    for (const permission of allPermissions) {
+    for (const basePerm of basePermissions) {
+      const fullPermission = `${resourceType}:${basePerm}`;
       const perm = await this.permissionService.grantPermission(
         resourceId,
         resourceType,
@@ -497,7 +527,7 @@ export class ResourcePermissionController extends Controller {
         {
           granteeType: 'user',
           granteeId: body.userId,
-          permission,
+          permission: fullPermission,
         }
       );
       createdPermissions.push(toResponse(perm));
@@ -521,7 +551,7 @@ export class ResourcePermissionController extends Controller {
       request.user,
       resourceId,
       resourceType,
-      'share'
+      `${resourceType}:share`
     );
 
     if (!canShare) {
@@ -534,7 +564,7 @@ export class ResourcePermissionController extends Controller {
       resourceType,
       request.user.uuid,
       body.userId,
-      body.permission || 'read',
+      body.permission || `${resourceType}:read`,
       body.expiresAt ? new Date(body.expiresAt) : undefined
     );
 
