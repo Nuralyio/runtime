@@ -6,8 +6,9 @@ export const updateFunctionHandler = (functionElement:any) => {
     headers: {
       "Content-Type": "application/json"
     },
+    credentials: "include",
     body: JSON.stringify({
-  ...functionElement
+      ...functionElement
     })
   })
 };
