@@ -30,6 +30,7 @@ export class ApplicationRole {
   /**
    * Check if this role has a specific permission
    * Supports wildcards: "*" = all permissions, "page:*" = all page permissions
+   * Permission inheritance: write implies execute (if you can edit, you can run)
    */
   hasPermission(permission: string): boolean {
     // Owner has all permissions
@@ -43,8 +44,14 @@ export class ApplicationRole {
     }
 
     // Check wildcard match (e.g., "page:*" matches "page:read")
-    const [resource] = permission.split(':');
+    const [resource, action] = permission.split(':');
     if (this.permissions.includes(`${resource}:*`)) {
+      return true;
+    }
+
+    // Permission inheritance: write implies execute
+    // If checking for execute and user has write, grant access
+    if (action === 'execute' && this.permissions.includes(`${resource}:write`)) {
       return true;
     }
 

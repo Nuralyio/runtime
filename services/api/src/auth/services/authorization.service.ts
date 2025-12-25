@@ -17,15 +17,18 @@ export class AuthorizationService {
   ) {}
 
   /**
-   * Check if a user can access a specific resource with a given permission.
+   * Check if a user can access a resource with a given permission.
    *
    * Permission Check Order:
    * 1. Check ResourcePermission (direct user/public/anonymous access on resource)
    * 2. Check ApplicationMember role permissions (via application membership)
    * 3. DENY if none match
    *
-   * For applications: applicationId = resourceId
-   * For pages/components: applicationId is looked up or passed explicitly
+   * @param user The user to check
+   * @param resourceId The resource ID
+   * @param resourceType The resource type (function, page, etc.)
+   * @param permission Full permission format: "function:read", "page:write", etc.
+   * @param applicationId Optional application ID for role-based checks
    */
   async canAccess(
     user: IUser,
@@ -34,16 +37,12 @@ export class AuthorizationService {
     permission: string,
     applicationId?: string
   ): Promise<boolean> {
-    // Extract base permission (e.g., 'page:read' -> 'read')
-    const basePermission = permission.includes(':')
-      ? permission.split(':')[1]
-      : permission;
-
     // 1. Check direct resource permissions (user, public, anonymous)
+    // Permission is stored in full format: "function:read", "page:write", etc.
     const hasResourcePermission = await this.resourcePermissionService.hasAccess(
       resourceId,
       resourceType,
-      basePermission as PermissionType,
+      permission as PermissionType,
       user.anonymous ? undefined : user.uuid,
       user.anonymous
     );
@@ -58,15 +57,10 @@ export class AuthorizationService {
     const appId = resourceType === 'application' ? resourceId : applicationId;
 
     if (appId && !user.anonymous) {
-      // Build permission string: 'read' -> 'page:read' or keep as-is if already prefixed
-      const fullPermission = permission.includes(':')
-        ? permission
-        : `${resourceType}:${permission}`;
-
       const hasRolePermission = await this.memberService.hasPermission(
         user.uuid,
         appId,
-        fullPermission
+        permission
       );
 
       if (hasRolePermission) {

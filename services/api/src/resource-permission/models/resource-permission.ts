@@ -1,5 +1,10 @@
 export type GranteeType = 'user' | 'role' | 'public' | 'anonymous';
-export type PermissionType = 'read' | 'write' | 'delete' | 'share' | 'execute';
+
+/**
+ * Permission type - supports full format like "function:read" or "page:write"
+ * Format: "{resourceType}:{action}" where action is read, write, delete, share, execute
+ */
+export type PermissionType = string;
 
 export class ResourcePermission {
   id?: number;
