@@ -115,8 +115,6 @@ public class FunctionInvoker {
                 HttpEntity entity = response.getEntity();
                 String responseBody = entity != null ? EntityUtils.toString(entity) : null;
 
-                // Log the response for debugging
-                System.out.println("Response Body: " + responseBody);
                 return responseBody;
 
             } catch (IOException e) {

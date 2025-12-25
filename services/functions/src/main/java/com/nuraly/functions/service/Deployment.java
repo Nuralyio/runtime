@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.UUID;
 
 @ApplicationScoped
 @Transactional
@@ -24,7 +25,7 @@ public class Deployment {
     @Inject
     com.nuraly.functions.configuration.Configuration configuration;
 
-    public void deploy(Long functionId) throws FunctionNotFoundException {
+    public void deploy(UUID functionId) throws FunctionNotFoundException {
         // Trouver l'entité FunctionEntity par son ID
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {

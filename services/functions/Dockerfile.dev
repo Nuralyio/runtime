@@ -11,4 +11,4 @@ EXPOSE 5005
 
 # Run Quarkus in development mode with hot reload
 # Skip the offline dependency download as it may fail with custom libraries
-CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=9000", "-DskipTests"]
+CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=9000", "-DskipTests", "-U"]
