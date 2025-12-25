@@ -1,10 +1,13 @@
 package com.nuraly.library.permission;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * DTO for permission check requests to the permissions API.
+ * Null fields are not included in JSON serialization to avoid validation errors.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PermissionCheckRequest {
 
     @JsonProperty("userId")
