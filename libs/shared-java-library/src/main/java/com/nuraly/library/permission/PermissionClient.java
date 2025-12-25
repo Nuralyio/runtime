@@ -94,6 +94,40 @@ public class PermissionClient {
     }
 
     /**
+     * Check if anonymous access is allowed for a specific resource and permission.
+     * Uses the existing /check-anonymous endpoint.
+     *
+     * @param resourceType   The type of resource (e.g., "function", "page")
+     * @param resourceId     The ID of the resource
+     * @param permissionType The permission to check (e.g., "function:execute")
+     * @return true if anonymous access is allowed, false otherwise
+     */
+    public boolean checkAnonymousAccess(String resourceType, String resourceId, String permissionType) {
+        try {
+            String url = permissionApiBaseUrl + "/resources/" + resourceType + "/" + resourceId
+                       + "/check-anonymous?permission=" + java.net.URLEncoder.encode(permissionType, StandardCharsets.UTF_8);
+
+            HttpURLConnection connection = (HttpURLConnection) new java.net.URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == 200) {
+                try (java.io.InputStream is = connection.getInputStream()) {
+                    JsonNode json = objectMapper.readTree(is);
+                    return json.has("allowed") && json.get("allowed").asBoolean(false);
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to check anonymous access: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Get list of resource IDs the user can access.
      *
      * @param resourceType The type of resource (e.g., "function")
