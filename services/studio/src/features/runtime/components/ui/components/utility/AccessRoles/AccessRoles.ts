@@ -230,6 +230,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
     if (!resourceId) return;
 
     const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
+    // Use full permission format: resourceType:read
+    const permission = `${resourceType}:read`;
 
     try {
       const response = checked
@@ -237,7 +239,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ permission: 'read' })
+            body: JSON.stringify({ permission })
           })
         : await fetch(`${baseUrl}/make-public`, { method: 'DELETE', credentials: 'include' });
 
@@ -249,7 +251,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
       console.error('[AccessRoles] Failed to update public access:', error);
     }
 
-    this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission: 'read' });
+    this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission });
   }
 
   private async handleAnonymousToggle(checked: boolean) {
@@ -260,8 +262,10 @@ export class AccessRolesDisplay extends BaseElementBlock {
     if (!resourceId) return;
 
     const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
+    // Use full permission format: resourceType:action
     // For functions, grant 'execute' permission; for other resources, grant 'read'
-    const permission = resourceType === 'function' ? 'execute' : 'read';
+    const action = resourceType === 'function' ? 'execute' : 'read';
+    const permission = `${resourceType}:${action}`;
 
     try {
       const response = checked
