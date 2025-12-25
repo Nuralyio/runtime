@@ -6,6 +6,7 @@ export const invokeFunctionHandler = async (functionId: any, data: any) => {
     headers: {
       "Content-Type": "application/json"
     },
+    credentials: "include",
     body: JSON.stringify({
       data
     })
