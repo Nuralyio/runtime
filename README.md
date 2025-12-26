@@ -1,6 +1,6 @@
 # @nuraly/runtime
 
-> Standalone runtime for building and executing Nuraly micro-apps in any web environment.
+Standalone runtime for executing Nuraly micro-apps in any web environment.
 
 ## Usage
 
@@ -29,7 +29,7 @@
     ...
 ```
 
-### Component Data Structure
+### MicroApp structure
 
 ```javascript
 const appComponents = [
