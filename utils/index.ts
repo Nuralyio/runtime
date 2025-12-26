@@ -9,6 +9,17 @@ import { setupChangeDetection } from '../components/ui/components/base/BaseEleme
 // Component Rendering
 export { renderComponent } from './render-util';
 
+// Component Registry
+export {
+  ComponentRegistry,
+  registerComponent,
+  registerComponents,
+  type ComponentRegistrationOptions,
+  type ComponentTemplateFunction,
+  type ComponentRenderProps,
+  type RegisteredComponent
+} from './component-registry';
+
 // Logging
 export { log as Logger, setLogLevel, enableLogging, enableBenchmarking, LOG_LEVELS } from './logger';
 

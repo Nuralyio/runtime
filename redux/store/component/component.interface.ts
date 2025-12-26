@@ -72,7 +72,7 @@ export interface ComponentElement {
   values?: any;
   uuid: string;
   name: string;
-  component_type: ComponentType;
+  component_type: ComponentType | string;  // Allow string for custom component types
   style?: { [key: string]: string };
   breakpoints?: any;
   styleHandlers: { [key: string]: string };

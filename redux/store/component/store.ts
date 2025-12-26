@@ -113,14 +113,11 @@ export const setComponentRuntimeValue = (componentId: string, key: string, value
   if (!componentId) {
     console.error('Cannot set runtime value: componentId is undefined');
     return;
-  }else{
-    console.log('setComponentRuntimeValue', componentId, key, value)
   }
   $runtimeValues.setKey(componentId, {
     ...$runtimeValues.get()[componentId],
     [key]: value
   });
-  console.log( $runtimeValues.get()[componentId])
   
   // Emit an event to notify subscribers about the change
   eventDispatcher.emit('component:value:change', {

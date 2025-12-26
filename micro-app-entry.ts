@@ -26,9 +26,4 @@ export { MicroAppMessageBus } from './micro-app/messaging/MicroAppMessageBus';
 if (typeof window !== 'undefined') {
   // Touch the class to ensure it's not tree-shaken
   void MicroApp;
-
-  console.log('[MicroApp Bundle] Loaded. MicroApp registered:', customElements.get('micro-app') !== undefined);
-  console.log('[MicroApp Bundle] ButtonBlock registered:', customElements.get('button-block') !== undefined);
-  console.log('[MicroApp Bundle] TextLabelBlock registered:', customElements.get('text-label-block') !== undefined);
-  console.log('[MicroApp Bundle] Container registered:', customElements.get('vertical-container-block') !== undefined);
 }

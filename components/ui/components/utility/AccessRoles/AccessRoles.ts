@@ -111,11 +111,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    // Register callback to watch for value input changes (contains resource_id)
     this.registerCallback('value', (val: any) => {
-      console.log('[AccessRoles] value callback triggered:', val);
       if (val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
-        console.log('[AccessRoles] Resource ID changed via callback, loading permissions:', val.resource_id);
         this.lastLoadedResourceId = val.resource_id;
         this.loadPermissions();
       }
@@ -133,15 +130,12 @@ export class AccessRolesDisplay extends BaseElementBlock {
   }
 
   override firstUpdated(): void {
-    // Try to load permissions immediately if resource_id is already available
     const h = this.getValueInput();
     if (h.resource_id && h.resource_id !== this.lastLoadedResourceId) {
-      console.log('[AccessRoles] firstUpdated: loading permissions for:', h.resource_id);
       this.lastLoadedResourceId = h.resource_id;
       void this.loadPermissions();
     }
 
-    // Mark as initialized after first render to prevent initial change events
     requestAnimationFrame(() => {
       this.initialized = true;
     });
@@ -152,12 +146,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
     const resourceId = h.resource_id;
     const resourceType = h.resource_type || 'page';
 
-    console.log('[AccessRoles] loadPermissions called:', { resourceId, resourceType });
-
-    if (!resourceId) {
-      console.log('[AccessRoles] No resourceId, skipping');
-      return;
-    }
+    if (!resourceId) return;
 
     try {
       const response = await fetch(`/api/resources/${resourceType}/${resourceId}/permissions`, {
@@ -166,13 +155,9 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include'
       });
 
-      if (!response.ok) {
-        console.error('Failed to load permissions:', response.status);
-        return;
-      }
+      if (!response.ok) return;
 
       const permissions = await response.json();
-      console.log('[AccessRoles] Permissions loaded from API:', permissions);
 
       if (permissions && Array.isArray(permissions)) {
         const is_public = permissions.some((p: any) => p.granteeType === 'public');
@@ -185,13 +170,10 @@ export class AccessRolesDisplay extends BaseElementBlock {
             is_system: ['owner', 'admin', 'editor', 'viewer'].includes(p.granteeId)
           }));
 
-        console.log('[AccessRoles] Setting loadedPermissions:', { is_public, is_anonymous, role_permissions });
-
-        // Set state - this triggers a re-render
         this.loadedPermissions = { is_public, is_anonymous, role_permissions };
       }
     } catch (error) {
-      console.error('Error loading permissions:', error);
+      console.error('Failed to load permissions:', error);
     }
   }
 
@@ -243,12 +225,9 @@ export class AccessRolesDisplay extends BaseElementBlock {
           })
         : await fetch(`${baseUrl}/make-public`, { method: 'DELETE', credentials: 'include' });
 
-      if (!response.ok) {
-        console.error('[AccessRoles] Failed to update public access:', response.status, await response.text());
-      }
-      await this.loadPermissions();
+      if (response.ok) await this.loadPermissions();
     } catch (error) {
-      console.error('[AccessRoles] Failed to update public access:', error);
+      console.error('Failed to toggle public access:', error);
     }
 
     this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission });
@@ -277,12 +256,9 @@ export class AccessRolesDisplay extends BaseElementBlock {
           })
         : await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE', credentials: 'include' });
 
-      if (!response.ok) {
-        console.error('[AccessRoles] Failed to update anonymous access:', response.status, await response.text());
-      }
-      await this.loadPermissions();
+      if (response.ok) await this.loadPermissions();
     } catch (error) {
-      console.error('[AccessRoles] Failed to update anonymous access:', error);
+      console.error('Failed to toggle anonymous access:', error);
     }
 
     this.emitChange('toggle_anonymous', { is_anonymous: checked, grantee_type: 'anonymous', permission });
