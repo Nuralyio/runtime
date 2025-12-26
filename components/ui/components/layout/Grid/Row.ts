@@ -15,8 +15,12 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 
-// Import nr-row from nuralyui grid
-import "@nuralyui/grid";
+// Safely import nr-row from nuralyui grid
+try {
+  await import("@nuralyui/grid");
+} catch (error) {
+  console.warn('[@nuralyui/grid] Package not found or failed to load.');
+}
 
 /** Input property names that trigger re-render */
 const ROW_INPUT_PROPS = ['gutter', 'align', 'justify', 'wrap'] as const;

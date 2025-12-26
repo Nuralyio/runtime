@@ -5,7 +5,13 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/select";
+
+// Safely import @nuralyui/select
+try {
+  await import("@nuralyui/select");
+} catch (error) {
+  console.warn('[@nuralyui/select] Package not found or failed to load.');
+}
 
 
 @customElement("select-block")

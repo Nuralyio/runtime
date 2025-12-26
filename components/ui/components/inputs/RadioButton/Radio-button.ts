@@ -3,7 +3,13 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map.js";
-import "@nuralyui/radio-group";
+
+// Safely import @nuralyui/radio-group
+try {
+  await import("@nuralyui/radio-group");
+} catch (error) {
+  console.warn('[@nuralyui/radio-group] Package not found or failed to load.');
+}
 
 @customElement("radio-button-block")
 export class RadioButtonBlock extends BaseElementBlock {
