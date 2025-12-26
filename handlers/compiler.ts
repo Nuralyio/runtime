@@ -188,7 +188,7 @@ const handlerFunctionCache: Record<string, Function> = {};
  * @remarks
  * **Parameter Categories:**
  * 
- * 1. **Core Services** (Database, eventHandler, Components, Editor)
+ * 1. **Core Services** (eventHandler, Components, Editor)
  * 2. **Context Data** (Event, Item, Current, currentPlatform, Values, Apps, Vars)
  * 3. **Variable Functions** (SetVar, GetContextVar, GetVar, SetContextVar)
  * 4. **Component Functions** (GetComponent, GetComponents, AddComponent)
@@ -227,7 +227,6 @@ const handlerFunctionCache: Record<string, Function> = {};
  * ```
  */
 export const HANDLER_PARAMETERS = [
-  "Database",
   "eventHandler",
   "Components",
   "Editor",
@@ -425,7 +424,7 @@ export function compileHandlerFunction(code: string): Function {
         var __scope__ = __createScope__({
           VarsProxy: Vars,
           parameters: {
-            Database, eventHandler: eventHandler, Components, Editor, Event, Item,
+            eventHandler: eventHandler, Components, Editor, Event, Item,
             Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
             UpdateApplication, GetVar, GetComponent, GetComponents, AddComponent,
             SetContextVar, AddPage, TraitCompoentFromSchema, NavigateToUrl,

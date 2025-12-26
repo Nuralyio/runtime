@@ -37,7 +37,6 @@
  */
 const RESERVED_NAMES = new Set([
   // Core runtime parameters
-  'Database',
   'eventHandler',
   'Components',
   'Editor',

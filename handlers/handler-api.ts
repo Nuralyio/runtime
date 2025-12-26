@@ -307,9 +307,6 @@ export interface HandlerAPI {
   /** Current platform info */
   Platform: string;
 
-  /** Database client */
-  Database: any;
-
   /** Event dispatcher for custom events */
   Events: any;
 
