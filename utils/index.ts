@@ -7,10 +7,7 @@
 import { setupChangeDetection } from '../components/ui/components/base/BaseElement/base-change-detection';
 
 // Component Rendering
-export { renderComponent, renderComponentAsync } from './render-util';
-
-// Lazy Component Loader
-export { loadComponent, loadComponents, isComponentLoaded, getAvailableComponents } from './lazy-component-loader';
+export { renderComponent } from './render-util';
 
 // Component Registry
 export {

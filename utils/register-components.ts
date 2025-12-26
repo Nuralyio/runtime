@@ -1,15 +1,41 @@
-/**
- * Runtime component registration
- *
- * Components are now loaded lazily on-demand via lazy-component-loader.ts
- * This file is kept for backwards compatibility and to load essential components.
- *
- * Components that depend on @nuralyui packages are NOT imported here.
- * They are loaded dynamically when first used via the lazy loader.
- */
-
-// Only import components that DON'T have @nuralyui dependencies
-// or are essential for the runtime to work
-
-// Toast is needed globally
+// Runtime component registration (side-effects for custom element definition)
+import "../components/ui/components/layout/Tabs/Tabs";
+import "../components/ui/components/layout/Containers/Container";
+import "../components/ui/components/layout/Card/Card";
+import "../components/ui/components/layout/Panel/Panel";
+import "../components/ui/components/layout/Grid/Row";
+import "../components/ui/components/layout/Grid/Col";
+import "../components/ui/components/navigation/Menu/Menu";
+import "../components/ui/components/navigation/EmbedURL/EmbedURL";
+import "../components/ui/components/navigation/Link/Link";
+import "../components/ui/components/inputs/ColorPicker/colorpicker";
+import "../components/ui/components/inputs/NumberInput/NumberInput";
+import "../components/ui/components/inputs/TextInput/TextInput";
+import "../components/ui/components/inputs/IconButton/iconbutton";
+import "../components/ui/components/inputs/Select/Select";
+import "../components/ui/components/inputs/Checkbox/Checkbox";
+import "../components/ui/components/inputs/Dropdown/Dropdown";
+import "../components/ui/components/inputs/DatePicker/DatePicker";
+import "../components/ui/components/inputs/RadioButton/Radio-button";
+import "../components/ui/components/inputs/Button/Button";
+import "../components/ui/components/inputs/FileUpload/FileUpload";
+import "../components/ui/components/inputs/Textarea/Textarea";
+import "../components/ui/components/inputs/Slider/Slider";
+import "../components/ui/components/inputs/Form/Form";
+import "../components/ui/components/display/Table/Table";
+import "../components/ui/components/display/Icon/Icon";
+import "../components/ui/components/display/Image/Image";
+import "../components/ui/components/display/Divider/Divider";
+import "../components/ui/components/display/TextLabel/TextLabel";
+import "../components/ui/components/display/Code/Code";
+import "../components/ui/components/display/Video/Video";
+import "../components/ui/components/display/Badge/Badge";
+import "../components/ui/components/display/Tag/Tag";
+import "../components/ui/components/advanced/AIChat/AIChat";
+import "../components/ui/components/advanced/MicroApp/MicroApp";
+import "../components/ui/components/advanced/Collapse/Collapse";
+import "../components/ui/components/advanced/Collections/Collections";
+import "../components/ui/components/advanced/RefComponent/RefComponent";
+import "../components/ui/components/advanced/RichText/RichText";
+import "../components/ui/components/utility/Document/Document";
 import "../components/ui/components/ToastContainer/ToastContainer";
