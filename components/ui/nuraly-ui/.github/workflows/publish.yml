@@ -48,6 +48,12 @@ jobs:
       - name: Build Component Bundles
         run: npm run roll
 
+      - name: Build Workspace Packages
+        run: |
+          npm run build --workspace=@nuralyui/forms --if-present
+          npm run build --workspace=@nuralyui/layout --if-present
+          npm run build --workspace=@nuralyui/themes --if-present
+
       - name: Upload coverage results to Codecov.io
         uses: codecov/codecov-action@v2
         with:
