@@ -32,8 +32,8 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Build Project
-        run: npm run build --if-present
+      - name: Compile TypeScript
+        run: npm run common:compile && tsc
 
       - name: Verify @nuralyui/common build outputs
         run: |
@@ -49,10 +49,7 @@ jobs:
         run: npm run roll
 
       - name: Build Workspace Packages
-        run: |
-          npm run build --workspace=@nuralyui/forms --if-present
-          npm run build --workspace=@nuralyui/layout --if-present
-          npm run build --workspace=@nuralyui/themes --if-present
+        run: npm run packages:build
 
       - name: Upload coverage results to Codecov.io
         uses: codecov/codecov-action@v2
