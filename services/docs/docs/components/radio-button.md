@@ -78,7 +78,7 @@ inputHandlers: {
         { label: 'Option B', value: 'b' },
         { label: 'Option C', value: 'c', disabled: true }
       ],
-      currentValue: Vars.selectedOption || 'a',
+      currentValue: $selectedOption || 'a',
       type: 'default'  // or 'button'
     };
   `

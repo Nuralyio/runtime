@@ -96,7 +96,7 @@ sequenceDiagram
     participant Local as Local Map
     participant Global as Global Map
 
-    Handler->>Proxy: Vars.userName
+    Handler->>Proxy: $userName
     activate Proxy
 
     Proxy->>Manager: get("userName")
@@ -180,7 +180,7 @@ sequenceDiagram
 
     rect rgb(230, 240, 255)
         Note over Dev,Local: Setting LOCAL Variable (Implicit)
-        Dev->>Proxy: Vars.clickCount = 5
+        Dev->>Proxy: $clickCount = 5
         Proxy->>Manager: set("clickCount", 5, LOCAL)
         Manager->>Local: store("clickCount", 5)
         Local-->>Manager: stored
@@ -201,7 +201,7 @@ sequenceDiagram
 
     rect rgb(240, 255, 240)
         Note over Dev,Global: Getting Variable with Auto-Resolution
-        Dev->>Proxy: value = Vars.someVar
+        Dev->>Proxy: value = $someVar
         Proxy->>Manager: get("someVar")
         Manager->>Local: has("someVar")?
         Local-->>Manager: false

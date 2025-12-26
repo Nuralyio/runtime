@@ -115,8 +115,8 @@ Components can have dynamic styles through `styleHandlers`:
 
 ```typescript
 styleHandlers: {
-  width: `return Vars.isCompact ? '200px' : '100%';`,
-  backgroundColor: `return Vars.isDarkMode ? '#333' : '#fff';`
+  width: `return $isCompact ? '200px' : '100%';`,
+  backgroundColor: `return $isDarkMode ? '#333' : '#fff';`
 }
 ```
 
