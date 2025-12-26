@@ -54,7 +54,6 @@ export default defineConfig({
           'immer',
           'uuid',
           '@nuralyui/',
-          '@nuraly/dbclient',
           'acorn',
           'acorn-walk',
           'fast-deep-equal'

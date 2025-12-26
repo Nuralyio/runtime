@@ -224,7 +224,6 @@ function createVarAPI(globalFunctions: GlobalFunctions): VarAPI {
  * @param eventData - Event data from triggering event
  * @param item - Item data for collection contexts
  * @param customConsole - Editor-aware console
- * @param database - Database client
  * @param eventDispatcher - Event dispatcher
  * @param utils - Utility functions (RuntimeHelpers)
  *
@@ -248,7 +247,6 @@ export function createHandlerAPI(
   eventData: any,
   item: any,
   customConsole: any,
-  database: any,
   eventDispatcher: any,
   utils: any
 ): HandlerAPI {
@@ -272,7 +270,6 @@ export function createHandlerAPI(
     Values: runtimeContext.Values,
     Apps: runtimeContext.Apps,
     Platform: runtimeContext.currentPlatform,
-    Database: database,
     Events: eventDispatcher,
     Utils: utils,
     console: customConsole,
@@ -299,7 +296,6 @@ export function extractLegacyParameters(api: HandlerAPI): Record<string, any> {
     Values: api.Values,
     Apps: api.Apps,
     currentPlatform: api.Platform,
-    Database: api.Database,
     eventHandler: api.Events,
     Components: api.Component,
     Editor: api.Editor,
