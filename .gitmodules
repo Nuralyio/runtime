@@ -1,0 +1,3 @@
+[submodule "components/ui/nuraly-ui"]
+	path = components/ui/nuraly-ui
+	url = https://github.com/Nuralyio/NuralyUI.git
