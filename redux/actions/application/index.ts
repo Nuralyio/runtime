@@ -9,7 +9,6 @@
 export { addPageToApplicationAction } from './addPageToApplicationAction';
 export { addTempApplication } from './addTempApplication';
 export { closeShareApplicationModalAction } from './closeShareApplicationModalAction';
-export { loadApplicationPermissionAction } from './loadApplicationPermissionAction';
 export { resetPermissionMessage } from './resetPermissionMessage';
 export { setApplication } from './setApplication';
 export { setApplicationPermissionAction } from './setApplicationPermissionAction';
