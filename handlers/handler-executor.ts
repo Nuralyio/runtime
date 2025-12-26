@@ -89,7 +89,6 @@ import { RuntimeHelpers } from '../utils/runtime-helpers';
 import { isServer } from '../utils/envirement';
 import { eventDispatcher } from '../utils/change-detection';
 import Editor from '../state/editor';
-import Database from '@nuraly/dbclient';
 
 import { compileHandlerFunction, createHandlerScope } from './compiler';
 import { setupRuntimeContext, extractRuntimeContext } from './context-setup';
@@ -298,7 +297,6 @@ export function executeHandler(
     EventData,
     item,
     customConsole,
-    Database,
     eventDispatcher,
     RuntimeHelpers
   );
@@ -306,7 +304,6 @@ export function executeHandler(
   // Execute the compiled function with all context and global functions
   // Includes both legacy flat parameters and new namespaced API
   return compiledFunction(
-    Database,
     eventDispatcher,
     runtimeContext.PropertiesProxy,
     Editor,
