@@ -201,9 +201,6 @@ export class PageContent extends LitElement {
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
-    this.subscription.add(eventDispatcher.on("kernel:log", (logsMessage) => {
-      this.logPanel?.addLogEntry(typeof logsMessage === "string" ? convert.toHtml(logsMessage) : logsMessage);
-    }));
 
     // Initialize currentPage if not set
     const currentPage = ExecuteInstance.Vars.currentPage;
