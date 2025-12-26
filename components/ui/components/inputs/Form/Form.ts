@@ -15,17 +15,9 @@ try {
   console.warn('[@nuralyui/forms] Package not found or failed to load.');
 }
 
-// Safely import icon and label for placeholder
-try {
-  await import("@nuralyui/icon");
-} catch (error) {
-  console.warn('[@nuralyui/icon] Package not found or failed to load.');
-}
-try {
-  await import("@nuralyui/label");
-} catch (error) {
-  console.warn('[@nuralyui/label] Package not found or failed to load.');
-}
+// Import icon and label for placeholder
+import "@nuralyui/icon";
+import "@nuralyui/label";
 
 /**
  * Form block component that wraps nr-form and handles field registration

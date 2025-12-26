@@ -26,22 +26,10 @@ import { ExecuteInstance } from '../../../../../state/runtime-context';
 import { openEditorTab, setCurrentEditorTab } from '../../../../../redux/actions/editor';
 import { $editorState, $currentApplication } from '../../../../../redux/store/apps';
 
-// Safely import nuraly-ui components
-try {
-  await import("@nuralyui/button");
-} catch (error) {
-  console.warn('[@nuralyui/button] Package not found or failed to load.');
-}
-try {
-  await import("@nuralyui/menu");
-} catch (error) {
-  console.warn('[@nuralyui/menu] Package not found or failed to load.');
-}
-try {
-  await import("@nuralyui/icon");
-} catch (error) {
-  console.warn('[@nuralyui/icon] Package not found or failed to load.');
-}
+// Import nuraly-ui components
+import '@nuralyui/button';
+import '@nuralyui/menu';
+import '@nuralyui/icon';
 
 
 export interface FunctionItem {
