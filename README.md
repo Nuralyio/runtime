@@ -2,7 +2,7 @@
 
 Standalone runtime for executing Nuraly micro-apps in any web environment.
 
-[Documentation](https://docs.nuraly.io/architecture/micro-apps/)
+[Documentation](https://docs.nuraly.io/architecture/micro-apps/) 
 
 ## Why MicroApp?
 
@@ -13,7 +13,9 @@ Standalone runtime for executing Nuraly micro-apps in any web environment.
 - **AI friendly** - LLMs maintain JSON structure more reliably than full implementations
 
 
-### MicroApp structure
+## Example
+
+[Live Demo](https://jsfiddle.net/nuraly/cp4jxkwv/)
 
 ```javascript
 const appComponents = [
@@ -49,21 +51,10 @@ const appComponents = [
     application_id: "my-app",
     pageId: "page-001",
     root: false,
-    style: {
-      fontSize: "14px",
-      color: "#888",
-      marginTop: "10px",
-      fontStyle: "italic",
-    },
-    parameters: {},
-    styleHandlers: {},
-    inputHandlers: {},
     input: {
       value: {
         type: "handler",
-        value: `
-              return "Click the button to see the counter in action" + ($clickCount ? ": " + $clickCount : "");
-            `,
+        value: `return "Count: " + ($count || 0);`,
       },
     },
   },
@@ -80,12 +71,7 @@ const appPages = [
 ];
 ```
 
-
-## Usage
-
 ```html
-...
-
 <div id="app"></div>
 
 <script type="module">
@@ -97,15 +83,13 @@ const appPages = [
   microApp.uuid = "my-app";
   microApp.page_uuid = "page-001";
   microApp.useIsolatedContext = true;
-  microApp.appComponents = [...];
-  microApp.appPages = [...];
+  microApp.appComponents = appComponents;
+  microApp.appPages = appPages;
   microApp.mode = "preview";
   microApp.prod = true;
 
   document.getElementById('app').appendChild(microApp);
 </script>
-
-...
 ```
 
 ## License
