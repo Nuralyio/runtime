@@ -26,10 +26,10 @@ Each micro-app instance runs in complete isolation:
 
 ```javascript
 // Instance 1 - Shopping Cart
-Vars.cartItems = [...]  // Isolated to this instance
+$cartItems = [...]  // Isolated to this instance
 
 // Instance 2 - Product Catalog
-Vars.cartItems = [...]  // Different variable, different instance
+$cartItems = [...]  // Different variable, different instance
 ```
 
 ### Flexible State Sharing
@@ -38,7 +38,7 @@ Choose between isolated and shared state as needed:
 
 ```javascript
 // LOCAL - Isolated to instance
-Vars.tempData = { ... }
+$tempData = { ... }
 
 // GLOBAL - Shared across all instances
 Vars['global.theme'] = 'dark'
@@ -50,7 +50,7 @@ Handler code runs in a controlled environment with access to specific APIs:
 
 ```javascript
 // Safe - Access to provided runtime APIs
-Vars.count++
+$count++
 Current.Instance.data = newValue
 navigateTo(pageId)
 
@@ -111,7 +111,7 @@ Singleton managing global variables across all instances.
 
 ```javascript
 // Within the micro-app handler
-Vars.cartTotal = calculateTotal()
+$cartTotal = calculateTotal()
 Vars['global.userName'] = getCurrentUser()
 
 // Navigate to checkout

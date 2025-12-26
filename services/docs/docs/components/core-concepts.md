@@ -84,7 +84,7 @@ input: {
   value: { type: "string", value: "static" }
 },
 inputHandlers: {
-  value: `return Vars.dynamicValue || "static";` // ← This is used
+  value: `return $dynamicValue || "static";` // ← This is used
 }
 ```
 
