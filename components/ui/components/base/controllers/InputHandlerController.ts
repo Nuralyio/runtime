@@ -55,6 +55,11 @@ export class InputHandlerController implements ReactiveController, Disposable {
   private setupEventListeners(): void {
     const { component, uniqueUUID } = this.host;
 
+    // Guard: component must be defined before setting up listeners
+    if (!component?.uuid) {
+      return;
+    }
+
     // Platform change - reprocess all inputs
     this.subscription.add(
       eventDispatcher.on("Vars:currentPlatform", () => {
