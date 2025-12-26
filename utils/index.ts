@@ -75,3 +75,6 @@ export { GenerateName } from './naming-generator';
 
 // Constants
 export * from './constants';
+
+// Toast
+export { showToast, hideToast, clearAllToasts, showSuccess, showError, showWarning, showInfo } from './toast';

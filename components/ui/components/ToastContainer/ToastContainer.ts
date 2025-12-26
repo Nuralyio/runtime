@@ -9,7 +9,7 @@ try {
 }
 
 import { $toasts, type Toast } from '../../../../redux/store/toast';
-import { hideToast } from '../../../../../../services/toast';
+import { hideToast } from '../../../../utils/toast';
 
 // Singleton instance tracker
 let toastContainerInstance: ToastContainer | null = null;
