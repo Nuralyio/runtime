@@ -1,8 +1,21 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { existsSync } from 'fs';
 
 // Check if we're building the bundle version
 const isBundleBuild = process.env.BUILD_BUNDLE === 'true';
+
+// Helper to find node_modules - check local first, then parent (for monorepo)
+function findNodeModule(moduleName: string): string {
+  const localPath = resolve(__dirname, 'node_modules', moduleName);
+  const parentPath = resolve(__dirname, '../../../node_modules', moduleName);
+
+  // Prefer local node_modules (standalone build), fallback to parent (monorepo)
+  if (existsSync(localPath)) {
+    return localPath;
+  }
+  return parentPath;
+}
 
 export default defineConfig({
   define: {
@@ -70,17 +83,22 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: '@', replacement: resolve(__dirname, './') },
-      // Resolve dependencies from the main studio node_modules
-      { find: 'lit', replacement: resolve(__dirname, '../../../node_modules/lit') },
-      { find: 'nanostores', replacement: resolve(__dirname, '../../../node_modules/nanostores') },
-      { find: 'rxjs', replacement: resolve(__dirname, '../../../node_modules/rxjs') },
-      { find: 'immer', replacement: resolve(__dirname, '../../../node_modules/immer') },
-      { find: 'uuid', replacement: resolve(__dirname, '../../../node_modules/uuid') },
-      { find: 'acorn', replacement: resolve(__dirname, '../../../node_modules/acorn') },
-      { find: 'acorn-walk', replacement: resolve(__dirname, '../../../node_modules/acorn-walk') },
-      { find: 'fast-deep-equal', replacement: resolve(__dirname, '../../../node_modules/fast-deep-equal') },
-      // Resolve all nuralyui packages using a regex pattern
-      { find: /^@nuralyui\/(.*)$/, replacement: resolve(__dirname, '../../../node_modules/@nuralyui/$1') }
+      // Resolve dependencies - automatically finds local or parent node_modules
+      { find: 'lit', replacement: findNodeModule('lit') },
+      { find: 'nanostores', replacement: findNodeModule('nanostores') },
+      { find: 'rxjs', replacement: findNodeModule('rxjs') },
+      { find: 'immer', replacement: findNodeModule('immer') },
+      { find: 'uuid', replacement: findNodeModule('uuid') },
+      { find: 'acorn', replacement: findNodeModule('acorn') },
+      { find: 'acorn-walk', replacement: findNodeModule('acorn-walk') },
+      { find: 'fast-deep-equal', replacement: findNodeModule('fast-deep-equal') },
+      // Resolve all nuralyui packages - check local first, then parent
+      {
+        find: /^@nuralyui\/(.*)$/,
+        replacement: existsSync(resolve(__dirname, 'node_modules/@nuralyui'))
+          ? resolve(__dirname, 'node_modules/@nuralyui/$1')
+          : resolve(__dirname, '../../../node_modules/@nuralyui/$1')
+      }
     ]
   }
 });
