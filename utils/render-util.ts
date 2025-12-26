@@ -1,69 +1,6 @@
 import { type ComponentElement, ComponentType } from '../redux/store/component/component.interface';
 import { html, type TemplateResult } from "lit";
 import { ComponentRegistry, type ComponentRenderProps } from './component-registry';
-import { loadComponent } from './lazy-component-loader';
-
-// Map ComponentType to tag name for lazy loading
-const componentTypeToTagName: Record<string, string> = {
-  [ComponentType.Select]: 'select-block',
-  [ComponentType.IconButton]: 'icon-button-block',
-  [ComponentType.ColorPicker]: 'color-picker-block',
-  [ComponentType.NumberInput]: 'number-input-block',
-  [ComponentType.TextInput]: 'text-input-block',
-  [ComponentType.TextLabel]: 'text-label-block',
-  [ComponentType.Button]: 'button-block',
-  [ComponentType.Tabs]: 'tabs-block',
-  [ComponentType.Menu]: 'menu-block',
-  [ComponentType.Table]: 'table-block',
-  [ComponentType.Container]: 'vertical-container-block',
-  [ComponentType.Collection]: 'collection-viewer',
-  [ComponentType.Checkbox]: 'checkbox-block',
-  [ComponentType.DatePicker]: 'date-picker-block',
-  [ComponentType.Divider]: 'divider-block',
-  [ComponentType.Icon]: 'icon-block',
-  [ComponentType.Image]: 'image-block',
-  [ComponentType.RadioButton]: 'radio-button-block',
-  [ComponentType.AI]: 'ai-chat-block',
-  [ComponentType.MicroApp]: 'micro-app-block',
-  [ComponentType.Collapse]: 'collapse-block',
-  [ComponentType.Dropdown]: 'dropdown-block',
-  [ComponentType.RefComponent]: 'ref-component-container-block',
-  [ComponentType.Code]: 'code-block',
-  [ComponentType.RichText]: 'rich-text-block',
-  [ComponentType.EmbedURL]: 'embed-url-block',
-  [ComponentType.Link]: 'link-block',
-  [ComponentType.FileUpload]: 'file-upload-block',
-  [ComponentType.Video]: 'video-block',
-  [ComponentType.Document]: 'document-block',
-  [ComponentType.Textarea]: 'textarea-block',
-  [ComponentType.Badge]: 'badge-block',
-  [ComponentType.Card]: 'card-block',
-  [ComponentType.Tag]: 'tag-block',
-  [ComponentType.Slider]: 'slider-block',
-  [ComponentType.Panel]: 'panel-block',
-  [ComponentType.GridRow]: 'grid-row-block',
-  [ComponentType.GridCol]: 'grid-col-block',
-  [ComponentType.Form]: 'form-block',
-};
-
-// Preload components used by a component tree
-async function preloadComponents(components: ComponentElement[]): Promise<void> {
-  const tagNames = new Set<string>();
-
-  function collectTagNames(comps: ComponentElement[]) {
-    for (const comp of comps) {
-      const tagName = componentTypeToTagName[comp?.component_type];
-      if (tagName) {
-        tagNames.add(tagName);
-      }
-    }
-  }
-
-  collectTagNames(components);
-
-  // Load all required components in parallel
-  await Promise.all(Array.from(tagNames).map(loadComponent));
-}
 
 const selectTemplate = (props: any, isViewMode: boolean)  => html`<select-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></select-block>`;
 const iconButtonTemplate = (props: any, isViewMode: boolean)  => html`<icon-button-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></icon-button-block>`;
@@ -206,26 +143,6 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
 
 export function renderComponent(components: ComponentElement[], item?: any, isViewMode?: boolean, parent?:ComponentElement ): TemplateResult {
   if (!components || !components.length) return html``;
-
-  // Trigger lazy loading for components (fire and forget - they will be defined before render completes)
-  preloadComponents(components);
-
-  return html`
-    ${components.map((component: ComponentElement) => {
-    const commonProps = { item: { ...item }, component , parent : { ...parent } };
-    return renderComponentElement(component, commonProps, isViewMode );
-  })}
-  `;
-}
-
-/**
- * Async version of renderComponent that waits for components to load
- */
-export async function renderComponentAsync(components: ComponentElement[], item?: any, isViewMode?: boolean, parent?:ComponentElement ): Promise<TemplateResult> {
-  if (!components || !components.length) return html``;
-
-  // Wait for all components to load
-  await preloadComponents(components);
 
   return html`
     ${components.map((component: ComponentElement) => {
