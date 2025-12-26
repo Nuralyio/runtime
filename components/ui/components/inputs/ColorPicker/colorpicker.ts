@@ -4,8 +4,14 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import "@nuralyui/color-picker";
 import { EMPTY_STRING } from '../../../../../utils/constants.ts';
+
+// Safely import @nuralyui/color-picker
+try {
+  await import("@nuralyui/color-picker");
+} catch (error) {
+  console.warn('[@nuralyui/color-picker] Package not found or failed to load.');
+}
 
 @customElement("color-picker-block")
 export class ColorPickerBlock extends BaseElementBlock {
