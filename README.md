@@ -71,6 +71,8 @@ const appPages = [
 ];
 ```
 
+Plain HTML, no framework required:
+
 ```html
 <div id="app"></div>
 
