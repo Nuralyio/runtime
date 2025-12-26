@@ -5,7 +5,7 @@
  */
 
 import * as React from 'react';
-import { createComponent } from '@lit/react';
+import { createComponent } from '@lit-labs/react';
 import { NrIconPickerElement } from './icon-picker.component.js';
 
 export const NrIconPicker = createComponent({
