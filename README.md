@@ -84,11 +84,8 @@ Plain HTML, no framework required:
   const microApp = document.createElement('micro-app');
   microApp.uuid = "my-app";
   microApp.page_uuid = "page-001";
-  microApp.useIsolatedContext = true;
   microApp.appComponents = appComponents;
   microApp.appPages = appPages;
-  microApp.mode = "preview";
-  microApp.prod = true;
 
   document.getElementById('app').appendChild(microApp);
 </script>
