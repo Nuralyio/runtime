@@ -373,7 +373,7 @@ export const HANDLER_PARAMETERS = [
  */
 /**
  * Flag to enable/disable transparent variable access.
- * When enabled, users can write `username = 'John'` instead of `Vars.username = 'John'`.
+ * When enabled, users can write `username = 'John'` instead of `$username = 'John'`.
  *
  * Set to false to use traditional explicit Vars access.
  */
@@ -383,7 +383,7 @@ let transparentVarsEnabled = true;
  * Enable or disable transparent variable access in handlers.
  *
  * When enabled (default), variables like `username` automatically
- * resolve to `Vars.username` for reactive access.
+ * resolve to `$username` for reactive access.
  *
  * @param enabled - Whether to enable transparent variable access
  */

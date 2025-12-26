@@ -4,7 +4,7 @@
  *
  * @description
  * A dedicated panel component for managing serverless functions in the Studio.
- * Stores functions in global Vars.studio_functions for low-code access.
+ * Stores functions in global $studio_functions for low-code access.
  * Uses Nuraly UI components (nr-menu, nr-button, nr-icon) for consistent styling.
  *
  * @example
@@ -15,7 +15,7 @@
  * @example Low-code access
  * ```javascript
  * // Access functions from handlers
- * const functions = Vars.studio_functions;
+ * const functions = $studio_functions;
  * const myFunc = functions.find(f => f.name === 'myFunction');
  * ```
  */
@@ -198,11 +198,11 @@ export class FunctionsPanel extends LitElement {
   }
 
   /**
-   * Update global Vars.studio_functions for low-code access
+   * Update global $studio_functions for low-code access
    */
   private updateGlobalVars() {
     try {
-      // Use VarsProxy for reactive updates (accessible via Vars.studio_functions in handlers)
+      // Use VarsProxy for reactive updates (accessible via $studio_functions in handlers)
       ExecuteInstance.VarsProxy.studio_functions = [...this.functions];
     } catch (err) {
       console.warn('Could not update global Vars:', err);

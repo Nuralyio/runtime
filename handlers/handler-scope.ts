@@ -23,8 +23,8 @@
  *
  * @example Which behaves like:
  * ```javascript
- * Vars.username = 'John'
- * Vars.count = Vars.count + 1
+ * $username = 'John'
+ * $count = $count + 1
  *
  * let temp = 'hello'
  * const MAX = 100
@@ -32,7 +32,7 @@
  */
 
 /**
- * Set of reserved parameter names that should NOT be routed to Vars.
+ * Set of reserved parameter names that should NOT be routed to $
  * These are the built-in handler parameters and global objects.
  */
 const RESERVED_NAMES = new Set([

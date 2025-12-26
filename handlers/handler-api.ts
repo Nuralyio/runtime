@@ -30,8 +30,8 @@
  * await Data.upload(file)
  *
  * // Variables (reactive)
- * Vars.username = 'John'
- * const count = Vars.count || 0
+ * $username = 'John'
+ * const count = $count || 0
  *
  * // Or with $ prefix
  * $username = 'John'

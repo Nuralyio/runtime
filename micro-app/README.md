@@ -114,7 +114,7 @@ Vars['app.selectedFile'] = '/src/App.tsx'
 Vars['global.userName'] = 'John Doe'
 
 // Auto-resolution (searches local → app → global)
-const userName = Vars.userName
+const userName = $userName
 
 // Publish local variable to higher scope
 ExecuteInstance.publishToApp('tempData')
@@ -219,7 +219,7 @@ const result = executor.executeHandler(
 
 // Execute expression
 const value = executor.executeExpression(
-  'Vars.userName + " - " + Current.name',
+  '$userName + " - " + Current.name',
   component
 )
 
@@ -301,7 +301,7 @@ From within handler code in an isolated micro-app:
 
 ```javascript
 // Access variables (with scope resolution)
-Vars.myLocalVar = 'value'
+$myLocalVar = 'value'
 const sharedVar = Vars['app.sharedData']
 const globalVar = Vars['global.userName']
 
@@ -330,8 +330,8 @@ sendMessage({
 
 ```javascript
 // In Files micro-app
-Vars.currentFile = '/src/App.tsx'  // Local scope
-Vars.selectedFiles = [...]          // Local scope
+$currentFile = '/src/App.tsx'  // Local scope
+$selectedFiles = [...]          // Local scope
 
 // NOT accessible in Functions micro-app
 ```
@@ -340,11 +340,11 @@ Vars.selectedFiles = [...]          // Local scope
 
 ```javascript
 // In Files micro-app
-Vars.currentFile = '/src/App.tsx'
+$currentFile = '/src/App.tsx'
 ExecuteInstance.publishToApp('currentFile')
 
 // In Functions micro-app - now accessible
-const file = Vars['app.currentFile']  // or Vars.currentFile (auto-resolves)
+const file = Vars['app.currentFile']  // or $currentFile (auto-resolves)
 console.log('Editing file:', file)
 ```
 
@@ -359,7 +359,7 @@ Vars['global.isAuthenticated'] = true
 // Accessible in ALL apps and micro-apps
 const userName = Vars['global.userName']
 // or
-const userName = Vars.userName  // Auto-resolves to global
+const userName = $userName  // Auto-resolves to global
 ```
 
 ### Example 4: Explicit Scope Access
@@ -371,7 +371,7 @@ const appValue = Vars['app.selectedFile']
 const globalValue = Vars['global.userName']
 
 // Auto-resolution priority: local → app → global
-const value = Vars.someVar
+const value = $someVar
 // Searches local first, then app, then global
 ```
 
@@ -474,7 +474,7 @@ const components = this.storeContext.getComponents()
 this.runtimeContext.VarsProxy.myVar = 'value'
 
 // Or in handler code (automatic)
-Vars.myVar = 'value'  // Uses isolated context
+$myVar = 'value'  // Uses isolated context
 ```
 
 ### Enabling Isolated Context

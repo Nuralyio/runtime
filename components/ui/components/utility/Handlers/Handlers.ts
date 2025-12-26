@@ -32,7 +32,7 @@ constructor() {
   handleCodeChange = (e: CustomEvent, eventName: string) => {
     executeHandler(this.component,
       /* js */`
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
               updateEvent(selectedComponent, "${eventName}", EventData.value )
        
         `, {
@@ -44,7 +44,7 @@ constructor() {
     
     executeHandler(this.component,
       /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
               updateEvent(selectedComponent, "${eventName}", "" )
         `, {
         value: ""
@@ -57,7 +57,7 @@ constructor() {
     executeHandler(this.component,
       /* js */ `
         try{
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
               updateEvent(selectedComponent, "${eventName}", null )
         }catch(error){
             console.error(error);

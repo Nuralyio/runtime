@@ -54,7 +54,7 @@ export class TextInputBlock extends BaseElementBlock {
         this.component,
         /* js */ `
           try {
-              const selectedComponent = Utils.first(Vars.selectedComponents);
+              const selectedComponent = Utils.first($selectedComponents);
               updateInput(selectedComponent, "value", "string", ${serializedValue}, null);
           } catch (error) {
               console.error(error);
