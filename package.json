@@ -129,6 +129,9 @@
   ],
   "author": "Nuraly",
   "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Nuralyio/stack.git",
