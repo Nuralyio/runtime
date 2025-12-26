@@ -95,7 +95,8 @@
     "vite": "^5.0.0",
     "typescript": "^5.0.0",
     "@vitejs/plugin-legacy": "^5.0.0",
-    "monaco-editor": "^0.52.0"
+    "monaco-editor": "^0.52.0",
+    "monacopilot": "^0.12.0"
   },
   "dependencies": {
     "lit": "^3.0.0",
