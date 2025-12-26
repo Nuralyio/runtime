@@ -1,4 +1,3 @@
-//@todo check if this still used
 export default {
   uuid: "left_panel_tabs",
   application_id: "1",
@@ -26,10 +25,11 @@ export default {
             type: "text",
             value: "Pages"
           },
-          icon :{
-            type:"string",
-            value:"panel-top"
+          icon: {
+            type: "string",
+            value: "panel-top"
           },
+          key: "pages",
           childrends: {
             type: "componentIdArray",
             value: ["pages_panel"]
@@ -40,9 +40,14 @@ export default {
             type: "text",
             value: "Functions"
           },
+          icon: {
+            type: "string",
+            value: "parentheses"
+          },
+          key: "functions",
           childrends: {
             type: "componentIdArray",
-            value: ["files_micro_app_block"]
+            value: ["function_micro_app_block"]
           }
         },
         {
@@ -50,9 +55,14 @@ export default {
             type: "text",
             value: "Files"
           },
+          icon: {
+            type: "string",
+            value: "folder"
+          },
+          key: "files",
           childrends: {
             type: "componentIdArray",
-            value: []
+            value: ["files_micro_app_block"]
           }
         }
       ]
