@@ -1,6 +1,6 @@
 {
   "name": "@nuraly/runtime",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Nuraly Visual App Builder Runtime - State management, handler execution, and component system with bundled micro-app support",
   "type": "module",
   "main": "./index.ts",
