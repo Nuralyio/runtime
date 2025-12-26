@@ -219,7 +219,6 @@ export default [
           } else if (action === 'remove_role_permission') {
             await makeRequest('DELETE', baseUrl + '/role-permission/' + encodeURIComponent(eventData.role_name), null);
           } else {
-            console.log('Unknown access control action:', action, eventData);
             return;
           }
 

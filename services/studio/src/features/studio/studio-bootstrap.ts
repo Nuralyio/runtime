@@ -1,39 +1,23 @@
 /**
  * Studio Bootstrap
- *
- * Initializes the studio editor by loading studio components
- * into the global component store when on studio paths.
- *
- * This module handles:
- * - Conditional client-side loading
- * - Path-based initialization
- * - Dynamic import for code splitting
- * - Component registration
- * - Event emission for runtime context update
+ * Initializes the studio editor when on studio paths.
  */
 
 import { $components } from '../runtime/redux/store/component/store';
 import { eventDispatcher } from '../runtime/utils/change-detection';
+import { registerStudioComponents } from './register-studio-components';
 
-/**
- * Initialize studio components
- * This function should be called on the client-side only
- */
 export function initializeStudio(): void {
-  // Only run on client-side
   const isServer = typeof window === "undefined";
 
   if (!isServer) {
-    // Check if we're on a studio path (defensive check even though imported by studio page)
     const isStudioPath = document.location.pathname.startsWith("/app/studio/");
 
     if (isStudioPath) {
-      // Dynamically import studio components only when needed (code splitting)
-      import("./studio-entrypoint").then(studioModule => {
-        // Register studio components with application ID "1" (reserved for studio)
-        $components.setKey("1", studioModule.default as any);
+      registerStudioComponents();
 
-        // Emit event to trigger RuntimeContext to re-register applications
+      import("./studio-entrypoint").then(studioModule => {
+        $components.setKey("1", studioModule.default as any);
         eventDispatcher.emit('component:refresh');
       });
     }
