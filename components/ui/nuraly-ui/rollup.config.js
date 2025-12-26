@@ -75,8 +75,8 @@ const gzipSummary = () => ({
   },
 });
 
-// Discover components dynamically from built JS in dist/components
-const distComponentsDir = path.join(process.cwd(), 'dist', 'components');
+// Discover components dynamically from built JS in dist/src/components
+const distComponentsDir = path.join(process.cwd(), 'dist', 'src', 'components');
 let components = [];
 try {
   components = fs
@@ -92,9 +92,9 @@ try {
 }
 
 const createConfig = (component) => ({
-  input: `dist/components/${component}/index.js`,
+  input: `dist/src/components/${component}/index.js`,
   output: {
-    file: `dist/components/${component}/bundle.js`,
+    file: `dist/src/components/${component}/bundle.js`,
     format: 'esm',
     inlineDynamicImports: true,
   },

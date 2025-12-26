@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DIST_COMPONENTS_DIR = path.join(__dirname, '../../../dist/components');
+const DIST_COMPONENTS_DIR = path.join(__dirname, '../../../dist/src/components');
 
 // Common components to check
 const COMMON_COMPONENTS = [
