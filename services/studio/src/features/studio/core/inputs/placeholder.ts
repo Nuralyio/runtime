@@ -49,7 +49,7 @@ export default [
     },
     event: {
       valueChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           updateInput(selectedComponent, 'placeholder', 'value', EventData.value);
         }
@@ -59,7 +59,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'placeholder') : null;
         return Input?.type === "value" ? Input.value ?? '' : '';
         `
@@ -67,7 +67,7 @@ export default [
       state: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.input?.placeholder?.type === "handler" &&
             selectedComponent?.input?.placeholder?.value
             ? "disabled"
@@ -106,7 +106,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const handlerValue = selectedComponent?.input?.placeholder?.type === 'handler'
             ? selectedComponent?.input?.placeholder.value
             : '';
@@ -116,7 +116,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.placeholder?.value) {
           updateInput(selectedComponent, 'placeholder', 'handler', EventData.value);
         }

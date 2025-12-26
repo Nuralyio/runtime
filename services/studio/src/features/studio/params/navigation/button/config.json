@@ -52,9 +52,9 @@
         "type": "radio",
         "default": "default",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'primary', label: 'Primary', disabled: isDisabled },\n  { value: 'secondary', label: 'Secondary', disabled: isDisabled },\n  { value: 'tertiary', label: 'Tertiary', disabled: isDisabled },\n  { value: 'danger', label: 'Danger', disabled: isDisabled },\n  { value: 'ghost', label: 'Ghost', disabled: isDisabled },\n  { value: 'text', label: 'Text', disabled: isDisabled },\n  { value: 'link', label: 'Link', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentType, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'primary', label: 'Primary', disabled: isDisabled },\n  { value: 'secondary', label: 'Secondary', disabled: isDisabled },\n  { value: 'tertiary', label: 'Tertiary', disabled: isDisabled },\n  { value: 'danger', label: 'Danger', disabled: isDisabled },\n  { value: 'ghost', label: 'Ghost', disabled: isDisabled },\n  { value: 'text', label: 'Text', disabled: isDisabled },\n  { value: 'link', label: 'Link', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentType, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
+          "changed": "const selectedComponent = Utils.first($selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -67,7 +67,7 @@
         "type": "radio",
         "default": "medium",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentSize = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {\n  isDisabled = true;\n} else {\n  currentSize = selectedComponent?.input?.size?.value || 'medium';\n}\nconst options = [\n  { value: 'small', label: 'Small', disabled: isDisabled },\n  { value: 'medium', label: 'Medium', disabled: isDisabled },\n  { value: 'large', label: 'Large', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentSize, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet currentSize = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.size?.type == 'handler' && selectedComponent?.input?.size?.value) {\n  isDisabled = true;\n} else {\n  currentSize = selectedComponent?.input?.size?.value || 'medium';\n}\nconst options = [\n  { value: 'small', label: 'Small', disabled: isDisabled },\n  { value: 'medium', label: 'Medium', disabled: isDisabled },\n  { value: 'large', label: 'Large', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentSize, radioType];",
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "size"
@@ -79,9 +79,9 @@
         "type": "radio",
         "default": "default",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentShape = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.shape?.type == 'handler' && selectedComponent?.input?.shape?.value) {\n  isDisabled = true;\n} else {\n  currentShape = selectedComponent?.input?.shape?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'circle', label: 'Circle', disabled: isDisabled },\n  { value: 'round', label: 'Round', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentShape, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet currentShape = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.shape?.type == 'handler' && selectedComponent?.input?.shape?.value) {\n  isDisabled = true;\n} else {\n  currentShape = selectedComponent?.input?.shape?.value || 'default';\n}\nconst options = [\n  { value: 'default', label: 'Default', disabled: isDisabled },\n  { value: 'circle', label: 'Circle', disabled: isDisabled },\n  { value: 'round', label: 'Round', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentShape, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'shape', 'string', EventData.value);\n}"
+          "changed": "const selectedComponent = Utils.first($selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'shape', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -247,9 +247,9 @@
         "type": "radio",
         "default": "left",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentPosition = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.iconPosition?.type == 'handler' && selectedComponent?.input?.iconPosition?.value) {\n  isDisabled = true;\n} else {\n  currentPosition = selectedComponent?.input?.iconPosition?.value || 'left';\n}\nconst options = [\n  { value: 'left', label: 'Left', disabled: isDisabled },\n  { value: 'right', label: 'Right', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentPosition, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet currentPosition = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.iconPosition?.type == 'handler' && selectedComponent?.input?.iconPosition?.value) {\n  isDisabled = true;\n} else {\n  currentPosition = selectedComponent?.input?.iconPosition?.value || 'left';\n}\nconst options = [\n  { value: 'left', label: 'Left', disabled: isDisabled },\n  { value: 'right', label: 'Right', disabled: isDisabled }\n];\nconst radioType = 'default';\nreturn [options, currentPosition, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'iconPosition', 'string', EventData.value);\n}"
+          "changed": "const selectedComponent = Utils.first($selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'iconPosition', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",

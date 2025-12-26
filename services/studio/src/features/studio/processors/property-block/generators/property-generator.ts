@@ -182,7 +182,7 @@ export class PropertyGenerator {
         checked: {
           type: "handler", 
           value: `
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
             if (selectedComponent) {
               return !selectedComponent?.style?.${property.name} || selectedComponent?.input?.${property.name}?.value == 'auto' ? 'check' : '';
             }
@@ -191,7 +191,7 @@ export class PropertyGenerator {
         state: {
           type: "handler",
           value: `
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
             if (selectedComponent) {
               return selectedComponent?.styleHandlers?.['${property.name}'] ? 'disabled' : 'enabled';
             }
@@ -200,7 +200,7 @@ export class PropertyGenerator {
       },
       event: {
         checkboxChanged: `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           if (selectedComponent) {
             updateInput(selectedComponent, '${property.name}', 'string', EventData.value ? 'auto' : '');
           }

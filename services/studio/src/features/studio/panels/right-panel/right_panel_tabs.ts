@@ -56,9 +56,9 @@ export default [
     tabs: {
       type: "handler",
       value: /* js */ `
-      Vars.selected_component_style_state
-                const selectedComponent = Utils.first(Vars.selectedComponents);
-                const currentPageId = Vars.currentPage;
+      $selected_component_style_state
+                const selectedComponent = Utils.first($selectedComponents);
+                const currentPageId = $currentPage;
                 let parameters = [], handlers = [], themes = ["select_component_text"];
                 
                 if(selectedComponent) { 

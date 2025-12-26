@@ -30,8 +30,8 @@ export const pagesMenu = {
       value: /* js */`
         const currentEditingApplication = GetVar("currentEditingApplication");
         const appPages = Vars[currentEditingApplication?.uuid + ".appPages"];
-        const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
-        const currentComponent = Vars.selectedComponents;
+        const currentPage = $currentPage || appPages?.[0]?.uuid;
+        const currentComponent = $selectedComponents;
         
         if (!appPages) {
           return [];
@@ -177,19 +177,19 @@ export const pagesMenu = {
   event: {
     onSelect: /* js */`
       if(EventData.type === "page"){
-        Vars.currentPage = EventData.id;
-        Vars.selectedComponents = [];
+        $currentPage = EventData.id;
+        $selectedComponents = [];
       } else {
         const componentParentPage = EventData.page;
-        const currentPage = Vars.currentPage;
+        const currentPage = $currentPage;
         if(componentParentPage != currentPage ){
           // TODO: This triggers an error when the new component is selected; it navigates to the last page.
-          //Vars.currentPage = componentParentPage;
+          //$currentPage = componentParentPage;
         }
         const selectedComponent = Editor.components.find(
           component => component.uuid == EventData.id
         );
-        Vars.selectedComponents = [selectedComponent];
+        $selectedComponents = [selectedComponent];
       }
     `,
     actionClick: /* js */`

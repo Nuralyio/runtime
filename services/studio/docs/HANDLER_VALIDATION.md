@@ -178,7 +178,7 @@ const component = {
     label: "return GetVar('labelText') || 'Default'",
   },
   styleHandlers: {
-    color: "return Vars.theme === 'dark' ? '#fff' : '#000'",
+    color: "return $theme === 'dark' ? '#fff' : '#000'",
   }
 };
 

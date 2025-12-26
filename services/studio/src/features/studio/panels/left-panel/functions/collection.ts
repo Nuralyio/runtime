@@ -58,7 +58,7 @@ export const StudioFunctionCollection = [
       },
       "display": {
         "type": "handler",
-        "value": "return Vars.studio_functions?.length == 0"
+        "value": "return $studio_functions?.length == 0"
       }
     },
     "style": {
@@ -102,12 +102,12 @@ export const StudioFunctionCollection = [
     "name": "Collection_9727",
     "uuid": "41c1199e-a4eb-4f23-8707-3ed9f0a2492e",
     "event": {
-      "onInit": "// Existing load_functions method\nVars.load_functions = () => {\n    fetch('/api/v1/functions', {\n        method: 'GET',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n    })\n    .then(response => {\n        if (!response.ok) {\n            throw new Error(`HTTP error! status: ${response.status}`);\n        }  \n        return response.json();\n    })\n    .then(data => {\n        Vars.studio_functions = data || [];\n        return data;\n    })\n    .catch(error => {\n        console.error('Error fetching functions:', error);\n        throw error;\n    });\n};\nVars.load_functions();\n// New create_function method\nVars.create_function = (newFunctionData) => {\n    return fetch('/api/v1/functions', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n        body: JSON.stringify(newFunctionData),\n    })\n    .then(response => {\n        if (!response.ok) {\n            return response.json().then(errData => {\n                const errorMessage = errData.message || `HTTP error! status: ${response.status}`;\n                throw new Error(errorMessage);\n            });\n        }\n        return response.json();\n    })\n    .then(createdFunction => {\n        Vars.studio_functions.push(createdFunction);\n        return createdFunction;\n    })\n    .catch(error => {\n        console.error('Error creating function:', error);\n        throw error;\n    });\n};"
+      "onInit": "// Existing load_functions method\n$load_functions = () => {\n    fetch('/api/v1/functions', {\n        method: 'GET',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n    })\n    .then(response => {\n        if (!response.ok) {\n            throw new Error(`HTTP error! status: ${response.status}`);\n        }  \n        return response.json();\n    })\n    .then(data => {\n        $studio_functions = data || [];\n        return data;\n    })\n    .catch(error => {\n        console.error('Error fetching functions:', error);\n        throw error;\n    });\n};\n$load_functions();\n// New create_function method\n$create_function = (newFunctionData) => {\n    return fetch('/api/v1/functions', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n        body: JSON.stringify(newFunctionData),\n    })\n    .then(response => {\n        if (!response.ok) {\n            return response.json().then(errData => {\n                const errorMessage = errData.message || `HTTP error! status: ${response.status}`;\n                throw new Error(errorMessage);\n            });\n        }\n        return response.json();\n    })\n    .then(createdFunction => {\n        $studio_functions.push(createdFunction);\n        return createdFunction;\n    })\n    .catch(error => {\n        console.error('Error creating function:', error);\n        throw error;\n    });\n};"
     },
     "input": {
       "data": {
         "type": "handler",
-        "value": "return Vars.studio_functions;"
+        "value": "return $studio_functions;"
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
@@ -121,7 +121,7 @@ export const StudioFunctionCollection = [
     "name": "text_input_9052",
     "uuid": "7769dda5-2969-4d76-98aa-4a9362fb3344",
     "event": {
-      "valueChange": "Vars.studio_function_create_name = EventData.value;\n"
+      "valueChange": "$studio_function_create_name = EventData.value;\n"
     },
     "input": {
       "label": {
@@ -150,7 +150,7 @@ export const StudioFunctionCollection = [
     "name": "button_input_2401",
     "uuid": "b67f4f2e-1232-4c31-beb9-f73c7c04802e",
     "event": {
-      "onClick": "const newFunction = {\n    \"label\": Vars.studio_function_create_name,\n    \"description\": Vars.studio_function_create_name,\n    \"template\": \"v1/deno/2\",\n    \"runtime\": \"deno\",\n    \"handler\": \"\"\n};\nVars.create_function(newFunction).then(()=>{\n    Vars.load_functions();\n    Vars.studio_display_create_function_block = false;\n})"
+      "onClick": "const newFunction = {\n    \"label\": $studio_function_create_name,\n    \"description\": $studio_function_create_name,\n    \"template\": \"v1/deno/2\",\n    \"runtime\": \"deno\",\n    \"handler\": \"\"\n};\n$create_function(newFunction).then(()=>{\n    $load_functions();\n    $studio_display_create_function_block = false;\n})"
     },
     "input": {
       "label": {
@@ -159,7 +159,7 @@ export const StudioFunctionCollection = [
       },
       "state": {
         "type": "handler",
-        "value": "return !!Vars.studio_function_create_name ? \"\" : \"disabled\""
+        "value": "return !!$studio_function_create_name ? \"\" : \"disabled\""
       }
     },
     "style": {
@@ -193,7 +193,7 @@ export const StudioFunctionCollection = [
     "input": {
       "display": {
         "type": "handler",
-        "value": "return !!Vars.studio_display_create_function_block;"
+        "value": "return !!$studio_display_create_function_block;"
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
@@ -209,7 +209,7 @@ export const StudioFunctionCollection = [
     "name": "button_input_4743",
     "uuid": "3f07be1d-8be5-4a59-b46c-e805c926cab2",
     "event": {
-      "onClick": "Vars.studio_display_create_function_block = true;"
+      "onClick": "$studio_display_create_function_block = true;"
     },
     "input": {
       "label": {
@@ -218,7 +218,7 @@ export const StudioFunctionCollection = [
       },
       "display": {
         "type": "handler",
-        "value": "return !Vars.studio_display_create_function_block"
+        "value": "return !$studio_display_create_function_block"
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
@@ -230,7 +230,7 @@ export const StudioFunctionCollection = [
     "name": "button_input_7279",
     "uuid": "f6d5d534-ba89-4f13-a0d8-f94c3b88bfa8",
     "event": {
-      "onClick": "Vars.studio_display_create_function_block = false;"
+      "onClick": "$studio_display_create_function_block = false;"
     },
     "input": {
       "label": {

@@ -20,7 +20,7 @@ export class HandlerGenerator {
       : `
         const parameter = '${handlerProperty}';
         let handlerValue = '';
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
 
         if (selectedComponent) {
           ${handlerType === 'style'
@@ -44,7 +44,7 @@ export class HandlerGenerator {
     const eventUpdate = property.handlerEventUpdate
       ? HandlerResolver.resolveHandler(property.handlerEventUpdate, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
       : `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           ${handlerType === 'style'
             ? `updateStyleHandlers(selectedComponent, '${handlerProperty}', EventData.value);`

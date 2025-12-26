@@ -53,7 +53,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'icon') : null;
 
           return Input?.value || '';
@@ -68,7 +68,7 @@ export default [
       disable: {
         type: "handler",
         value: /* js */ ` 
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           return !!(
             selectedComponent?.input?.icon?.type === "handler" && 
             selectedComponent?.input?.icon?.value
@@ -78,7 +78,7 @@ export default [
     },
     event: {
       onChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
           updateInput(selectedComponent, 'icon', 'string', EventData.value);
       `
     }
@@ -111,7 +111,7 @@ export default [
         type: "handler",
         value: /* js */`
           const parameter = 'iconPicker';
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const iconPickerHandler = selectedComponent?.input?.icon?.type === 'handler' 
             ? selectedComponent?.input?.icon?.value 
             : '';
@@ -121,7 +121,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.icon?.value) {
           updateInput(selectedComponent, 'icon', 'handler', EventData.value);
         }

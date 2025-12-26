@@ -26,7 +26,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          const currentFunction = Vars.currentFunction;
+          const currentFunction = $currentFunction;
           if (!currentFunction?.id) {
             return { resource_id: null, resource_type: 'function' };
           }

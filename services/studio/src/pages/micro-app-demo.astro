@@ -113,13 +113,13 @@ const appComponents = [
         // Variables support scope: local (default), app, or global
 
         // Local scope (isolated to this micro-app instance)
-        Vars.clickCount = (Vars.clickCount || 0) + 1;
+        $clickCount = ($clickCount || 0) + 1;
 
         // Or explicitly: Vars['local.clickCount'] = ...
         // App scope: Vars['app.sharedData'] = ...
         // Global scope: Vars['global.theme'] = ...
 
-        const message = 'Button clicked ' + Vars.clickCount + ' times!';
+        const message = 'Button clicked ' + $clickCount + ' times!';
         console.log('[MicroApp Demo] ' + message);
 
         // Example: Instance is for component-scoped non-reactive state
@@ -155,7 +155,7 @@ const appComponents = [
       value: {
         type: "handler",
         value: `
-          return "Click the button to see the counter in action" + (Vars.clickCount ? ": " + Vars.clickCount : "");
+          return "Click the button to see the counter in action" + ($clickCount ? ": " + $clickCount : "");
         `,
       },
     },

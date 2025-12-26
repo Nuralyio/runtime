@@ -41,14 +41,14 @@ const borderRadiusComponent = {
   style: { width: "50px" },
   event: {
     borderChanged: /* js */ `
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       EventData.borders.forEach(border => {
         const keyName = Object.keys(border)[0];
         updateStyle(selectedComponent, keyName, border[keyName]);
       })
     `,
     borderRadiusChanged: /* js */ `
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       updateStyle(selectedComponent, EventData.attributeName, EventData.value);
     `
   },
@@ -56,7 +56,7 @@ const borderRadiusComponent = {
     border: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
           const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
@@ -102,7 +102,7 @@ const borderRadiusComponent = {
     value: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           const currentEditingAppUUID = GetVar("currentEditingApplication").uuid;
           const currentComponent = GetComponent(selectedComponent, currentEditingAppUUID);
@@ -179,7 +179,7 @@ const borderRadiusComponent = {
     state: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         let state = 'enabled';
         if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['border-radius']) {
           state = 'disabled';
@@ -211,7 +211,7 @@ const handlerComponent = {
         }
 
         let borderRadiusHandler = '';
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         borderRadiusHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['border-radius'] || '';
         return [parameter, borderRadiusHandler];
       `
@@ -219,7 +219,7 @@ const handlerComponent = {
   },
   event: {
     codeChange: /* js */ `
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       updateStyleHandlers(selectedComponent, 'border-radius', EventData.value);
     `
   }

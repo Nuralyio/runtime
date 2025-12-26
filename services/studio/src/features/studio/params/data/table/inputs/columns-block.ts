@@ -46,7 +46,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                 
                 
                 let fontFamily = selectedComponent.style['font-family'];
@@ -89,7 +89,7 @@ export default [
       changed: /* js */ `
 
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     const fontFamilyValue = EventData.value?EventData.value:'initial'

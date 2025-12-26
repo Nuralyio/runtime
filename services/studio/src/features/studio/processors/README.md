@@ -365,7 +365,7 @@ properties:
       ref: styleHandler
       params: [width, "auto"]
     handlerEventUpdate: |
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       if (selectedComponent) {
         updateStyleHandlers(selectedComponent, 'width', EventData.value);
       }

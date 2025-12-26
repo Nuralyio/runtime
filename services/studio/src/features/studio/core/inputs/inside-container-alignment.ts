@@ -57,8 +57,8 @@ export const StudioInnerContainerInputAlignment = [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
-          const currentType = Editor.getComponentStyle(Utils.first(Vars.selectedComponents), 'innerAlignment') || 'start';
+          const selectedComponent = Utils.first($selectedComponents);
+          const currentType = Editor.getComponentStyle(Utils.first($selectedComponents), 'innerAlignment') || 'start';
           const options = [
             { label: "Start", value: "start" },
             { label: "Middle", value: "middle" },
@@ -70,7 +70,7 @@ export const StudioInnerContainerInputAlignment = [
       state: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.styleHandlers?.innerAlignment 
             ? 'disabled' 
             : 'enabled';
@@ -82,7 +82,7 @@ export const StudioInnerContainerInputAlignment = [
     },
     event: {
       changed: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
           const typeValue = EventData.value || 'start';
           updateInput(selectedComponent, "innerAlignment", 'string', typeValue);
       `
@@ -117,7 +117,7 @@ export const StudioInnerContainerInputAlignment = [
         type: "handler",
         value: /* js */`
           const parameter = 'innerAlignment';
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const handlerValue = selectedComponent?.styleHandlers?.innerAlignment || '';
           return [parameter, handlerValue];
         `
@@ -125,7 +125,7 @@ export const StudioInnerContainerInputAlignment = [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           updateStyleHandlers(selectedComponent, 'innerAlignment', EventData.value);
         }

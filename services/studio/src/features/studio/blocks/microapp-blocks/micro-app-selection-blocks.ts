@@ -40,7 +40,7 @@ export default [
 
                 let options = [];
                 let selectedMicroApplication;
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                 
                 
                 let appUUID = selectedComponent.input?.['appUUID'];
@@ -76,7 +76,7 @@ export default [
       changed: /* js */ `
 
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     const appUUIDValue = EventData.value?EventData.value:''

@@ -147,7 +147,7 @@ export class PreviewIFramePanel extends LitElement {
 
   private setupModeListener() {
     eventDispatcher.on('Vars:currentEditingMode', () => {
-      const mode = ExecuteInstance.Vars.currentEditingMode;
+      const mode = ExecuteInstance.$currentEditingMode;
       this.sendMessageToIframe({
         type: 'SET_MODE',
         payload: mode
@@ -157,11 +157,11 @@ export class PreviewIFramePanel extends LitElement {
 
   private setupPageChangeListener() {
     // Initialize with current page
-    this.currentPageId = ExecuteInstance.Vars.currentPage || '';
+    this.currentPageId = ExecuteInstance.$currentPage || '';
 
     // Listen for page changes and send message to iframe (don't reload)
     eventDispatcher.on('Vars:currentPage', () => {
-      const newPageId = ExecuteInstance.Vars.currentPage || '';
+      const newPageId = ExecuteInstance.$currentPage || '';
       if (newPageId !== this.currentPageId) {
         this.currentPageId = newPageId;
         // Send page change to iframe instead of reloading
@@ -195,7 +195,7 @@ export class PreviewIFramePanel extends LitElement {
   private handleReady() {
     this.iframeReady = true;
     this.isLoading = false;
-    const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
+    const initialMode = ExecuteInstance.$currentEditingMode || 'edit';
     this.sendMessageToIframe({ type: 'SET_MODE', payload: initialMode });
   }
 
@@ -286,7 +286,7 @@ export class PreviewIFramePanel extends LitElement {
     const appId = this.applicationId || $currentApplication.get()?.uuid || '';
     // Use pageUrl prop or initial currentPage for first load only
     // Page changes are handled via SET_PAGE message, not URL change
-    const pageUrl = this.pageUrl || ExecuteInstance.Vars.currentPage || '';
+    const pageUrl = this.pageUrl || ExecuteInstance.$currentPage || '';
     return `/app/preview/${appId}/${pageUrl}`;
   }
 

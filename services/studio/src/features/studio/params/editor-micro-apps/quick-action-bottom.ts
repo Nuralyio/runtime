@@ -34,7 +34,7 @@ export default [
       options:{
         type: "handler",
         value: /* javascript */`
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           let options = [];
           if(selectedComponent){
             options = [
@@ -51,7 +51,7 @@ export default [
     },
     event : {
       onItemClicked: /* javascript */`
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       switch(EventData.value) {
         case 'Copy':
           CopyComponentToClipboard(selectedComponent);

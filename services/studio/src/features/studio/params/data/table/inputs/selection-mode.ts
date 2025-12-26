@@ -56,7 +56,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
 
                 let currentSelectionMode =""
                 let isDisabled=false;
@@ -95,7 +95,7 @@ export default [
     event: {
       changed: /* js */ `
             
-              const selectedComponent = Utils.first(Vars.selectedComponents);
+              const selectedComponent = Utils.first($selectedComponents);
                     const selectionModeValue = EventData.value;
                     updateInput(selectedComponent,'selectionMode','string',EventData.value)
               
@@ -128,7 +128,7 @@ export default [
         value: /* js */`
                 const parameter ='selectionMode';
                 let selectionModeHandler=''
-                  const selectedComponent = Utils.first(Vars.selectedComponents);
+                  const selectedComponent = Utils.first($selectedComponents);
                         if(selectedComponent?.input?.selectionMode?.type =='handler' && selectedComponent?.input?.selectionMode?.value){
                             selectionModeHandler = selectedComponent?.input?.selectionMode?.value
                         }
@@ -139,7 +139,7 @@ export default [
 
     event: {
       codeChange: /* js */ `
-              const selectedComponent = Utils.first(Vars.selectedComponents);
+              const selectedComponent = Utils.first($selectedComponents);
                     if(EventData.value != selectedComponent?.input?.selectionMode?.value)
                     updateInput(selectedComponent,'selectionMode','handler',EventData.value);
       `
