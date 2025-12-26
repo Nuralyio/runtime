@@ -82,11 +82,8 @@ const processedHeaders = processHeaders(Astro.request.headers);
       import "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
 
       async function initializeDashboardMicroApp() {
-        console.log('[Dashboard] Starting initialization...');
-
         // Wait for the custom element to be defined
         await customElements.whenDefined('micro-app');
-        console.log('[Dashboard] micro-app custom element is defined');
 
         const data = (window as any).__DASHBOARD_DATA__;
 
@@ -94,8 +91,6 @@ const processedHeaders = processHeaders(Astro.request.headers);
           console.error('[Dashboard] Missing required data:', data);
           return;
         }
-
-        console.log('[Dashboard] Setting up micro-app with data:', data);
 
         // Create the micro-app element
         const microApp = document.createElement('micro-app') as any;
@@ -110,21 +105,10 @@ const processedHeaders = processHeaders(Astro.request.headers);
         microApp.mode = "preview";
         microApp.prod = true;
 
-        console.log('[Dashboard] MicroApp properties set (before connection):', {
-          uuid: microApp.uuid,
-          page_uuid: microApp.page_uuid,
-          useIsolatedContext: microApp.useIsolatedContext,
-          componentsCount: microApp.appComponents?.length,
-          pagesCount: microApp.appPages?.length,
-          mode: microApp.mode,
-          prod: microApp.prod
-        });
-
         // Add to DOM - this triggers connectedCallback
         const container = document.getElementById('dashboard-micro-app-container');
         if (container) {
           container.appendChild(microApp);
-          console.log('[Dashboard] MicroApp element added to DOM');
         } else {
           console.error('[Dashboard] Container not found!');
         }

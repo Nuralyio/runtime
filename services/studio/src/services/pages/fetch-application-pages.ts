@@ -14,8 +14,6 @@ export async function fetchApplicationPagesById(headers: Record<string, string>,
   error?: any
 }> {
   const url = APIS_URL.getApplicationPages(id);
-  console.log(`[fetchApplicationPagesById] Fetching pages for app: ${id}`);
-  console.log(`[fetchApplicationPagesById] URL: ${url}`);
 
   const response = await fetch(url, {
     headers: {
@@ -24,7 +22,6 @@ export async function fetchApplicationPagesById(headers: Record<string, string>,
   });
 
   if (!response.ok) {
-    console.log(`Failed to fetch application pages: ${response.statusText}`);
     throw new ApplicationNotFound(`Failed to fetch application pages: ${response.statusText}`);
   }
 

@@ -102,7 +102,7 @@ export const StudioFunctionCollection = [
     "name": "Collection_9727",
     "uuid": "41c1199e-a4eb-4f23-8707-3ed9f0a2492e",
     "event": {
-      "onInit": "// Existing load_functions method\nVars.load_functions = () => {\n    fetch('/api/v1/functions', {\n        method: 'GET',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n    })\n    .then(response => {\n        if (!response.ok) {\n            // Handle non-OK response\n            throw new Error(`HTTP error! status: ${response.status}`);\n        }  \n        return response.json();\n    })\n    .then(data => {\n        console.log(\"data\", data); \n        Vars.studio_functions = data || [];\n        return data;\n    })\n    .catch(error => {\n        console.error('Error fetching functions:', error);\n        throw error; // Re-throw the error so the caller can handle it\n    });\n};\nVars.load_functions();\n// New create_function method\nVars.create_function = (newFunctionData) => {\n    return fetch('/api/v1/functions', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n        body: JSON.stringify(newFunctionData),\n    })\n    .then(response => {\n        if (!response.ok) {\n            // Handle non-OK response\n            return response.json().then(errData => {\n                const errorMessage = errData.message || `HTTP error! status: ${response.status}`;\n                throw new Error(errorMessage);\n            });\n        }\n        return response.json();\n    })\n    .then(createdFunction => {\n        console.log(\"Function created successfully:\", createdFunction);\n        Vars.studio_functions.push(createdFunction);\n        return createdFunction;\n    })\n    .catch(error => {\n        console.error('Error creating function:', error);\n        throw error; // Re-throw the error so the caller can handle it\n    });\n};\n\n\n/*Vars.create_function(newFunction)\n    .then(createdFunction => {\n        console.log(\"Created Function:\", createdFunction);\n        // Perform additional actions if needed\n    })\n    .catch(error => {\n        console.error(\"Failed to create function:\", error);\n    });*/"
+      "onInit": "// Existing load_functions method\nVars.load_functions = () => {\n    fetch('/api/v1/functions', {\n        method: 'GET',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n    })\n    .then(response => {\n        if (!response.ok) {\n            throw new Error(`HTTP error! status: ${response.status}`);\n        }  \n        return response.json();\n    })\n    .then(data => {\n        Vars.studio_functions = data || [];\n        return data;\n    })\n    .catch(error => {\n        console.error('Error fetching functions:', error);\n        throw error;\n    });\n};\nVars.load_functions();\n// New create_function method\nVars.create_function = (newFunctionData) => {\n    return fetch('/api/v1/functions', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n        },\n        body: JSON.stringify(newFunctionData),\n    })\n    .then(response => {\n        if (!response.ok) {\n            return response.json().then(errData => {\n                const errorMessage = errData.message || `HTTP error! status: ${response.status}`;\n                throw new Error(errorMessage);\n            });\n        }\n        return response.json();\n    })\n    .then(createdFunction => {\n        Vars.studio_functions.push(createdFunction);\n        return createdFunction;\n    })\n    .catch(error => {\n        console.error('Error creating function:', error);\n        throw error;\n    });\n};"
     },
     "input": {
       "data": {
@@ -150,7 +150,7 @@ export const StudioFunctionCollection = [
     "name": "button_input_2401",
     "uuid": "b67f4f2e-1232-4c31-beb9-f73c7c04802e",
     "event": {
-      "onClick": "const newFunction = {\n    \"label\": Vars.studio_function_create_name,\n    \"description\": Vars.studio_function_create_name,\n    \"template\": \"v1/deno/2\",\n    \"runtime\": \"deno\",\n    \"handler\": \"\"\n};\nconsole.log(newFunction);\nVars.create_function(newFunction).then(()=>{\n    Vars.load_functions();\n    Vars.studio_display_create_function_block = false;\n})"
+      "onClick": "const newFunction = {\n    \"label\": Vars.studio_function_create_name,\n    \"description\": Vars.studio_function_create_name,\n    \"template\": \"v1/deno/2\",\n    \"runtime\": \"deno\",\n    \"handler\": \"\"\n};\nVars.create_function(newFunction).then(()=>{\n    Vars.load_functions();\n    Vars.studio_display_create_function_block = false;\n})"
     },
     "input": {
       "label": {
@@ -159,7 +159,7 @@ export const StudioFunctionCollection = [
       },
       "state": {
         "type": "handler",
-        "value": "console.log(Vars.studio_function_create_name)\nreturn !!Vars.studio_function_create_name ? \"\" : \"disabled\""
+        "value": "return !!Vars.studio_function_create_name ? \"\" : \"disabled\""
       }
     },
     "style": {
