@@ -16,9 +16,25 @@ import { setCurrentEditorTab } from '../../../runtime/redux/actions/editor/setCu
 export class TabsPanel extends LitElement {
   static override styles = [
     css`
-           
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+      }
 
-        `
+      nr-tabs {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      nr-tabs::part(content) {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+    `
   ];
   @state()
   activeTab = 0;
@@ -64,9 +80,10 @@ export class TabsPanel extends LitElement {
                 id: tab.id,
                 label: tab.label,
                 content: html`
-                                <editor-interactive-panel>
+                                <!-- <editor-interactive-panel> -->
                                     <function-page .detail=${tab.detail}></function-page>
-                                </editor-interactive-panel>`
+                                <!-- </editor-interactive-panel> -->
+                                `
               });
               break;
             case "files":
@@ -104,16 +121,16 @@ export class TabsPanel extends LitElement {
       });
 
       if (editorState.currentTab) {
-        const tabindex = editorState.tabs.findIndex((tab: any) => tab.id === editorState.currentTab.id);
-        if (tabindex > 0) {
+        // Find the tab index in editableTabs (not editorState.tabs) since they may differ
+        const tabindex = this.editableTabs.findIndex((tab: any) => tab.id === editorState.currentTab.id);
+        if (tabindex >= 0) {
           this.activeTab = tabindex;
-          // Ensure the activeTab index is updated if needed
-          this.requestUpdate();
         }
       }
 
       // Trigger a re-render with the updated tabs
       this.editableTabs = [...this.editableTabs];
+      this.requestUpdate();
       });
     }, 0);
   }
@@ -131,18 +148,32 @@ export class TabsPanel extends LitElement {
        
         size="small"
           .activeTab=${this.activeTab}
-          @removeTab=${(e: CustomEvent) => {
-            const tabToClose = this.editableTabs[e.detail.index];
-            closeEditorTab(tabToClose);
-          this.editableTabs = [...this.editableTabs.filter((tab, index) => index !== e.detail.index)];
-          this.activeTab = e.detail.index-1;
-          setCurrentEditorTab(this.editableTabs[this.activeTab]);
+          @nr-tab-remove=${(e: CustomEvent) => {
+            const tabIndex = e.detail.index;
+            const tabToClose = this.editableTabs[tabIndex];
 
+            if (!tabToClose) {
+              console.error('[TabsPanel] No tab found at index:', tabIndex);
+              return;
+            }
+
+            closeEditorTab(tabToClose);
+            this.editableTabs = [...this.editableTabs.filter((_, index) => index !== tabIndex)];
+
+            // Calculate new active tab
+            const newActiveTab = Math.max(0, tabIndex - 1);
+            this.activeTab = newActiveTab;
+
+            if (this.editableTabs[newActiveTab]) {
+              setCurrentEditorTab(this.editableTabs[newActiveTab]);
+            }
         }}
-          @tabTilteClick=${(e: CustomEvent) => {
-          setCurrentEditorTab($editorState.get().tabs[e.detail.index]);
-        }
-        }
+          @nr-tab-click=${(e: CustomEvent) => {
+            const tabIndex = e.detail.index;
+            if (this.editableTabs[tabIndex]) {
+              setCurrentEditorTab(this.editableTabs[tabIndex]);
+            }
+        }}
           .tabs=${this.editableTabs}
           .editable=${{
           canDeleteTab: this.editableTabs.length !== 1,

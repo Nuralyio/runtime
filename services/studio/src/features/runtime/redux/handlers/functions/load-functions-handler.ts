@@ -6,5 +6,6 @@ export const loadFunctionsHandler = async () => {
     headers: {
       "Content-Type": "application/json"
     },
-  }).then(res=>res.json())
+    credentials: "include",
+  }).then(res => res.json())
 };

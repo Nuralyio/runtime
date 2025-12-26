@@ -1,13 +1,10 @@
-import { isServer } from '../../../../runtime/utils/envirement';
-export let functionAppUUID = "" ;
-export let functionPageUUID = "" ;
-if(!isServer){
- functionAppUUID = window.__FUNCTION_APP_UUID__;
- functionPageUUID = window.__FUNCTION_PAGE_UUID__;
-}
+/**
+ * Studio Functions Panel Collection
+ * Uses the native functions-panel component for better reliability and low-code access
+ */
 export const StudioFunctionCollection = [
   {
-    "name": "function_micro_app",
+    "name": "function_panel_container",
     "root": true,
     "uuid": "function_micro_app",
     "input": {
@@ -21,22 +18,12 @@ export const StudioFunctionCollection = [
       }
     },
     "style": {
-      "height": "643px",
+      "height": "100%",
+      "width": "100%",
       "display": "flex",
-      "box-shadow": " 0px 0px 0px 0px #000000 ",
-      "border-radius": "0px",
-      "justify-content": "default",
-      "align-items": "start"
+      "flex-direction": "column"
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "breakpoints": {
-      "430px": {
-        "width": "100%"
-      },
-      "1024px": {
-        "width": "80%"
-      }
-    },
     "childrenIds": [
       "function_micro_app_block",
     ],
@@ -46,22 +33,12 @@ export const StudioFunctionCollection = [
   {
     application_id: "1",
     uuid: "function_micro_app_block",
-    name: "function_micro_app",
-    component_type: "MicroApp",
-    input: {
-      appUUID: {
-        type: "string",
-        value: functionAppUUID
-      },
-      componentToRenderUUID: {
-        type: "string",
-        value: functionPageUUID
-      },
-      mode: {
-        type: "string",
-        value: "preview"
-      }
-    },
+    name: "functions_panel",
+    component_type: "FunctionsPanel",
+    style: {
+      "height": "100%",
+      "width": "100%"
+    }
   },
   {
     "name": "text_label_3780",

@@ -22,18 +22,27 @@ export default [{
       type: "handler",
       value: /* js */ `
       return [
-                 
-                    {
-                        label: {
-                            type: "text",
-                            value: "Debug"
-                        },
-                        childrends: {
-                            type: "componentIdArray",
-                            value:  ["right_panel_function_tabs_block"]
-                        }
-                    },
-                    ]
+        {
+          label: {
+            type: "text",
+            value: "Debug"
+          },
+          childrends: {
+            type: "componentIdArray",
+            value: ["right_panel_function_tabs_block"]
+          }
+        },
+        {
+          label: {
+            type: "text",
+            value: "Permissions"
+          },
+          childrends: {
+            type: "componentIdArray",
+            value: ["right_panel_function_permissions"]
+          }
+        }
+      ]
       `
     }
   }
