@@ -15,12 +15,8 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 
-// Safely import nr-col from nuralyui grid
-try {
-  await import("@nuralyui/grid");
-} catch (error) {
-  console.warn('[@nuralyui/grid] Package not found or failed to load.');
-}
+// Import nr-col from nuralyui grid
+import "@nuralyui/grid";
 
 /** Input property names that trigger re-render */
 const COL_INPUT_PROPS = ['span', 'offset', 'order', 'pull', 'push', 'flex', 'xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const;
