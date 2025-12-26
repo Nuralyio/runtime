@@ -59,7 +59,7 @@ export default [
     event: {
       valueChange:  /* js */ `
         
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           if (selectedComponent) {
             const newHelperText = EventData.value;
             updateInput(selectedComponent, 'helper', 'value', newHelperText);
@@ -71,7 +71,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const helperInput = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, 'helper') : null;
           return helperInput?.type === "value" ? helperInput.value ?? '' : '';
         `
@@ -79,7 +79,7 @@ export default [
       state: {
         type: "handler",
         value: /* js */`
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
             let state = "unabled";
             if (selectedComponent?.input?.helper?.type == "handler" && 
                 selectedComponent?.input?.helper?.value) {
@@ -124,7 +124,7 @@ export default [
         value: /* js */`
             const parameter = 'helper';
             let helperHandler = '';
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
             if (selectedComponent?.input?.helper?.type == 'handler' && 
                 selectedComponent?.input?.helper?.value) {
               helperHandler = selectedComponent?.input?.helper.value;
@@ -135,7 +135,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           if (selectedComponent && EventData.value !== selectedComponent?.input?.helper?.value) {
             updateInput(selectedComponent, 'helper', 'handler', EventData.value);
           }

@@ -238,7 +238,7 @@ export const Insert = /* js */`
                       "input": {
                         "label": {
                           "type": "handler",
-                          "value": "return Vars.currentValue"
+                          "value": "return $currentValue"
                         },
                         "options": {
                           "type": "handler",

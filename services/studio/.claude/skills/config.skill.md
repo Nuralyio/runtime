@@ -278,7 +278,7 @@ Different component wrappers use specific event names. Always verify the event n
 
 For other property types:
 - **Radio inputs**: Use `changed` event handler (NOT `onChange`)
-  - Example: `"eventHandlers": { "changed": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'size', 'string', EventData.value); }" }`
+  - Example: `"eventHandlers": { "changed": "const selectedComponent = Utils.first($selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'size', 'string', EventData.value); }" }`
 - **Text inputs**: Use `valueChange` event handler
   - Example: `"eventHandlers": { "valueChange": { "ref": "updateInput", "params": ["label", "string"] } }`
 - **Number inputs**: Use `valueChange` event handler

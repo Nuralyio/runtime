@@ -43,7 +43,7 @@ const validationRulesComponent = {
     value: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return {};
 
         const input = selectedComponent.input || {};
@@ -62,7 +62,7 @@ const validationRulesComponent = {
   },
   event: {
     onChange: /* js */`
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       if (!selectedComponent) return;
 
       const property = EventData.property;

@@ -56,7 +56,7 @@ export const createHandlersFromEvents = (
         events: {
           type: "handler",
           value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
                 return selectedComponent.event ?? {}
                 `
         }

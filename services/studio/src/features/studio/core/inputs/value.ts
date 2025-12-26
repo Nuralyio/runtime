@@ -50,7 +50,7 @@ export const StudioTextValueInput = [
     },
     event: {
       valueChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           updateInput(selectedComponent, 'value', 'value', EventData.value);
         }
@@ -60,14 +60,14 @@ export const StudioTextValueInput = [
       value: {
         type: "handler",
         value: /* js */ `
-          const { input: { value: valueInput } = {} } = Utils.first(Vars.selectedComponents) || {};
+          const { input: { value: valueInput } = {} } = Utils.first($selectedComponents) || {};
           return valueInput?.type === 'handler' ? '' : valueInput?.value || '';
         `
       },
       state: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.input?.value?.type === "handler" &&
             selectedComponent?.input?.value?.value
             ? "disabled"
@@ -94,7 +94,7 @@ export const StudioTextValueInput = [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
           const handlerValue = selectedComponent?.input?.value?.type === 'handler'
             ? selectedComponent?.input?.value.value
             : '';
@@ -104,7 +104,7 @@ export const StudioTextValueInput = [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent && EventData.value !== selectedComponent?.input?.value?.value) {
           updateInput(selectedComponent, 'value', 'handler', EventData.value);
         }

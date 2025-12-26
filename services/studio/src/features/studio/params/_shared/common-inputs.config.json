@@ -67,7 +67,7 @@
         "width": "80px",
         "valueHandler": { "ref": "displayToggle" },
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'display', 'string', EventData.value); }"
+          "changed": "const selectedComponent = Utils.first($selectedComponents); if (selectedComponent) { updateInput(selectedComponent, 'display', 'string', EventData.value); }"
         }
       }
     ]

@@ -55,7 +55,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ ` 
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                 
                 
                 let currentFilter="";
@@ -90,7 +90,7 @@ export default [
     event: {
       changed: /* js */ `
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     const filterValue = EventData.value;
@@ -126,7 +126,7 @@ export default [
                 const parameter ='filter';
                 let filterHandler=''
                 
-                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    const selectedComponent = Utils.first($selectedComponents);
                         
                         
                         if(selectedComponent.input?.filter?.type =='handler' && selectedComponent.input?.filter?.value){
@@ -141,7 +141,7 @@ export default [
     event: {
       codeChange: /* js */ `
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     if(EventData.value != selectedComponent.input?.filter?.value)

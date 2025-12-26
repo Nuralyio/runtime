@@ -80,8 +80,8 @@ export default [
         type: "handler",
         value: /* js */`
           // Get current resource context (page, component, or application)
-          const currentPageId = Vars.currentPage;
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const currentPageId = $currentPage;
+          const selectedComponent = Utils.first($selectedComponents);
           const currentEditingApplication = GetVar("currentEditingApplication");
 
           // Determine resource type and id
@@ -113,7 +113,7 @@ export default [
     event: {
       onInit: /* js */`
         (async () => {
-          const currentPageId = Vars.currentPage;
+          const currentPageId = $currentPage;
           const resourceType = 'page';
           const resourceId = currentPageId;
 
@@ -166,7 +166,7 @@ export default [
             return;
           }
 
-          const currentPageId = Vars.currentPage;
+          const currentPageId = $currentPage;
           const resourceType = 'page';
           const resourceId = currentPageId;
           const baseUrl = '/api/resources/' + resourceType + '/' + resourceId;

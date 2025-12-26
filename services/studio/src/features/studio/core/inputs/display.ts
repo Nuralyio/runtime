@@ -40,7 +40,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
 
           let currentDisplay = "";
           let isDisabled = false;
@@ -76,7 +76,7 @@ export default [
     },
     event: {
       changed: /* js */ `
-        updateInput(Utils.first(Vars.selectedComponents), 'display', 'string', EventData.value);
+        updateInput(Utils.first($selectedComponents), 'display', 'string', EventData.value);
       `
     }
   },
@@ -106,7 +106,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
+          const selectedComponent = Utils.first($selectedComponents);
 
           const parameter = 'display';
           let displayHandler = '';
@@ -121,7 +121,7 @@ export default [
     },
     event: {
       codeChange: /* js */ `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         updateInput(selectedComponent, 'display', 'handler', EventData.value);
       `
     }

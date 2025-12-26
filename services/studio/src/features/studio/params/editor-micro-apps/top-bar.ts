@@ -78,7 +78,7 @@ export default [{
     onClick: /* js */ `
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+            const currentPage = $currentPage || appPages?.[0]?.uuid;
             if(currentPage){
               const itemValue = EventData.value || EventData;
               const componentType = itemValue.value;
@@ -135,7 +135,7 @@ export default [{
     onClick: /* js */ `
     const currentEditingApplication = GetVar("currentEditingApplication");
     const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-    const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+    const currentPage = $currentPage || appPages?.[0]?.uuid;
     if(currentPage){
       const itemData = EventData.value || EventData;
       const componentType = itemData.value || itemData;
@@ -197,7 +197,7 @@ export default [{
     onClick: /* js */ `
     const currentEditingApplication = GetVar("currentEditingApplication");
     const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-    const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+    const currentPage = $currentPage || appPages?.[0]?.uuid;
     debugger
     if(currentPage){
       const action = EventData.additionalData.action;
@@ -330,7 +330,7 @@ export default [{
   event: {
     onChange: /* js */`
       // alert('Zoom set to ' + EventData.value + '%');
-        Vars.EditorZoom = EventData.value;
+        $EditorZoom = EventData.value;
         `
   },
   input: {
@@ -409,14 +409,14 @@ export default [{
   component_type: "button_input",
   event: {
     onClick: /* js */`
-      Vars.currentEditingMode = "edit";
+      $currentEditingMode = "edit";
         `
   },
   input: {
     display: {
       type: "handler",
       value: /* js */`
-            return Vars.currentEditingMode  == "preview"
+            return $currentEditingMode  == "preview"
             `
     },
     label: {
@@ -448,7 +448,7 @@ export default [{
   component_type: "button_input",
   event: {
     onClick: /* js */`
-      Vars.currentEditingMode = "preview"
+      $currentEditingMode = "preview"
         `
   },
   input: {
@@ -459,7 +459,7 @@ export default [{
     display: {
       type: "handler",
       value: /* js */`
-            return Vars.currentEditingMode == "edit" || Vars.currentEditingMode == undefined
+            return $currentEditingMode == "edit" || $currentEditingMode == undefined
             `
     },
     label: {
@@ -506,7 +506,7 @@ export default [{
     value: {
       type: "handler",
       value: /* js */`
-        const currentPlatform = Vars.currentPlatform?.platform || "desktop";
+        const currentPlatform = $currentPlatform?.platform || "desktop";
         
         const options = [
           {
@@ -538,19 +538,19 @@ export default [{
       const platform = EventData.value;
       
       if (platform === "desktop") {
-        Vars.currentPlatform = {
+        $currentPlatform = {
           platform: "desktop",
           width: "1366px"
         };
       } else if (platform === "tablet") {
-        Vars.currentPlatform = {
+        $currentPlatform = {
           platform: "tablet",
           width: "1024px",
           height: "768px",
           isMobile: true
         };
       } else if (platform === "mobile") {
-        Vars.currentPlatform = {
+        $currentPlatform = {
           platform: "mobile",
           width: "430px",
           height: "767px",
@@ -738,7 +738,7 @@ export default [{
       value: /* js */`
             const currentEditingApplication = GetVar("currentEditingApplication");
             const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);
-            const currentPage = Vars.currentPage || appPages?.[0]?.uuid;
+            const currentPage = $currentPage || appPages?.[0]?.uuid;
             const currentPageName = appPages?.find((page)=>page.uuid == currentPage).name
 
             const appName = currentEditingApplication.name;

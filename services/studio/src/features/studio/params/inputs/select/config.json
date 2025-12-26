@@ -44,8 +44,8 @@
         "width": "50px",
         "handlerType": "input",
         "handlerProperty": "options",
-        "handlerValueGetter": "const parameter = 'options'; let valueHandler = ''; const selectedComponent = Utils.first(Vars.selectedComponents); if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){ valueHandler = selectedComponent.input?.options?.value } return [parameter, valueHandler];",
-        "handlerEventUpdate": "const selectedComponent = Utils.first(Vars.selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
+        "handlerValueGetter": "const parameter = 'options'; let valueHandler = ''; const selectedComponent = Utils.first($selectedComponents); if(selectedComponent.input?.options?.type =='handler' && selectedComponent.input?.options?.value){ valueHandler = selectedComponent.input?.options?.value } return [parameter, valueHandler];",
+        "handlerEventUpdate": "const selectedComponent = Utils.first($selectedComponents); if(EventData.value != selectedComponent.input?.options?.value) updateInput(selectedComponent,'options','handler',EventData.value);"
       },
       {
         "name": "select_value",

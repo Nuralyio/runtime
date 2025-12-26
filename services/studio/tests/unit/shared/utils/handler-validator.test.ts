@@ -285,7 +285,7 @@ describe('Handler Validator - Component Handlers', () => {
         placeholder: "return 'Enter ' + GetVar('fieldType')",
       },
       styleHandlers: {
-        color: "return Vars.theme === 'dark' ? '#fff' : '#000'",
+        color: "return $theme === 'dark' ? '#fff' : '#000'",
         fontSize: "return GetVar('fontSize') || '16px'",
       }
     };
@@ -328,7 +328,7 @@ describe('Handler Validator - Real-World Patterns', () => {
   `);
 
   testValidCode('validates component visibility handler', `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return Editor.getComponentStyle(selectedComponent, 'display') || 'block';
   `);
 

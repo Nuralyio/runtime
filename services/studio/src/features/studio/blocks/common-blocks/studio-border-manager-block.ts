@@ -44,11 +44,11 @@ const borderManagerComponent = {
     value: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return {};
 
         // Use Editor.getComponentStyleForState to support pseudo-states (:hover, :focus, :active)
-        // This respects Vars.selected_component_style_state
+        // This respects $selected_component_style_state
         return {
           style: {
             'border': Editor.getComponentStyleForState(selectedComponent, 'border') || '',
@@ -62,20 +62,20 @@ const borderManagerComponent = {
             'border-bottom-right-radius': Editor.getComponentStyleForState(selectedComponent, 'border-bottom-right-radius') || '',
           },
           // Pass the current state for UI feedback
-          currentState: Vars.selected_component_style_state || 'default'
+          currentState: $selected_component_style_state || 'default'
         };
       `
     }
   },
   event: {
     onChange: /* js */`
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       if (!selectedComponent) return;
 
       const property = EventData.property;
       const value = EventData.value;
 
-      // updateStyle automatically handles pseudo-states via Vars.selected_component_style_state
+      // updateStyle automatically handles pseudo-states via $selected_component_style_state
       // If :hover is selected, it will update style[':hover'][property] instead of style[property]
       updateStyle(selectedComponent, property, value);
     `

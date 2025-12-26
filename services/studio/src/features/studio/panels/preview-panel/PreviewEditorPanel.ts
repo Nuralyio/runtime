@@ -152,7 +152,7 @@ export class PreviewEditorPanel extends LitElement {
     // Don't subscribe to mode changes if in standalone view mode
     if (!(window as any).__IS_VIEW_MODE__) {
       eventDispatcher.on('Vars:currentEditingMode', () => {
-        this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
+        this.mode = ExecuteInstance.$currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
       });
     }
 

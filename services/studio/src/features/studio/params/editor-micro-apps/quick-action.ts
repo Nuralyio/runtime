@@ -127,7 +127,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "text_input";
         `
@@ -145,7 +145,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "select";
         `
@@ -163,7 +163,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "checkbox";
         `
@@ -180,7 +180,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "Datepicker";
         `
@@ -196,7 +196,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "vertical-container-block";
         `
@@ -212,7 +212,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "Icon";
         `
@@ -228,7 +228,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "Image";
         `
@@ -244,7 +244,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         
           return selectedComponent?.component_type == "Collection";
         `
@@ -261,7 +261,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.component_type === "text_label";
         `
       },
@@ -278,7 +278,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.component_type === "button_input";
         `
       },
@@ -296,7 +296,7 @@ export default [
       display: {
         type: "handler",
         value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
           return selectedComponent?.component_type === "Table";
         `
       },

@@ -95,9 +95,9 @@
         "type": "radio",
         "default": "text",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'text';\n}\nconst options = [\n  { value: 'text', icon: 'font', disabled: isDisabled },\n  { value: 'password', icon: 'lock', disabled: isDisabled },\n  { value: 'email', icon: 'envelope', disabled: isDisabled },\n  { value: 'number', icon: 'hashtag', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentType, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet currentType = '';\nlet isDisabled = false;\nif (selectedComponent?.input?.type?.type == 'handler' && selectedComponent?.input?.type?.value) {\n  isDisabled = true;\n} else {\n  currentType = selectedComponent?.input?.type?.value || 'text';\n}\nconst options = [\n  { value: 'text', icon: 'font', disabled: isDisabled },\n  { value: 'password', icon: 'lock', disabled: isDisabled },\n  { value: 'email', icon: 'envelope', disabled: isDisabled },\n  { value: 'number', icon: 'hashtag', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentType, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
+          "changed": "const selectedComponent = Utils.first($selectedComponents);\nif (selectedComponent) {\n  updateInput(selectedComponent, 'type', 'string', EventData.value);\n}"
         },
         "hasHandler": true,
         "handlerType": "input",
@@ -171,15 +171,15 @@
         "type": "radio",
         "default": "default",
         "width": "180px",
-        "valueHandler": "const selectedComponent = Utils.first(Vars.selectedComponents);\nlet isDisabled = false;\nlet currentStatus = '';\nif (selectedComponent?.input?.status?.type == 'handler' && selectedComponent?.input?.status?.value != '') {\n  isDisabled = true;\n} else {\n  currentStatus = selectedComponent?.input?.status?.value || 'default';\n}\nconst options = [\n  { value: 'default', icon: 'font-awesome', disabled: isDisabled },\n  { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled },\n  { value: 'error', icon: 'circle-exclamation', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentStatus, radioType];",
+        "valueHandler": "const selectedComponent = Utils.first($selectedComponents);\nlet isDisabled = false;\nlet currentStatus = '';\nif (selectedComponent?.input?.status?.type == 'handler' && selectedComponent?.input?.status?.value != '') {\n  isDisabled = true;\n} else {\n  currentStatus = selectedComponent?.input?.status?.value || 'default';\n}\nconst options = [\n  { value: 'default', icon: 'font-awesome', disabled: isDisabled },\n  { value: 'warning', icon: 'triangle-exclamation', disabled: isDisabled },\n  { value: 'error', icon: 'circle-exclamation', disabled: isDisabled }\n];\nconst radioType = 'button';\nreturn [options, currentStatus, radioType];",
         "eventHandlers": {
-          "changed": "const selectedComponent = Utils.first(Vars.selectedComponents);\nconst statusValue = EventData.value ? EventData.value : 'default';\nupdateInput(selectedComponent, 'status', 'string', statusValue);"
+          "changed": "const selectedComponent = Utils.first($selectedComponents);\nconst statusValue = EventData.value ? EventData.value : 'default';\nupdateInput(selectedComponent, 'status', 'string', statusValue);"
         },
         "hasHandler": true,
         "handlerType": "input",
         "handlerProperty": "status",
-        "handlerValueGetter": "const parameter = 'status';\nlet statusHandler = '';\nconst selectedComponent = Utils.first(Vars.selectedComponents);\nif (selectedComponent?.input?.status?.type == 'handler') {\n  statusHandler = selectedComponent?.input?.status?.value || '';\n}\nreturn [parameter, statusHandler];",
-        "handlerEventUpdate": "updateInput(Utils.first(Vars.selectedComponents), 'status', 'handler', EventData.value);"
+        "handlerValueGetter": "const parameter = 'status';\nlet statusHandler = '';\nconst selectedComponent = Utils.first($selectedComponents);\nif (selectedComponent?.input?.status?.type == 'handler') {\n  statusHandler = selectedComponent?.input?.status?.value || '';\n}\nreturn [parameter, statusHandler];",
+        "handlerEventUpdate": "updateInput(Utils.first($selectedComponents), 'status', 'handler', EventData.value);"
       },
       {
         "name": "textinput_readonly",

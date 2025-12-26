@@ -47,7 +47,7 @@ export class EditorInteractivePanel extends LitElement {
       <div class="iframe-wrapper">
         <preview-iframe-panel
           .applicationId=${$currentApplication.get()?.uuid || ''}
-          .pageUrl=${ExecuteInstance.Vars.currentPage || ''}
+          .pageUrl=${ExecuteInstance.$currentPage || ''}
           @component-selected-from-iframe=${this.handleComponentSelectedFromIframe}
         ></preview-iframe-panel>
       </div>
@@ -66,12 +66,12 @@ export class EditorInteractivePanel extends LitElement {
 
   private initializeSubscriptions() {
     eventDispatcher.on('Vars:currentEditingMode', () => {
-      this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
+      this.mode = ExecuteInstance.$currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
     });
 
     // Listen for selection changes from structure panel or other sources
     eventDispatcher.on('Vars:selectedComponents', () => {
-      const selectedComponents = ExecuteInstance.Vars.selectedComponents || [];
+      const selectedComponents = ExecuteInstance.$selectedComponents || [];
       if (selectedComponents.length > 0 && this.iframePanel) {
         const component = selectedComponents[0];
         // Only sync if selection came from outside (not from iframe click)

@@ -46,7 +46,7 @@ export default [
     event: {
       valueChange:  /* js */ `
             
-                const currentPageId =  Vars.currentPage;
+                const currentPageId =  $currentPage;
                 if(currentPageId){
             const description = EventData.value;
             const currentEditingApplication = GetVar("currentEditingApplication");
@@ -67,7 +67,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */`
-            const currentPageId =  Vars.currentPage;
+            const currentPageId =  $currentPage;
             if(currentPageId) {
                 const currentEditingApplication = GetVar("currentEditingApplication");
                 const appPages = GetContextVar(currentEditingApplication?.uuid + ".appPages", currentEditingApplication?.uuid);

@@ -8,7 +8,7 @@ import type { PropertyConfig } from '../types.ts';
 export class ChangeHandlerBuilder {
   static generateChangeHandler(property: PropertyConfig): string {
     let handler = `
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       if (!selectedComponent) return;
       
       let value = EventData.value;

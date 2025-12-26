@@ -43,7 +43,7 @@ const boxModelComponent = {
     value: {
       type: "handler",
       value: /* js */`
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return {};
 
         const propertiesToExtract = [
@@ -88,7 +88,7 @@ const boxModelComponent = {
   },
   event: {
     onChange: /* js */`
-      const selectedComponent = Utils.first(Vars.selectedComponents);
+      const selectedComponent = Utils.first($selectedComponents);
       if (!selectedComponent) return;
 
       const property = EventData.property;

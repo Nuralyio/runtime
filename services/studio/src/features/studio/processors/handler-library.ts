@@ -38,7 +38,7 @@
  * properties:
  *   - name: width
  *     valueHandler: |
- *       const selectedComponent = Utils.first(Vars.selectedComponents);
+ *       const selectedComponent = Utils.first($selectedComponents);
  *       return selectedComponent?.style?.width || 'auto';
  * ```
  * 
@@ -92,7 +92,7 @@
  * 
  * // Result: Generated JavaScript code string
  * console.log(handlerCode);
- * // Output: "const selectedComponent = Utils.first(Vars.selectedComponents); ..."
+ * // Output: "const selectedComponent = Utils.first($selectedComponents); ..."
  * ```
  * 
  * @example Configuration Reference
@@ -121,7 +121,7 @@
  *   
  *   // New custom handler
  *   customGetter: (propertyName: string, multiplier: number) => `
- *     const selectedComponent = Utils.first(Vars.selectedComponents);
+ *     const selectedComponent = Utils.first($selectedComponents);
  *     const value = selectedComponent?.custom?.${propertyName} || 0;
  *     return value * ${multiplier};
  *   `
@@ -154,7 +154,7 @@
  * **Common Patterns:**
  * ```typescript
  * // 1. Get selected component
- * const selectedComponent = Utils.first(Vars.selectedComponents);
+ * const selectedComponent = Utils.first($selectedComponents);
  * 
  * // 2. Extract property with default
  * const value = selectedComponent?.style?.propertyName || defaultValue;
@@ -175,13 +175,13 @@
 export const ValueHandlers = {
   // Get component name
   componentName: `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return selectedComponent?.name || '';
   `,
   
   // Get component input property (prioritizes inputHandlers over input)
   componentInput: (propertyName: string, defaultValue?: any) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
     // Return the value if it exists (handles both {type: 'value', value: x} and direct values)
     if (input?.type === 'handler' && input?.value) {
@@ -193,7 +193,7 @@ export const ValueHandlers = {
   
   // Get component input handler value (when type is 'handler')
   componentInputHandler: (propertyName: string, defaultValue: string = '') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
     // Return handler code if it exists, otherwise default
     return input?.type === 'handler' ? (input.value || '${defaultValue}') : '${defaultValue}';
@@ -202,7 +202,7 @@ export const ValueHandlers = {
   // Get component input property for radio buttons (returns {options, currentValue, type})
   componentInputRadio: (propertyName: string, options: Array<{label: string, value: string}>, defaultValue: string = '') => `
     const options = ${JSON.stringify(options)};
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
     // Only use the value if type is "value", otherwise use default (e.g., for handlers)
     const currentValue = input?.type === 'value' ? (input.value || '${defaultValue}') : '${defaultValue}';
@@ -212,13 +212,13 @@ export const ValueHandlers = {
   
   // Get component style property
   componentStyle: (propertyName: string, defaultValue: string = '') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return Editor.getComponentStyle(selectedComponent, '${propertyName}') || "${defaultValue}";
   `,
   
   // Get component style property for select inputs (returns [options, [currentValue]])
   componentStyleSelect: (propertyName: string, options: Array<{label: string, value: string}>, defaultValue: string = '') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const currentValue = Editor.getComponentStyle(selectedComponent, '${propertyName}') || '${defaultValue}';
     const options = ${JSON.stringify(options)};
     return [options, [currentValue]];
@@ -226,7 +226,7 @@ export const ValueHandlers = {
   
   // Get component input property for select inputs (returns [options, [currentValue]])
   componentInputSelect: (propertyName: string, defaultValue: string = '') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const input = Editor.getComponentBreakpointInput(selectedComponent, '${propertyName}');
     // Only use the value if type is "value", otherwise use default (e.g., for handlers)
     const currentValue = input?.type === 'value' ? (input.value || '${defaultValue}') : '${defaultValue}';
@@ -235,13 +235,13 @@ export const ValueHandlers = {
   
   // Style handler - for getting style values with handler support
   styleHandler: (propertyName: string, defaultValue: string = '') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return Editor.getComponentStyleForState(selectedComponent, '${propertyName}') || "${defaultValue}";
   `,
   
   // Display toggle (show/hide) with icons
   displayToggle: `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     let currentDisplay = '';
     let isDisabled = false;
     
@@ -262,7 +262,7 @@ export const ValueHandlers = {
   
   // Radio button with options
   radioWithOptions: (propertyName: string, options: any[], defaultValue: any) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const currentValue = Editor.getComponentStyle(selectedComponent, '${propertyName}') || "${defaultValue}";
     const options = ${JSON.stringify(options)};
     const radioType = "button";
@@ -371,7 +371,7 @@ export const StateHandlers = {
    * ```
    */
   defaultStyle: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return selectedComponent?.styleHandlers?.['${propertyName}'] ? 'disabled' : 'enabled';
   `,
   
@@ -406,7 +406,7 @@ export const StateHandlers = {
    * ```
    */
   inputHandler: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
                            selectedComponent?.input?.${propertyName}?.value;
     return hasHandlerType ? 'disabled' : 'enabled';
@@ -442,7 +442,7 @@ export const StateHandlers = {
    * ```
    */
   inputHelperText: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     const hasHandlerType = selectedComponent?.input?.${propertyName}?.type === 'handler' &&
                            selectedComponent?.input?.${propertyName}?.value;
     return hasHandlerType ? 'Value driven by handler' : '';
@@ -484,7 +484,7 @@ export const StateHandlers = {
    * ```
    */
   iconPickerDisable: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return !!(selectedComponent?.input?.${propertyName}?.type === 'handler' && selectedComponent?.input?.${propertyName}?.value);
   `,
   
@@ -523,7 +523,7 @@ export const StateHandlers = {
    * ```
    */
   valueHandler: `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     return selectedComponent?.input?.value?.type === 'handler' && selectedComponent?.input?.value?.value ? 'disabled' : 'enabled';
   `
 };
@@ -555,7 +555,7 @@ export const StateHandlers = {
  * **Common Pattern:**
  * ```typescript
  * // 1. Get selected component
- * const selectedComponent = Utils.first(Vars.selectedComponents);
+ * const selectedComponent = Utils.first($selectedComponents);
  * if (!selectedComponent) return;
  * 
  * // 2. Extract and process value
@@ -655,7 +655,7 @@ export const EventHandlers = {
    * ```
    */
   updateName: `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     if (selectedComponent) {
       updateName(selectedComponent, EventData.value);
     }
@@ -714,7 +714,7 @@ export const EventHandlers = {
    * ```
    */
   updateInput: (propertyName: string, valueType: string = 'string') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     if (selectedComponent) {
       updateInput(selectedComponent, '${propertyName}', '${valueType}', EventData.value);
     }
@@ -760,7 +760,7 @@ export const EventHandlers = {
    * ```
    */
   updateInputHandler: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     if (selectedComponent) {
       updateInput(selectedComponent, '${propertyName}', 'handler', EventData.value);
     }
@@ -821,7 +821,7 @@ export const EventHandlers = {
    * ```
    */
   updateStyle: (propertyName: string) => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     if (!selectedComponent) return;
     updateStyle(selectedComponent, '${propertyName}', EventData.value);
   `,
@@ -910,7 +910,7 @@ export const EventHandlers = {
    * ```
    */
   updateStyleWithUnit: (propertyName: string, unit: string = 'px') => `
-    const selectedComponent = Utils.first(Vars.selectedComponents);
+    const selectedComponent = Utils.first($selectedComponents);
     if (!selectedComponent) return;
     
     let value = EventData.value;

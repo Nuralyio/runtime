@@ -123,7 +123,7 @@ export default [
     },
     event: {
         onChange: /* js */ `
-            Vars.selected_component_style_state = EventData.value;
+            $selected_component_style_state = EventData.value;
         `
     },
     style: {

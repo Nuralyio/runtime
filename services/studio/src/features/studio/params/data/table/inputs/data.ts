@@ -47,7 +47,7 @@ export default [
                 const parameter ='value';
                 let valueHandler=''
                 
-                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    const selectedComponent = Utils.first($selectedComponents);
                     
                         
                         
@@ -63,7 +63,7 @@ export default [
     event: {
       codeChange: /* js */ `
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     if(selectedComponent.input?.value?.value != EventData.value )

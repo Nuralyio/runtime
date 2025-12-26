@@ -42,7 +42,7 @@ export default [
     event: {
       boxShadowChanged:  /* js */ `
                     
-                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        const selectedComponent = Utils.first($selectedComponents);
                         
                             
                             
@@ -56,7 +56,7 @@ export default [
         type: "handler",
         value: /* js */`
             
-            const selectedComponent = Utils.first(Vars.selectedComponents);
+            const selectedComponent = Utils.first($selectedComponents);
 
                 
                 
@@ -92,7 +92,7 @@ export default [
         value:/* js */`
 
                 
-                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    const selectedComponent = Utils.first($selectedComponents);
                         
                         
                         let state ='enabled'
@@ -137,7 +137,7 @@ export default [
                 const parameter ='boxShadow';
                 let boxShadowHandler =''
                 
-                    const selectedComponent = Utils.first(Vars.selectedComponents);
+                    const selectedComponent = Utils.first($selectedComponents);
                     
                         
                     boxShadowHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow'] || ''  
@@ -150,7 +150,7 @@ export default [
     event: {
       codeChange: /* js */ `
             
-                const selectedComponent = Utils.first(Vars.selectedComponents);
+                const selectedComponent = Utils.first($selectedComponents);
                     
                     
                     updateStyleHandlers(selectedComponent,'box-shadow',EventData.value)

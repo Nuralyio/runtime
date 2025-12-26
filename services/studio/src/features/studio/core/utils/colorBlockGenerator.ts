@@ -57,7 +57,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       event: {
         valueChange: /* js */ `
                     
-                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        const selectedComponent = Utils.first($selectedComponents);
                         if (selectedComponent) {
                             updateStyle(selectedComponent, "${cssVar}", EventData.value);
                         }
@@ -74,7 +74,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
           type: "handler",
           value: /* js */ `
                         
-                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            const selectedComponent = Utils.first($selectedComponents);
                             if (true) {
                                 if (selectedComponent.style)
                                     return selectedComponent.style['${cssVar}'];
@@ -86,7 +86,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
           type: "handler",
           value: /* js */ `
                         
-                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            const selectedComponent = Utils.first($selectedComponents);
                             if (true) {
                                 
                                 ;
@@ -131,7 +131,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
                         const parameter = '${label}';
                         let helperColorHandler = '';
                         
-                            const selectedComponent = Utils.first(Vars.selectedComponents);
+                            const selectedComponent = Utils.first($selectedComponents);
                             if (true) {
                                 
                                 ;
@@ -145,7 +145,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       event: {
         codeChange: /* js */ `
                     
-                        const selectedComponent = Utils.first(Vars.selectedComponents);
+                        const selectedComponent = Utils.first($selectedComponents);
                         if (true) {
                             updateStyleHandlers(selectedComponent, '${cssVar}', EventData.value);
                         }

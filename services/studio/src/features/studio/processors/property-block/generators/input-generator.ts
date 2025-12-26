@@ -33,7 +33,7 @@ export class InputGenerator {
     const valueGetter = property.handlerValueGetter 
       ? HandlerResolver.resolveHandler(property.handlerValueGetter, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
       : `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return ["", ""];
         const handler = selectedComponent?.${property.handlerType || 'input'}Handlers?.['${property.handlerProperty || property.name}'];
         return handler ? [${property.handlerProperty || property.name}, handler] : ["", ""];
@@ -42,7 +42,7 @@ export class InputGenerator {
     const eventUpdate = property.handlerEventUpdate
       ? HandlerResolver.resolveHandler(property.handlerEventUpdate, { ...ValueHandlers, ...StateHandlers, ...EventHandlers })
       : `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           update${property.handlerType === 'style' ? 'Style' : 'Input'}Handler(selectedComponent, "${property.handlerProperty || property.name}", EventData.handler, EventData.type);
         }
@@ -110,7 +110,7 @@ export class InputGenerator {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
                  `
-                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   const selectedComponent = Utils.first($selectedComponents);
                    const Input = selectedComponent ? Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}') : null;
                    return Input?.value || '';
                  `
@@ -123,7 +123,7 @@ export class InputGenerator {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
-                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   const selectedComponent = Utils.first($selectedComponents);
                    return !!(
                      selectedComponent?.input?.${property.name}?.type === "handler" &&
                      selectedComponent?.input?.${property.name}?.value
@@ -180,7 +180,7 @@ export class InputGenerator {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.valueHandler, ValueHandlers) ||
                  `
-                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   const selectedComponent = Utils.first($selectedComponents);
                    if (!selectedComponent) return '';
                    const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
                    if (!input) return '';
@@ -226,7 +226,7 @@ export class InputGenerator {
     // Add default date change event if not provided
     if (!dateInput.event.onDateChange) {
       dateInput.event.onDateChange = `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
         updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
       `;
@@ -266,7 +266,7 @@ export class InputGenerator {
                  (property.type === 'radio'
                    ? `
                      const options = ${JSON.stringify(property.options || [])};
-                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const selectedComponent = Utils.first($selectedComponents);
                      const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
                      const currentValue = input?.type === 'value' ? (input.value ?? ${JSON.stringify(property.default)}) : ${JSON.stringify(property.default)};
                      const type = "button";
@@ -274,18 +274,18 @@ export class InputGenerator {
                    `
                    : property.type === 'boolean'
                    ? `
-                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const selectedComponent = Utils.first($selectedComponents);
                      const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
                      return input.value;
                    `
                    : property.type === 'textarea'
                    ? `
-                     const selectedComponent = Utils.first(Vars.selectedComponents);
+                     const selectedComponent = Utils.first($selectedComponents);
                      const input = Editor.getComponentBreakpointInput(selectedComponent, '${property.inputProperty || property.name}');
                      return input?.value || "${property.default || ''}";
                    `
                    : `
-                     let e =  Editor.getComponentStyleForState(Utils.first(Vars.selectedComponents), '${property.name}') || "${property.default}"
+                     let e =  Editor.getComponentStyleForState(Utils.first($selectedComponents), '${property.name}') || "${property.default}"
                      return e;
                    `),
         },
@@ -297,7 +297,7 @@ export class InputGenerator {
           type: "handler",
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
-                   const selectedComponent = Utils.first(Vars.selectedComponents);
+                   const selectedComponent = Utils.first($selectedComponents);
                    return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.inputProperty || property.name}'] ? 'disabled' : 'enabled';
                  `
         }
@@ -345,7 +345,7 @@ export class InputGenerator {
     // Add default change event for radio buttons
     if (property.type === 'radio' && !baseInput.event.onChange) {
       baseInput.event.onChange = `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
         updateStyle(selectedComponent, "${property.inputProperty || property.name}", EventData.value);
       `;
@@ -354,7 +354,7 @@ export class InputGenerator {
     // Add default change event for select inputs
     if (property.type === 'select' && !baseInput.event.onSelect) {
       baseInput.event.onSelect = `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
 
         updateInput(selectedComponent, "${property.name}", 'string', EventData.value);
@@ -364,7 +364,7 @@ export class InputGenerator {
     // Add default change event for boolean/checkbox inputs
     if (property.type === 'boolean' && !baseInput.event.onChange && !property.eventHandlers) {
       baseInput.event.onChange = `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
         updateInput(selectedComponent, "${property.inputProperty || property.name}", "boolean", Boolean(EventData.checked));
       `;
@@ -373,7 +373,7 @@ export class InputGenerator {
     // Add default change event for textarea inputs
     if (property.type === 'textarea' && !baseInput.event.onChange && !property.eventHandlers) {
       baseInput.event.onChange = `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
         updateInput(selectedComponent, "${property.inputProperty || property.name}", "string", EventData.value);
       `;
@@ -393,7 +393,7 @@ export class InputGenerator {
   private static addNumberInputEvents(baseInput: any, property: PropertyConfig): void {
     const defaultEvents = {
       onChange: `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (!selectedComponent) return;
         
         let value = EventData.value;
@@ -410,14 +410,14 @@ export class InputGenerator {
       `,
       
       valueChange: `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
           updateStyle(selectedComponent, "${property.name}", EventData.value ?? "${property.default}");
         }
       `,
       
       onArrowUp: `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         let ${property.name} = Editor.getComponentStyle(selectedComponent, '${property.name}') || "0${property.unit || 'px'}"
         ${property.name} = ${property.name}.trim();
         let numericPart = "";
@@ -440,7 +440,7 @@ export class InputGenerator {
       `,
       
       onArrowDown: `
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
         if (selectedComponent) {
             let ${property.name} = selectedComponent?.style?.${property.name} || "0${property.unit || 'px'}";
             ${property.name} = ${property.name}.trim();

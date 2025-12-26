@@ -43,7 +43,7 @@ export default [
     event: {
       valueChange: /* js */ `
 
-      const currentPageId =  Vars.currentPage;
+      const currentPageId =  $currentPage;
       if(currentPageId){
         const newPageName = EventData.value;
         const currentEditingApplication = GetVar("currentEditingApplication");
@@ -60,7 +60,7 @@ export default [
       }
 
             
-        const selectedComponent = Utils.first(Vars.selectedComponents);
+        const selectedComponent = Utils.first($selectedComponents);
        // updateStyle(selectedComponent, "hello", EventData.value);
       `
     },
@@ -68,8 +68,8 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const selectedComponent = Utils.first(Vars.selectedComponents);
-          return  Editor.getComponentStyle(Utils.first(Vars.selectedComponents), "color") ?? "black";
+          const selectedComponent = Utils.first($selectedComponents);
+          return  Editor.getComponentStyle(Utils.first($selectedComponents), "color") ?? "black";
           `
       }
     }
