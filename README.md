@@ -12,32 +12,6 @@ Standalone runtime for executing Nuraly micro-apps in any web environment.
 - **Isolated contexts** - Multiple micro-apps run independently on the same page
 - **AI friendly** - LLMs maintain JSON structure more reliably than full implementations
 
-## Usage
-
-```html
-...
-
-<div id="app"></div>
-
-<script type="module">
-  import "@nuraly/runtime";
-
-  await customElements.whenDefined('micro-app');
-
-  const microApp = document.createElement('micro-app');
-  microApp.uuid = "my-app";
-  microApp.page_uuid = "page-001";
-  microApp.useIsolatedContext = true;
-  microApp.appComponents = [...];
-  microApp.appPages = [...];
-  microApp.mode = "preview";
-  microApp.prod = true;
-
-  document.getElementById('app').appendChild(microApp);
-</script>
-
-...
-```
 
 ### MicroApp structure
 
@@ -104,6 +78,34 @@ const appPages = [
     is_default: true,
   },
 ];
+```
+
+
+## Usage
+
+```html
+...
+
+<div id="app"></div>
+
+<script type="module">
+  import "@nuraly/runtime";
+
+  await customElements.whenDefined('micro-app');
+
+  const microApp = document.createElement('micro-app');
+  microApp.uuid = "my-app";
+  microApp.page_uuid = "page-001";
+  microApp.useIsolatedContext = true;
+  microApp.appComponents = [...];
+  microApp.appPages = [...];
+  microApp.mode = "preview";
+  microApp.prod = true;
+
+  document.getElementById('app').appendChild(microApp);
+</script>
+
+...
 ```
 
 ## License
