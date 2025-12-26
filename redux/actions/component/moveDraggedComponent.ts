@@ -125,6 +125,5 @@ export function moveDraggedComponent(
   $components.setKey(appUUID, components);
   updatePageAction(page, appUUID);
   updatePageHandler(page);
-    eventDispatcher.emit("component:refresh");
-  console.log(`Moved ${draggedComponent.uuid} to ${position} ${dropInComponentId}`, draggedComponent);
+  eventDispatcher.emit("component:refresh");
 }
