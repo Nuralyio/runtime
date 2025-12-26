@@ -358,7 +358,7 @@ export function executeHandler(
     globalFunctions.ShowInfoToast,
     globalFunctions.HideToast,
     globalFunctions.ClearAllToasts,
-    createHandlerScope, // For transparent variable access ($username = 'John' instead of Vars.username = 'John')
+    createHandlerScope,
     // Namespaced APIs (new clean API)
     handlerAPI.Nav,
     handlerAPI.UI,

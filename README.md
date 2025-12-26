@@ -2,31 +2,41 @@
 
 Standalone runtime for executing Nuraly micro-apps in any web environment.
 
+[Documentation](https://docs.nuraly.io/architecture/micro-apps/)
+
+## Why MicroApp?
+
+- **Declarative** - Define your entire application as JSON object
+- **Framework agnostic** - Web Components work everywhere
+- **Reactive by default** - `$variables` automatically trigger UI updates
+- **Isolated contexts** - Multiple micro-apps run independently on the same page
+- **AI friendly** - LLMs maintain JSON structure more reliably than full implementations
+
 ## Usage
 
 ```html
-    ...
-    
-    <div id="app"></div>
+...
 
-    <script type="module">
-      import "@nuraly/runtime";
+<div id="app"></div>
 
-      await customElements.whenDefined('micro-app');
+<script type="module">
+  import "@nuraly/runtime";
 
-      const microApp = document.createElement('micro-app');
-      microApp.uuid = "my-app";
-      microApp.page_uuid = "page-001";
-      microApp.useIsolatedContext = true;
-      microApp.appComponents = [...];
-      microApp.appPages = [...];
-      microApp.mode = "preview";
-      microApp.prod = true;
+  await customElements.whenDefined('micro-app');
 
-      document.getElementById('app').appendChild(microApp);
-    </script>
+  const microApp = document.createElement('micro-app');
+  microApp.uuid = "my-app";
+  microApp.page_uuid = "page-001";
+  microApp.useIsolatedContext = true;
+  microApp.appComponents = [...];
+  microApp.appPages = [...];
+  microApp.mode = "preview";
+  microApp.prod = true;
 
-    ...
+  document.getElementById('app').appendChild(microApp);
+</script>
+
+...
 ```
 
 ### MicroApp structure
@@ -40,7 +50,7 @@ const appComponents = [
     application_id: "my-app",
     pageId: "page-001",
     root: true,
-    childrenIds: ["comp-002","comp-005"],
+    childrenIds: ["comp-002", "comp-005"],
     style: { padding: "20px" },
     input: {},
   },
