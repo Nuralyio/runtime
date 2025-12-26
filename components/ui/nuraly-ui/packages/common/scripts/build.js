@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DIST_COMPONENTS_DIR = path.join(__dirname, '../../../dist/components');
+const DIST_COMPONENTS_DIR = path.join(__dirname, '../../../dist/src/components');
 const DIST_DIR = path.join(__dirname, '../dist');
 const PACKAGE_ROOT = path.join(__dirname, '..');
 const SRC_DIR = path.join(PACKAGE_ROOT, 'src');
