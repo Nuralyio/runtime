@@ -21,8 +21,6 @@ let  FILES_MODULES_CONFIG
 try{
   if (files_modules_config) {
      FILES_MODULES_CONFIG = JSON.parse(files_modules_config);
-  } else {
-    console.log('FILES_MODULES_CONFIG is not defined');
   }
 } catch (error) {
   console.error('Error parsing FILES_MODULES_CONFIG:', error);
