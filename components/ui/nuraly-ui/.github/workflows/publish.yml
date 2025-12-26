@@ -80,10 +80,10 @@ jobs:
       - name: Publish Components
         run: |
           npm install -g publish-if-not-published
-          for dir in $(find dist/components -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort); do
-            if [ -f "dist/components/$dir/package.json" ]; then
+          for dir in $(find dist/src/components -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | sort); do
+            if [ -f "dist/src/components/$dir/package.json" ]; then
               echo "Publishing $dir..."
-              (cd dist/components/$dir && publish-if-not-published -- --access=public)
+              (cd dist/src/components/$dir && publish-if-not-published -- --access=public)
             else
               echo "Skipping $dir (no package.json)"
             fi
