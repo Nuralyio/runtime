@@ -9,7 +9,7 @@ import { MicroAppStoreContext } from '../../../../../micro-app/state/MicroAppSto
 import { MicroAppRuntimeContext } from '../../../../../micro-app/state/MicroAppRuntimeContext';
 
 /**
- * MicroComponents - A lightweight wrapper for rendering an array of components
+ * MicroComponent - A lightweight wrapper for rendering an array of components
  *
  * Similar to MicroApp but simpler - just accepts an array of ComponentElement
  * and renders them using the existing renderComponent logic.
@@ -20,24 +20,24 @@ import { MicroAppRuntimeContext } from '../../../../../micro-app/state/MicroAppR
  *
  * @example
  * // Simple usage (shared global vars)
- * <micro-components
+ * <micro-component
  *   .components=${[
  *     { uuid: '1', component_type: 'vertical_container', root: true },
  *     { uuid: '2', component_type: 'text', input: { value: 'Hello' } }
  *   ]}
  *   .vars=${{ userName: 'John' }}
- * ></micro-components>
+ * ></micro-component>
  *
  * @example
  * // With isolated context (scoped vars)
- * <micro-components
+ * <micro-component
  *   .components=${[...]}
  *   useIsolatedContext
  *   .vars=${{ count: 0 }}
- * ></micro-components>
+ * ></micro-component>
  */
-@customElement("micro-components")
-export class MicroComponents extends LitElement {
+@customElement("micro-component")
+export class MicroComponent extends LitElement {
   static override styles = css`
     :host {
       display: block;
@@ -70,7 +70,7 @@ export class MicroComponents extends LitElement {
   @property({ type: Object }) vars?: Record<string, any>;
 
   // Isolated context instances
-  private microComponentsId: string = '';
+  private microComponentId: string = '';
   private storeContext: MicroAppStoreContext | null = null;
   private runtimeContext: MicroAppRuntimeContext | null = null;
 
@@ -107,12 +107,12 @@ export class MicroComponents extends LitElement {
    */
   private initializeIsolatedContext(): void {
     // Generate unique ID for this instance
-    this.microComponentsId = `micro-components_${uuidv4()}`;
+    this.microComponentId = `micro-component_${uuidv4()}`;
 
     // Create store context with components (no pages needed)
     this.storeContext = new MicroAppStoreContext(
-      this.microComponentsId,
-      this.microComponentsId,
+      this.microComponentId,
+      this.microComponentId,
       this.components,
       [] // no pages
     );

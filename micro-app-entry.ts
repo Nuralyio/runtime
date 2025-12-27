@@ -11,10 +11,10 @@ import './utils/register-components';
 // Import MicroApp component to trigger registration
 // The @customElement decorator will register it when the class is imported
 import { MicroApp } from './components/ui/components/runtime/MicroApp/MicroApp';
-import { MicroComponents } from './components/ui/components/runtime/MicroComponents/MicroComponents';
+import { MicroComponent } from './components/ui/components/runtime/MicroComponent/MicroComponent';
 
-// Export MicroApp and MicroComponents components for programmatic access
-export { MicroApp, MicroComponents };
+// Export MicroApp and MicroComponent components for programmatic access
+export { MicroApp, MicroComponent };
 
 // Export related types and utilities
 export { MicroAppStoreContext } from './micro-app/state/MicroAppStoreContext';
@@ -27,5 +27,5 @@ export { MicroAppMessageBus } from './micro-app/messaging/MicroAppMessageBus';
 if (typeof window !== 'undefined') {
   // Touch the classes to ensure they're not tree-shaken
   void MicroApp;
-  void MicroComponents;
+  void MicroComponent;
 }

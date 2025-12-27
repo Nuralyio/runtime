@@ -37,6 +37,6 @@ import "../components/ui/components/advanced/Collapse/Collapse";
 import "../components/ui/components/advanced/Collections/Collections";
 import "../components/ui/components/advanced/RefComponent/RefComponent";
 import "../components/ui/components/advanced/RichText/RichText";
-import "../components/ui/components/runtime/MicroComponents/MicroComponents";
+import "../components/ui/components/runtime/MicroComponent/MicroComponent";
 import "../components/ui/components/utility/Document/Document";
 import "../components/ui/components/ToastContainer/ToastContainer";
