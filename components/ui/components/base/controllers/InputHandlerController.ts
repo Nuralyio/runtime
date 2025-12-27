@@ -189,37 +189,38 @@ export class InputHandlerController implements ReactiveController, Disposable {
   private async processInput(input: any, inputName: string): Promise<void> {
     if (!input) return;
 
-    const { component, item, inputHandlersValue, callbacks, errors, uniqueUUID } =
-      this.host;
+    const { component, inputHandlersValue, callbacks, errors } = this.host;
     const handlerKey = `${component.uuid || component.name}:${inputName}`;
 
-    // Use execution guard to prevent re-entrant execution
-    const result = await this.executionGuard.guard(handlerKey, async () => {
-      return this.executeInputHandler(input, inputName);
-    });
+    // Handler for updating state when execution completes (including pending executions)
+    const handleResult = (result: { value: any; error?: { message: string } }) => {
+      // Update state if value changed
+      if (inputHandlersValue[inputName] !== result.value) {
+        inputHandlersValue[inputName] = result.value;
 
-    if (result === undefined) {
-      // Handler was already executing, skip
-      return;
-    }
+        // Update properties proxy
+        const proxy =
+          (this.host.ExecuteInstance.PropertiesProxy[component.name] ??= {});
+        proxy[inputName] = result.value;
 
-    // Update state if value changed
-    if (inputHandlersValue[inputName] !== result.value) {
-      inputHandlersValue[inputName] = result.value;
+        // Call registered callback
+        callbacks[inputName]?.(result.value);
+      }
 
-      // Update properties proxy
-      const proxy =
-        (this.host.ExecuteInstance.PropertiesProxy[component.name] ??= {});
-      proxy[inputName] = result.value;
+      // Track errors
+      if (result.error) {
+        errors[inputName] = { error: result.error.message };
+      }
+    };
 
-      // Call registered callback
-      callbacks[inputName]?.(result.value);
-    }
-
-    // Track errors
-    if (result.error) {
-      errors[inputName] = { error: result.error.message };
-    }
+    // Use execution guard with pending queue to handle re-entrant execution
+    // This ensures that if a new value comes in while processing, the latest value is used
+    // The onResult callback ensures state is updated for both initial and pending executions
+    await this.executionGuard.guardWithPending(
+      handlerKey,
+      async () => this.executeInputHandler(input, inputName),
+      handleResult
+    );
   }
 
   /**
