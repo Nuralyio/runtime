@@ -5,6 +5,7 @@ import "../components/ui/components/layout/Card/Card";
 import "../components/ui/components/layout/Panel/Panel";
 import "../components/ui/components/layout/Grid/Row";
 import "../components/ui/components/layout/Grid/Col";
+import "../components/ui/components/layout/Flex/Flex";
 import "../components/ui/components/navigation/Menu/Menu";
 import "../components/ui/components/navigation/EmbedURL/EmbedURL";
 import "../components/ui/components/navigation/Link/Link";
