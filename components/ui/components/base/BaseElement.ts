@@ -168,12 +168,12 @@ export class BaseElementCore extends LitElement {
     }
   }
 
-  protected override firstUpdated(_changedProperties: PropertyValues): void {
+  protected override async firstUpdated(_changedProperties: PropertyValues): Promise<void> {
     super.firstUpdated(_changedProperties);
 
-    // Initial processing
-    this.inputController.processInputs();
-    this.styleController.processStyles();
+    // Initial processing - await to ensure inputs are ready before first render completes
+    await this.inputController.processInputs();
+    await this.styleController.processStyles();
 
     // Setup hash-based scrolling
     this.handleHash();
@@ -187,7 +187,7 @@ export class BaseElementCore extends LitElement {
     super.disconnectedCallback();
   }
 
-  protected override update(changedProperties: PropertyValues): void {
+  protected override async update(changedProperties: PropertyValues): Promise<void> {
     super.update(changedProperties);
 
     if (changedProperties.has("component")) {
@@ -209,9 +209,9 @@ export class BaseElementCore extends LitElement {
         }
       }
 
-      // Re-process handlers
-      this.inputController.processInputsDebounced();
-      this.styleController.processStyles();
+      // Re-process handlers - await to ensure inputs are ready before render
+      await this.inputController.processInputs();
+      await this.styleController.processStyles();
     }
   }
 
@@ -240,15 +240,15 @@ export class BaseElementCore extends LitElement {
   /**
    * Force reprocessing of input handlers
    */
-  refreshInputs(): void {
-    this.inputController.processInputs();
+  async refreshInputs(): Promise<void> {
+    await this.inputController.processInputs();
   }
 
   /**
    * Force reprocessing of style handlers
    */
-  refreshStyles(): void {
-    this.styleController.processStyles();
+  async refreshStyles(): Promise<void> {
+    await this.styleController.processStyles();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
