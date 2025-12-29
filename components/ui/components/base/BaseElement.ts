@@ -60,6 +60,9 @@ export class BaseElementCore extends LitElement {
   /** Component errors by input name */
   @state() errors: Record<string, any> = {};
 
+  /** Runtime styles from store */
+  @state() runtimeStyles: Record<string, any> = {};
+
   // ═══════════════════════════════════════════════════════════════════════════
   // REFS & IDENTIFIERS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -117,6 +120,9 @@ export class BaseElementCore extends LitElement {
     this.styleController = new StyleHandlerController(this as any);
     this.eventController = new EventController(this as any);
 
+    // Connect controllers for coordinated updates
+    this.inputController.setStyleController(this.styleController);
+
     // Setup hash scroll handler
     this.handleHash = () =>
       setupHashScroll(
@@ -172,8 +178,8 @@ export class BaseElementCore extends LitElement {
     super.firstUpdated(_changedProperties);
 
     // Initial processing - await to ensure inputs are ready before first render completes
-    await this.inputController.processInputs();
-    await this.styleController.processStyles();
+    this.inputController.processInputs();
+    this.styleController.processStyles();
 
     // Setup hash-based scrolling
     this.handleHash();
@@ -187,17 +193,11 @@ export class BaseElementCore extends LitElement {
     super.disconnectedCallback();
   }
 
-  protected override async update(changedProperties: PropertyValues): Promise<void> {
+  protected override update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
 
     if (changedProperties.has("component")) {
-      const prev = changedProperties.get("component") as ComponentElement | undefined;
       const curr = this.component;
-
-      // Re-run onInit if it changed
-      if (prev?.event?.onInit !== curr?.event?.onInit) {
-        this.eventController.executeOnInit();
-      }
 
       // Update component metadata
       if (curr) {
@@ -209,9 +209,9 @@ export class BaseElementCore extends LitElement {
         }
       }
 
-      // Re-process handlers - await to ensure inputs are ready before render
-      await this.inputController.processInputs();
-      await this.styleController.processStyles();
+      // Re-process handlers
+      this.inputController.processInputs();
+      this.styleController.processStyles();
     }
   }
 
