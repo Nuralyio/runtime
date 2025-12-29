@@ -50,7 +50,9 @@ export interface InputHandlerHost extends BaseElementHost {
 /**
  * Host interface for style handler controller
  */
-export interface StyleHandlerHost extends BaseElementHost {}
+export interface StyleHandlerHost extends BaseElementHost {
+  runtimeStyles: Record<string, any>;
+}
 
 /**
  * Host interface for event controller

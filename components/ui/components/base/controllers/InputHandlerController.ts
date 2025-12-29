@@ -1,42 +1,39 @@
 /**
  * @file InputHandlerController.ts
  * @description Controller for processing component input handlers
- * Handles dynamic input resolution, caching, and debouncing
+ * Matches original BaseElement behavior without debouncing
  */
 
 import type { ReactiveController } from "lit";
 import { Subscription } from "rxjs";
 import { eventDispatcher } from "../../../../../utils/change-detection";
-import { executeHandler } from "../../../../../handlers/handler-executor";
 import Editor from "../../../../../state/editor";
-import EditorInstance from "../../../../../state/editor";
-import { RuntimeHelpers } from "../../../../../utils/runtime-helpers";
-import { getNestedAttribute } from "../../../../../utils/object.utils";
 import { isServer } from "../../../../../utils/envirement";
 import { addlogDebug } from "../../../../../redux/actions/debug/store";
 import type { InputHandlerHost, Disposable } from "../types/base-element.types";
-import { EventDebouncer, ExecutionGuard, ChildRefreshBatcher } from "../utils/event-debouncer";
+import { traitInputHandler } from "../BaseElement/input-handler.helpers";
+import type { StyleHandlerController } from "./StyleHandlerController";
 
 /**
  * Controller responsible for processing input handlers
- * Extracts input processing logic from BaseElement for better separation of concerns
+ * Matches original BaseElement.traitInputsHandlers behavior
  */
 export class InputHandlerController implements ReactiveController, Disposable {
   private host: InputHandlerHost;
   private subscription = new Subscription();
-  private debouncer = new EventDebouncer(16);
-  private executionGuard = new ExecutionGuard();
-  private childRefreshBatcher: ChildRefreshBatcher;
   private isConnected = false;
+
+  /** Reference to style controller for coordinated updates */
+  styleController: StyleHandlerController | null = null;
 
   constructor(host: InputHandlerHost) {
     this.host = host;
     host.addController(this);
+  }
 
-    // Set up child refresh batcher
-    this.childRefreshBatcher = new ChildRefreshBatcher((childId) => {
-      eventDispatcher.emit(`component:request:refresh:${childId}`);
-    });
+  /** Set style controller reference */
+  setStyleController(controller: StyleHandlerController): void {
+    this.styleController = controller;
   }
 
   hostConnected(): void {
@@ -51,121 +48,90 @@ export class InputHandlerController implements ReactiveController, Disposable {
 
   /**
    * Set up all event listeners for input refresh triggers
+   * Matches original BaseElement subscriptions
    */
   private setupEventListeners(): void {
     const { component, uniqueUUID } = this.host;
 
-    // Guard: component must be defined before setting up listeners
     if (!component?.uuid) {
       return;
     }
 
-    // Platform change - reprocess all inputs
+    // Platform change - reprocess all inputs (from original firstUpdated)
     this.subscription.add(
       eventDispatcher.on("Vars:currentPlatform", () => {
-        this.processInputsDebounced();
+        this.processInputs();
+        this.styleController?.processStyles();
       })
     );
 
-    // Component-specific input refresh request
+    // Component-specific input refresh request (from original firstUpdated)
     this.subscription.add(
-      eventDispatcher.on(
-        `component-input-refresh-request:${component.uuid}`,
-        () => {
-          this.processInputsDebounced();
-        }
-      )
+      eventDispatcher.on(`component-input-refresh-request:${component.uuid}`, () => {
+        this.processInputs();
+        this.styleController?.processStyles();
+      })
     );
 
-    // Value set events
+    // Value set events (from original connectedCallback)
     this.subscription.add(
       eventDispatcher.on(`component:value:set:${uniqueUUID}`, () => {
-        this.processInputsDebounced();
-        this.queueChildRefresh();
+        this.processInputs();
+        component.childrenIds?.forEach((childId) => {
+          eventDispatcher.emit(`component:request:refresh:${childId}`);
+        });
       })
     );
 
-    // Component request refresh
+    // Component request refresh (from original connectedCallback)
     this.subscription.add(
       eventDispatcher.on(`component:request:refresh:${component.uuid}`, () => {
-        this.processInputsDebounced();
-        this.queueChildRefresh();
+        this.processInputs();
+        component.childrenIds?.forEach((childId) => {
+          eventDispatcher.emit(`component:request:refresh:${childId}`);
+        });
       })
     );
 
-    // Property changed event
+    // Property changed event (from original connectedCallback)
     this.subscription.add(
-      eventDispatcher.on(
-        `component-property-changed:${String(component.name)}`,
-        () => {
-          this.processInputsDebounced();
-          this.queueChildRefresh();
-        }
-      )
+      eventDispatcher.on(`component-property-changed:${String(component.name)}`, () => {
+        this.processInputs();
+        this.styleController?.processStyles();
+        component.childrenIds?.forEach((childId) => {
+          eventDispatcher.emit(`component:request:refresh:${childId}`);
+        });
+      })
     );
 
-    // Component updated event
+    // Component updated event (from original connectedCallback)
     this.subscription.add(
       eventDispatcher.on(`component-updated:${String(component.uuid)}`, () => {
-        this.debouncer.debounce("component-updated", () => {
+        setTimeout(() => {
           this.processInputs();
-        }, 0); // Use setTimeout(0) to defer to next tick
+          this.styleController?.processStyles();
+        }, 0);
       })
     );
-
-    // Editing mode change - re-run onInit
-    this.subscription.add(
-      eventDispatcher.on("Vars:currentEditingMode", () => {
-        this.executeOnInit();
-      })
-    );
-  }
-
-  /**
-   * Queue child refresh with batching to prevent event storms
-   */
-  private queueChildRefresh(): void {
-    const childIds = this.host.component.childrenIds;
-    if (childIds?.length) {
-      this.childRefreshBatcher.queueChildren(childIds);
-    }
-  }
-
-  /**
-   * Execute onInit handler if present
-   */
-  private executeOnInit(): void {
-    const code = getNestedAttribute(this.host.component, "event.onInit");
-    if (code) {
-      executeHandler(this.host.component, code, {}, { ...this.host.item });
-    }
-  }
-
-  /**
-   * Process inputs with debouncing
-   */
-  processInputsDebounced(): void {
-    this.debouncer.debounce("process-inputs", () => {
-      this.processInputs();
-    });
   }
 
   /**
    * Process all component inputs
+   * Matches original traitInputsHandlers behavior exactly
    */
   async processInputs(): Promise<void> {
     if (isServer || !this.isConnected) return;
 
-    // Reset errors for this processing cycle
+    // Reset errors
     this.host.errors = {};
 
     const inputs = Editor.getComponentBreakpointInputs(this.host.component);
     if (!inputs) return;
 
-    // Process all inputs in parallel
+    // Process all inputs in parallel - same as original
     await Promise.all(
       Object.keys(inputs).map((name) =>
-        this.processInput(inputs[name], name)
+        traitInputHandler(this.host, inputs[name], name)
       )
     );
 
@@ -178,116 +144,6 @@ export class InputHandlerController implements ReactiveController, Disposable {
         },
       },
     });
-
-    // Trigger re-render
-    this.host.requestUpdate();
-  }
-
-  /**
-   * Process a single input handler
-   */
-  private async processInput(input: any, inputName: string): Promise<void> {
-    if (!input) return;
-
-    const { component, item, inputHandlersValue, callbacks, errors, uniqueUUID } =
-      this.host;
-    const handlerKey = `${component.uuid || component.name}:${inputName}`;
-
-    // Use execution guard to prevent re-entrant execution
-    const result = await this.executionGuard.guard(handlerKey, async () => {
-      return this.executeInputHandler(input, inputName);
-    });
-
-    if (result === undefined) {
-      // Handler was already executing, skip
-      return;
-    }
-
-    // Update state if value changed
-    if (inputHandlersValue[inputName] !== result.value) {
-      inputHandlersValue[inputName] = result.value;
-
-      // Update properties proxy
-      const proxy =
-        (this.host.ExecuteInstance.PropertiesProxy[component.name] ??= {});
-      proxy[inputName] = result.value;
-
-      // Call registered callback
-      callbacks[inputName]?.(result.value);
-    }
-
-    // Track errors
-    if (result.error) {
-      errors[inputName] = { error: result.error.message };
-    }
-  }
-
-  /**
-   * Execute input handler and return result
-   */
-  private async executeInputHandler(
-    input: any,
-    inputName: string
-  ): Promise<{ value: any; error?: { message: string } }> {
-    const { component, item, uniqueUUID } = this.host;
-
-    // Execute handler if input type is "handler"
-    if (input.type === "handler") {
-      try {
-        const code = input.value;
-        if (code) {
-          const fn = executeHandler(
-            { ...component, uniqueUUID },
-            code,
-            undefined,
-            { ...item }
-          );
-          const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
-          return { value: result };
-        }
-        return { value: undefined };
-      } catch (error: any) {
-        this.logHandlerError(inputName, input.value, error, "input");
-        return { value: undefined, error: { message: error.message } };
-      }
-    }
-
-    // Static value
-    return { value: input.value };
-  }
-
-  /**
-   * Log handler execution error to console
-   */
-  private logHandlerError(
-    inputName: string,
-    code: string,
-    error: Error,
-    source: "inputHandlers" | "input"
-  ): void {
-    try {
-      const { component } = this.host;
-      EditorInstance.Console.log(
-        `<i style="cursor:pointer" data-uuid="${component.uuid}" data-application_uuid="${component.application_id}"><b>${component.name}</b></i> > ${source} > ${inputName} | component uuid > ${component.uuid}`
-      );
-      EditorInstance.Console.log(this.formatCodeWithError(code, error));
-    } catch (logError) {
-      console.error("Error logging handler error:", logError);
-    }
-  }
-
-  /**
-   * Format code with error highlighting
-   */
-  private formatCodeWithError(code: string, error: Error): string {
-    // Simplified error formatting - can be expanded
-    const lines = code?.split("\n") || [];
-    let result = "Code:\n";
-    lines.forEach((line, i) => {
-      result += `${(i + 1).toString().padStart(3, " ")}| ${line}\n`;
-    });
-    result += `\nError: ${error.name}: ${error.message}`;
-    return result;
   }
 
   /**
@@ -296,8 +152,5 @@ export class InputHandlerController implements ReactiveController, Disposable {
   dispose(): void {
     this.subscription.unsubscribe();
     this.subscription = new Subscription();
-    this.debouncer.cancelAll();
-    this.executionGuard.clear();
-    this.childRefreshBatcher.cancel();
   }
 }
