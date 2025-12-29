@@ -157,6 +157,7 @@ export class ChildRefreshBatcher {
  */
 export class ExecutionGuard {
   private executing = new Set<string>();
+  private pending = new Map<string, () => any | Promise<any>>();
 
   /**
    * Try to acquire execution lock
@@ -194,6 +195,50 @@ export class ExecutionGuard {
   }
 
   /**
+   * Execute callback with guard, queuing the latest pending request
+   * If a request comes in while executing, it queues the latest one
+   * and executes it after the current one completes (with the newest value)
+   *
+   * @param key - Unique key for this execution
+   * @param callback - The callback to execute
+   * @param onResult - Optional callback called with each result (including pending executions)
+   * @returns The result, or undefined if queued as pending
+   */
+  async guardWithPending<T>(
+    key: string,
+    callback: () => T | Promise<T>,
+    onResult?: (result: T) => void
+  ): Promise<T | undefined> {
+    // If already executing, queue this as pending (replaces any previous pending)
+    if (this.executing.has(key)) {
+      this.pending.set(key, callback);
+      return undefined;
+    }
+
+    this.executing.add(key);
+
+    try {
+      let result = await callback();
+      onResult?.(result);
+
+      // After execution, check if there's a pending request
+      while (this.pending.has(key)) {
+        const pendingCallback = this.pending.get(key)!;
+        this.pending.delete(key);
+        // Execute the pending callback to get the latest value
+        result = await pendingCallback();
+        onResult?.(result);
+      }
+
+      return result;
+    } finally {
+      this.executing.delete(key);
+      // Clean up any pending on error
+      this.pending.delete(key);
+    }
+  }
+
+  /**
    * Check if key is currently executing
    */
   isExecuting(key: string): boolean {
@@ -201,9 +246,17 @@ export class ExecutionGuard {
   }
 
   /**
+   * Check if key has a pending request
+   */
+  hasPending(key: string): boolean {
+    return this.pending.has(key);
+  }
+
+  /**
    * Clear all locks
    */
   clear(): void {
     this.executing.clear();
+    this.pending.clear();
   }
 }
