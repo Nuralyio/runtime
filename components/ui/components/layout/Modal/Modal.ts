@@ -16,24 +16,24 @@ import { ModalSize, ModalPosition, ModalAnimation, ModalBackdrop } from "@nuraly
 export class ModalBlock extends BaseElementBlock {
   static styles = [css`
     :host {
-      display: contents;
-    }
-
-    /* Zero-height wrapper so card doesn't affect layout */
-    .modal-indicator-wrapper {
+      display: block;
       position: absolute;
-      top: var(--modal-indicator-top, 8px);
-      right: 8px;
       width: 0;
       height: 0;
       overflow: visible;
-      z-index: 100;
+      pointer-events: none;
+    }
+
+    /* Modal indicator card - fixed position at top-right, stacks vertically */
+    .modal-indicator-wrapper {
+      position: fixed;
+      top: var(--modal-indicator-top, 60px);
+      right: 16px;
+      z-index: 1000;
+      pointer-events: auto;
     }
 
     .modal-editor-card {
-      position: absolute;
-      top: 0;
-      right: 0;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -43,7 +43,7 @@ export class ModalBlock extends BaseElementBlock {
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
       cursor: pointer;
       transition: all 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       white-space: nowrap;
     }
 
@@ -193,14 +193,15 @@ export class ModalBlock extends BaseElementBlock {
     this._editorOpen = !this._editorOpen;
   }
 
-  // Calculate vertical position for edge indicator to avoid overlapping with other modals
+  // Calculate vertical position for indicator to stack modals vertically
   private _getIndicatorTop(): number {
-    const baseTop = 100;
-    const indicatorHeight = 36;
+    const baseTop = 60;
+    const indicatorHeight = 44;
     const gap = 8;
 
-    // Find all modal-block elements and get this one's index
-    const allModals = document.querySelectorAll('modal-block');
+    // Find all modal-block elements in the same document/shadow root and get this one's index
+    const root = this.getRootNode() as Document | ShadowRoot;
+    const allModals = root.querySelectorAll('modal-block');
     let index = 0;
     allModals.forEach((modal, i) => {
       if (modal === this) {
@@ -305,11 +306,8 @@ export class ModalBlock extends BaseElementBlock {
     // In editor mode: show card at top-right corner of page (outside layout) + modal when editing
     if (!this.isViewMode) {
       return html`
-        <!-- Card wrapper - positioned at top-right of page, outside layout flow -->
-        <div
-          class="modal-indicator-wrapper"
-          style="--modal-indicator-top: ${this._getIndicatorTop()}px"
-        >
+        <!-- Card wrapper - displays inline in the editor -->
+        <div class="modal-indicator-wrapper" style="--modal-indicator-top: ${this._getIndicatorTop()}px">
           <div
             class="modal-editor-card"
             @click="${() => setCurrentComponentIdAction(this.component?.uuid)}"
