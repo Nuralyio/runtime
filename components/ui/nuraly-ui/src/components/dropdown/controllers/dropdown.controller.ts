@@ -340,12 +340,38 @@ export class NrDropdownController extends BaseDropdownController implements Drop
       const spaceRight = viewportWidth - triggerRect.right;
       const spaceLeft = triggerRect.left;
 
-      const estimatedDropdownHeight = 200;
+      const estimatedDropdownHeight = dropdownRect.height || 200;
       const dropdownWidth = dropdownRect.width || 300;
-      
+
       const verticalPlacement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
       const horizontalPlacement = this.determineHorizontalPlacement(dropdownWidth, spaceLeft, spaceRight);
-      
+
+      // Calculate fixed position based on trigger's viewport position
+      let top: number;
+      let left: number;
+
+      // Vertical positioning
+      if (verticalPlacement === 'bottom') {
+        top = triggerRect.bottom + this.host.offset;
+      } else {
+        top = triggerRect.top - estimatedDropdownHeight - this.host.offset;
+      }
+
+      // Horizontal positioning
+      if (horizontalPlacement === 'left') {
+        left = triggerRect.right - dropdownWidth;
+      } else {
+        left = triggerRect.left;
+      }
+
+      // Ensure dropdown stays within viewport bounds
+      left = Math.max(8, Math.min(left, viewportWidth - dropdownWidth - 8));
+      top = Math.max(8, Math.min(top, viewportHeight - estimatedDropdownHeight - 8));
+
+      // Apply fixed positioning
+      this._dropdownElement.style.top = `${top}px`;
+      this._dropdownElement.style.left = `${left}px`;
+
       this.applyPlacement(verticalPlacement, horizontalPlacement);
 
     } catch (error) {

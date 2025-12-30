@@ -24,9 +24,7 @@ export const styles = css`
   }
 
   .dropdown__panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
+    position: fixed;
     z-index: var(--nuraly-dropdown-z-index, 9999);
     background: var(--nuraly-color-dropdown-background, #ffffff);
     border: var(--nuraly-dropdown-border-width, 1px) solid var(--nuraly-color-dropdown-border, #e0e0e0);
@@ -47,12 +45,15 @@ export const styles = css`
     isolation: isolate;
     /* Force above other elements */
     transform-origin: top center;
+    /* Prevent clipping by overflow containers */
+    pointer-events: none;
   }
 
   .dropdown__panel--open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
   }
 
   /* Alternative attribute-based selector (like select component) */
@@ -62,14 +63,11 @@ export const styles = css`
     transform: translateY(0);
   }
 
-  /* Placement variants */
+  /* Placement variants - transform origin adjustments */
   .dropdown__panel--top,
   .dropdown__panel--top-start,
   .dropdown__panel--top-end {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: 1px;
-    margin-top: 0;
+    transform-origin: bottom center;
     transform: translateY(8px);
   }
 
@@ -79,27 +77,10 @@ export const styles = css`
     transform: translateY(0);
   }
 
-  .dropdown__panel--bottom-end,
-  .dropdown__panel--top-end {
-    left: auto;
-    right: 0;
-  }
-
+  .dropdown__panel--bottom,
   .dropdown__panel--bottom-start,
-  .dropdown__panel--top-start {
-    left: 0;
-    right: auto;
-  }
-
-  /* Horizontal alignment for viewport edge handling */
-  .dropdown__panel--right-aligned {
-    left: auto;
-    right: 0;
-  }
-
-  .dropdown__panel--left-aligned {
-    left: 0;
-    right: auto;
+  .dropdown__panel--bottom-end {
+    transform-origin: top center;
   }
 
   /* Size variants */
