@@ -66,8 +66,34 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
     this.accessibilityController.updateAriaAttributes();
   }
 
-  override updated(): void {
+  override updated(changedProperties: Map<string, unknown>): void {
+    // Re-initialize selection state when items change
+    if (changedProperties.has('items')) {
+      this._initializeSelectedState();
+      // Also open submenus that have 'opened' set to true
+      this._initializeOpenedState();
+    }
     this.accessibilityController.updateAriaAttributes();
+  }
+
+  private _initializeOpenedState() {
+    this._openSubMenusFromItems(this.items, []);
+  }
+
+  private _openSubMenusFromItems(items: IMenu[], parentPath: number[]): void {
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index];
+      const currentPath = [...parentPath, index];
+
+      if (item.children) {
+        // If this item has 'opened' set to true, open it
+        if (item.opened) {
+          this.stateController.openSubMenu(currentPath);
+        }
+        // Recursively check children
+        this._openSubMenusFromItems(item.children, currentPath);
+      }
+    }
   }
 
   private _initializeSelectedState() {
