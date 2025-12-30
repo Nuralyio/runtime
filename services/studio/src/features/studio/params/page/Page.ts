@@ -143,8 +143,6 @@ export class PageContent extends LitElement {
 
     const pageHandler = () => {
       this.refreshComponent();
-      this.style.setProperty('--nuraly-page-background-color', this.currentPage?.style?.["--nuraly-page-background-color"]);
-      this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
     };
     eventDispatcher.on('Vars:currentPage', pageHandler);
     this.cleanupFunctions.push(() => eventDispatcher.off('Vars:currentPage', pageHandler));
@@ -415,32 +413,6 @@ export class PageContent extends LitElement {
 
   render() {
     return html`
-    <style>
-      
-      .page-container {
-        --page-background-color : var(--nuraly-page-background-color);
-        margin-top: 20px;
-
-      }
-      @media (prefers-color-scheme: dark) {
-        .page-container {
-          --page-background-color : var(--nuraly-page-background-color-dark);
-        }
-      }
-    </style>
-    <!-- <micro-app
-      style=${styleMap({
-        "z-index": 9999999,
-        position: "absolute",
-        bottom: "10px",
-        left: "40%",
-      })}
-    uuid="1" componentToRenderUUID="app_insert_top_bar"> </micro-app> -->
-      <style>
-        :host{
-          zoom: ${this.zoomLevel}%;
-        }
-      </style>
       <div
         class="page-container ${this.currentPlatform?.isMobile  ? "mobile" : ""} ${this.isPreviewMode() ? "viewer" : ""}"
         style=${styleMap({
