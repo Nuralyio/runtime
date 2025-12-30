@@ -65,6 +65,7 @@ export class VerticalContainer extends BaseElementBlock {
           vertical: this.inputHandlersValue.direction === "vertical",
           boxed: this.inputHandlersValue.layout === "boxed",
           "drag-over": this.dragOverSituation,
+          [`drop-${this.component.uuid}`] : true,
         })}
         @mouseenter="${(e: Event) => this.executeEvent("onMouseEnter", {...e,unique : this.uniqueUUID})}"
         @mouseleave="${(e: Event) => this.executeEvent("onMouseLeave", {...e,unique : this.uniqueUUID})}"
