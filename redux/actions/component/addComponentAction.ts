@@ -37,6 +37,7 @@ export const addComponentAction = (
     ComponentType.GridRow,
     ComponentType.GridCol,
     ComponentType.Form,
+    ComponentType.Modal,
   ];
 
   if (
@@ -54,7 +55,8 @@ export const addComponentAction = (
       currentComponent?.component_type === ComponentType.Collection ||
       currentComponent?.component_type === ComponentType.GridRow ||
       currentComponent?.component_type === ComponentType.GridCol ||
-      currentComponent?.component_type === ComponentType.Form
+      currentComponent?.component_type === ComponentType.Form ||
+      currentComponent?.component_type === ComponentType.Modal
     ) {
       // Add as child of the current component
       //addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);
@@ -62,6 +64,7 @@ export const addComponentAction = (
       if (updateParent) {
         const parentComponent = components.find((comp) => comp.uuid === currentComponentId);
         if (parentComponent) {
+          // Add to childrenIds (body slot for all container types including Modal)
           if (!parentComponent.childrenIds) {
             parentComponent.childrenIds = [];
           }

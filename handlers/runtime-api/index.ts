@@ -124,6 +124,7 @@ import { createStorageFunctions } from './storage';
 import { createFunctionInvocationFunctions } from './functions';
 import { createEditorFunctions } from './editor';
 import { createToastFunctions } from './toast';
+import { createModalFunctions } from './modal';
 
 /**
  * Creates all global functions available to handler code.
@@ -216,6 +217,7 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
     ...createFunctionInvocationFunctions(),
     ...createEditorFunctions(),
     ...createToastFunctions(),
+    ...createModalFunctions(),
   };
 }
 

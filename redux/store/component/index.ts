@@ -13,6 +13,7 @@ export {
   $hoveredComponentId,
   $hoveredComponent,
   $draggingComponentInfo,
+  $activeSlot,
   $applicationComponents,
   $componentWithChildren,
   $selectedComponent,
