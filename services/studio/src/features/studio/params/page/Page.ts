@@ -11,8 +11,9 @@ import { styleMap } from "lit/directives/style-map.js";
 import { renderComponent, Logger, eventDispatcher, copyCpmponentToClipboard, pasteComponentFromClipboard, debounce } from '@nuraly/runtime/utils';
 import { getVar } from '@nuraly/runtime/redux/store/context';
 import { ViewMode } from '@nuraly/runtime/redux/store';
-import { moveDraggedComponentIntoCurrentPageRoot, deleteComponentAction, updatePageInfo, setEnvirementMode } from '@nuraly/runtime/redux/actions';
+import { moveDraggedComponentIntoCurrentPageRoot, deleteComponentAction, updatePageInfo, setEnvirementMode, updateComponentAttributes } from '@nuraly/runtime/redux/actions';
 import { ExecuteInstance } from '@nuraly/runtime';
+import Editor from '@nuraly/runtime/state/editor';
 import type { LogPanel } from '../../panels/log-panel/LogPanel';
 import { Subscription } from "rxjs";
 import Convert from "ansi-to-html";
@@ -259,7 +260,80 @@ export class PageContent extends LitElement {
           this.handlePaste();
         }
         break;
+      case "ArrowUp":
+      case "ArrowDown":
+      case "ArrowLeft":
+      case "ArrowRight":
+        // Require Cmd (Mac) or Ctrl (Windows/Linux) to move components
+        if (e.metaKey || e.ctrlKey) {
+          this.handleArrowKey(e);
+        }
+        break;
     }
+  }
+
+  /**
+   * Handle arrow key presses to move selected components.
+   * Requires Cmd (Mac) or Ctrl (Windows/Linux) modifier.
+   * When position is not absolute, adjusts margins to move the component.
+   * Hold Shift for 10px steps, otherwise 1px.
+   */
+  handleArrowKey(e: KeyboardEvent): void {
+    const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents ?? [];
+    if (selectedComponents.length === 0) return;
+
+    // Prevent default scrolling behavior when moving components
+    e.preventDefault();
+
+    // Determine step size: shift = 10px, default = 1px
+    const step = e.shiftKey ? 10 : 1;
+
+    selectedComponents.forEach((component: ComponentElement) => {
+      const position = Editor.getComponentStyle(component, 'position');
+
+      // Skip if position is absolute (absolute positioning uses top/left)
+      if (position === 'absolute') {
+        return;
+      }
+
+      // For non-absolute positions, adjust margins
+      const styleUpdates: Record<string, string> = {};
+
+      switch (e.key) {
+        case "ArrowUp":
+          styleUpdates["margin-top"] = this.adjustMargin(Editor.getComponentStyle(component, "margin-top"), -step);
+          break;
+        case "ArrowDown":
+          styleUpdates["margin-top"] = this.adjustMargin(Editor.getComponentStyle(component, "margin-top"), step);
+          break;
+        case "ArrowLeft":
+          styleUpdates["margin-left"] = this.adjustMargin(Editor.getComponentStyle(component, "margin-left"), -step);
+          break;
+        case "ArrowRight":
+          styleUpdates["margin-left"] = this.adjustMargin(Editor.getComponentStyle(component, "margin-left"), step);
+          break;
+      }
+
+      if (Object.keys(styleUpdates).length > 0) {
+        updateComponentAttributes(component.application_id, component.uuid, "style", styleUpdates);
+      }
+    });
+  }
+
+  /**
+   * Adjust a margin value by a given delta.
+   * Parses the current margin value and adds the delta, returning the new value with 'px' unit.
+   */
+  adjustMargin(currentValue: string | undefined, delta: number): string {
+    if (!currentValue || currentValue === 'auto') {
+      return `${delta}px`;
+    }
+
+    // Parse the numeric value from the margin (e.g., "10px" -> 10)
+    const match = currentValue.match(/^(-?\d+(?:\.\d+)?)/);
+    const currentNumeric = match ? parseFloat(match[1]) : 0;
+
+    return `${currentNumeric + delta}px`;
   }
 
   handleCopy() {
