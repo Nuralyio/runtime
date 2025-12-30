@@ -31,7 +31,10 @@ export const $currentComponentId = persistentAtom<string>(
 
 export const $hoveredComponentId = atom<string>(null);
 export const $hoveredComponent = atom<Object>(null);
-export const $draggingComponentInfo = atom<Object>(null)
+export const $draggingComponentInfo = atom<Object>(null);
+
+// Track which slot is active for insertion (used by modal and other multi-slot components)
+export const $activeSlot = atom<string | null>(null);
 
 export const $applicationComponents = ($application_id: string) => computed(
   [$components],
