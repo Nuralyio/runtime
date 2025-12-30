@@ -23,31 +23,10 @@ const pageStyle = css`
     margin: auto;
     
   }
-  .mobile.page-container {
-    padding-top: 45px;
-    border: 16px solid #000;
-    border-radius: 40px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    margin: auto;
-  }
-
   .page-container.viewer {
     margin-top: 0px;
     height: 100vh;
     width: 100%;
-  }
-
-  /* Simulated mobile notch */
-  .mobile.page-container::before {
-    content: "";
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    width: 120px;
-    height: 30px;
-    background: black;
-    border-radius: 20px;
-    transform: translateX(-50%);
   }
 
 
