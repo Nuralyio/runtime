@@ -9,15 +9,18 @@ import { css } from 'lit';
  */
 export const styles = css`
   :host {
-    display: block;
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    
+    min-height: 0;
+    overflow: hidden;
+
     /* Force CSS custom property inheritance to ensure theme switching works properly */
     color: var(--nuraly-color-text);
     background-color: var(--nuraly-color-background);
-    
+
     /* Minimal transitions for better performance */
-    
+
   }
 
   /* When tabs are inside a panel, adjust sizing */
@@ -42,7 +45,10 @@ export const styles = css`
 
   .tabs-container {
     display: flex;
+    flex: 1;
     height: 100%;
+    min-height: 0;
+    overflow: hidden;
     background-color: var(--nuraly-color-background);
     border-radius: var(--nuraly-border-radius-tabs, var(--nuraly-border-radius-medium, 0));
     box-shadow: var(--nuraly-shadow-tabs);
@@ -58,6 +64,7 @@ export const styles = css`
 
   .tab-labels {
     display: flex;
+    flex-shrink: 0;
     background-color: var(--nuraly-color-tabs-header-background);
     border: var(--nuraly-border-tabs-header);
   }
@@ -231,8 +238,8 @@ export const styles = css`
     border-right: var(--nuraly-border-width-tabs-content-right) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
     border-bottom: var(--nuraly-border-width-tabs-content-bottom) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
     border-left: var(--nuraly-border-width-tabs-content-left) var(--nuraly-border-style-tabs-content) var(--nuraly-border-color-tabs-content);
-    overflow: visible;
-    max-height: 100vh;
+    overflow: auto;
+    min-height: 0;
   }
 
   /* Orientation specific styles */
@@ -308,6 +315,7 @@ export const styles = css`
 
   .horizontal-align {
     flex-direction: column;
+    min-height: 0;
   }
 
   /* Size variations */
