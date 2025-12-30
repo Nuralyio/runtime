@@ -14,5 +14,5 @@ export const pagesPanelContainer = {
     height: "100%",
     "--nuraly-button-font-size": "12px"
   },
-  childrenIds: ["menu_heade2r", "menu_1", "component_panel", "app_access_control_panel_block"]
+  childrenIds: ["menu_heade2r", "menu_1", "xcomponent_panel", "app_access_control_panel_block"]
 };
