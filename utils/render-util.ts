@@ -41,6 +41,7 @@ const panelTemplate = (props: any, isViewMode: boolean)  => html`<panel-block .i
 const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-row-block>`;
 const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
 const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></form-block>`;
+const modalTemplate = (props: any, isViewMode: boolean)  => html`<modal-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></modal-block>`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -127,6 +128,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return gridColTemplate(commonProps, isViewMode);
     case ComponentType.Form:
       return formTemplate(commonProps, isViewMode);
+    case ComponentType.Modal:
+      return modalTemplate(commonProps, isViewMode);
     default:
       const registeredTemplate = ComponentRegistry.getTemplate(component?.component_type as string);
       if (registeredTemplate) {

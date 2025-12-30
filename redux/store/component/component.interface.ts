@@ -46,7 +46,7 @@ export const enum ComponentType {
   Tag = "Tag",
   Slider = "Slider",
   Alert = "Alert",
-  Modal = "Modal",
+  Modal = "modal-block",
   Toast = "Toast",
   Panel = "Panel",
   GridRow = "grid-row-block",
@@ -82,6 +82,8 @@ export interface ComponentElement {
   errors?: { [key: string]: string };
   childrens?: ComponentElement[];
   childrenIds?: string[];
+  headerChildrenIds?: string[];  // For modal header slot
+  footerChildrenIds?: string[];  // For modal footer slot
   pageId?: string;
   application_id?: string;
   uniqueUUID?: string;

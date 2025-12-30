@@ -3,6 +3,7 @@ import "../components/ui/components/layout/Tabs/Tabs";
 import "../components/ui/components/layout/Containers/Container";
 import "../components/ui/components/layout/Card/Card";
 import "../components/ui/components/layout/Panel/Panel";
+import "../components/ui/components/layout/Modal/Modal";
 import "../components/ui/components/layout/Grid/Row";
 import "../components/ui/components/layout/Grid/Col";
 import "../components/ui/components/navigation/Menu/Menu";
