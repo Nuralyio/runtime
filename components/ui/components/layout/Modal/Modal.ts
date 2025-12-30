@@ -290,17 +290,17 @@ export class ModalBlock extends BaseElementBlock {
     const modalStyles = this.component?.style || {};
 
     // Get properties from input or inputHandlers
-    const open = this.component?.input?.open?.value ?? this.inputHandlersValue?.open ?? false;
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || ModalSize.Medium;
-    const position = this.component?.input?.position?.value || this.inputHandlersValue?.position || ModalPosition.Center;
-    const backdrop = this.component?.input?.backdrop?.value || this.inputHandlersValue?.backdrop || ModalBackdrop.Closable;
-    const closable = this.component?.input?.closable?.value ?? this.inputHandlersValue?.closable ?? true;
-    const animation = this.component?.input?.animation?.value || this.inputHandlersValue?.animation || ModalAnimation.Fade;
+    const open = this.inputHandlersValue?.open ?? false;
+    const size = this.inputHandlersValue?.size || ModalSize.Medium;
+    const position =  this.inputHandlersValue?.position || ModalPosition.Center;
+    const backdrop = this.inputHandlersValue?.backdrop || ModalBackdrop.Closable;
+    const closable =  this.inputHandlersValue?.closable ?? true;
+    const animation =  this.inputHandlersValue?.animation || ModalAnimation.None;
     const modalTitle = this.component?.input?.modalTitle?.value || this.inputHandlersValue?.modalTitle || 'Modal';
-    const showCloseButton = this.component?.input?.showCloseButton?.value ?? this.inputHandlersValue?.showCloseButton ?? true;
-    const modalDraggable = this.component?.input?.modalDraggable?.value ?? this.inputHandlersValue?.modalDraggable ?? false;
-    const width = this.component?.input?.width?.value || this.inputHandlersValue?.width || '';
-    const height = this.component?.input?.height?.value || this.inputHandlersValue?.height || '';
+    const showCloseButton =  this.inputHandlersValue?.showCloseButton ?? true;
+    const modalDraggable =  this.inputHandlersValue?.modalDraggable ?? false;
+    const width = this.inputHandlersValue?.width || '';
+    const height =  this.inputHandlersValue?.height || '';
 
     // In editor mode: show card at top-right corner of page (outside layout) + modal when editing
     if (!this.isViewMode) {
@@ -350,7 +350,23 @@ export class ModalBlock extends BaseElementBlock {
             ?modalDraggable=${true}
             .width=${width}
             .height=${height}
-            @modal-close=${() => { this._editorOpen = false; }}
+            @modal-close=${(e) => { 
+
+               this.executeEvent('onModalClose', e , 
+                          {
+                            value: e.detail.value,
+                            oldValue: e.detail.oldValue
+                          }
+                          );
+             }}
+            @modal-escape=${(e) => {
+               this.executeEvent('onModalClose', e , 
+                          {
+                            value: e.detail.value,
+                            oldValue: e.detail.oldValue
+                          }
+                          );
+             }}
           >
             ${this.renderBodySlot()}
           </nr-modal>
