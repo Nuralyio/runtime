@@ -34,11 +34,15 @@ export const styles = css`
     max-width: var(--nuraly-dropdown-max-width, 20rem);
     max-height: var(--nuraly-dropdown-max-height, 200px);
     overflow: auto;
+    /* Use display none to fully hide when closed */
+    display: none;
     /* Use opacity and visibility for smooth animations */
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
-    transition: all var(--nuraly-dropdown-animation-duration, 0.15s) var(--nuraly-dropdown-animation-timing, ease);
+    transition: opacity var(--nuraly-dropdown-animation-duration, 0.15s) var(--nuraly-dropdown-animation-timing, ease),
+                visibility var(--nuraly-dropdown-animation-duration, 0.15s) var(--nuraly-dropdown-animation-timing, ease),
+                transform var(--nuraly-dropdown-animation-duration, 0.15s) var(--nuraly-dropdown-animation-timing, ease);
     /* Ensure proper containment */
     box-sizing: border-box;
     /* Create new stacking context to prevent layering issues */
@@ -50,6 +54,7 @@ export const styles = css`
   }
 
   .dropdown__panel--open {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -58,9 +63,11 @@ export const styles = css`
 
   /* Alternative attribute-based selector (like select component) */
   :host([open]) .dropdown__panel {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
   }
 
   /* Placement variants - transform origin adjustments */

@@ -64,3 +64,47 @@ export interface PopconfirmConfig {
   disabled?: boolean;
   arrow?: boolean;
 }
+
+/**
+ * Configuration for programmatic popconfirm at cursor position
+ */
+export interface PopconfirmShowConfig {
+  /** Title of the confirmation box */
+  title: string;
+  /** Description of the confirmation box (optional) */
+  description?: string;
+  /** Text of the OK button */
+  okText?: string;
+  /** Text of the Cancel button */
+  cancelText?: string;
+  /** Button type of the OK button */
+  okType?: PopconfirmButtonType;
+  /** Show cancel button */
+  showCancel?: boolean;
+  /** Icon name */
+  icon?: string;
+  /** Custom icon color */
+  iconColor?: string;
+  /** Callback when confirmed */
+  onConfirm?: () => void | Promise<void>;
+  /** Callback when cancelled */
+  onCancel?: () => void;
+}
+
+/**
+ * Position for cursor-based popconfirm
+ */
+export interface PopconfirmPosition {
+  x: number;
+  y: number;
+}
+
+/**
+ * Active popconfirm item
+ */
+export interface PopconfirmItem {
+  id: string;
+  config: PopconfirmShowConfig;
+  position: PopconfirmPosition;
+  loading?: boolean;
+}
