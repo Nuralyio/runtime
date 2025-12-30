@@ -3,6 +3,7 @@ import { customElement, property, state, query } from 'lit/decorators.js';
 import { $currentApplication, $applicationComponents } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
+import Editor from '@nuraly/runtime/state/editor';
 
 /**
  * Message types for iframe communication
@@ -25,13 +26,57 @@ export class PreviewIFramePanel extends LitElement {
       width: 100%;
       height: 100%;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow: auto;
+      background: #f5f5f5;
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      background: white;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      transition: width 0.3s ease, height 0.3s ease;
+      margin: auto;
+    }
+
+    .iframe-wrapper.mobile {
+      padding-top: 45px;
+      border: 16px solid #000;
+      border-radius: 40px;
+    }
+
+    /* Simulated mobile notch */
+    .iframe-wrapper.mobile::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      width: 120px;
+      height: 30px;
+      background: black;
+      border-radius: 20px;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .iframe-wrapper.tablet {
+      border: 12px solid #222;
+      border-radius: 20px;
+    }
+
+    .iframe-wrapper.desktop {
+      border-radius: 4px;
+      border: 1px solid #ddd;
     }
 
     iframe {
-      width: 100%;
-      height: 100%;
+      display: block;
       border: none;
       background: white;
+      width: 100%;
+      height: 100%;
     }
 
     .loading-overlay {
@@ -67,6 +112,7 @@ export class PreviewIFramePanel extends LitElement {
 
   @state() private isLoading = true;
   @state() private iframeReady = false;
+  @state() private currentPlatform: { platform: string; width: string; height?: string } = Editor.currentPlatform;
 
   // Track current page to avoid sending duplicate SET_PAGE messages
   private currentPageId: string = '';
@@ -82,6 +128,13 @@ export class PreviewIFramePanel extends LitElement {
     this.setupComponentStoreSubscription();
     this.setupModeListener();
     this.setupPageChangeListener();
+    this.setupPlatformListener();
+  }
+
+  private setupPlatformListener() {
+    eventDispatcher.on('Vars:currentPlatform', () => {
+      this.currentPlatform = Editor.currentPlatform;
+    });
   }
 
   disconnectedCallback() {
@@ -296,6 +349,10 @@ export class PreviewIFramePanel extends LitElement {
 
   render() {
     const previewUrl = this.getPreviewUrl();
+    const platform = this.currentPlatform?.platform || 'desktop';
+    const iframeWidth = this.currentPlatform?.width || '100%';
+    const iframeHeight = this.currentPlatform?.height || '100%';
+
     return html`
       <div class="iframe-container">
         ${this.isLoading ? html`
@@ -303,10 +360,12 @@ export class PreviewIFramePanel extends LitElement {
             <div class="loading-spinner"></div>
           </div>
         ` : ''}
-        <iframe
-          src=${previewUrl}
-          @load=${this.handleIframeLoad}
-        ></iframe>
+        <div class="iframe-wrapper ${platform}" style="width: ${iframeWidth}; height: ${iframeHeight};">
+          <iframe
+            src=${previewUrl}
+            @load=${this.handleIframeLoad}
+          ></iframe>
+        </div>
       </div>
     `;
   }

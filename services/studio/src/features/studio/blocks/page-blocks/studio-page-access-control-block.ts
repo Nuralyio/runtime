@@ -116,7 +116,7 @@ export default [
           const currentPageId = $currentPage;
           const resourceType = 'page';
           const resourceId = currentPageId;
-
+ return;
           if (!resourceId) {
             return;
           }
