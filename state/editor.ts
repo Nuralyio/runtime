@@ -146,7 +146,9 @@ class Editor {
       window.addEventListener("resize", this.handleResize);
     }
     eventDispatcher.on('Vars:currentPlatform', (data) => {
-      this.currentPlatform = {...this.ExecuteInstance.Vars.currentPlatform};
+      if (this.ExecuteInstance?.Vars?.currentPlatform) {
+        this.currentPlatform = {...this.ExecuteInstance.Vars.currentPlatform};
+      }
     })
     $editorState.subscribe(() =>{
       this.Tabs = $editorState.get().tabs;
@@ -181,7 +183,10 @@ class Editor {
     // If platform has changed, update the state and trigger events
     if (currentPlatform.platform !== this.currentPlatform.platform) {
       this.currentPlatform = { ...currentPlatform };
-      this.ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
+      // Guard: ExecuteInstance may not be initialized yet during startup
+      if (this.ExecuteInstance?.VarsProxy) {
+        this.ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
+      }
       eventDispatcher.emit("component:refresh");
     }
     return currentPlatform
@@ -324,12 +329,15 @@ class Editor {
   }
   Console = {
     log: (log: any) => {
+      console.log(log);
       this.log(log)
     },
     error: (log: any) => {
+      console.error(log);
       this.log(log)
     },
     warn: (log: any) => {
+      console.warn(log);
       this.log(log)
     },
     info: (log: any) => {
