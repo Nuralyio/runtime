@@ -113,6 +113,27 @@ export class InputHandlerController implements ReactiveController, Disposable {
         }, 0);
       })
     );
+
+    // Selection change - reprocess inputs for components that depend on $selectedComponents
+    this.subscription.add(
+      eventDispatcher.on("Vars:selectedComponents", () => {
+        this.processInputs();
+      })
+    );
+
+    // Component deleted - reprocess inputs for components that depend on component list (e.g., menu)
+    this.subscription.add(
+      eventDispatcher.on("component:deleted", () => {
+        this.processInputs();
+      })
+    );
+
+    // Component refresh - reprocess inputs when components are added or structure changes
+    this.subscription.add(
+      eventDispatcher.on("component:refresh", () => {
+        this.processInputs();
+      })
+    );
   }
 
   /**
