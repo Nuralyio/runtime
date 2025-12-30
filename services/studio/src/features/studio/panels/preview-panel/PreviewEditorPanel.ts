@@ -3,7 +3,7 @@ import { customElement, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { keyed } from "lit/directives/keyed.js";
 import { ViewMode, $currentPageViewPort, $pageZoom, $draggingComponentInfo, type ComponentElement } from '@nuraly/runtime/redux/store';
-import { createRef, type Ref } from "lit/directives/ref.js";
+import { type Ref } from "lit/directives/ref.js";
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
@@ -41,9 +41,8 @@ export class PreviewEditorPanel extends LitElement {
   @state() selectedComponent: ComponentElement;
   @state() hoveredComponent: ComponentElement;
   @state() currentPageViewPort: string = "100%";
-
-  private selectedComponentRef: Ref<HTMLElement> = createRef();
-  private hoveredComponentRef: Ref<HTMLElement> = createRef();
+  @state() selectedComponentRef: Ref<HTMLElement> | null = null;
+  @state() hoveredComponentRef: Ref<HTMLElement> | null = null;
 
   handleComponentSelected = (event: CustomEvent) => {
     const { component, elementRef } = event.detail;
@@ -85,21 +84,22 @@ export class PreviewEditorPanel extends LitElement {
     document.addEventListener("dragend", this.handleDragEnd);
     document.addEventListener("drop", this.handleDragEnd);
 
-    // Listen for component selection and hover events
-    this.addEventListener('component-selected', this.handleComponentSelected as EventListener);
-    this.addEventListener('component-hovered', this.handleComponentHovered as EventListener);
+    // Listen for component selection and hover events from DOM
+    document.addEventListener('component-selected', this.handleComponentSelected as EventListener);
+    document.addEventListener('component-hovered', this.handleComponentHovered as EventListener);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener("dragend", this.handleDragEnd);
     document.removeEventListener("drop", this.handleDragEnd);
-    this.removeEventListener('component-selected', this.handleComponentSelected as EventListener);
-    this.removeEventListener('component-hovered', this.handleComponentHovered as EventListener);
+    document.removeEventListener('component-selected', this.handleComponentSelected as EventListener);
+    document.removeEventListener('component-hovered', this.handleComponentHovered as EventListener);
   }
 
   render() {
     const overlayDisplay = this.mode == ViewMode.Edit ? "block" : "none";
+
     return html`
       <div class="overlay-container" style="display: ${overlayDisplay}">
         ${this.hoveredComponent && this.hoveredComponentRef?.value && this.hoveredComponent.uuid !== this.selectedComponent?.uuid ? html`
@@ -154,6 +154,27 @@ export class PreviewEditorPanel extends LitElement {
       eventDispatcher.on('Vars:currentEditingMode', () => {
         this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
       });
+
+      // Listen for selection changes from parent window (via iframe bridge)
+      // This handles selections made from the structure panel in the parent
+      eventDispatcher.on('Vars:selectedComponents', () => {
+        const selectedComponents = ExecuteInstance.Vars.selectedComponents;
+        if (selectedComponents?.length === 1) {
+          const component = selectedComponents[0];
+          // Find the DOM element by data-component-uuid attribute or class
+          const element = this.findComponentElement(component.uuid);
+          if (element) {
+            this.selectedComponent = component;
+            this.selectedComponentRef = { value: element };
+            this.requestUpdate();
+          }
+        } else if (!selectedComponents?.length) {
+          // Clear selection
+          this.selectedComponent = null;
+          this.selectedComponentRef = null;
+          this.requestUpdate();
+        }
+      });
     }
 
     $currentPageViewPort.subscribe(viewPort => {
@@ -186,5 +207,40 @@ export class PreviewEditorPanel extends LitElement {
   private updateZoomLevel(pageZoom: string) {
     this.zoomLevel = Number(pageZoom) || 100;
     this.requestUpdate();
+  }
+
+  /**
+   * Find a component element by UUID, searching through Shadow DOMs
+   */
+  private findComponentElement(uuid: string): HTMLElement | null {
+    // First try direct query on document
+    let element = document.querySelector(`[data-component-uuid="${uuid}"]`) as HTMLElement;
+    if (element) return element;
+
+    // Also try by class name (component-{uuid})
+    element = document.querySelector(`.component-${uuid}`) as HTMLElement;
+    if (element) return element;
+
+    // Search through shadow roots recursively
+    const searchShadowRoots = (root: Document | ShadowRoot): HTMLElement | null => {
+      // Try direct query
+      let found = root.querySelector(`[data-component-uuid="${uuid}"]`) as HTMLElement;
+      if (found) return found;
+
+      found = root.querySelector(`.component-${uuid}`) as HTMLElement;
+      if (found) return found;
+
+      // Search in shadow roots of all elements
+      const allElements = root.querySelectorAll('*');
+      for (const el of allElements) {
+        if (el.shadowRoot) {
+          const result = searchShadowRoots(el.shadowRoot);
+          if (result) return result;
+        }
+      }
+      return null;
+    };
+
+    return searchShadowRoots(document);
   }
 }

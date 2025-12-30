@@ -30,43 +30,44 @@ export const pagesMenu = {
       value: /* js */`
         const currentEditingApplication = GetVar("currentEditingApplication");
         const appPages = Vars[currentEditingApplication?.uuid + ".appPages"];
-        const currentPage = $currentPage || appPages?.[0]?.uuid;
+        let currentPage = $currentPage || appPages?.[0]?.uuid;
         const currentComponent = $selectedComponents;
-        
         if (!appPages) {
           return [];
         }
-        
+
         const selectedComponentId = currentComponent?.[0]?.uuid;
         const autoOpened = new Set();
-        
-        function findSelectedPath(appId, childrenIds) {
+        let selectedComponentPageId = null;
+
+        function findSelectedPath(appId, childrenIds, pageId) {
           for (const componentId of childrenIds) {
             const component = GetComponent(componentId, appId);
             if (!component) continue;
-        
+
             if (component.uuid === selectedComponentId) {
               autoOpened.add(component.uuid);
+              selectedComponentPageId = pageId;
               return true;
             }
-        
+
             const componentChildrenIds = component?.childrenIds;
-            if (componentChildrenIds?.length && findSelectedPath(appId, componentChildrenIds)) {
+            if (componentChildrenIds?.length && findSelectedPath(appId, componentChildrenIds, pageId)) {
               autoOpened.add(component.uuid);
               return true;
             }
           }
           return false;
         }
-        
-        function findChildren(appId, children, childrenIds) {
+
+        function findChildren(appId, children, childrenIds, pageId) {
           childrenIds.forEach((componentId) => {
             const component = GetComponent(componentId, appId);
             if (!component) return;
-        
+
             const componentChildrenIds = component?.childrenIds;
             let componentIcon = 'smile';
-        
+
             switch (component.component_type) {
               case 'text_label': componentIcon = "case-sensitive"; break;
               case 'rich-text': componentIcon = "whole-word"; break;
@@ -91,13 +92,14 @@ export const pagesMenu = {
               case 'Datepicker': componentIcon = 'calendar'; break;
               case 'Icon': componentIcon = 'cable-car'; break;
             }
-        
+
             const isSelected = component.uuid === selectedComponentId;
-        
+
             let childNode = {
               text: component.name,
               icon: componentIcon,
               id: component.uuid,
+              page: pageId,
               selected: isSelected,
               handlerKey: "onSelect",
               menu: {
@@ -122,35 +124,50 @@ export const pagesMenu = {
                 }]
               }
             };
-        
+
             if (componentChildrenIds?.length) {
               childNode.children = [];
-              findChildren(appId, childNode.children, componentChildrenIds);
+              findChildren(appId, childNode.children, componentChildrenIds, pageId);
             }
-        
+
             if (autoOpened.has(component.uuid)) {
               childNode.opened = true;
             }
-        
+
             children.push(childNode);
           });
         }
-        
+
+        // First pass: find which page contains the selected component
+        for (const page of appPages) {
+          const componentIds = page.component_ids;
+          const appId = page.application_id;
+          if (componentIds && findSelectedPath(appId, componentIds, page.uuid)) {
+            break;
+          }
+        }
+
+        // If the selected component is on a different page, switch to that page
+        if (selectedComponentPageId && selectedComponentPageId !== currentPage) {
+          $currentPage = selectedComponentPageId;
+          currentPage = selectedComponentPageId;
+        }
+
         return appPages.map((page) => {
           const componentIds = page.component_ids;
           const appId = page.application_id;
           const children = [];
-        
+          const isPageWithSelectedComponent = page.uuid === selectedComponentPageId;
+
           if (componentIds) {
-            findSelectedPath(appId, componentIds);
-            findChildren(appId, children, componentIds);
+            findChildren(appId, children, componentIds, page.uuid);
           }
-        
+
           return {
             text: page.name,
             id: page.uuid,
             selected: page.uuid === currentPage,
-            opened: page.uuid === currentPage,
+            opened: page.uuid === currentPage || isPageWithSelectedComponent,
             icon: 'file',
             type: "page",
             handlerKey: "onSelect",
@@ -182,9 +199,8 @@ export const pagesMenu = {
       } else {
         const componentParentPage = EventData.page;
         const currentPage = $currentPage;
-        if(componentParentPage != currentPage ){
-          // TODO: This triggers an error when the new component is selected; it navigates to the last page.
-          //$currentPage = componentParentPage;
+        if(componentParentPage && componentParentPage !== currentPage){
+          $currentPage = componentParentPage;
         }
         const selectedComponent = Editor.components.find(
           component => component.uuid == EventData.id

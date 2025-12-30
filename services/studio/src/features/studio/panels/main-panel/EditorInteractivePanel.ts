@@ -72,7 +72,7 @@ export class EditorInteractivePanel extends LitElement {
 
     // Listen for selection changes from structure panel or other sources
     eventDispatcher.on('Vars:selectedComponents', () => {
-      const selectedComponents = ExecuteInstance.$selectedComponents || [];
+      const selectedComponents = ExecuteInstance.Vars.selectedComponents || [];
       if (selectedComponents.length > 0 && this.iframePanel) {
         const component = selectedComponents[0];
         // Only sync if selection came from outside (not from iframe click)
