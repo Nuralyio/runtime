@@ -46,6 +46,7 @@ export class EditorInteractivePanel extends LitElement {
       </style>
       <div class="iframe-wrapper">
         <preview-iframe-panel
+        
           .applicationId=${$currentApplication.get()?.uuid || ''}
           .pageUrl=${ExecuteInstance.$currentPage || ''}
           @component-selected-from-iframe=${this.handleComponentSelectedFromIframe}
