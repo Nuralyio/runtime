@@ -48,6 +48,11 @@
  *    - `ShowWarningToast`, `ShowInfoToast` - Toast variants
  *    - `HideToast`, `ClearAllToasts` - Toast control
  *
+ * 11. **Popconfirm Dialogs** (`popconfirm.ts`)
+ *    - `ShowPopconfirm`, `Confirm` - Show confirmation dialogs at cursor position
+ *    - `ShowDeleteConfirm`, `ShowWarningConfirm` - Convenience functions
+ *    - `ClosePopconfirm`, `CloseAllPopconfirms` - Popconfirm control
+ *
  * **Usage in Handler Code:**
  * All these functions are available directly in handler code without imports:
  * 
@@ -125,6 +130,7 @@ import { createFunctionInvocationFunctions } from './functions';
 import { createEditorFunctions } from './editor';
 import { createToastFunctions } from './toast';
 import { createModalFunctions } from './modal';
+import { createPopconfirmFunctions } from './popconfirm';
 
 /**
  * Creates all global functions available to handler code.
@@ -145,6 +151,7 @@ import { createModalFunctions } from './modal';
  * - Function invocation (InvokeFunction)
  * - Editor functions (openEditorTab, setCurrentEditorTab, TraitCompoentFromSchema)
  * - Toast notification functions (ShowToast, ShowSuccessToast, ShowErrorToast, etc.)
+ * - Popconfirm functions (ShowPopconfirm, Confirm, ShowDeleteConfirm, etc.)
  *
  * **Why Create Functions This Way:**
  * 1. **Closure over runtime context**: Functions have access to current context
@@ -218,6 +225,7 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
     ...createEditorFunctions(),
     ...createToastFunctions(),
     ...createModalFunctions(),
+    ...createPopconfirmFunctions(),
   };
 }
 

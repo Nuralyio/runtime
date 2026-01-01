@@ -40,10 +40,7 @@ export function createComponentFunctions(runtimeContext: any) {
      * Deletes a component with confirmation
      */
     DeleteComponentAction: (component: ComponentElement) => {
-      const userInput = confirm("Are you sure you want to delete this component?");
-      if (userInput) {
         deleteComponentAction(component.uuid, component.application_id);
-      }
     },
 
     /**
