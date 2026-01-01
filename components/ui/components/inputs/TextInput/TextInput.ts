@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-import { registerWithParentForm, unregisterFromParentForm, notifyFieldValueChange } from "../../base/FormRegisterable.ts";
+import { registerWithParentForm, unregisterFromParentForm } from "../../base/FormRegisterable.ts";
 
 // Safely import @nuralyui/input
 try {
@@ -108,6 +108,7 @@ export class TextInputBlock extends BaseElementBlock {
           .validateOnBlurInput=${this.inputHandlersValue?.validateOnBlur !== false}
           .hasFeedback=${this.inputHandlersValue?.hasFeedback || false}
           .autocomplete=${this.inputHandlersValue?.autocomplete ?? 'off'}
+          .debounce=${this.inputHandlersValue?.debounce ?? 0}
           @nr-input=${(e) => {
             this._isUserFocused = true;
             this.executeEvent('onChange', e , 

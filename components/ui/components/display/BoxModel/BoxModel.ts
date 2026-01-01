@@ -267,6 +267,30 @@ export class BoxModelDisplay extends BaseElementBlock {
     }
   }
 
+  private handleDimensionPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text/plain') || '';
+
+    // Allow pasting values with units (e.g., "100px", "50%", "auto")
+    const match = text.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
+    const isAuto = text.toLowerCase() === "auto";
+    const pasteValue = isAuto ? "auto" : (match ? text : text.replace(/[^0-9.]/g, ''));
+
+    if (pasteValue) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        const textNode = document.createTextNode(pasteValue);
+        range.insertNode(textNode);
+        range.setStartAfter(textNode);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  }
+
   private moveCursorToEnd(element: HTMLElement) {
     const range = document.createRange();
     const selection = window.getSelection();
@@ -307,17 +331,37 @@ export class BoxModelDisplay extends BaseElementBlock {
     const div = event.target as HTMLDivElement;
     const value = div.textContent?.trim() || "";
 
-    // Allow "auto" or numbers (with optional decimals)
+    // Allow "auto" or numbers with units (px, %, em, rem, vw, vh)
     const isAuto = value.toLowerCase() === "auto";
-    const numericValue = value.replace(/[^0-9.]/g, '');
+    const validUnits = ['px', '%', 'em', 'rem', 'vw', 'vh'];
 
-    if (!isAuto && value !== numericValue && value.toLowerCase() !== "a" && value.toLowerCase() !== "au" && value.toLowerCase() !== "aut") {
-      div.textContent = numericValue || "auto";
-      this.moveCursorToEnd(div);
+    // Match number (with optional decimals) followed by optional unit
+    const match = value.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
+
+    // Allow partial typing of "auto"
+    const isPartialAuto = ['a', 'au', 'aut'].includes(value.toLowerCase());
+
+    if (isAuto || isPartialAuto || match) {
+      // Valid input, don't modify
+    } else if (value !== '') {
+      // Invalid input - extract just the number part
+      const numericPart = value.replace(/[^0-9.]/g, '');
+      if (numericPart) {
+        div.textContent = numericPart;
+        this.moveCursorToEnd(div);
+      }
     }
 
     // Trigger the onChange event handler
-    const finalValue = isAuto ? "auto" : (numericValue ? `${numericValue}px` : "auto");
+    let finalValue = "auto";
+    if (isAuto) {
+      finalValue = "auto";
+    } else if (match) {
+      const num = match[1];
+      const unit = match[2] || 'px';
+      finalValue = `${num}${unit}`;
+    }
+
     this.executeEvent("onChange", event, {
       property,
       value: finalValue,
@@ -330,17 +374,22 @@ export class BoxModelDisplay extends BaseElementBlock {
 
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
       event.preventDefault();
-      const currentValue = parseFloat(currentText) || 0;
+
+      // Extract number and unit from current value
+      const match = currentText.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
+      const currentValue = match ? parseFloat(match[1]) : 0;
+      const unit = match?.[2] || 'px';
+
       const step = event.shiftKey ? 10 : 1;
       const newValue = event.key === "ArrowUp" ? currentValue + step : currentValue - step;
       const finalValue = Math.max(0, newValue);
 
-      div.textContent = finalValue.toString();
+      div.textContent = `${finalValue}${unit}`;
       this.moveCursorToEnd(div);
 
       this.executeEvent("onChange", event, {
         property,
-        value: `${finalValue}px`,
+        value: `${finalValue}${unit}`,
       });
     } else if (event.key === "Enter") {
       event.preventDefault();
@@ -352,12 +401,19 @@ export class BoxModelDisplay extends BaseElementBlock {
     const div = event.target as HTMLDivElement;
     const value = div.textContent?.trim() || "";
 
-    // Allow "auto" or ensure we have a valid number
+    // Allow "auto" or number with unit
     if (value.toLowerCase() === "auto") {
       div.textContent = "auto";
     } else {
-      const numericValue = value.replace(/[^0-9.]/g, '');
-      div.textContent = numericValue || "auto";
+      const match = value.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
+      if (match) {
+        const num = match[1];
+        const unit = match[2] || 'px';
+        div.textContent = `${num}${unit}`;
+      } else {
+        const numericValue = value.replace(/[^0-9.]/g, '');
+        div.textContent = numericValue ? `${numericValue}px` : "auto";
+      }
     }
   }
 
@@ -369,7 +425,7 @@ export class BoxModelDisplay extends BaseElementBlock {
       spellcheck="false"
       @input=${(e: Event) => this.handleDimensionChange(property, e)}
       @keydown=${(e: KeyboardEvent) => this.handleDimensionKeyDown(property, e)}
-      @paste=${(e: ClipboardEvent) => this.handlePaste(e)}
+      @paste=${(e: ClipboardEvent) => this.handleDimensionPaste(e)}
       @blur=${(e: FocusEvent) => this.handleDimensionBlur(property, e)}
     >${displayValue}</div>`;
   }

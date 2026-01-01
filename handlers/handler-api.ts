@@ -365,6 +365,7 @@ export const LEGACY_TO_NAMESPACED: Record<string, string> = {
 
   // App
   UpdateApplication: 'App.update',
+  DeleteApplication: 'App.delete',
 
   // Variables
   GetVar: 'Var.get',
