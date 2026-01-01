@@ -336,7 +336,6 @@ export class NrPopconfirmElement extends NuralyUIBaseMixin(LitElement) {
   private renderContent() {
     const iconClass = this.getIconClass();
     const iconColor = this.getIconColor();
-    const okButtonClass = `ok-${this.okType}`;
 
     return html`
       <div class="popconfirm-content">

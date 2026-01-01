@@ -1,0 +1,49 @@
+{
+  "name": "@nuralyui/container",
+  "version": "0.0.1",
+  "description": "Container layout component for NuralyUI library",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "*.js.map",
+    "container.bundled.js",
+    "bundle.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "src/components/container"
+  },
+  "keywords": [
+    "container",
+    "layout",
+    "boxed",
+    "fluid",
+    "web-components",
+    "lit-element",
+    "nuralyui",
+    "ui-components"
+  ],
+  "author": "Nuraly, Laabidi Aymen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/Nuralyio/NuralyUI#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
