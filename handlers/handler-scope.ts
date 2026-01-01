@@ -202,6 +202,12 @@ export interface HandlerScopeConfig {
 
   /** All handler parameters as key-value pairs */
   parameters: Record<string, any>;
+
+  /** Apps registry for component lookup by name */
+  Apps?: Record<string, Record<string, any>>;
+
+  /** Cache for component proxies to avoid recreation */
+  componentProxyCache?: WeakMap<any, any>;
 }
 
 /**
@@ -216,6 +222,86 @@ function isReactiveVar(prop: string): boolean {
  */
 function stripPrefix(prop: string): string {
   return prop.slice(1);
+}
+
+/**
+ * Find a component by name across all apps
+ * @param Apps - The Apps registry
+ * @param name - Component name to find
+ * @returns The component or null if not found
+ */
+function findComponentByName(Apps: Record<string, Record<string, any>> | undefined, name: string): any | null {
+  if (!Apps) return null;
+  for (const appName in Apps) {
+    if (Apps[appName]?.[name]) {
+      return Apps[appName][name];
+    }
+  }
+  return null;
+}
+
+/**
+ * Create a merged proxy for a component that exposes Instance values directly
+ *
+ * This allows `Input1.value` instead of `Input1.Instance.value`
+ * - Get: Instance values first, then component properties
+ * - Set: Always writes to Instance (runtime values)
+ *
+ * @param component - The component to wrap
+ * @param cache - Cache to store proxies for reuse
+ * @returns A proxy that merges Instance values with component properties
+ */
+function createComponentProxy(component: any, cache?: WeakMap<any, any>): any {
+  // Return cached proxy if available
+  if (cache?.has(component)) {
+    return cache.get(component);
+  }
+
+  const proxy = new Proxy(component, {
+    get(target, prop) {
+      const propStr = String(prop);
+
+      // Symbol properties go directly to target
+      if (typeof prop === 'symbol') {
+        return target[prop];
+      }
+
+      // Instance values take priority (runtime values)
+      if (target.Instance?.[propStr] !== undefined) {
+        return target.Instance[propStr];
+      }
+
+      // Fall back to component properties
+      return target[propStr];
+    },
+
+    set(target, prop, value) {
+      const propStr = String(prop);
+
+      // Symbol properties go directly to target
+      if (typeof prop === 'symbol') {
+        target[prop] = value;
+        return true;
+      }
+
+      // Always write to Instance (runtime values)
+      if (!target.Instance) {
+        // Instance should already exist, but ensure it does
+        console.warn(`Component ${target.name} has no Instance property`);
+        return false;
+      }
+
+      target.Instance[propStr] = value;
+      return true;
+    }
+  });
+
+  // Cache the proxy
+  if (cache) {
+    cache.set(component, proxy);
+  }
+
+  return proxy;
 }
 
 /**
@@ -248,7 +334,7 @@ function stripPrefix(prop: string): string {
  * ```
  */
 export function createHandlerScope(config: HandlerScopeConfig): any {
-  const { VarsProxy, parameters } = config;
+  const { VarsProxy, parameters, Apps, componentProxyCache } = config;
 
   return new Proxy(parameters, {
     /**
@@ -256,6 +342,7 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
      * We claim to have:
      * - All reserved names (handler parameters)
      * - All $-prefixed names (reactive variables)
+     * - Component names (for direct component access like Input1.value)
      */
     has(target, prop) {
       const propStr = String(prop);
@@ -275,6 +362,11 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
         return true;
       }
 
+      // Check if it's a component name (for direct component access)
+      if (findComponentByName(Apps, propStr)) {
+        return true;
+      }
+
       // For other names, let them resolve normally (local vars, globals)
       // Returning false lets the `with` statement fall through to outer scope
       return false;
@@ -284,6 +376,7 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
      * Get property value.
      * - Reserved names get their actual values
      * - $-prefixed names get from VarsProxy (without the $ prefix)
+     * - Component names return merged proxy (Instance + component props)
      * - Other names shouldn't reach here (has() returns false)
      */
     get(target, prop, receiver) {
@@ -320,6 +413,12 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
       // Check if it's a handler parameter
       if (propStr in target) {
         return target[propStr];
+      }
+
+      // Check if it's a component name - return merged proxy
+      const component = findComponentByName(Apps, propStr);
+      if (component) {
+        return createComponentProxy(component, componentProxyCache);
       }
 
       // Fallback to undefined (shouldn't normally reach here)
