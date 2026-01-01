@@ -165,6 +165,10 @@ export class NrInputElement extends NumberMixin(
   @property({ type: String })
   label?: string;
 
+  /** Debounce delay in milliseconds for input events */
+  @property({ type: Number })
+  debounce = 0;
+
   /** Validation message */
   @state()
   validationMessage?: string;
@@ -219,10 +223,11 @@ export class NrInputElement extends NumberMixin(
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    
+
     this.removeEventListener('nr-validation', this._handleValidationEvent as EventListener);
-    
+
     this.validationController.clearDebounceTimer?.();
+    this.eventController.clearDebounceTimer?.();
   }
 
   /**
