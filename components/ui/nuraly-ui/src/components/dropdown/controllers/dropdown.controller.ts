@@ -476,12 +476,12 @@ export class NrDropdownController extends BaseDropdownController implements Drop
     return false;
   }
 
-  handleItemClick(item: any): void {
+  handleItemClick(item: any, originalEvent?: MouseEvent): void {
     this.dispatchEvent(
       new CustomEvent('nr-dropdown-item-click', {
         bubbles: true,
         composed: true,
-        detail: { item, dropdown: this.host }
+        detail: { item, dropdown: this.host, originalEvent }
       })
     );
 

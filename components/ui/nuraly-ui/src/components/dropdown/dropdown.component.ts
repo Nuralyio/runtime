@@ -145,7 +145,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
     e.stopPropagation();
   };
 
-  private handleItemClick = (item: DropdownItem): void => {
+  private handleItemClick = (item: DropdownItem, e?: MouseEvent): void => {
     if (item.disabled) return;
 
     if ((item.options && item.options.length > 0) || item.customContent) {
@@ -153,7 +153,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
       return;
     }
 
-    this.dropdownController.handleItemClick(item);
+    this.dropdownController.handleItemClick(item, e);
   };
 
   private handleItemHover = (item: DropdownItem): void => {
@@ -252,7 +252,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
                   'dropdown__item--has-submenu': hasSubmenu
                 })}"
                 ?disabled="${item.disabled}"
-                @click="${() => this.handleItemClick(item)}"
+                @click="${(e: MouseEvent) => this.handleItemClick(item, e)}"
                 @mouseenter="${() => hasSubmenu && this.handleItemHover(item)}"
                 @mouseleave="${() => hasSubmenu && this.handleItemLeave(item)}"
               >
@@ -288,7 +288,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
                               'dropdown__item--disabled': !!subItem.disabled
                             })}"
                             ?disabled="${subItem.disabled}"
-                            @click="${() => this.handleItemClick(subItem)}"
+                            @click="${(e: MouseEvent) => this.handleItemClick(subItem, e)}"
                           >
                             ${subItem.icon ? html`<nr-icon name="${subItem.icon}" class="dropdown__item-icon"></nr-icon>` : nothing}
                             <span class="dropdown__item-label">${subItem.label}</span>

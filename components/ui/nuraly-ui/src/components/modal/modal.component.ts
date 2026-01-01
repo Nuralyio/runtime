@@ -304,7 +304,7 @@ export class NrModalElement extends NuralyUIBaseMixin(LitElement)
   /**
    * Closes the modal
    */
-  closeModal() {
+  closeModal = () => {
     if (!this.closable) return;
 
     // Dispatch before close event (cancelable)
@@ -318,14 +318,15 @@ export class NrModalElement extends NuralyUIBaseMixin(LitElement)
     });
 
     const dispatched = this.dispatchEvent(beforeCloseEvent);
-    
+
     // Only close if event wasn't cancelled
     if (dispatched) {
       this.open = false;
-      
+
       // Dispatch close event
       this.dispatchEvent(new CustomEvent('modal-close', {
         bubbles: true,
+        composed: true,
         detail: { modal: this }
       }));
     }
@@ -403,12 +404,20 @@ export class NrModalElement extends NuralyUIBaseMixin(LitElement)
         ` : nothing}
         
         ${this.showCloseButton ? html`
-          <button 
+          <button
             class="modal-close-button"
-            @click=${this.closeModal}
+            @click=${(e: Event) => {
+              e.stopPropagation();
+              this.open = false;
+              this.dispatchEvent(new CustomEvent('modal-close', {
+                bubbles: true,
+                composed: true,
+                detail: { modal: this }
+              }));
+            }}
             aria-label="Close modal"
             type="button">
-            <nr-icon class="modal-close-icon" name="close"></nr-icon>
+            <nr-icon class="modal-close-icon" name="x"></nr-icon>
           </button>
         ` : nothing}
       </div>

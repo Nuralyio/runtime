@@ -57,4 +57,6 @@ export interface IAction {
   label: string;
   /** Action value */
   value: string;
+  /** Action icon */
+  icon?: string;
 }
