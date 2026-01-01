@@ -301,6 +301,8 @@ export const HANDLER_PARAMETERS = [
   "HasAnyRole",
   "HasAllRoles",
   "CurrentUser",
+  // Cross-component reactivity
+  "componentValueListeners",
 ] as const;
 
 /**
@@ -440,6 +442,8 @@ export function compileHandlerFunction(code: string): Function {
           VarsProxy: Vars,
           Apps: Apps,
           componentProxyCache: new WeakMap(),
+          Current: Current,
+          componentValueListeners: componentValueListeners,
           parameters: {
             eventHandler: eventHandler, Components, Editor, Event, Item,
             Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
