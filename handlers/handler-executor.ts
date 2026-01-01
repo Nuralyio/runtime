@@ -378,6 +378,6 @@ export function executeHandler(
     globalFunctions.HasAnyRole,
     globalFunctions.HasAllRoles,
     globalFunctions.GetCurrentUser(), // CurrentUser - direct access to user object
-    context.componentValueListeners || {} // Cross-component reactivity listener registry
+    context.listeners || {} // Shared listener registry for reactivity
   );
 }

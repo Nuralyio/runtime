@@ -206,14 +206,11 @@ export interface HandlerScopeConfig {
   /** Apps registry for component lookup by name */
   Apps?: Record<string, Record<string, any>>;
 
-  /** Cache for component proxies to avoid recreation */
-  componentProxyCache?: WeakMap<any, any>;
-
   /** Current component executing the handler (for dependency tracking) */
   Current?: any;
 
-  /** Listener registry for cross-component dependencies */
-  componentValueListeners?: Record<string, Set<string>>;
+  /** Shared listener registry (same as VarsProxy uses) */
+  listeners?: Record<string, Set<string>>;
 }
 
 /**
@@ -250,25 +247,20 @@ function findComponentByName(Apps: Record<string, Record<string, any>> | undefin
  * Create a merged proxy for a component that exposes Instance values directly
  *
  * This allows `Input1.value` instead of `Input1.Instance.value`
- * - Get: Instance values first, then component properties
+ * - Get: Instance values first, then component properties (+ registers dependency)
  * - Set: Always writes to Instance (runtime values)
  *
  * @param component - The component to wrap
- * @param cache - Cache to store proxies for reuse
  * @param currentComponent - The component currently executing (for dependency tracking)
- * @param listeners - Registry to track which components depend on which values
+ * @param listeners - Shared listener registry (same as VarsProxy uses)
  * @returns A proxy that merges Instance values with component properties
  */
 function createComponentProxy(
   component: any,
-  cache?: WeakMap<any, any>,
   currentComponent?: any,
   listeners?: Record<string, Set<string>>
 ): any {
-  // Note: We can't use cache when we need fresh dependency tracking per execution
-  // The proxy itself is lightweight, so creating a new one per access is fine
-
-  const proxy = new Proxy(component, {
+  return new Proxy(component, {
     get(target, prop) {
       const propStr = String(prop);
 
@@ -277,7 +269,8 @@ function createComponentProxy(
         return target[prop];
       }
 
-      // Register dependency: currentComponent depends on target.propStr
+      // Register dependency using same pattern as VarsProxy
+      // Key format: "ComponentName.propName" (e.g., "Input1.value")
       if (currentComponent?.name && listeners && target.name) {
         const depKey = `${target.name}.${propStr}`;
         if (!listeners[depKey]) {
@@ -306,7 +299,6 @@ function createComponentProxy(
 
       // Always write to Instance (runtime values)
       if (!target.Instance) {
-        // Instance should already exist, but ensure it does
         console.warn(`Component ${target.name} has no Instance property`);
         return false;
       }
@@ -315,8 +307,6 @@ function createComponentProxy(
       return true;
     }
   });
-
-  return proxy;
 }
 
 /**
@@ -349,7 +339,7 @@ function createComponentProxy(
  * ```
  */
 export function createHandlerScope(config: HandlerScopeConfig): any {
-  const { VarsProxy, parameters, Apps, componentProxyCache, Current, componentValueListeners } = config;
+  const { VarsProxy, parameters, Apps, Current, listeners } = config;
 
   return new Proxy(parameters, {
     /**
@@ -433,7 +423,7 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
       // Check if it's a component name - return merged proxy with dependency tracking
       const component = findComponentByName(Apps, propStr);
       if (component) {
-        return createComponentProxy(component, componentProxyCache, Current, componentValueListeners);
+        return createComponentProxy(component, Current, listeners);
       }
 
       // Fallback to undefined (shouldn't normally reach here)
