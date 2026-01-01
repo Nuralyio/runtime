@@ -61,27 +61,35 @@ export class BlockGenerator {
    */
   static generateFromConfig(blockConfig: BlockConfig, blockName: string): any[] {
     const components = this.generateBlockComponents(blockConfig, blockName);
-    
+
     // Process includeCommonProperties if present
     if (blockConfig.includeCommonProperties && blockConfig.includeCommonProperties.length > 0) {
       const commonComponents: any[] = [];
-      
-      
+      const commonBlockRootUuids: string[] = [];
+
       for (const commonBlockUuid of blockConfig.includeCommonProperties) {
         const commonBlock = getCommonPropertyBlock(commonBlockUuid);
-        
+
         if (commonBlock && commonBlock.length > 0) {
           commonComponents.push(...commonBlock);
+          // The first component in each common block is the root container
+          commonBlockRootUuids.push(commonBlockUuid);
         } else {
           console.warn(`Common property block "${commonBlockUuid}" not found or empty`);
         }
       }
-      
-      
+
+      // Find the properties container and add common block root UUIDs to its childrenIds
+      const propertiesContainerUuid = `${blockName}_collapse_container_childrens`;
+      const propertiesContainer = components.find(c => c.uuid === propertiesContainerUuid);
+      if (propertiesContainer && propertiesContainer.childrenIds) {
+        propertiesContainer.childrenIds = [...propertiesContainer.childrenIds, ...commonBlockRootUuids];
+      }
+
       // Append common components to the generated components
       return [...components, ...commonComponents];
     }
-    
+
     return components;
   }
 }

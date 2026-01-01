@@ -9,7 +9,7 @@ import Editor from '@nuraly/runtime/state/editor';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
   payload?: any;
 }
 
@@ -186,6 +186,20 @@ export class PreviewIFramePanel extends LitElement {
               payload: updatedComponent
             });
           }
+        }
+      });
+
+      // Listen for component deletion - sync full component list to iframe
+      eventDispatcher.on('component:deleted', () => {
+        if (this.iframeReady) {
+          this.syncComponentsToIframe();
+        }
+      });
+
+      // Listen for component refresh (e.g., after adding new components)
+      eventDispatcher.on('component:refresh', () => {
+        if (this.iframeReady) {
+          this.syncComponentsToIframe();
         }
       });
     }

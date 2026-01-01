@@ -13,14 +13,18 @@
 
 import { StudioComponentIdInput } from "../core/inputs/id.ts";
 import { StudioComponentNameInput } from "../core/inputs/name.ts";
+import StudioDisplayBlock from "../core/inputs/display.ts";
+import { StudioComponentHashInput } from "../core/inputs/hash.ts";
 
 /**
  * Registry mapping UUIDs to component arrays.
- * 
+ *
  */
 export const COMMON_PROPERTIES_MAP: Record<string, any[]> = {
   component_value_text_block: StudioComponentNameInput,
   component_id_text_block: StudioComponentIdInput,
+  display_block: StudioDisplayBlock,
+  component_hash_text_block: StudioComponentHashInput,
   component_refs_block: [],
 };
 

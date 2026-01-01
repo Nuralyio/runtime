@@ -425,6 +425,19 @@ export const StudioRefComponent = loadComponentProperties(
   refComponentMeta
 );
 
+// Modal
+import modalConfig from "./advanced/modal/config.json";
+import modalHandlers from "./advanced/modal/handlers.json";
+import modalTheme from "./advanced/modal/theme.json";
+import modalMeta from "./advanced/modal/meta.json";
+
+export const StudioModal = loadComponentProperties(
+  modalConfig,
+  modalHandlers,
+  modalTheme,
+  modalMeta
+);
+
 // ========================================
 // COMPONENT REGISTRY
 // ========================================
@@ -475,4 +488,5 @@ export const StudioComponents = {
   // Advanced
   StudioEmbed,
   StudioRefComponent,
+  StudioModal,
 };

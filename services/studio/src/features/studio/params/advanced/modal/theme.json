@@ -1,0 +1,78 @@
+[
+  {
+    "name": "Modal Appearance",
+    "open": true,
+    "items": [
+      {
+        "label": "Background Color",
+        "cssVar": "--nuraly-color-modal-background"
+      },
+      {
+        "label": "Backdrop Color",
+        "cssVar": "--nuraly-color-modal-backdrop"
+      },
+      {
+        "label": "Border Radius",
+        "cssVar": "--nuraly-border-radius-modal"
+      },
+      {
+        "label": "Box Shadow",
+        "cssVar": "--nuraly-shadow-modal"
+      }
+    ]
+  },
+  {
+    "name": "Modal Sizing",
+    "open": false,
+    "items": [
+      {
+        "label": "Small Width",
+        "cssVar": "--nuraly-modal-width-small"
+      },
+      {
+        "label": "Medium Width",
+        "cssVar": "--nuraly-modal-width-medium"
+      },
+      {
+        "label": "Large Width",
+        "cssVar": "--nuraly-modal-width-large"
+      },
+      {
+        "label": "XL Width",
+        "cssVar": "--nuraly-modal-width-xl"
+      }
+    ]
+  },
+  {
+    "name": "Modal Spacing",
+    "open": false,
+    "items": [
+      {
+        "label": "Header Padding",
+        "cssVar": "--nuraly-spacing-modal-header"
+      },
+      {
+        "label": "Body Padding",
+        "cssVar": "--nuraly-spacing-modal-body"
+      },
+      {
+        "label": "Footer Padding",
+        "cssVar": "--nuraly-spacing-modal-footer"
+      },
+      {
+        "label": "Viewport Margin",
+        "cssVar": "--nuraly-spacing-modal-margin"
+      }
+    ]
+  },
+  {
+    "name": "Animation",
+    "open": false,
+    "items": [
+      {
+        "label": "Transition Duration",
+        "cssVar": "--nuraly-transition-modal"
+      }
+    ]
+  }
+]

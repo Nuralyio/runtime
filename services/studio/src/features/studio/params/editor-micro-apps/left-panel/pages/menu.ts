@@ -17,7 +17,7 @@ export const pagesMenu = {
     "margin-left": "13px",
     "margin-top": "11px",
     "--nuraly-menu-link-padding-medium": "4px",
-    "height": "39vh",
+    "height": "calc(100vh - 49px)",
     "overflow-y": "auto"
   },
   input: {
@@ -91,6 +91,7 @@ export const pagesMenu = {
               case 'button_input': componentIcon = 'rectangle-horizontal'; break;
               case 'Datepicker': componentIcon = 'calendar'; break;
               case 'Icon': componentIcon = 'cable-car'; break;
+              case 'modal-block': componentIcon = 'square-stack'; break;
             }
 
             const isSelected = component.uuid === selectedComponentId;
@@ -208,22 +209,36 @@ export const pagesMenu = {
         $selectedComponents = [selectedComponent];
       }
     `,
-    actionClick: /* js */`
+    onActionClick: /* js */`
+      // Get cursor position from the original mouse event
+      const originalEvent = EventData.originalEvent;
+      const mouseX = originalEvent?.clientX || 400;
+      const mouseY = originalEvent?.clientY || 300;
+      const position = { x: mouseX, y: mouseY };
+
       if (EventData.action === "delete") {
-        const { type, component, page } = EventData.value;
-      
-        switch (type) {
-          case "component":
-            if (component) {
+        const type = EventData.value?.type;
+        const component = EventData.value?.component;
+        const page = EventData.value?.page;
+
+        if (type === "component" && component) {
+          ShowDeleteConfirm(
+            component.name || 'this component',
+            position,
+            () => {
               DeleteComponentAction(component);
+              ShowSuccessToast('Component deleted');
             }
-            break;
-      
-          case "page":
-            if (page) {
+          );
+        } else if (type === "page" && page) {
+          ShowDeleteConfirm(
+            page.name || 'this page',
+            position,
+            () => {
               deletePage(page);
+              ShowSuccessToast('Page deleted');
             }
-            break;
+          );
         }
       } else if(EventData.action === "copy"){
         eventHandler.emit("Copy")

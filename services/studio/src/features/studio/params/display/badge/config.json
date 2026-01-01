@@ -251,6 +251,13 @@
         "handlerType": "input",
         "handlerProperty": "ribbonPlacement"
       }
-    ]
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block",
+      "display_block",
+      "component_hash_text_block"
+    ],
+    "includeContainers": []
   }
 }

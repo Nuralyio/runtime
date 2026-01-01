@@ -50,6 +50,10 @@ export const componentCollection = {
           { id: "ref-component", icon: "asterisk", label: "Ref Component" }
         ];
 
+        const advancedOptions = [
+          { id: "modal", icon: "square-stack", label: "Modal" }
+        ];
+
         const mediaOptions = [
           { id: "image", icon: "image", label: "Image" },
           { id: "video", icon: "video", label: "Video" },
@@ -65,6 +69,7 @@ export const componentCollection = {
           ...displayOptions,
           ...dataOptions,
           ...layoutOptions,
+          ...advancedOptions,
           ...mediaOptions,
           ...applicationOptions
         ];

@@ -114,6 +114,34 @@ export const Insert = /* js */`
             icon: "grip-vertical",
           },
           {
+            id: "modal",
+            label: "Modal",
+            value: {
+              value: "modal-block",
+              additionalData: {
+              action: "add",
+              input: {
+                "open": {
+                  "type": "static",
+                  "value": false
+                },
+                "modalTitle": {
+                  "type": "static",
+                  "value": "Modal Title"
+                },
+                "size": {
+                  "type": "static",
+                  "value": "medium"
+                }
+              },
+              style:{
+                  width: "auto",
+              }
+              },
+            },
+            icon: "square-stack",
+          },
+          {
             id: "grid-row",
             label: "Grid Row",
             value: {
