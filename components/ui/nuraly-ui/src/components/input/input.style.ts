@@ -368,7 +368,8 @@ const inputStyle = css`
   }
 
   :host([variant='outlined']:not([state='error'])) #input-container:focus-within {
-    border: var(--nuraly-input-outlined-focus-border, var(--nuraly-outlined-focus-border, 2px solid #3b82f6));
+    border-color: var(--nuraly-color-input-border-focus, #3b82f6);
+    box-shadow: var(--nuraly-shadow-input-focus, 0 0 0 1px #3b82f6);
   }
 
   /* 
