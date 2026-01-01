@@ -301,8 +301,8 @@ export const HANDLER_PARAMETERS = [
   "HasAnyRole",
   "HasAllRoles",
   "CurrentUser",
-  // Cross-component reactivity
-  "componentValueListeners",
+  // Shared listener registry for reactivity
+  "listeners",
 ] as const;
 
 /**
@@ -441,9 +441,8 @@ export function compileHandlerFunction(code: string): Function {
         var __scope__ = __createScope__({
           VarsProxy: Vars,
           Apps: Apps,
-          componentProxyCache: new WeakMap(),
           Current: Current,
-          componentValueListeners: componentValueListeners,
+          listeners: listeners,
           parameters: {
             eventHandler: eventHandler, Components, Editor, Event, Item,
             Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,

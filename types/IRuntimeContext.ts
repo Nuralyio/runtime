@@ -202,16 +202,13 @@ export interface IRuntimeContext {
   valuesProxyCache: WeakMap<any, any>;
 
   // ============================================================================
-  // Cross-Component Reactivity
+  // Reactivity
   // ============================================================================
 
   /**
-   * Listener registry for cross-component Instance value dependencies.
-   * Key: "ComponentName.propertyName" (e.g., "Input1.value")
+   * Shared listener registry for Vars and Component values.
+   * Key: property name (e.g., "username") or "ComponentName.propName" (e.g., "Input1.value")
    * Value: Set of component names that depend on this value
-   *
-   * Used to track when Component A reads Component B's Instance value,
-   * so that A can be re-rendered when B's value changes.
    */
-  componentValueListeners?: Record<string, Set<string>>;
+  listeners?: Record<string, Set<string>>;
 }
