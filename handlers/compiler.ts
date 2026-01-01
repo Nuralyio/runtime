@@ -432,11 +432,14 @@ export function compileHandlerFunction(code: string): Function {
     if (transparentVarsEnabled) {
       // Compile with transparent variable access using `with` statement
       // The scope proxy routes unknown variables to VarsProxy
+      // Also provides direct component access (Input1.value) via Apps registry
       handlerFunctionCache[cacheKey] = new Function(
         ...HANDLER_PARAMETERS,
         `
         var __scope__ = __createScope__({
           VarsProxy: Vars,
+          Apps: Apps,
+          componentProxyCache: new WeakMap(),
           parameters: {
             eventHandler: eventHandler, Components, Editor, Event, Item,
             Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
