@@ -212,6 +212,11 @@ export default [
                             parameters: ["form_blocks"],
                             handlers: ["studio_form_handler"],
                             themes: ["form_theme_container", "border_manager_collapse", "box_model_collapse"]
+                        },
+                        "modal-block": {
+                            parameters: ["modal_blocks"],
+                            handlers: ["studio_modal_handler"],
+                            themes: ["studio_modal_theme_container", "border_manager_collapse", "box_model_collapse"]
                         }
                     };
                     // prepare select_component_text into themes
@@ -224,7 +229,7 @@ export default [
                         themes = ["select_component_styles_state_container", ...(config.themes || [])];
                     }
                 } else if(currentPageId) {
-                    parameters = ["page_info_container_block", "access_control_panel_block", "app_settings_container_block", "app_access_control_panel_block"];
+                    parameters = ["page_info_container_block", "access_control_panel_block"];
                     themes = ["PageThemeStudio"];
                 }
                 

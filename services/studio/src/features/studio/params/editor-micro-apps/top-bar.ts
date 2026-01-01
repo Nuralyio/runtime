@@ -1,5 +1,6 @@
 import { Edit } from "./top-menu/edit";
 import { Insert } from "./top-menu/insert";
+import { Application } from "./top-menu/application";
 
 export default [{
   uuid: "top-bar",
@@ -14,7 +15,7 @@ export default [{
     "justify-content": "center",
     "border-bottom": "1px #d6d6d6 solid",
   },
-  childrenIds: ["info-top-bar", "settings-top-bar"]
+  childrenIds: ["info-top-bar", "settings-top-bar", "app_settings_modal"]
 },
 {
   uuid: "info-top-bar",
@@ -160,13 +161,59 @@ export default [{
   }
 },
 {
+  uuid: "app_application_top_bar",
+  name: "app application top bar",
+  application_id: "1",
+  style: {
+      "height": "24px",
+      "margin-left": "5px",
+  },
+  component_type: "InsertDropdown",
+  input: {
+    icon:{
+      type: "string",
+      value: "app-window"
+    },
+    title: {
+      type: "string",
+      value: ""
+    },
+    options: {
+      type: "handler",
+      value: Application
+    }
+  },
+  event: {
+    onClick: /* js */ `
+    const itemValue = EventData.value || EventData;
+    const action = itemValue.action;
+
+    console.log("Application menu clicked", itemValue, action);
+
+    if(action === "open-modal"){
+      // Open the application settings modal
+      $applicationSettingsModalOpen = true
+    } else if(action === "export"){
+      // Export application functionality
+      const currentEditingApplication = GetVar("currentEditingApplication");
+      if(currentEditingApplication) {
+        ExportApplication(currentEditingApplication.uuid);
+      }
+    } else if(action === "import"){
+      // Import application functionality
+      ImportApplication();
+    }
+    `
+  }
+},
+{
   uuid: "app_insert_top_bar2",
   name: "app insert top bar",
   application_id: "1",
   style: {
     "--text-label-color": "black",
     "--resolved-text-label-color" : "black",
-    "title-color": "white", 
+    "title-color": "white",
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
@@ -372,7 +419,7 @@ export default [{
     "margin-right": "14px",
     "align-items": "center",
   },
-  childrenIds: ["app_insert_top_bar",  "app_edit_top_bar", "vdivider",  "prev_next_top_bar" , "vdivider",  "zoom_top_bar",  "vdivider",  "edit_mode", "preview_mode"]
+  childrenIds: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode"]
 
 },
 
@@ -745,6 +792,328 @@ export default [{
             return appName;
              return currentPageName;
             `
+    }
+  }
+},
+{
+  uuid: "app_settings_modal",
+  name: "Application Settings Modal",
+  application_id: "1",
+  component_type: "modal-block",
+  input: {
+    open: {
+      type: "handler",
+      value: /* js */`
+        $applicationSettingsModalOpen;
+      `
+    },
+    modalTitle: {
+      type: "string",
+      value: "Application Settings"
+    },
+    size: {
+      type: "string",
+      value: "large"
+    },
+    position: {
+      type: "string",
+      value: "center"
+    },
+    closable: {
+      type: "boolean",
+      value: true
+    },
+    showCloseButton: {
+      type: "boolean",
+      value: true
+    }
+  },
+  event: {
+    onModalClose: /* js */`
+      $applicationSettingsModalOpen = false
+    `
+  },
+  childrenIds: ["app_settings_modal_content"]
+},
+{
+  uuid: "app_settings_modal_content",
+  name: "Settings Modal Content",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    "wdith": "80%",
+    gap: "16px",
+    display: "flex",
+    "flex-direction": "column",
+    width: "100%"
+  },
+  childrenIds: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section"]
+},
+{
+  uuid: "app_settings_name_section",
+  name: "App Name Section",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    gap: "8px",
+    display: "flex",
+    "flex-direction": "column",
+    width: "100%"
+  },
+  childrenIds: ["app_settings_name_label", "app_settings_name_input"]
+},
+{
+  uuid: "app_settings_name_label",
+  name: "App Name Label",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Application Name"
+    }
+  },
+  style: {
+    "font-weight": "600",
+    "font-size": "14px"
+  }
+},
+{
+  uuid: "app_settings_name_input",
+  name: "App Name Input",
+  application_id: "1",
+  component_type: "text_input",
+  style: {
+    width: "100%"
+  },
+  input: {
+    value: {
+      type: "handler",
+      value: /* js */`
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        return currentEditingApplication?.name || "";
+      `
+    },
+    placeholder: {
+      type: "string",
+      value: "Enter application name"
+    }
+  },
+  event: {
+    onInput: /* js */`
+      const currentEditingApplication = GetVar("currentEditingApplication");
+      if(currentEditingApplication) {
+        currentEditingApplication.name = EventData.value;
+        UpdateApplication({...currentEditingApplication});
+      }
+    `
+  }
+},
+{
+  uuid: "app_settings_description_section",
+  name: "App Description Section",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    gap: "8px",
+    display: "flex",
+    "flex-direction": "column",
+    width: "100%"
+  },
+  childrenIds: ["app_settings_description_label", "app_settings_description_input"]
+},
+{
+  uuid: "app_settings_description_label",
+  name: "App Description Label",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Description"
+    }
+  },
+  style: {
+    "font-weight": "600",
+    "font-size": "14px"
+  }
+},
+{
+  uuid: "app_settings_description_input",
+  name: "App Description Input",
+  application_id: "1",
+  component_type: "text_input",
+  style: {
+    width: "100%"
+  },
+  input: {
+    value: {
+      type: "handler",
+      value: /* js */`
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        return currentEditingApplication?.description || "";
+      `
+    },
+    placeholder: {
+      type: "string",
+      value: "Enter application description"
+    }
+  },
+  event: {
+    onInput: /* js */`
+      const currentEditingApplication = GetVar("currentEditingApplication");
+      if(currentEditingApplication) {
+        currentEditingApplication.description = EventData.value;
+        UpdateApplication({...currentEditingApplication});
+      }
+    `
+  }
+},
+{
+  uuid: "app_settings_subdomain_section",
+  name: "App Subdomain Section",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    gap: "8px",
+    display: "flex",
+    "flex-direction": "column",
+    width: "100%"
+  },
+  childrenIds: ["app_settings_subdomain_label", "app_settings_subdomain_input_row"]
+},
+{
+  uuid: "app_settings_subdomain_label",
+  name: "App Subdomain Label",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Subdomain"
+    }
+  },
+  style: {
+    "font-weight": "600",
+    "font-size": "14px"
+  }
+},
+{
+  uuid: "app_settings_subdomain_input_row",
+  name: "App Subdomain Input Row",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    display: "flex",
+    "flex-direction": "row",
+    "align-items": "center",
+    gap: "4px",
+    width: "100%"
+  },
+  childrenIds: ["app_settings_subdomain_input", "app_settings_subdomain_suffix"]
+},
+{
+  uuid: "app_settings_subdomain_input",
+  name: "App Subdomain Input",
+  application_id: "1",
+  component_type: "text_input",
+  style: {
+    width: "200px"
+  },
+  input: {
+    value: {
+      type: "handler",
+      value: /* js */`
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        return currentEditingApplication?.subdomain || '';
+      `
+    },
+    placeholder: {
+      type: "string",
+      value: "my-app"
+    }
+  },
+  event: {
+    onInput: /* js */`
+      const newSubdomain = EventData.value?.toLowerCase().replace(/[^a-z0-9-]/g, '') || '';
+      const currentEditingApplication = GetVar("currentEditingApplication");
+
+      if (currentEditingApplication) {
+        UpdateApplication({
+          ...currentEditingApplication,
+          subdomain: newSubdomain || null
+        });
+      }
+    `
+  }
+},
+{
+  uuid: "app_settings_subdomain_suffix",
+  name: "App Subdomain Suffix",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: ".nuraly.io"
+    }
+  },
+  style: {
+    "font-size": "14px",
+    color: "#6b7280"
+  }
+},
+{
+  uuid: "app_settings_access_section",
+  name: "App Access Section",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    gap: "8px"
+  },
+  childrenIds: ["app_settings_access_label", "app_settings_access_roles"]
+},
+{
+  uuid: "app_settings_access_label",
+  name: "App Access Label",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Access Roles"
+    }
+  },
+  style: {
+    "font-weight": "600",
+    "font-size": "14px"
+  }
+},
+{
+  uuid: "app_settings_access_roles",
+  name: "App Access Roles",
+  application_id: "1",
+  component_type: "access_roles",
+  style: {
+    width: "100%",
+    display: "block"
+  },
+  input: {
+    value: {
+      type: "handler",
+      value: /* js */`
+        const currentEditingApplication = GetVar("currentEditingApplication");
+
+        return {
+          resource_type: 'application',
+          resource_id: currentEditingApplication?.uuid,
+          application_id: currentEditingApplication?.uuid,
+          is_public: false,
+          is_anonymous: false,
+          role_permissions: [],
+          available_roles: currentEditingApplication?.roles || []
+        };
+      `
     }
   }
 }];

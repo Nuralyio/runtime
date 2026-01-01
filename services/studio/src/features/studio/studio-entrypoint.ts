@@ -13,7 +13,7 @@ import {
   StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioCard, StudioDocument,
   StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
   StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
-  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol, StudioForm
+  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol, StudioForm, StudioModal
 } from "./params/index.ts";
 
 import {
@@ -472,6 +472,7 @@ export default [
     ...StudioGridRow,
     ...StudioGridCol,
     ...StudioForm,
+    ...StudioModal,
     ...studioValidationRulesBlock,
     ...studioBorderManagerBlock
 ];

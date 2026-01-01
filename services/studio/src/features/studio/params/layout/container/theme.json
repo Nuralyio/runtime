@@ -10,7 +10,7 @@
     "name": "Light Mode",
     "open": true,
     "items": [
-      { "label": "Background Color", "cssVar": "--container-bg-color" }
+      { "label": "Background Color", "cssVar": "background-color" }
     ]
   }
 ]
