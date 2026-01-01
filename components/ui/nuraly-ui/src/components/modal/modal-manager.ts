@@ -53,8 +53,6 @@ class ModalManagerClass {
     // Update modal z-index
     this.updateModalZIndex(modal, zIndex);
     
-    console.log(`Modal opened. Stack depth: ${this.modalStack.length}, Z-Index: ${zIndex}`);
-    
     return zIndex;
   }
 

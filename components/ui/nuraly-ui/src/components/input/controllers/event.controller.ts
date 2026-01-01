@@ -33,7 +33,8 @@ export interface InputEventHost extends InputHost {
   allowClear?: boolean;
   inputType?: string;
   focused?: boolean;
-  
+  debounce?: number;
+
   // Mixin methods that should be available
   isReadonlyKeyAllowed?(keyDownEvent: KeyboardEvent): boolean;
   isActivationKey?(keyDownEvent: KeyboardEvent): boolean;
@@ -41,12 +42,12 @@ export interface InputEventHost extends InputHost {
   getSelectedText?(): string;
   increment?(): void;
   decrement?(): void;
-  
+
   // Event dispatch methods
   dispatchInputEvent(eventName: string, detail: any): void;
   dispatchFocusEvent(eventName: string, detail: any): void;
   dispatchActionEvent(eventName: string, detail: any): void;
-  
+
   // DOM access
   shadowRoot?: ShadowRoot | null;
 }
@@ -57,12 +58,24 @@ export interface InputEventHost extends InputHost {
  * value changes, and action button interactions.
  */
 export class InputEventController extends BaseInputController implements EventController {
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
   protected get eventHost(): InputEventHost {
     return this.host as InputEventHost;
   }
 
   private get inputElement(): HTMLInputElement | null {
     return this.eventHost.shadowRoot?.querySelector('#input') as HTMLInputElement || null;
+  }
+
+  /**
+   * Clear debounce timer on disconnect
+   */
+  clearDebounceTimer(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
   }
 
   /**
@@ -109,21 +122,35 @@ export class InputEventController extends BaseInputController implements EventCo
     if (this.eventHost.type === INPUT_TYPE.NUMBER && newValue) {
       this.validateNumericValue(newValue, event);
     }
-    
-    // Update value and dispatch events
+
+    // Update value immediately
     this.eventHost.value = newValue;
-    
+
     // Trigger validation (if validation controller exists)
     const host = this.eventHost as any;
     if (host.validationController && typeof host.validationController.validateOnChange === 'function') {
       host.validationController.validateOnChange();
     }
-    
-    this.eventHost.dispatchInputEvent('nr-input', {
-      value: this.eventHost.value,
-      target: target,
-      originalEvent: event
-    });
+
+    // Dispatch event with debounce if configured
+    const debounceMs = this.eventHost.debounce || 0;
+
+    if (debounceMs > 0) {
+      this.clearDebounceTimer();
+      this.debounceTimer = setTimeout(() => {
+        this.eventHost.dispatchInputEvent('nr-input', {
+          value: this.eventHost.value,
+          target: target,
+          originalEvent: event
+        });
+      }, debounceMs);
+    } else {
+      this.eventHost.dispatchInputEvent('nr-input', {
+        value: this.eventHost.value,
+        target: target,
+        originalEvent: event
+      });
+    }
   };
 
   /**
