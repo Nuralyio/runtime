@@ -160,6 +160,11 @@ export class ModalBlock extends BaseElementBlock {
     .header-slot, .footer-slot {
       position: relative;
     }
+
+    /* Ensure nr-modal receives pointer events despite host having pointer-events: none */
+    nr-modal {
+      pointer-events: auto;
+    }
   `];
 
   @property({ type: Object })
@@ -340,30 +345,24 @@ export class ModalBlock extends BaseElementBlock {
             ?open=${true}
             .size=${size}
             .position=${position}
-            .backdrop=${ModalBackdrop.Static}
-            ?closable=${false}
+            .backdrop=${ModalBackdrop.Closable}
+            ?closable=${true}
             .animation=${ModalAnimation.Fade}
             .modalTitle=${modalTitle || 'Modal'}
             ?showCloseButton=${true}
             ?modalDraggable=${true}
             .width=${width}
             .height=${height}
-            @modal-close=${(e) => { 
-
-               this.executeEvent('onModalClose', e , 
-                          {
-                            value: e.detail.value,
-                            oldValue: e.detail.oldValue
-                          }
-                          );
+            @modal-close=${(e: CustomEvent) => {
+              alert('ok')
+               this._editorOpen = false;
+               this.executeEvent('onModalClose', e);
+               this.requestUpdate();
              }}
-            @modal-escape=${(e) => {
-               this.executeEvent('onModalClose', e , 
-                          {
-                            value: e.detail.value,
-                            oldValue: e.detail.oldValue
-                          }
-                          );
+            @modal-escape=${(e: CustomEvent) => {
+               this._editorOpen = false;
+               this.executeEvent('onModalClose', e);
+               this.requestUpdate();
              }}
           >
             ${this.renderBodySlot()}
