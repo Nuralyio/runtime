@@ -27,6 +27,7 @@ export class TabsPanel extends LitElement {
         height: 100%;
         display: flex;
         flex-direction: column;
+        --nuraly-spacing-tabs-content-padding-small : 0;
       }
 
       nr-tabs::part(content) {

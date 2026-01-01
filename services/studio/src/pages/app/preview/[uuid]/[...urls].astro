@@ -28,6 +28,17 @@ const filesModulesConfig = FILES_MODULES_CONFIG;
 
 const processedHeaders = processHeaders(Astro.request.headers);
 
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
+
 let pageData, componentData, applications, application;
 let occurredError = null;
 
@@ -60,7 +71,7 @@ try {
   <title>Preview - {application?.name}</title>
 </head>
 
-<script is:inline define:vars={{ pageData, componentData, applications, application, functionAppUUID, functionPageUUID, filesAppUUID, filesPageUUID, filesModulesConfig, urls }}>
+<script is:inline define:vars={{ pageData, componentData, applications, application, functionAppUUID, functionPageUUID, filesAppUUID, filesPageUUID, filesModulesConfig, urls, currentUser }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
@@ -71,6 +82,7 @@ try {
   window.__FILES_APP_UUID__ = filesAppUUID;
   window.__FILES_PAGE_UUID__ = filesPageUUID;
   window.__URL__ = urls;
+  window.__CURRENT_USER__ = currentUser;
   // Check if this is a standalone view (not inside studio iframe) - hide editor overlays
   window.__IS_IFRAME_PREVIEW__ = window.parent !== window;
   window.__IS_VIEW_MODE__ = window.parent === window;
