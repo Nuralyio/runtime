@@ -41,6 +41,14 @@ export async function traitInputHandler(
     }
   };
 
+  // CHECK INSTANCE VALUE FIRST - Instance always wins over input handlers
+  // This allows runtime values set via Component.value to take precedence
+  const instanceValue = ctx.component.Instance?.[inputName];
+  if (instanceValue !== undefined) {
+    setResult(instanceValue);
+    return;
+  }
+
   // Check inputHandlers first (prioritize dynamic handlers over static input)
   const inputHandler = ctx.component?.inputHandlers?.[inputName];
   if (inputHandler) {
