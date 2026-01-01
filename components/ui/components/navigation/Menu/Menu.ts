@@ -67,8 +67,9 @@ export class MenuBlock extends BaseElementBlock {
           }}"
           @action-click="${(e: CustomEvent) => {
             this.executeEvent('onActionClick', e, {
-              value: e.detail.additionalData,
-              action: e.detail.value
+              value: e.detail.item?.additionalData,
+              action: e.detail.value,
+              originalEvent: e.detail.originalEvent
             });
           }}">
         </nr-menu>

@@ -278,6 +278,12 @@ export const HANDLER_PARAMETERS = [
   "ShowInfoToast",
   "HideToast",
   "ClearAllToasts",
+  "ShowPopconfirm",
+  "Confirm",
+  "ShowDeleteConfirm",
+  "ShowWarningConfirm",
+  "ClosePopconfirm",
+  "CloseAllPopconfirms",
   "__createScope__", // For transparent variable access
   // Namespaced API object (new clean API)
   "Nav",
@@ -435,6 +441,8 @@ export function compileHandlerFunction(code: string): Function {
             Utils, console, UploadFile, BrowseFiles, Instance, ShowToast,
             ShowSuccessToast, ShowErrorToast, ShowWarningToast, ShowInfoToast,
             HideToast, ClearAllToasts,
+            ShowPopconfirm, Confirm, ShowDeleteConfirm, ShowWarningConfirm,
+            ClosePopconfirm, CloseAllPopconfirms,
             Nav, UI, Component, Data, Page, App, Var
           }
         });

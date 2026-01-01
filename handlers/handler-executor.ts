@@ -355,6 +355,12 @@ export function executeHandler(
     globalFunctions.ShowInfoToast,
     globalFunctions.HideToast,
     globalFunctions.ClearAllToasts,
+    globalFunctions.ShowPopconfirm,
+    globalFunctions.Confirm,
+    globalFunctions.ShowDeleteConfirm,
+    globalFunctions.ShowWarningConfirm,
+    globalFunctions.ClosePopconfirm,
+    globalFunctions.CloseAllPopconfirms,
     createHandlerScope,
     // Namespaced APIs (new clean API)
     handlerAPI.Nav,

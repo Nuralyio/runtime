@@ -27,6 +27,9 @@ import { defaultMicroAppDataLoader, type MicroAppDataLoader } from "./MicroAppDa
 // Import toast container
 import { ToastContainer } from '../../ToastContainer/ToastContainer';
 
+// Import popconfirm container
+import { PopconfirmContainer } from '../../PopconfirmContainer/PopconfirmContainer';
+
 // Studio app UUID - special case for editor that doesn't load from API
 const STUDIO_APP_UUID = "1";
 
@@ -125,6 +128,9 @@ export class MicroApp extends LitElement {
 
     // Initialize toast container singleton (ensures it exists globally)
     ToastContainer.getInstance();
+
+    // Initialize popconfirm container singleton (ensures it exists globally)
+    PopconfirmContainer.getInstance();
 
     // Initialize isolated context if feature is enabled
     if (this.useIsolatedContext) {

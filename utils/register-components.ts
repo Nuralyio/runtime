@@ -41,3 +41,4 @@ import "../components/ui/components/advanced/RichText/RichText";
 import "../components/ui/components/runtime/MicroComponent/MicroComponent";
 import "../components/ui/components/utility/Document/Document";
 import "../components/ui/components/ToastContainer/ToastContainer";
+import "../components/ui/components/PopconfirmContainer/PopconfirmContainer";
