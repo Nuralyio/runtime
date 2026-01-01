@@ -754,7 +754,7 @@ export default [{
   },
   event: {
     onClick: /* js */ `
-        window.location.href = "/logout";
+        NavigateToUrl("/logout");
          `
   }
 },
@@ -847,7 +847,7 @@ export default [{
     "flex-direction": "column",
     width: "100%"
   },
-  childrenIds: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section"]
+  childrenIds: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_settings_danger_section"]
 },
 {
   uuid: "app_settings_name_section",
@@ -897,10 +897,14 @@ export default [{
     placeholder: {
       type: "string",
       value: "Enter application name"
+    },
+    debounce: {
+      type: "number",
+      value: 500
     }
   },
   event: {
-    onInput: /* js */`
+    onChange: /* js */`
       const currentEditingApplication = GetVar("currentEditingApplication");
       if(currentEditingApplication) {
         currentEditingApplication.name = EventData.value;
@@ -957,10 +961,14 @@ export default [{
     placeholder: {
       type: "string",
       value: "Enter application description"
+    },
+    debounce: {
+      type: "number",
+      value: 500
     }
   },
   event: {
-    onInput: /* js */`
+    onChange: /* js */`
       const currentEditingApplication = GetVar("currentEditingApplication");
       if(currentEditingApplication) {
         currentEditingApplication.description = EventData.value;
@@ -1115,5 +1123,88 @@ export default [{
         };
       `
     }
+  }
+},
+{
+  uuid: "app_settings_danger_section",
+  name: "Danger Zone Section",
+  application_id: "1",
+  component_type: "vertical-container-block",
+  style: {
+    gap: "12px",
+    display: "flex",
+    "flex-direction": "column",
+    width: "100%",
+    "margin-top": "24px",
+    "padding-top": "24px",
+    "border-top": "1px solid #fee2e2"
+  },
+  childrenIds: ["app_settings_danger_label", "app_settings_danger_description", "app_settings_delete_btn"]
+},
+{
+  uuid: "app_settings_danger_label",
+  name: "Danger Zone Label",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Danger Zone"
+    }
+  },
+  style: {
+    "font-weight": "600",
+    "font-size": "14px",
+    color: "#dc2626"
+  }
+},
+{
+  uuid: "app_settings_danger_description",
+  name: "Danger Zone Description",
+  application_id: "1",
+  component_type: "text_label",
+  input: {
+    value: {
+      type: "string",
+      value: "Once you delete an application, there is no going back. Please be certain."
+    }
+  },
+  style: {
+    "font-size": "13px",
+    color: "#6b7280"
+  }
+},
+{
+  uuid: "app_settings_delete_btn",
+  name: "Delete Application Button",
+  application_id: "1",
+  component_type: "button_input",
+  input: {
+    label: {
+      type: "string",
+      value: "Delete Application"
+    },
+    type:{
+      type: "string",
+      value : "danger"
+    }
+  },
+  event: {
+    onClick: /* js */`
+      const currentEditingApplication = GetVar('currentEditingApplication');
+      console.log(currentEditingApplication)
+      const appName = currentEditingApplication?.name || "this application";
+
+      ShowDeleteConfirm(
+        appName,
+        { x: Event.clientX, y: Event.clientY },
+        () => {
+          DeleteApplication(currentEditingApplication?.uuid).then(() => {
+            ShowSuccessToast("Application deleted successfully");
+            NavigateToUrl("/dashboard");
+          });
+        }
+      );
+    `
   }
 }];

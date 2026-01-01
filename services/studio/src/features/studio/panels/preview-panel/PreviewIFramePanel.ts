@@ -39,6 +39,7 @@ export class PreviewIFramePanel extends LitElement {
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
       transition: width 0.3s ease, height 0.3s ease;
       margin: auto;
+      margin-top: 18px;
     }
 
     .iframe-wrapper.mobile {
