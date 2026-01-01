@@ -205,9 +205,10 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
 
   private _handleActionClick(path: number[], event: CustomEvent) {
     const item = event.detail.item;
+    const originalEvent = event.detail.originalEvent;
     this.dispatchEvent(
       new CustomEvent('action-click', {
-        detail: { value: item.value, path, item },
+        detail: { value: item.value, path, item, originalEvent },
         composed: true,
         bubbles: true,
       })
@@ -222,7 +223,9 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
     return actions.map(action => ({
       id: action.value,
       label: action.label,
-      value: action.value
+      value: action.value,
+      icon: action.icon,
+      additionalData: (action as any).additionalData
     }));
   }
 

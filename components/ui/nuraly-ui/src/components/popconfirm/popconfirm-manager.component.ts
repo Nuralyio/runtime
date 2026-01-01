@@ -6,12 +6,10 @@
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { popconfirmManagerStyles } from './popconfirm-manager.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import {
-  PopconfirmButtonType,
   PopconfirmIcon,
   PopconfirmShowConfig,
   PopconfirmPosition,
@@ -21,6 +19,7 @@ import {
 // Import required components
 import '../icon/icon.component.js';
 import '../button/button.component.js';
+import '../label/label.component.js';
 
 /**
  * # PopconfirmManager Component
@@ -71,7 +70,7 @@ import '../button/button.component.js';
 export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = popconfirmManagerStyles;
 
-  override requiredComponents = ['nr-icon', 'nr-button'];
+  override requiredComponents = ['nr-icon', 'nr-button', 'nr-label'];
 
   /** Active popconfirm items */
   @state() private items: PopconfirmItem[] = [];
@@ -79,6 +78,9 @@ export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
   /** Bound event handlers */
   private _boundHandleOutsideClick: ((e: Event) => void) | null = null;
   private _boundHandleKeydown: ((e: KeyboardEvent) => void) | null = null;
+
+  /** Timestamp when popconfirm was shown (to prevent immediate close from same click) */
+  private _showTimestamp: number = 0;
 
   /** Static instance for global access */
   private static _instance: NrPopconfirmManagerElement | null = null;
@@ -160,8 +162,14 @@ export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
       loading: false,
     };
 
+    // Record timestamp to prevent immediate close from same click event
+    this._showTimestamp = Date.now();
+
     // Only allow one popconfirm at a time
     this.items = [item];
+
+    console.log('[nr-popconfirm-manager] show() called, items:', this.items);
+    this.requestUpdate();
 
     return id;
   }
@@ -236,6 +244,12 @@ export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
    */
   private handleOutsideClick(e: Event): void {
     if (this.items.length === 0) return;
+
+    // Prevent immediate close from the same click event that opened the popconfirm
+    // Allow at least 100ms before responding to outside clicks
+    if (Date.now() - this._showTimestamp < 100) {
+      return;
+    }
 
     const path = e.composedPath();
     const popconfirmContainer = this.shadowRoot?.querySelector('.popconfirm-manager__item');
@@ -346,8 +360,8 @@ export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
               <nr-icon name=${icon}></nr-icon>
             </div>
             <div class="popconfirm-manager__text">
-              ${config.title ? html`<div class="popconfirm-manager__title">${config.title}</div>` : nothing}
-              ${config.description ? html`<div class="popconfirm-manager__description">${config.description}</div>` : nothing}
+              ${config.title ? html`<nr-label class="popconfirm-manager__title" size="medium">${config.title}</nr-label>` : nothing}
+              ${config.description ? html`<nr-label class="popconfirm-manager__description" size="small" variant="secondary">${config.description}</nr-label>` : nothing}
             </div>
           </div>
           <div class="popconfirm-manager__buttons">

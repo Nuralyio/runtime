@@ -15,6 +15,7 @@ import {
   PopconfirmIcon,
 } from './popconfirm.types.js';
 
+
 /**
  * # Popconfirm Component
  *
@@ -71,7 +72,7 @@ import {
 export class NrPopconfirmElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
-  override requiredComponents = ['nr-dropdown', 'nr-icon', 'nr-button'];
+  override requiredComponents = ['nr-dropdown', 'nr-icon', 'nr-button', 'nr-label'];
 
   /**
    * Title of the confirmation box
@@ -346,9 +347,9 @@ export class NrPopconfirmElement extends NuralyUIBaseMixin(LitElement) {
             <nr-icon name=${this.icon}></nr-icon>
           </div>
           <div class="popconfirm-text">
-            ${this.title ? html`<div class="popconfirm-title">${this.title}</div>` : ''}
+            ${this.title ? html`<nr-label class="popconfirm-title" size="medium">${this.title}</nr-label>` : ''}
             ${this.description
-              ? html`<div class="popconfirm-description">${this.description}</div>`
+              ? html`<nr-label class="popconfirm-description" size="small" variant="secondary">${this.description}</nr-label>`
               : ''}
           </div>
         </div>
