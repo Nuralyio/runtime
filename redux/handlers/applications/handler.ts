@@ -29,9 +29,8 @@ export function createApplicationAction(application: any) {
 }
 
 
-export function deleteApplicationAction(application_id: any) {
-
-  fetch("/api/applications/" + application_id, {
+export function deleteApplicationAction(application_id: any): Promise<any> {
+  return fetch("/api/applications/" + application_id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json"
@@ -39,21 +38,26 @@ export function deleteApplicationAction(application_id: any) {
   }).then(res => res.json())
     .then((res) => {
       loadOrRefreshApplications();
+      return res;
     });
 }
 
 export function updateApplicationActionHandler(application: any) {
-const{ uuid } = application;
-delete application.uuid;
+  const { uuid, ...rest } = application;
+
+  // Filter out null and undefined values to avoid validation errors
+  const filteredApplication = Object.fromEntries(
+    Object.entries(rest).filter(([_, value]) => value !== null && value !== undefined)
+  );
+
   fetch("/api/applications/" + uuid, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(application)
+    body: JSON.stringify(filteredApplication)
   }).then(res => res.json())
     .then((res) => {
-
       loadOrRefreshApplications();
     });
 }

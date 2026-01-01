@@ -78,6 +78,7 @@ interface GlobalFunctions {
 
   // App
   UpdateApplication: (data: any) => void;
+  DeleteApplication: (applicationId: string) => void;
 
   // Variables
   GetVar: (name: string) => any;
@@ -183,6 +184,7 @@ function createPageAPI(globalFunctions: GlobalFunctions): PageAPI {
 function createAppAPI(globalFunctions: GlobalFunctions, runtimeContext: RuntimeContextData): AppAPI {
   return {
     update: globalFunctions.UpdateApplication,
+    delete: globalFunctions.DeleteApplication,
     all: runtimeContext.applications,
     context: runtimeContext.context,
   };
@@ -343,6 +345,7 @@ export function extractLegacyParameters(api: HandlerAPI): Record<string, any> {
 
     // App
     UpdateApplication: api.App.update,
+    DeleteApplication: api.App.delete,
 
     // Variables
     GetVar: api.Var.get,

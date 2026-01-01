@@ -240,6 +240,7 @@ export const HANDLER_PARAMETERS = [
   "SetVar",
   "GetContextVar",
   "UpdateApplication",
+  "DeleteApplication",
   "GetVar",
   "GetComponent",
   "GetComponents",
@@ -293,6 +294,13 @@ export const HANDLER_PARAMETERS = [
   "Page",
   "App",
   "Var",
+  // User functions
+  "GetCurrentUser",
+  "IsAuthenticated",
+  "HasRole",
+  "HasAnyRole",
+  "HasAllRoles",
+  "CurrentUser",
 ] as const;
 
 /**
@@ -432,7 +440,7 @@ export function compileHandlerFunction(code: string): Function {
           parameters: {
             eventHandler: eventHandler, Components, Editor, Event, Item,
             Current, currentPlatform, Values, Apps, Vars, SetVar, GetContextVar,
-            UpdateApplication, GetVar, GetComponent, GetComponents, AddComponent,
+            UpdateApplication, DeleteApplication, GetVar, GetComponent, GetComponents, AddComponent,
             SetContextVar, AddPage, TraitCompoentFromSchema, NavigateToUrl,
             NavigateToHash, NavigateToPage, UpdatePage, context, applications,
             updateInput, deletePage, CopyComponentToClipboard, PasteComponentFromClipboard,
@@ -443,7 +451,8 @@ export function compileHandlerFunction(code: string): Function {
             HideToast, ClearAllToasts,
             ShowPopconfirm, Confirm, ShowDeleteConfirm, ShowWarningConfirm,
             ClosePopconfirm, CloseAllPopconfirms,
-            Nav, UI, Component, Data, Page, App, Var
+            Nav, UI, Component, Data, Page, App, Var,
+            GetCurrentUser, IsAuthenticated, HasRole, HasAnyRole, HasAllRoles, CurrentUser
           }
         });
         with (__scope__) {

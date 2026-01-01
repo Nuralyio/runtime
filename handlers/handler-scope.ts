@@ -74,6 +74,7 @@ const RESERVED_NAMES = new Set([
 
   // Application functions
   'UpdateApplication',
+  'DeleteApplication',
   'context',
   'applications',
 
@@ -115,6 +116,14 @@ const RESERVED_NAMES = new Set([
   'ShowInfoToast',
   'HideToast',
   'ClearAllToasts',
+
+  // User functions
+  'GetCurrentUser',
+  'IsAuthenticated',
+  'HasRole',
+  'HasAnyRole',
+  'HasAllRoles',
+  'CurrentUser',
 
   // JavaScript built-ins that must be preserved
   'undefined',

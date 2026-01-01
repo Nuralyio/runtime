@@ -317,6 +317,7 @@ export function executeHandler(
     globalFunctions.SetVar,
     globalFunctions.GetContextVar,
     globalFunctions.UpdateApplication,
+    globalFunctions.DeleteApplication,
     globalFunctions.GetVar,
     globalFunctions.GetComponent,
     globalFunctions.GetComponents,
@@ -369,6 +370,13 @@ export function executeHandler(
     handlerAPI.Data,
     handlerAPI.Page,
     handlerAPI.App,
-    handlerAPI.Var
+    handlerAPI.Var,
+    // User functions
+    globalFunctions.GetCurrentUser,
+    globalFunctions.IsAuthenticated,
+    globalFunctions.HasRole,
+    globalFunctions.HasAnyRole,
+    globalFunctions.HasAllRoles,
+    globalFunctions.GetCurrentUser() // CurrentUser - direct access to user object
   );
 }

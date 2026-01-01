@@ -143,8 +143,7 @@ export class StyleHandlerController implements ReactiveController, Disposable {
     return {
       ...regularStyles,
       ...this.host.stylesHandlersValue,
-      width: width === "auto" ? "auto" :
-             RuntimeHelpers.extractUnit(width) === "%" ? "100%" : width ?? "auto",
+      width: width ?? "auto",
       ...this.host.runtimeStyles,
     };
   }
