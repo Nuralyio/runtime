@@ -389,7 +389,14 @@ class RuntimeContext implements IRuntimeContext {
   
   /** Cache for values proxies to avoid recreation */
   valuesProxyCache = new WeakMap();
-  
+
+  /**
+   * Listener registry for cross-component Instance value dependencies.
+   * Key: "ComponentName.propertyName" (e.g., "Input1.value")
+   * Value: Set of component names that depend on this value
+   */
+  componentValueListeners: Record<string, Set<string>> = {};
+
   /** Function to set component runtime style attributes */
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   
@@ -517,8 +524,21 @@ class RuntimeContext implements IRuntimeContext {
         }
       },
       (id: string, prop: string, value: any) => {
-        // Emit event when value changes
+        // Emit event when value changes (for the component itself)
         eventDispatcher.emit(`component:value:set:${id}`, { prop, value });
+
+        // Notify dependent components (cross-component reactivity)
+        const depKey = `${component.name}.${prop}`;
+        const dependents = this.componentValueListeners[depKey];
+        if (dependents) {
+          dependents.forEach((dependentComponentName: string) => {
+            eventDispatcher.emit(`component-property-changed:${dependentComponentName}`, {
+              prop: depKey,
+              value,
+              source: component.name
+            });
+          });
+        }
       },
       this.valuesProxyCache
     );

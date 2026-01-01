@@ -208,6 +208,12 @@ export interface HandlerScopeConfig {
 
   /** Cache for component proxies to avoid recreation */
   componentProxyCache?: WeakMap<any, any>;
+
+  /** Current component executing the handler (for dependency tracking) */
+  Current?: any;
+
+  /** Listener registry for cross-component dependencies */
+  componentValueListeners?: Record<string, Set<string>>;
 }
 
 /**
@@ -249,13 +255,18 @@ function findComponentByName(Apps: Record<string, Record<string, any>> | undefin
  *
  * @param component - The component to wrap
  * @param cache - Cache to store proxies for reuse
+ * @param currentComponent - The component currently executing (for dependency tracking)
+ * @param listeners - Registry to track which components depend on which values
  * @returns A proxy that merges Instance values with component properties
  */
-function createComponentProxy(component: any, cache?: WeakMap<any, any>): any {
-  // Return cached proxy if available
-  if (cache?.has(component)) {
-    return cache.get(component);
-  }
+function createComponentProxy(
+  component: any,
+  cache?: WeakMap<any, any>,
+  currentComponent?: any,
+  listeners?: Record<string, Set<string>>
+): any {
+  // Note: We can't use cache when we need fresh dependency tracking per execution
+  // The proxy itself is lightweight, so creating a new one per access is fine
 
   const proxy = new Proxy(component, {
     get(target, prop) {
@@ -264,6 +275,15 @@ function createComponentProxy(component: any, cache?: WeakMap<any, any>): any {
       // Symbol properties go directly to target
       if (typeof prop === 'symbol') {
         return target[prop];
+      }
+
+      // Register dependency: currentComponent depends on target.propStr
+      if (currentComponent?.name && listeners && target.name) {
+        const depKey = `${target.name}.${propStr}`;
+        if (!listeners[depKey]) {
+          listeners[depKey] = new Set();
+        }
+        listeners[depKey].add(currentComponent.name);
       }
 
       // Instance values take priority (runtime values)
@@ -295,11 +315,6 @@ function createComponentProxy(component: any, cache?: WeakMap<any, any>): any {
       return true;
     }
   });
-
-  // Cache the proxy
-  if (cache) {
-    cache.set(component, proxy);
-  }
 
   return proxy;
 }
@@ -334,7 +349,7 @@ function createComponentProxy(component: any, cache?: WeakMap<any, any>): any {
  * ```
  */
 export function createHandlerScope(config: HandlerScopeConfig): any {
-  const { VarsProxy, parameters, Apps, componentProxyCache } = config;
+  const { VarsProxy, parameters, Apps, componentProxyCache, Current, componentValueListeners } = config;
 
   return new Proxy(parameters, {
     /**
@@ -415,10 +430,10 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
         return target[propStr];
       }
 
-      // Check if it's a component name - return merged proxy
+      // Check if it's a component name - return merged proxy with dependency tracking
       const component = findComponentByName(Apps, propStr);
       if (component) {
-        return createComponentProxy(component, componentProxyCache);
+        return createComponentProxy(component, componentProxyCache, Current, componentValueListeners);
       }
 
       // Fallback to undefined (shouldn't normally reach here)

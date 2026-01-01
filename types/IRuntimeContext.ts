@@ -200,4 +200,18 @@ export interface IRuntimeContext {
    * Uses WeakMap for automatic garbage collection.
    */
   valuesProxyCache: WeakMap<any, any>;
+
+  // ============================================================================
+  // Cross-Component Reactivity
+  // ============================================================================
+
+  /**
+   * Listener registry for cross-component Instance value dependencies.
+   * Key: "ComponentName.propertyName" (e.g., "Input1.value")
+   * Value: Set of component names that depend on this value
+   *
+   * Used to track when Component A reads Component B's Instance value,
+   * so that A can be re-rendered when B's value changes.
+   */
+  componentValueListeners?: Record<string, Set<string>>;
 }
