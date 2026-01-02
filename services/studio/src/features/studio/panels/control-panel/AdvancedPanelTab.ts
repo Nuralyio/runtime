@@ -20,7 +20,7 @@ export class AdvancedPanel extends LitElement {
         }}
             .component=${{ ...this.component }}
             .attributeName=${attributeName}
-            .handlerScope=${"styleHandlers"}
+            .handlerScope=${"style_handlers"}
           ></smart-attribute-handler>
         </div>`;
       }

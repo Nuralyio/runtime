@@ -52,9 +52,9 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Event`,
-      component_type: "event",
+      type: "event",
       inputHandlers: {},
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -62,7 +62,7 @@ export class InputGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       style: {
         display: "block",
         width: property.width || "180px"
@@ -88,9 +88,9 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Input`,
-      component_type: "IconPicker",
+      type: "icon_picker",
       inputHandlers: {},
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -98,7 +98,7 @@ export class InputGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       style: {
         display: "block",
         width: property.width || "180px",
@@ -156,9 +156,9 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Input`,
-      component_type: "Datepicker",
+      type: "date_picker",
       inputHandlers: {},
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -166,7 +166,7 @@ export class InputGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       style: {
         display: "block",
         width: property.width || "180px",
@@ -240,9 +240,9 @@ export class InputGenerator {
       uuid: inputUuid,
       application_id: "1",
       name: `${property.label} Input`,
-      component_type: PropertyTypeMapper.getComponentType(property.type),
+      type: PropertyTypeMapper.getComponentType(property.type),
       inputHandlers: {},
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -250,7 +250,7 @@ export class InputGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       style: {
         display: "block",
         width: property.width || "180px",
@@ -298,7 +298,7 @@ export class InputGenerator {
           value: HandlerResolver.resolveHandler(property.stateHandler, StateHandlers) ||
                  `
                    const selectedComponent = Utils.first($selectedComponents);
-                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'styleHandlers'}?.['${property.inputProperty || property.name}'] ? 'disabled' : 'enabled';
+                   return selectedComponent?.${property.handlerType === 'input' ? 'inputHandlers' : 'style_handlers'}?.['${property.inputProperty || property.name}'] ? 'disabled' : 'enabled';
                  `
         }
       },

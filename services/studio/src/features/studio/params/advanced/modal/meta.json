@@ -3,7 +3,7 @@
   "name": "Modal",
   "themeContainerId": "studio_modal_theme_container",
   "configKey": "modalFields",
-  "childrenIds": [
+  "children_ids": [
     "modal_collapse_container"
   ]
 }

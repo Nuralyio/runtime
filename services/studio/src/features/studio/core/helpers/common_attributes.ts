@@ -2,7 +2,7 @@ export const COMMON_ATTRIBUTES = {
   input: {},
   inputHandlers: {},
   style: {},
-  styleHandlers: {},
+  style_handlers: {},
   styleBreakPoints: {
     mobile: {},
     tablet: {},
@@ -10,5 +10,5 @@ export const COMMON_ATTRIBUTES = {
   },
   attributesHandlers: {},
   errors: {},
-  childrenIds: []
+  children_ids: []
 };

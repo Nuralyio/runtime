@@ -6,32 +6,32 @@ export default [
     uuid: "table_selection_mode",
     application_id: "1",
     name: "table selection mode block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
 
-    childrenIds: ["table_selectionmode_radio_block", "table_selectionmode_handler_block"]
+    children_ids: ["table_selectionmode_radio_block", "table_selectionmode_handler_block"]
   },
   {
     uuid: "table_selectionmode_radio_block",
     application_id: "1",
     name: "table selection mode radio block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["table_selectionmode_label"]
+    children_ids: ["table_selectionmode_label"]
   },
 
   {
     uuid: "table_selectionmode_label",
     name: "table selection mode label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -48,9 +48,9 @@ export default [
   {
     uuid: "table_selectionmode_radio",
     application_id: "1",
-    component_type: "RadioButton",
+    type: "radio_button",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "selection mode radio",
     input: {
       value: {
@@ -106,18 +106,18 @@ export default [
     uuid: "table_selectionmode_handler_block",
     application_id: "1",
     name: "table selection mode handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {},
 
-    childrenIds: ["table_selectionmode_radio", "table_selectionmode_handler"]
+    children_ids: ["table_selectionmode_radio", "table_selectionmode_handler"]
   },
   {
     uuid: "table_selectionmode_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "selection mode handler",
     style: {
       display: "block"

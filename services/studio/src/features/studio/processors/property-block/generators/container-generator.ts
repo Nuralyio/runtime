@@ -13,21 +13,21 @@ export class ContainerGenerator {
       uuid: blockConfig.container.uuid,
       application_id: "1",
       name: blockConfig.container.name,
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: blockConfig.container.style,
-      childrenIds: [blockConfig.collapse.uuid]
+      children_ids: [blockConfig.collapse.uuid]
     };
   }
   
   static generateCollapseContainer(blockConfig: BlockConfig, blockName: string): any {
-    const childrenIds = [`${blockName}_collapse_container_childrens`];
+    const children_ids = [`${blockName}_collapse_container_childrens`];
 
     return {
       uuid: blockConfig.collapse.uuid,
       application_id: "1",
       name: `${blockName} collapse`,
-      component_type: "Collapse",
+      type: "collapse",
       style: {
         marginTop: "16px",
         marginBottom: "16px",
@@ -52,7 +52,7 @@ export class ContainerGenerator {
           }]
         }
       },
-      childrenIds
+      children_ids
     };
   }
   
@@ -61,7 +61,7 @@ export class ContainerGenerator {
       uuid: `${blockName}_text_label_collapse`,
       name: `${blockName}_text_label_collapse`,
       application_id: "1",
-      component_type: "text_label",
+      type: "text_label",
       style: {
         ...CollapseHeaderTheme
       },
@@ -75,16 +75,16 @@ export class ContainerGenerator {
   }
   
   static generatePropertiesContainer(blockConfig: BlockConfig, blockName: string): any {
-    const childrenIds = blockConfig.properties.map(prop => `${prop.name}_container`);
+    const children_ids = blockConfig.properties.map(prop => `${prop.name}_container`);
     
     return {
       uuid: `${blockName}_collapse_container_childrens`,
       application_id: "1",
       name: "Properties Container",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {},
-      childrenIds
+      children_ids
     };
   }
 }

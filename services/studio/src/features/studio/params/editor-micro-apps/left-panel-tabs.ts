@@ -2,7 +2,7 @@ export default {
   uuid: "left_panel_tabs",
   application_id: "1",
   name: "left_panel_tabs",
-  component_type: "tabs",
+  type: "tabs",
   event: {},
   style: {
     width: "100%",

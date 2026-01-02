@@ -62,7 +62,7 @@ export default [
   {
     uuid: "divider",
     name: "divider",
-    component_type: "Divider",
+    type: "divider",
     application_id: "1",
     input: {}
   },
@@ -70,7 +70,7 @@ export default [
     uuid: "select_component_styles_state_container",
     name: "Select Component Styles Container",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
           display: "flex",
@@ -78,14 +78,14 @@ export default [
           width :"292px",
           "margin-bottom": "4px",
     },
-    childrenIds: [ "select_component_styles_state"]
+    children_ids: [ "select_component_styles_state"]
   },
  
   {
     uuid: "select_component_styles_state",
     name: "Select Component Styles",
     application_id: "1",
-    component_type: "select",
+    type: "select",
     input: {
         size: {
             type: "string",
@@ -142,7 +142,7 @@ export default [
   {
     uuid: "vdivider",
     name: "vdivider",
-    component_type: "Divider",
+    type: "divider",
     application_id: "1",
     input: {
       direction: {
@@ -154,7 +154,7 @@ export default [
   {
     uuid: "1",
     name: "text_label",
-    component_type: "text_label",
+    type: "text_label",
     parameters: {
       value: "Font Size"
     },
@@ -171,7 +171,7 @@ export default [
     uuid: "2",
     name: "name",
     application_id: "1",
-    component_type: "text_input",
+    type: "text_input",
     parameters: {
       value: "22px"
     },
@@ -189,7 +189,7 @@ export default [
     uuid: "left_panel_tabs",
     application_id: "1",
     name: "left_panel_tabs",
-    component_type: "tabs",
+    type: "tabs",
     event: {
       onTabChanged: /* js */ `
         if (EventData.tab.key === "files") {
@@ -346,18 +346,18 @@ export default [
     uuid: "text_label_handlers_collapse_container",
     application_id: "1",
     name: "position collapse container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       marginTop: "13px"
     },
-    childrenIds: ["text_label_handlers_collpase"]
+    children_ids: ["text_label_handlers_collpase"]
   },
   {
     uuid: "text_label_handlers_collpase",
     application_id: "1",
     name: " collapse",
-    component_type: "Collapse",
+    type: "collapse",
     style: {
       "--nr-collapse-content-small-size-padding": "5px",
       "--nr-collapse-font-weight": "normal",
@@ -390,7 +390,7 @@ export default [
   {
     uuid: "select_component_text",
     name: "text_label",
-    component_type: "text_label",
+    type: "text_label",
     ...COMMON_ATTRIBUTES,
     application_id: "1",
     input: {

@@ -5,7 +5,7 @@ export default [
     uuid: "right_panel_function_permissions",
     application_id: "1",
     name: "Function Permissions Container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -13,12 +13,12 @@ export default [
       width: "100%",
       padding: "0"
     },
-    childrenIds: ["function_permissions_block"]
+    children_ids: ["function_permissions_block"]
   },
   {
     uuid: "function_permissions_block",
     name: "function_permissions_block",
-    component_type: "access_roles",
+    type: "access_roles",
     style: {
       width: "100%"
     },

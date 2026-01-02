@@ -3,7 +3,7 @@
   "name": "Parent Link Container",
   "themeContainerId": "studio_link_theme_container",
   "configKey": "linkFields",
-  "childrenIds": [
+  "children_ids": [
     "link_collapse_container"
   ]
 }

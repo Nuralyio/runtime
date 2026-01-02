@@ -2,7 +2,7 @@ export const pagesMenu = {
   uuid: "menu_1",
   name: "menu",
   application_id: "1",
-  component_type: "menu",
+  type: "menu",
   style: {
     "--nuraly-menu-border": "none",
     "--nuraly-menu-font-size": "13px",
@@ -40,8 +40,8 @@ export const pagesMenu = {
         const autoOpened = new Set();
         let selectedComponentPageId = null;
 
-        function findSelectedPath(appId, childrenIds, pageId) {
-          for (const componentId of childrenIds) {
+        function findSelectedPath(appId, children_ids, pageId) {
+          for (const componentId of children_ids) {
             const component = GetComponent(componentId, appId);
             if (!component) continue;
 
@@ -51,7 +51,7 @@ export const pagesMenu = {
               return true;
             }
 
-            const componentChildrenIds = component?.childrenIds;
+            const componentChildrenIds = component?.children_ids;
             if (componentChildrenIds?.length && findSelectedPath(appId, componentChildrenIds, pageId)) {
               autoOpened.add(component.uuid);
               return true;
@@ -60,15 +60,15 @@ export const pagesMenu = {
           return false;
         }
 
-        function findChildren(appId, children, childrenIds, pageId) {
-          childrenIds.forEach((componentId) => {
+        function findChildren(appId, children, children_ids, pageId) {
+          children_ids.forEach((componentId) => {
             const component = GetComponent(componentId, appId);
             if (!component) return;
 
-            const componentChildrenIds = component?.childrenIds;
+            const componentChildrenIds = component?.children_ids;
             let componentIcon = 'smile';
 
-            switch (component.component_type) {
+            switch (component.type) {
               case 'text_label': componentIcon = "case-sensitive"; break;
               case 'rich-text': componentIcon = "whole-word"; break;
               case 'link': componentIcon = "link"; break;
@@ -79,7 +79,7 @@ export const pagesMenu = {
               case 'checkbox': componentIcon = 'square-check'; break;
               case 'Table': componentIcon = 'table'; break;
               case 'select': componentIcon = 'list-video'; break;
-              case 'vertical-container-block':
+              case 'container-block':
                 componentIcon = component.input?.direction?.value === 'horizontal' ? 'grip-horizontal' : 'grip-vertical'; break;
               case 'text_input': componentIcon = 'text-cursor-input'; break;
               case 'Image': componentIcon = 'image'; break;

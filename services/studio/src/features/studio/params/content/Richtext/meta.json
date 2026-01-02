@@ -3,7 +3,7 @@
   "name": "Parent Rich Text Container",
   "themeContainerId": "studio_rich_text_theme_container",
   "configKey": "richtextFields",
-  "childrenIds": [
+  "children_ids": [
     "rich_text_collapse_container"
   ]
 }

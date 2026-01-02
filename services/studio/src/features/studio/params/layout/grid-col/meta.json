@@ -3,7 +3,7 @@
   "name": "Parent Grid Col Container",
   "themeContainerId": "studio_grid_col_theme_container",
   "configKey": "containerFields",
-  "childrenIds": [
+  "children_ids": [
     "grid_col_collapse_container",
     "size_collapse_container",
     "border_collapse_container"

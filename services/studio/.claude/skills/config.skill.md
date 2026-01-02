@@ -532,9 +532,9 @@ When updating or creating component configurations:
 **Update wrapper** (`Select.ts`):
 ```typescript
 <nr-select
-  ?searchable=${this.inputHandlersValue?.searchable ?? false}
-  ?clearable=${this.inputHandlersValue?.clearable ?? false}
-  .size=${this.inputHandlersValue?.size ?? nothing}
+  ?searchable=${this.resolvedInputs?.searchable ?? false}
+  ?clearable=${this.resolvedInputs?.clearable ?? false}
+  .size=${this.resolvedInputs?.size ?? nothing}
 >
 ```
 

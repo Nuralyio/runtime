@@ -6,26 +6,26 @@ export default [
     uuid: "placeholder_text_block",
     application_id: "1",
     name: "placeholder text block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["placeholder_input_block", "placeholder_handler_block"]
+    children_ids: ["placeholder_input_block", "placeholder_handler_block"]
   },
   {
     uuid: "placeholder_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {},
-    childrenIds: ["placeholder_text_label"]
+    children_ids: ["placeholder_text_label"]
   },
   {
     uuid: "placeholder_text_label",
     name: "placeholder text label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -42,7 +42,7 @@ export default [
     uuid: "placeholder_text_input",
     name: "placeholder text input",
     application_id: "1",
-    component_type: "text_input",
+    type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
@@ -84,20 +84,20 @@ export default [
     uuid: "placeholder_handler_block",
     application_id: "1",
     name: "placeholder handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["placeholder_text_input", "placeholder_handler"]
+    children_ids: ["placeholder_text_input", "placeholder_handler"]
   },
   {
     uuid: "placeholder_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "placeholder handler",
     style: {
       display: "block"

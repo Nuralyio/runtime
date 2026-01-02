@@ -1,7 +1,7 @@
 export const addPageButton = {
   uuid: "add_page",
   name: "add page",
-  component_type: "button_input",
+  type: "button_input",
   application_id: "1",
   style: {},
   input: {

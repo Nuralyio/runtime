@@ -3,7 +3,7 @@
   "name": "Parent Button Container",
   "themeContainerId": "studio_button_theme_container",
   "configKey": "buttonFields",
-  "childrenIds": [
+  "children_ids": [
     "button_collapse_container"
   ]
 }

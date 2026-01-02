@@ -29,17 +29,17 @@ const borderChildrenContainer = {
   uuid: "border_collapse_container_childrens",
   application_id: "1",
   name: "Border Children Container",
-  component_type: "vertical-container-block",
+  type: "container",
   ...COMMON_ATTRIBUTES,
   style: {},
-  childrenIds: ["border_radius_vertical_container", "box_model_vertical_container", "box_shadow_block"]
+  children_ids: ["border_radius_vertical_container", "box_model_vertical_container", "box_shadow_block"]
 };
 
 // Add divider
 const divider = {
   uuid: "divider",
   name: "divider",
-  component_type: "Divider",
+  type: "divider",
   application_id: "1",
   input: {}
 };

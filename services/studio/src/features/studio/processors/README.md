@@ -28,7 +28,7 @@ The Processors Module eliminates manual component definition by generating UI fr
 **Manual (500+ lines):**
 ```typescript
 const sizeComponents = [
-  { uuid: "size_container", component_type: ComponentType.Container, ... },
+  { uuid: "size_container", type: ComponentType.Container, ... },
   { uuid: "size_collapse", ... },
   // ... 20+ more components
 ];
@@ -305,7 +305,7 @@ export const SizeBlock = generateFromConfig(config.sizeInputs, 'size');
   "name": "Text Input Properties",
   "themeContainerId": "text_input_theme_container",
   "configKey": "textInputFields",
-  "childrenIds": []
+  "children_ids": []
 }
 
 // 2. Load in component file

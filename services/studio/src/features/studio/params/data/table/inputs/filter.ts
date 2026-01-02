@@ -6,32 +6,32 @@ export default [
     uuid: "table_filter_block",
     application_id: "1",
     name: "table filter block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
 
-    childrenIds: ["table_filter_radio_block", "table_filter_handler_block"]
+    children_ids: ["table_filter_radio_block", "table_filter_handler_block"]
   },
   {
     uuid: "table_filter_radio_block",
     application_id: "1",
     name: "table filter radio block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["table_filter_label"]
+    children_ids: ["table_filter_label"]
   },
 
   {
     uuid: "table_filter_label",
     name: "table filter label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -47,9 +47,9 @@ export default [
   {
     uuid: "table_filter_radio",
     application_id: "1",
-    component_type: "RadioButton",
+    type: "radio_button",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "table filter radio",
     input: {
       value: {
@@ -103,18 +103,18 @@ export default [
     uuid: "table_filter_handler_block",
     application_id: "1",
     name: "table filter handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {},
 
-    childrenIds: ["table_filter_radio", "table_filter_handler"]
+    children_ids: ["table_filter_radio", "table_filter_handler"]
   },
   {
     uuid: "table_filter_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "filter handler",
     style: {
       display: "block"

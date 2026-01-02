@@ -12,7 +12,7 @@ export const filesMicroApp = {
   application_id: "1",
   uuid: "files_micro_app_block",
   name: "function_micro_app",
-  component_type: "MicroApp",
+  type: "micro_app",
   input: {
     appUUID: {
       type: "string",

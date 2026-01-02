@@ -9,13 +9,13 @@ export const PageThemeStudio = [
         uuid: "PageThemeStudio",
         application_id: "1",
         name: "PageThemeStudio",
-        component_type: "vertical-container-block",
+        type: "container",
         ...COMMON_ATTRIBUTES,
         style: {
             display: "flex",
             "flex-direction": "column"
         },
-        childrenIds: ["page_bg_color_theme_block", "page_bg-dark_color_theme_block"]
+        children_ids: ["page_bg_color_theme_block", "page_bg-dark_color_theme_block"]
     },
     ...inputs,
     ...inputsDark

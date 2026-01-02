@@ -3,7 +3,7 @@
   "name": "Parent Badge Container",
   "themeContainerId": "badge_theme_container",
   "configKey": "badgeFields",
-  "childrenIds": [
+  "children_ids": [
     "badge_fields_collapse_container"
   ]
 }

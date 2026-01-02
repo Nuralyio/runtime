@@ -3,7 +3,7 @@
   "name": "Parent Text Label Container",
   "themeContainerId": "text_label_theme_container",
   "configKey": "textLabelFields",
-  "childrenIds": [
+  "children_ids": [
     "text_label_collapse_container",
     "text_label_properties_collapse_container",
     "typography_collapse_container",

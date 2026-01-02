@@ -20,7 +20,7 @@ export default [
     uuid: "access_control_panel_block",
     application_id: "1",
     name: "access control panel block",
-    component_type: "Panel",
+    type: "panel",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "100%",
@@ -45,13 +45,13 @@ export default [
       resizable: { type: "boolean", value: false },
       draggable: { type: "boolean", value: false }
     },
-    childrenIds: ["access_control_content_container"]
+    children_ids: ["access_control_content_container"]
   },
   {
     uuid: "access_control_content_container",
     application_id: "1",
     name: "access control content container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -63,13 +63,13 @@ export default [
     input: {
       direction: { type: "string", value: "vertical" }
     },
-    childrenIds: ["access_roles_display_block"]
+    children_ids: ["access_roles_display_block"]
   },
   {
     uuid: "access_roles_display_block",
     name: "access roles display block",
     application_id: "1",
-    component_type: "access_roles",
+    type: "access_roles",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "100%",

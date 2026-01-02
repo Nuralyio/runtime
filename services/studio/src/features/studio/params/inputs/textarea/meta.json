@@ -3,7 +3,7 @@
   "name": "Parent Textarea Container",
   "themeContainerId": "textarea_theme_container",
   "configKey": "textareaFields",
-  "childrenIds": [
+  "children_ids": [
     "textarea_fields_collapse_container"
   ]
 }

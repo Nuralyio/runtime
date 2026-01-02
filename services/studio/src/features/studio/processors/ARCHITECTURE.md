@@ -53,7 +53,7 @@ Creates property UI: container + label + input + optional handler icon. Supports
 Generates input components by type: event (Monaco), icon (picker), standard (text/number/select/color/checkbox). Auto-generates number events (onChange, onArrowUp/Down).
 
 ### HandlerGenerator
-Creates handler icon components with code editor. For style handlers, updates `styleHandlers`. For input handlers, updates `component.input[property]` with `{type: 'handler', value: code}`.
+Creates handler icon components with code editor. For style handlers, updates `style_handlers`. For input handlers, updates `component.input[property]` with `{type: 'handler', value: code}`.
 
 ### HandlerResolver
 Resolves handlers to code strings:

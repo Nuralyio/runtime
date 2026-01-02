@@ -3,7 +3,7 @@
   "name": "Parent Document Container",
   "themeContainerId": "parent_color_container",
   "configKey": "documentFields",
-  "childrenIds": [
+  "children_ids": [
     "document_collapse_container"
   ]
 }

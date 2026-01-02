@@ -6,17 +6,17 @@ export default [
     uuid: "display_block",
     application_id: "1",
     name: "display block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["display_label", "display_handler_block"]
+    children_ids: ["display_label", "display_handler_block"]
   },
   {
     uuid: "display_label",
     name: "display label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -32,9 +32,9 @@ export default [
   {
     uuid: "display_radio",
     application_id: "1",
-    component_type: "RadioButton",
+    type: "radio_button",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "display radio",
     input: {
       value: {
@@ -84,20 +84,20 @@ export default [
     uuid: "display_handler_block",
     application_id: "1",
     name: "icon position handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["display_radio", "display_handler"]
+    children_ids: ["display_radio", "display_handler"]
   },
   {
     uuid: "display_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "display handler",
     style: {
       display: "block"
@@ -129,7 +129,7 @@ export default [
   {
     uuid: "display_divider",
     name: "divider",
-    component_type: "Divider",
+    type: "divider",
     application_id: "1",
     ...COMMON_ATTRIBUTES
   }

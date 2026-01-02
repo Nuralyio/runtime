@@ -4,9 +4,9 @@ export const Insert = /* js */`
         const dataOptions = [
           {
             id: "table",
-            label: "Table",
+            label: "table",
             value: {
-              value: "Table",
+              value: "table",
               additionalData: {
               action: "add",
               style:{
@@ -21,7 +21,7 @@ export const Insert = /* js */`
             id: "collections",
             label: "Collections",
             value: {
-              value: "Collection",
+              value: "collection",
               additionalData: {
               action: "add",
               style:{
@@ -35,9 +35,9 @@ export const Insert = /* js */`
         const mediaOptions = [
           {
             id: "image",
-            label: "Image",
+            label: "image",
             value: {
-              value: "Image",
+              value: "image",
               additionalData: {
               action: "add",                
               style:{
@@ -84,9 +84,9 @@ export const Insert = /* js */`
            
           {
             id: "microapp",
-            label: "MicroApp",
+            label: "micro_app",
             value: {
-              value: "MicroApp",
+              value: "micro_app",
               additionalData: {
               action: "add",
               style:{
@@ -103,7 +103,7 @@ export const Insert = /* js */`
             id: "container",
             label: "Container",
             value: {
-              value: "vertical-container-block",
+              value: "container",
               additionalData: {
               action: "add",
               style:{
@@ -117,7 +117,7 @@ export const Insert = /* js */`
             id: "modal",
             label: "Modal",
             value: {
-              value: "modal-block",
+              value: "modal",
               additionalData: {
               action: "add",
               input: {
@@ -145,7 +145,7 @@ export const Insert = /* js */`
             id: "grid-row",
             label: "Grid Row",
             value: {
-              value: "grid-row-block",
+              value: "grid_row",
               additionalData: {
               action: "add",
               input: {
@@ -169,7 +169,7 @@ export const Insert = /* js */`
             id: "grid-col",
             label: "Grid Col",
             value: {
-              value: "grid-col-block",
+              value: "grid_col",
               additionalData: {
               action: "add",
               input: {
@@ -189,7 +189,7 @@ export const Insert = /* js */`
             id: "ref-component",
             label: "Ref Component",
             value: {
-              value: "RefComponent",
+              value: "ref_component",
               additionalData: {
               action: "add",
               style:{
@@ -253,7 +253,7 @@ export const Insert = /* js */`
             id: "dropdown",
             label: "Dropdown",
             value: {
-              value: "vertical-container-block",
+              value: "container",
               additionalData: {
               action: "paste",
               schema : JSON.stringify(
@@ -278,20 +278,20 @@ export const Insert = /* js */`
                         }
                       },
                       "pageId": "35bd7304-b77b-4b54-b222-ee6f2f8bece3",
-                      "childrenIds": [
+                      "children_ids": [
                         "89dbb4d0-a780-4ecf-9f5d-c01afacd2d21",
                         "f7b65c66-8a7a-4443-80d3-ba3035f62929"
                       ],
                       "application_id": "9c144432-215e-4436-b317-96559dcf1e71",
-                      "component_type": "dropdown"
+                      "type": "dropdown"
                     },
                     {
                       "name": "text_label_423",
-                      "component_type": "text_label",
+                      "type": "text_label",
                       "uuid": "f7b65c66-8a7a-4443-80d3-ba3035f62929",
                       "pageId": "35bd7304-b77b-4b54-b222-ee6f2f8bece3",
                       "application_id": "9c144432-215e-4436-b317-96559dcf1e71",
-                      "childrenIds": [],
+                      "children_ids": [],
                       "input": {
                         "value": {
                           "type": "string",
@@ -393,7 +393,7 @@ export const Insert = /* js */`
           {
             label: "File Upload",
             value: {
-              value: "file-upload",
+              value: "file_upload",
               additionalData: {
               action: "add",                
               input : {
@@ -412,7 +412,7 @@ export const Insert = /* js */`
           {
             label: "DatePicker",
             value: {
-              value: "Datepicker",
+              value: "date_picker",
               additionalData: {
               action: "add",
               style:{
@@ -423,9 +423,9 @@ export const Insert = /* js */`
             icon: "calendar",
           },
           {
-            label: "Icon",
+            label: "icon",
             value: {
-              value: "Icon",
+              value: "icon",
               additionalData: {
               action: "add",
               style:{
@@ -450,15 +450,15 @@ export const Insert = /* js */`
             icon: "text-cursor-input",
           },
           {
-            label: "Textarea",
+            label: "textarea",
             value: {
-              value: "Textarea",
+              value: "textarea",
               additionalData: {
               action: "add",
               input: {
                 "label": {
                   "type": "value",
-                  "value": "Textarea"
+                  "value": "textarea"
                 },
                 "placeholder": {
                   "type": "value",
@@ -474,9 +474,9 @@ export const Insert = /* js */`
             icon: "align-left",
           },
           {
-            label: "Slider",
+            label: "slider",
             value: {
-              value: "Slider",
+              value: "slider",
               additionalData: {
               action: "add",
               input: {
@@ -547,7 +547,7 @@ export const Insert = /* js */`
           {
             label: "Rich Text",
             value: {
-              value: "rich-text",
+              value: "rich_text",
               additionalData: {
               action: "add",   
               input : {
@@ -564,9 +564,9 @@ export const Insert = /* js */`
             icon: "whole-word",
           },
           {
-            label: "Badge",
+            label: "badge",
             value: {
-              value: "Badge",
+              value: "badge",
               additionalData: {
               action: "add",
               input: {
@@ -583,15 +583,15 @@ export const Insert = /* js */`
             icon: "badge",
           },
           {
-            label: "Tag",
+            label: "tag",
             value: {
-              value: "Tag",
+              value: "tag",
               additionalData: {
               action: "add",
               input: {
                 "label": {
                   "type": "value",
-                  "value": "Tag"
+                  "value": "tag"
                 }
               },
               style:{
@@ -602,9 +602,9 @@ export const Insert = /* js */`
             icon: "tag",
           },
           {
-            label: "Card",
+            label: "card",
             value: {
-              value: "Card",
+              value: "card",
               additionalData: {
               action: "add",
               input: {
@@ -622,9 +622,9 @@ export const Insert = /* js */`
             icon: "credit-card",
           },
           {
-            label: "Icon",
+            label: "icon",
             value: {
-              value: "Icon",
+              value: "icon",
               additionalData: {
               action: "add",
               style:{
@@ -637,7 +637,7 @@ export const Insert = /* js */`
           {
             label: "Code",
             value: {
-              value: "code-block",
+              value: "code",
               additionalData: {
               action: "add",              
               style :{
@@ -651,7 +651,7 @@ export const Insert = /* js */`
           {
             label: "Embed URL",
             value: {
-              value: "embed-url",
+              value: "embed_url",
               additionalData: {
               action: "add",              
               style :{
@@ -678,19 +678,19 @@ export const Insert = /* js */`
                       "uuid": "b13aa393-45a9-44cb-b9bc-2a3f279ca87a",
                       "style": {},
                       "pageId": "2bea47d0-d1a8-4c02-99fe-6274552f6654",
-                      "childrenIds": [
+                      "children_ids": [
                         "a86c493d-dea0-4608-b7dd-74a2a02fdfa9"
                       ],
                       "application_id": "13186611-5512-4e79-98db-dc7cd88719b6",
-                      "component_type": "link"
+                      "type": "link"
                     },
                     {
                       "name": "linkt_label",
                       "uuid": "a86c493d-dea0-4608-b7dd-74a2a02fdfa9",
                       "pageId": "2bea47d0-d1a8-4c02-99fe-6274552f6654",
-                      "childrenIds": [],
+                      "children_ids": [],
                       "application_id": "13186611-5512-4e79-98db-dc7cd88719b6",
-                      "component_type": "text_label"
+                      "type": "text_label"
                     }
                   ]
                 }

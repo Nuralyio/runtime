@@ -3,7 +3,7 @@
   "name": "Parent Color Container",
   "themeContainerId": "studio_datepicker_theme_container",
   "configKey": "datepickerFields",
-  "childrenIds": [
+  "children_ids": [
     "datepickerFields_collapse_container"
   ]
 }

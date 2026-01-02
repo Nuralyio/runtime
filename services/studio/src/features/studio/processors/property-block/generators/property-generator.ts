@@ -24,7 +24,7 @@ export class PropertyGenerator {
     // Check if property supports handlers
     const hasHandlerSupport = property.hasHandler || property.type === 'number' || property.type === 'text' || property.type === 'radio';
     
-    // Determine childrenIds based on whether auto checkbox is needed and handler support
+    // Determine children_ids based on whether auto checkbox is needed and handler support
     let containerChildrenIds = [labelUuid];
     
     if (hasHandlerSupport) {
@@ -41,7 +41,7 @@ export class PropertyGenerator {
       uuid: containerUuid,
       application_id: "1",
       name: `${property.label} Container`,
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
@@ -50,7 +50,7 @@ export class PropertyGenerator {
         width: "319px",
         "margin-bottom": "8px"
       },
-      childrenIds: containerChildrenIds
+      children_ids: containerChildrenIds
     });
     
     // Property label
@@ -58,12 +58,12 @@ export class PropertyGenerator {
       uuid: labelUuid,
       application_id: "1",
       name: `${property.label} Label`,
-      component_type: "text_label",
+      type: "text_label",
       inputHandlers: {},
       style: {
         width: "100px"
       },
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -71,7 +71,7 @@ export class PropertyGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       input: {
         value: {
           type: "string",
@@ -91,14 +91,14 @@ export class PropertyGenerator {
         uuid: handlerWrapperUuid,
         application_id: "1",
         name: `${property.label} Handler Wrapper`,
-        component_type: "vertical-container-block",
+        type: "container",
         inputHandlers: {},
         style: {
           display: "flex",
           "justify-content": "space-between",
           "align-items": "center"
         },
-        styleHandlers: {},
+        style_handlers: {},
         styleBreakPoints: {
           mobile: {},
           tablet: {},
@@ -106,7 +106,7 @@ export class PropertyGenerator {
         },
         attributesHandlers: {},
         errors: {},
-        childrenIds: wrapperChildren,
+        children_ids: wrapperChildren,
         input: {}
       });
     }
@@ -137,13 +137,13 @@ export class PropertyGenerator {
       uuid: inputContainerUuid,
       application_id: "1",
       name: `${property.label} Input Container`,
-      component_type: "vertical-container-block",
+      type: "container",
       inputHandlers: {},
       style: {
         display: "flex",
         "align-items": "center"
       },
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -151,7 +151,7 @@ export class PropertyGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [inputUuid, autoCheckboxUuid],
+      children_ids: [inputUuid, autoCheckboxUuid],
       input: {}
     });
     
@@ -160,12 +160,12 @@ export class PropertyGenerator {
       uuid: autoCheckboxUuid,
       application_id: "1",
       name: `auto ${property.label} checkbox`,
-      component_type: "checkbox",
+      type: "checkbox",
       inputHandlers: {},
       style: {
         size: "small"
       },
-      styleHandlers: {},
+      style_handlers: {},
       styleBreakPoints: {
         mobile: {},
         tablet: {},
@@ -173,7 +173,7 @@ export class PropertyGenerator {
       },
       attributesHandlers: {},
       errors: {},
-      childrenIds: [],
+      children_ids: [],
       input: {
         label: {
           type: "handler",
@@ -193,7 +193,7 @@ export class PropertyGenerator {
           value: `
             const selectedComponent = Utils.first($selectedComponents);
             if (selectedComponent) {
-              return selectedComponent?.styleHandlers?.['${property.name}'] ? 'disabled' : 'enabled';
+              return selectedComponent?.style_handlers?.['${property.name}'] ? 'disabled' : 'enabled';
             }
           `
         }

@@ -3,7 +3,7 @@ export default [
   uuid: "right_panel_tabs",
   application_id: "1",
   name: "right_panel_tabs",
-  component_type: "tabs",
+  type: "tabs",
   event: {},
   style: {
     width: "100%",
@@ -73,12 +73,12 @@ export default [
                             handlers: ["studio_text_input_handler"],
                             themes: ["text_input_icon_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Textarea": {
+                        "textarea": {
                             parameters: ["textarea_blocks"],
                             handlers: ["studio_textarea_handler"],
                             themes: ["textarea_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Slider": {
+                        "slider": {
                             parameters: ["slider_blocks"],
                             handlers: ["studio_slider_handler"],
                             themes: ["slider_theme_container", "border_manager_collapse", "box_model_collapse"]
@@ -93,12 +93,12 @@ export default [
                             handlers: ["studio_checkbox_handler"],
                             themes: ["checkbox_button_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Image": {
+                        "image": {
                             parameters: ["image_blocks"],
                             handlers: ["studio_image_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
                         },
-                        "Datepicker": {
+                        "date_picker": {
                             parameters: ["datepicker_block"],
                             handlers: ["studio_datepicker_handler"],
                             themes: ["studio_datepicker_theme_container", "border_manager_collapse", "box_model_collapse"]
@@ -108,57 +108,57 @@ export default [
                             handlers: ["studio_select_handler"],
                             themes: ["studio_select_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Table": {
+                        "table": {
                             parameters: ["table_blocks"],
                             handlers: ["studio_table_handler"],
                             themes: ["studio_table_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Icon": {
+                        "icon": {
                             parameters: ["icon_blocks"],
                             handlers: ["studio_icon_handler"],
                             themes: ["studio_icon_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Badge": {
+                        "badge": {
                             parameters: ["badge_blocks"],
                             handlers: ["studio_badge_handler"],
                             themes: ["badge_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Tag": {
+                        "tag": {
                             parameters: ["tag_blocks"],
                             handlers: ["studio_tag_handler"],
                             themes: ["tag_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "vertical-container-block": {
+                        "container": {
                             parameters: ["container_blocks"],
                             handlers: ["studio_container_handler"],
                             themes: ["studio_container_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Card": {
+                        "card": {
                             parameters: ["card_blocks"],
                             handlers: ["studio_card_handler"],
                             themes: ["card_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "Collection": {
+                        "collection": {
                             parameters: ["collection_blocks"],
                             handlers: ["studio_collection_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
                         },
-                        "RefComponent": {
+                        "ref_component": {
                             parameters: ["ref_component_blocks"],
                             handlers: ["studio_ref_component_handler"],
                             themes: ["studio_ref_component_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "code-block": {
+                        "code": {
                             parameters: ["code_blocks"],
                             handlers: ["studio_code_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
                         },
-                        "rich-text": {
+                        "rich_text": {
                             parameters: ["rich_text_blocks"],
                             handlers: ["studio_rich_text_handler"],
                             themes: ["studio_rich_text_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "rich-text-editor": {
+                        "rich_text_editor": {
                             parameters: ["rich_text_editor_blocks"],
                             handlers: ["studio_rich_text_editor_handler"],
                             themes: ["studio_rich_text_editor_theme_container", "border_manager_collapse", "box_model_collapse"]
@@ -173,7 +173,7 @@ export default [
                             handlers: ["studio_dropdown_handler"],
                             themes: ["studio_dropdown_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "embed-url": {
+                        "embed_url": {
                             parameters: ["embed_blocks"],
                             handlers: ["studio_embed_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
@@ -183,7 +183,7 @@ export default [
                             handlers: ["studio_link_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
                         },
-                        "file-upload": {
+                        "file_upload": {
                             parameters: ["FileUpload_input_collapse_container"],
                             handlers: ["studio_FileUpload_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
@@ -198,12 +198,12 @@ export default [
                             handlers: ["studio_document_handler"],
                             themes: ["border_manager_collapse", "box_model_collapse"]
                         },
-                        "grid-row-block": {
+                        "grid_row": {
                             parameters: ["grid_row_blocks"],
                             handlers: ["studio_grid_row_handler"],
                             themes: ["studio_grid_row_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "grid-col-block": {
+                        "grid_col": {
                             parameters: ["grid_col_blocks"],
                             handlers: ["studio_grid_col_handler"],
                             themes: ["studio_grid_col_theme_container", "border_manager_collapse", "box_model_collapse"]
@@ -213,7 +213,7 @@ export default [
                             handlers: ["studio_form_handler"],
                             themes: ["form_theme_container", "border_manager_collapse", "box_model_collapse"]
                         },
-                        "modal-block": {
+                        "modal": {
                             parameters: ["modal_blocks"],
                             handlers: ["studio_modal_handler"],
                             themes: ["studio_modal_theme_container", "border_manager_collapse", "box_model_collapse"]
@@ -221,7 +221,7 @@ export default [
                     };
                     // prepare select_component_text into themes
                     
-                    const config = componentConfigs[selectedComponent?.component_type];
+                    const config = componentConfigs[selectedComponent?.type];
                     if(config) {
                         // Create new arrays instead of mutating originals
                         parameters = [...(config.parameters || []), "access_control_panel_block"];
@@ -251,7 +251,7 @@ export default [
                         }
                     },
                     {
-                        label: { type: "text", value: "Handlers" },
+                        label: { type: "text", value: "handlers" },
                         icon: { type: "string", value: "git-compare" },
                         childrends: {
                             type: "componentIdArray",

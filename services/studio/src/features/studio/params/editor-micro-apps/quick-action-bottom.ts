@@ -4,7 +4,7 @@ export default [
     uuid: "quick-action-wrapper-bottom",
     application_id: "1",
     name: "helper text block",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       direction: {
         type: "string",
@@ -12,20 +12,20 @@ export default [
       }
     },
     ...COMMON_ATTRIBUTES,
-    childrenIds: [ "dropdonwn-context"]
+    children_ids: [ "dropdonwn-context"]
   },
  
   // {
   //   uuid: "export-import-block-wrapper",
   //   application_id: "1",
   //   name: "export-import-block-wrapper",
-  //   component_type: "ExportImport"
+  //   type: "export_import"
   // },
   {
     uuid: "dropdonwn-context",
     application_id: "1",
     name: "dropdonwn-context",
-    component_type: "dropdown",
+    type: "dropdown",
     input : {
       show:{
         type : "boolean",

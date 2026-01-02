@@ -3,7 +3,7 @@
   "name": "Parent Table Container",
   "themeContainerId": "studio_table_theme_container",
   "configKey": "tableFields",
-  "childrenIds": [
+  "children_ids": [
     "table_fields_collapse_container"
   ]
 }

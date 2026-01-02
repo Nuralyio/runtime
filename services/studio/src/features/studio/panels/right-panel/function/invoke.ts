@@ -5,19 +5,19 @@ export default [
       uuid: "right_panel_function_invoke",
       application_id: "1",
       name: "Parent Color Container",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
         "flex-direction": "column",
         width :"300px"
       },
-      childrenIds: ["invoke_function_block"]
+      children_ids: ["invoke_function_block"]
     },
   {
     uuid: "invoke_text_label",
     name: "invoke_text_label",
-    component_type: "text_label",
+    type: "text_label",
     style: {
     },
     input: {
@@ -31,7 +31,7 @@ export default [
   {
     uuid: "invoke_function_block",
     name: "invoke_function_block",
-    component_type: "InvokeFunction",
+    type: "invoke_function",
     style: {
 
     },

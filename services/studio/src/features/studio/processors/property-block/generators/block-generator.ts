@@ -79,11 +79,11 @@ export class BlockGenerator {
         }
       }
 
-      // Find the properties container and add common block root UUIDs to its childrenIds
+      // Find the properties container and add common block root UUIDs to its children_ids
       const propertiesContainerUuid = `${blockName}_collapse_container_childrens`;
       const propertiesContainer = components.find(c => c.uuid === propertiesContainerUuid);
-      if (propertiesContainer && propertiesContainer.childrenIds) {
-        propertiesContainer.childrenIds = [...propertiesContainer.childrenIds, ...commonBlockRootUuids];
+      if (propertiesContainer && propertiesContainer.children_ids) {
+        propertiesContainer.children_ids = [...propertiesContainer.children_ids, ...commonBlockRootUuids];
       }
 
       // Append common components to the generated components

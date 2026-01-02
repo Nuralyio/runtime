@@ -6,30 +6,30 @@ export const StudioInnerContainerInputAlignment = [
     uuid: "inner_container_alignement_block",
     application_id: "1",
     name: "button type block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["inner_container_radio_block", "inner_container_handler_block"]
+    children_ids: ["inner_container_radio_block", "inner_container_handler_block"]
   },
   {
     uuid: "inner_container_radio_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["inner_container_label"]
+    children_ids: ["inner_container_label"]
   },
   {
     uuid: "inner_container_label",
     name: "button type label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -45,9 +45,9 @@ export const StudioInnerContainerInputAlignment = [
   {
     uuid: "inner_container_select",
     application_id: "1",
-    component_type: "select",
+    type: "select",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "button type select",
     input: {
       placeholder: {
@@ -71,7 +71,7 @@ export const StudioInnerContainerInputAlignment = [
         type: "handler",
         value: /* js */`
           const selectedComponent = Utils.first($selectedComponents);
-          return selectedComponent?.styleHandlers?.innerAlignment 
+          return selectedComponent?.style_handlers?.innerAlignment 
             ? 'disabled' 
             : 'enabled';
         `
@@ -92,21 +92,21 @@ export const StudioInnerContainerInputAlignment = [
     uuid: "inner_container_handler_block",
     application_id: "1",
     name: "button type handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between",
       "align-items": "center"
     },
-    childrenIds: ["inner_container_select", "inner_container_handler"]
+    children_ids: ["inner_container_select", "inner_container_handler"]
   },
   {
     uuid: "inner_container_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "type handler",
     style: {
       display: "block",
@@ -118,7 +118,7 @@ export const StudioInnerContainerInputAlignment = [
         value: /* js */`
           const parameter = 'innerAlignment';
           const selectedComponent = Utils.first($selectedComponents);
-          const handlerValue = selectedComponent?.styleHandlers?.innerAlignment || '';
+          const handlerValue = selectedComponent?.style_handlers?.innerAlignment || '';
           return [parameter, handlerValue];
         `
       }

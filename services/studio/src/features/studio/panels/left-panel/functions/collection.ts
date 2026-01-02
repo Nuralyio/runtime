@@ -24,17 +24,17 @@ export const StudioFunctionCollection = [
       "flex-direction": "column"
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [
+    "children_ids": [
       "function_micro_app_block",
     ],
     "application_id": "1",
-    "component_type": "vertical-container-block"
+    "type": "container"
   },
   {
     application_id: "1",
     uuid: "function_micro_app_block",
     name: "functions_panel",
-    component_type: "FunctionsPanel",
+    type: "functions_panel",
     style: {
       "height": "100%",
       "width": "100%"
@@ -78,25 +78,25 @@ export const StudioFunctionCollection = [
         "height": "150px"
       }
     },
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "text_label"
+    "type": "text_label"
   },
   {
-    "name": "vertical-container-block_3282",
+    "name": "container-block_3282",
     "uuid": "e68eacb2-5b8b-46f0-9189-a63a0d739dd9",
     "style": {
       "width": "100px",
       "height": "100px"
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [
+    "children_ids": [
       "41c1199e-a4eb-4f23-8707-3ed9f0a2492e",
       "770176d7-b582-4b20-bb61-7ca780510bdf",
       "3f07be1d-8be5-4a59-b46c-e805c926cab2"
     ],
     "application_id": "1",
-    "component_type": "vertical-container-block"
+    "type": "container"
   },
   {
     "name": "Collection_9727",
@@ -111,11 +111,11 @@ export const StudioFunctionCollection = [
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [
+    "children_ids": [
       "46048d56-5520-4370-8b91-ff985c82b378"
     ],
     "application_id": "1",
-    "component_type": "Collection"
+    "type": "collection"
   },
   {
     "name": "text_input_9052",
@@ -142,9 +142,9 @@ export const StudioFunctionCollection = [
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "text_input"
+    "type": "text_input"
   },
   {
     "name": "button_input_2401",
@@ -166,9 +166,9 @@ export const StudioFunctionCollection = [
       "width": "80px"
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "button_input"
+    "type": "button_input"
   },
   {
     "name": "text_label_3494",
@@ -183,12 +183,12 @@ export const StudioFunctionCollection = [
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "text_label"
+    "type": "text_label"
   },
   {
-    "name": "vertical-container-block_5089",
+    "name": "container-block_5089",
     "uuid": "770176d7-b582-4b20-bb61-7ca780510bdf",
     "input": {
       "display": {
@@ -197,13 +197,13 @@ export const StudioFunctionCollection = [
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [
+    "children_ids": [
       "7769dda5-2969-4d76-98aa-4a9362fb3344",
       "b67f4f2e-1232-4c31-beb9-f73c7c04802e",
       "f6d5d534-ba89-4f13-a0d8-f94c3b88bfa8"
     ],
     "application_id": "1",
-    "component_type": "vertical-container-block"
+    "type": "container"
   },
   {
     "name": "button_input_4743",
@@ -222,9 +222,9 @@ export const StudioFunctionCollection = [
       }
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "button_input"
+    "type": "button_input"
   },
   {
     "name": "button_input_7279",
@@ -242,8 +242,8 @@ export const StudioFunctionCollection = [
       "type": "danger"
     },
     "pageId": "4bb2c99e-1615-4bcb-a530-b8038b8edcc8",
-    "childrenIds": [],
+    "children_ids": [],
     "application_id": "1",
-    "component_type": "button_input"
+    "type": "button_input"
   }
 ];

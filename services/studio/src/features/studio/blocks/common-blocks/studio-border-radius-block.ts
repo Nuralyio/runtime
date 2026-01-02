@@ -5,7 +5,7 @@ const containerComponent = {
   uuid: "border_radius_vertical_container",
   name: "Left panel",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   ...COMMON_ATTRIBUTES,
   style: {
     display: "flex",
@@ -13,14 +13,14 @@ const containerComponent = {
     "justify-content": "space-between",
     width: "276px"
   },
-  childrenIds: ["border_radius_label", "border_radius_block", "label_border_radius_handler"]
+  children_ids: ["border_radius_label", "border_radius_block", "label_border_radius_handler"]
 };
 
 const labelComponent = {
   uuid: "border_radius_label",
   name: "text_label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   ...COMMON_ATTRIBUTES,
   parameters: { value: " " },
   input: {
@@ -36,7 +36,7 @@ const borderRadiusComponent = {
   uuid: "border_radius_block",
   name: "border radius block",
   application_id: "1",
-  component_type: "border_radius",
+  type: "border_radius",
   ...COMMON_ATTRIBUTES,
   style: { width: "50px" },
   event: {
@@ -181,7 +181,7 @@ const borderRadiusComponent = {
       value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         let state = 'enabled';
-        if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['border-radius']) {
+        if (selectedComponent?.style_handlers && selectedComponent?.style_handlers['border-radius']) {
           state = 'disabled';
         }
         return state;
@@ -194,7 +194,7 @@ const handlerComponent = {
   uuid: "label_border_radius_handler",
   name: "border-radius handler",
   application_id: "1",
-  component_type: "event",
+  type: "event",
   ...COMMON_ATTRIBUTES,
   style: {
     display: "block",
@@ -212,7 +212,7 @@ const handlerComponent = {
 
         let borderRadiusHandler = '';
         const selectedComponent = Utils.first($selectedComponents);
-        borderRadiusHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['border-radius'] || '';
+        borderRadiusHandler = selectedComponent?.style_handlers && selectedComponent?.style_handlers['border-radius'] || '';
         return [parameter, borderRadiusHandler];
       `
     }

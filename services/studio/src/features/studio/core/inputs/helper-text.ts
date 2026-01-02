@@ -6,8 +6,8 @@ export default [
     uuid: "helper_text_block",
     application_id: "1",
     name: "helper text block",
-    component_type: "vertical-container-block",
-    styleHandlers: {},
+    type: "container",
+    style_handlers: {},
     input: {
       direction: "vertical"
     },
@@ -15,25 +15,25 @@ export default [
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["helper_input_block", "helper_handler_block"]
+    children_ids: ["helper_input_block", "helper_handler_block"]
   },
   {
     uuid: "helper_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["helper_text_label"]
+    children_ids: ["helper_text_label"]
   },
   {
     uuid: "helper_text_label",
     name: "helper text label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -50,8 +50,8 @@ export default [
     uuid: "helper_text_input",
     name: "helper text input",
     application_id: "1",
-    component_type: "text_input",
-    styleHandlers: {},
+    type: "text_input",
+    style_handlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
@@ -100,20 +100,20 @@ export default [
     uuid: "helper_handler_block",
     application_id: "1",
     name: "helper handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["helper_text_input", "helper_handler"]
+    children_ids: ["helper_text_input", "helper_handler"]
   },
   {
     uuid: "helper_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "helper handler",
     style: {
       display: "block"

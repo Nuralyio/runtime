@@ -68,7 +68,7 @@ export interface ComponentMetadata {
   configKey: string;
   
   /** Child component IDs to include in the parent container */
-  childrenIds: string[];
+  children_ids: string[];
   
   /** Optional: Custom container styles */
   containerStyle?: Record<string, string>;
@@ -143,13 +143,13 @@ export function loadComponentProperties(
     uuid: metadata.uuid,
     application_id: "1",
     name: metadata.name,
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: metadata.containerStyle || {
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: metadata.childrenIds
+    children_ids: metadata.children_ids
   };
 
   // Combine all components

@@ -6,7 +6,7 @@ const containerComponent = {
   uuid: "border_manager_vertical_container",
   name: "Border Manager Container",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   ...COMMON_ATTRIBUTES,
   style: {
     display: "flex",
@@ -14,14 +14,14 @@ const containerComponent = {
     "justify-content": "space-between",
     width: "100%"
   },
-  childrenIds: ["border_manager_label", "border_manager_display_block"]
+  children_ids: ["border_manager_label", "border_manager_display_block"]
 };
 
 const labelComponent = {
   uuid: "border_manager_label",
   name: "text_label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   ...COMMON_ATTRIBUTES,
   parameters: { value: " " },
   input: {
@@ -37,7 +37,7 @@ const borderManagerComponent = {
   uuid: "border_manager_display_block",
   name: "border manager display block",
   application_id: "1",
-  component_type: "border_manager",
+  type: "border_manager",
   ...COMMON_ATTRIBUTES,
   style: { width: "100%", display: "block" },
   input: {
@@ -86,7 +86,7 @@ const collapseComponent = {
   uuid: "border_manager_collapse",
   name: "Border Manager Collapse",
   application_id: "1",
-  component_type: "Collapse",
+  type: "collapse",
   ...COMMON_ATTRIBUTES,
   style: {
     marginTop: "8px",
@@ -111,7 +111,7 @@ const collapseComponent = {
       }]
     }
   },
-  childrenIds: ["border_manager_vertical_container"]
+  children_ids: ["border_manager_vertical_container"]
 };
 
 export const studioBorderManagerBlock = [

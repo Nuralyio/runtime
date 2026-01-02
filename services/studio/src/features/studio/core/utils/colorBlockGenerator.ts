@@ -7,12 +7,12 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}`,
       application_id: "1",
       name: "select helper color block",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         ...InputBlockContainerTheme
       },
-      childrenIds: [
+      children_ids: [
         `${containerUuid}_input_block`,
         `${containerUuid}_handler_block`
       ]
@@ -21,19 +21,19 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_input_block`,
       application_id: "1",
       name: "select helper color input block",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
         "align-items": "center",
         "justify-content": "space-between"
       },
-      childrenIds: [`${containerUuid}_label`]
+      children_ids: [`${containerUuid}_label`]
     },
     {
       uuid: `${containerUuid}_label`,
       name: "select helper color label",
-      component_type: "text_label",
+      type: "text_label",
       application_id: "1",
       ...COMMON_ATTRIBUTES,
       input: {
@@ -53,7 +53,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_input`,
       name: "helper color input",
       application_id: "1",
-      component_type: "color_picker",
+      type: "color_picker",
       event: {
         valueChange: /* js */ `
                     
@@ -91,7 +91,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
                                 
                                 ;
                                 let state = 'enabled';
-                                if (selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}']) {
+                                if (selectedComponent?.style_handlers && selectedComponent?.style_handlers['${cssVar}']) {
                                     state = 'disabled';
                                     return state;
                                 }
@@ -105,20 +105,20 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
       uuid: `${containerUuid}_handler_block`,
       application_id: "1",
       name: "select helper color handler block",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
         "justify-content": "space-between"
       },
-      childrenIds: [`${containerUuid}_input`, `${containerUuid}_handler`]
+      children_ids: [`${containerUuid}_input`, `${containerUuid}_handler`]
     },
     {
       uuid: `${containerUuid}_handler`,
       application_id: "1",
-      component_type: "event",
+      type: "event",
       ...COMMON_ATTRIBUTES,
-      styleHandlers: {},
+      style_handlers: {},
       name: "helper color handler",
       style: {
         display: "block",
@@ -135,7 +135,7 @@ export function generateComponents(containerUuid: string, cssVar: string, label:
                             if (true) {
                                 
                                 ;
-                                helperColorHandler = selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['${cssVar}'] || '';
+                                helperColorHandler = selectedComponent?.style_handlers && selectedComponent?.style_handlers['${cssVar}'] || '';
                             }
                         
                         return [parameter, helperColorHandler];

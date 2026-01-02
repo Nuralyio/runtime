@@ -5,7 +5,7 @@ export default [
     uuid: "page_info_container_block",
     application_id: "1",
     name: "page info container block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -15,6 +15,6 @@ export default [
       padding: "8px",
       "margin-bottom" : "8px"
     },
-    childrenIds: ["page_name_block", "page_url_block", "description_block", "page_default_checkbox_block"]
+    children_ids: ["page_name_block", "page_url_block", "description_block", "page_default_checkbox_block"]
   }
 ];
