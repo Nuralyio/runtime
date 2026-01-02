@@ -7,13 +7,12 @@ export default [{
   application_id: "1",
   name: "top bar",
   component_type: "vertical-container-block",
-
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "fluid" },
+  },
   style: {
-    width: "100vw",
-    display: "flex",
-    "align-items": "center",
-    "justify-content": "center",
-    "border-bottom": "1px #d6d6d6 solid",
+    "border-bottom": "1px solid #d6d6d6",
   },
   childrenIds: ["info-top-bar", "settings-top-bar", "app_settings_modal"]
 },
@@ -22,11 +21,14 @@ export default [{
   name: "info top bar",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "fluid" },
+    justify: { type: "string", value: "space-between" },
+    align: { type: "string", value: "center" },
+  },
   style: {
     width: "60vw",
-    display: "flex",
-    "justify-content": "space-between",
-    "margin-top": "-1px",
   },
   childrenIds: ["app_details_top_bar", "mode_topbar"]
 },
@@ -35,9 +37,11 @@ export default [{
   name: "details top bar",
   application_id: "1",
   component_type: "vertical-container-block",
-  style: {
-    "align-items": "center",
-    "gap": "5px",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "boxed" },
+    align: { type: "string", value: "center" },
+    gap: { type: "string", value: "5px" },
   },
   childrenIds: ["app_logo2", "app_back_top_bar", "app_name_top_bar_backed", "website-name"]
 },
@@ -347,12 +351,15 @@ export default [{
   uuid: "settings-top-bar",
   name: "settings top bar",
   application_id: "1",
-
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "fluid" },
+    justify: { type: "string", value: "flex-end" },
+    align: { type: "string", value: "center" },
+  },
   style: {
     width: "40vw",
-    "justify-content": "flex-end",
-        "align-items": "center",
   },
   childrenIds: [ "platform_top_bar",  "vdivider","app_logout_top_bar"]
 },
@@ -360,8 +367,11 @@ export default [{
   uuid: "zoom_top_bar",
   name: "zoom top bar",
   application_id: "1",
-
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "boxed" },
+  },
   childrenIds: ["zoom_input"]
 },
 {
@@ -413,14 +423,16 @@ export default [{
   uuid: "mode_topbar",
   name: "mode_topbar",
   application_id: "1",
-
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "boxed" },
+    align: { type: "string", value: "center" },
+  },
   style: {
     "margin-right": "14px",
-    "align-items": "center",
   },
   childrenIds: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode"]
-
 },
 
 {
@@ -611,13 +623,13 @@ export default [{
   uuid: "prev_next_top_bar",
   name: "prev next top bar",
   application_id: "1",
-
   component_type: "vertical-container-block",
-  style: {
-    "gap": "4px",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "boxed" },
+    gap: { type: "string", value: "4px" },
   },
   childrenIds: ["previous_button", "next_button"]
-
 },
 {
   uuid: "previous_button",
@@ -840,11 +852,12 @@ export default [{
   name: "Settings Modal Content",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "vertical" },
+    layout: { type: "string", value: "fluid" },
+    gap: { type: "string", value: "16px" },
+  },
   style: {
-    "wdith": "80%",
-    gap: "16px",
-    display: "flex",
-    "flex-direction": "column",
     width: "100%"
   },
   childrenIds: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_settings_danger_section"]
@@ -854,10 +867,12 @@ export default [{
   name: "App Name Section",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "vertical" },
+    layout: { type: "string", value: "fluid" },
+    gap: { type: "string", value: "8px" },
+  },
   style: {
-    gap: "8px",
-    display: "flex",
-    "flex-direction": "column",
     width: "100%"
   },
   childrenIds: ["app_settings_name_label", "app_settings_name_input"]
@@ -918,10 +933,12 @@ export default [{
   name: "App Description Section",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "vertical" },
+    layout: { type: "string", value: "fluid" },
+    gap: { type: "string", value: "8px" },
+  },
   style: {
-    gap: "8px",
-    display: "flex",
-    "flex-direction": "column",
     width: "100%"
   },
   childrenIds: ["app_settings_description_label", "app_settings_description_input"]
@@ -982,10 +999,12 @@ export default [{
   name: "App Subdomain Section",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "vertical" },
+    layout: { type: "string", value: "fluid" },
+    gap: { type: "string", value: "8px" },
+  },
   style: {
-    gap: "8px",
-    display: "flex",
-    "flex-direction": "column",
     width: "100%"
   },
   childrenIds: ["app_settings_subdomain_label", "app_settings_subdomain_input_row"]
@@ -1011,11 +1030,13 @@ export default [{
   name: "App Subdomain Input Row",
   application_id: "1",
   component_type: "vertical-container-block",
+  input: {
+    direction: { type: "string", value: "horizontal" },
+    layout: { type: "string", value: "fluid" },
+    align: { type: "string", value: "center" },
+    gap: { type: "string", value: "4px" },
+  },
   style: {
-    display: "flex",
-    "flex-direction": "row",
-    "align-items": "center",
-    gap: "4px",
     width: "100%"
   },
   childrenIds: ["app_settings_subdomain_input", "app_settings_subdomain_suffix"]
@@ -1076,8 +1097,8 @@ export default [{
   name: "App Access Section",
   application_id: "1",
   component_type: "vertical-container-block",
-  style: {
-    gap: "8px"
+  input: {
+    gap: { type: "string", value: "8px" },
   },
   childrenIds: ["app_settings_access_label", "app_settings_access_roles"]
 },
@@ -1102,10 +1123,6 @@ export default [{
   name: "App Access Roles",
   application_id: "1",
   component_type: "access_roles",
-  style: {
-    width: "100%",
-    display: "block"
-  },
   input: {
     value: {
       type: "handler",
