@@ -129,6 +129,8 @@ class Editor {
   currentPlatform: any = {};
   isPreviewMode: boolean = false;
   isEditorMode: boolean = false;
+  /** Flag to prevent re-processing of inputs while editing a handler */
+  isEditingHandler: boolean = false;
   Vars: any = {};
   currentSelection: any[] = []
   Tabs: any[] = [];
