@@ -31,6 +31,8 @@
  * ```
  */
 
+import { RuntimeInstance } from '../state/runtime-context';
+
 /**
  * Set of reserved parameter names that should NOT be routed to $
  * These are the built-in handler parameters and global objects.
@@ -244,6 +246,19 @@ function findComponentByName(Apps: Record<string, Record<string, any>> | undefin
 }
 
 /**
+ * Ensures a component has Instance attached for runtime values.
+ * This is called lazily when accessing a component that doesn't have Instance yet.
+ *
+ * @param component - The component to ensure Instance for
+ */
+function ensureInstanceAttached(component: any): void {
+  if (!component.Instance && component.uniqueUUID) {
+    // Lazily attach Instance when first accessed
+    RuntimeInstance.attachValuesProperty(component);
+  }
+}
+
+/**
  * Create a merged proxy for a component that exposes Instance values directly
  *
  * This allows `Input1.value` instead of `Input1.Instance.value`
@@ -268,6 +283,9 @@ function createComponentProxy(
       if (typeof prop === 'symbol') {
         return target[prop];
       }
+
+      // Ensure Instance is attached before accessing values
+      ensureInstanceAttached(target);
 
       // Register dependency using same pattern as VarsProxy
       // Key format: "ComponentName.propName" (e.g., "Input1.value")
@@ -297,9 +315,12 @@ function createComponentProxy(
         return true;
       }
 
+      // Ensure Instance is attached before setting values
+      ensureInstanceAttached(target);
+
       // Always write to Instance (runtime values)
       if (!target.Instance) {
-        console.warn(`Component ${target.name} has no Instance property`);
+        console.warn(`Component ${target.name} has no Instance property (uniqueUUID: ${target.uniqueUUID})`);
         return false;
       }
 
