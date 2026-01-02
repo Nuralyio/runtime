@@ -320,9 +320,34 @@ export class PreviewIFramePanel extends LitElement {
     };
   }
 
+  /**
+   * Strip non-serializable properties from a component before sending to iframe.
+   * Properties like Instance (Proxy), parent (circular ref), children (circular ref) cannot be cloned.
+   */
+  private sanitizeComponentForIframe(component: any): any {
+    if (!component) return component;
+
+    // Create a shallow copy and remove non-serializable properties
+    const { Instance, parent, children, __microAppContext, ...serializableProps } = component;
+    return serializableProps;
+  }
+
   private sendMessageToIframe(message: PreviewMessage) {
     if (this.iframeElement?.contentWindow) {
-      this.iframeElement.contentWindow.postMessage(message, globalThis.location.origin);
+      // Sanitize component payloads before sending
+      let sanitizedMessage = message;
+      if (message.type === 'COMPONENT_UPDATE_SINGLE' && message.payload) {
+        sanitizedMessage = {
+          ...message,
+          payload: this.sanitizeComponentForIframe(message.payload)
+        };
+      } else if (message.type === 'COMPONENTS_UPDATE' && Array.isArray(message.payload)) {
+        sanitizedMessage = {
+          ...message,
+          payload: message.payload.map((c: any) => this.sanitizeComponentForIframe(c))
+        };
+      }
+      this.iframeElement.contentWindow.postMessage(sanitizedMessage, globalThis.location.origin);
     }
   }
 
