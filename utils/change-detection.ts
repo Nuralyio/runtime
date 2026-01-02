@@ -23,12 +23,12 @@ class EventDispatcher {
   private batchingEnabled: boolean = true;
 
   // Events that should always be batched (high-frequency property changes)
+  // Note: component:value:set removed - needs immediate delivery for reactivity
   private readonly batchableEventPatterns: RegExp[] = [
     /^component-property-changed:/,
     /^microapp:.*:component-property-changed:/,
     /^Vars:/,
     /^microapp:.*:Vars:/,
-    /^component:value:set:/,
     /^microapp:.*:component-instance-changed:/
   ];
 
