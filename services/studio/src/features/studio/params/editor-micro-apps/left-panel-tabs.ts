@@ -49,21 +49,6 @@ export default {
             type: "componentIdArray",
             value: ["function_micro_app_block"]
           }
-        },
-        {
-          label: {
-            type: "text",
-            value: "Files"
-          },
-          icon: {
-            type: "string",
-            value: "folder"
-          },
-          key: "files",
-          childrends: {
-            type: "componentIdArray",
-            value: ["files_micro_app_block"]
-          }
         }
       ]
     }
