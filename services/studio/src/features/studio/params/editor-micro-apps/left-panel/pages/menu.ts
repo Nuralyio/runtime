@@ -122,6 +122,15 @@ export const pagesMenu = {
                     type: "component",
                     component
                   }
+                },
+                {
+                  label: 'Copy Component Name',
+                  value: 'copyComponentName',
+                  icon: "clipboard-copy",
+                  additionalData: {
+                    type: "component",
+                    component
+                  }
                 }]
               }
             };
@@ -215,6 +224,7 @@ export const pagesMenu = {
       const mouseX = originalEvent?.clientX || 400;
       const mouseY = originalEvent?.clientY || 300;
       const position = { x: mouseX, y: mouseY };
+      const closeMenu = EventData.close;
 
       if (EventData.action === "delete") {
         const type = EventData.value?.type;
@@ -222,15 +232,21 @@ export const pagesMenu = {
         const page = EventData.value?.page;
 
         if (type === "component" && component) {
+          
           ShowDeleteConfirm(
             component.name || 'this component',
             position,
             () => {
               DeleteComponentAction(component);
               ShowSuccessToast('Component deleted');
+              closeMenu?.();
+            },
+            ()=>{
+              closeMenu?.();
             }
           );
         } else if (type === "page" && page) {
+          closeMenu?.();
           ShowDeleteConfirm(
             page.name || 'this page',
             position,
@@ -241,7 +257,16 @@ export const pagesMenu = {
           );
         }
       } else if(EventData.action === "copy"){
+        closeMenu?.();
         eventHandler.emit("Copy")
+      } else if(EventData.action === "copyComponentName"){
+        const component = EventData.value?.component;
+        if(component?.name){
+          navigator.clipboard.writeText(component.name).then(() => {
+            closeMenu?.();
+            ShowSuccessToast('Component name copied to clipboard');
+          });
+        }
       }
     `
   }
