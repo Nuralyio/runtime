@@ -206,9 +206,22 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
   private _handleActionClick(path: number[], event: CustomEvent) {
     const item = event.detail.item;
     const originalEvent = event.detail.originalEvent;
+    const dropdown = event.detail.dropdown;
+
+    // Create a close callback for async actions
+    const close = () => {
+      if (dropdown) {
+        if (typeof dropdown.hide === 'function') {
+          dropdown.hide();
+        } else if (typeof dropdown.close === 'function') {
+          dropdown.close();
+        }
+      }
+    };
+
     this.dispatchEvent(
       new CustomEvent('action-click', {
-        detail: { value: item.value, path, item, originalEvent },
+        detail: { value: item.value, path, item, originalEvent, close },
         composed: true,
         bubbles: true,
       })
@@ -259,9 +272,9 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
                 <nr-icon name=${menu.status.icon} class="status-icon"  size="small"></nr-icon>
               ` : nothing}
               ${menu.menu?.actions ? html`
-                <nr-dropdown 
-                  .items=${this._convertActionsToDropdownItems(menu.menu.actions)} 
-                  trigger="click" 
+                <nr-dropdown
+                  .items=${this._convertActionsToDropdownItems(menu.menu.actions)}
+                  trigger="click"
                   placement="bottom-end"
                   @nr-dropdown-item-click=${(e: CustomEvent) => this._handleActionClick(path, e)}>
                   <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger"  size="small"></nr-icon>
@@ -322,9 +335,9 @@ export class NrMenuElement extends NuralyUIBaseMixin(LitElement) {
               <nr-icon name=${menu.status.icon} class="status-icon" size="small"></nr-icon>
             ` : nothing}
             ${(isHighlighted || isHovered) && menu.menu?.actions ? html`
-              <nr-dropdown 
-                .items=${this._convertActionsToDropdownItems(menu.menu.actions)} 
-                trigger="click" 
+              <nr-dropdown
+                .items=${this._convertActionsToDropdownItems(menu.menu.actions)}
+                trigger="click"
                 placement="bottom-end"
                 @nr-dropdown-item-click=${(e: CustomEvent) => this._handleActionClick(path, e)}>
                 <nr-icon name="${menu.menu.icon}" class="action-icon" slot="trigger" size="small"></nr-icon>
