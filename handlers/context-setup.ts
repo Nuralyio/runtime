@@ -108,7 +108,7 @@ const observe = (o: any, f: (target: any, prop: string, value: any) => void) => 
  * 
  * **Setup Process:**
  * 1. **Set Current Component**: Makes component accessible as `Current` in handlers
- * 2. **Initialize Children**: Creates empty children array if component has childrenIds
+ * 2. **Initialize Children**: Creates empty children array if component has children_ids
  * 3. **Attach Values Property**: Creates reactive `Instance` proxy for component state
  * 4. **Propagate to Parents**: Ensures all parent components also have values attached
  * 5. **Set Event Data**: Makes event information accessible as `Event` in handlers
@@ -130,7 +130,7 @@ const observe = (o: any, f: (target: any, prop: string, value: any) => void) => 
  * - Cached to avoid duplicate proxy creation
  * 
  * @param {any} component - The component to execute the handler for
- *   Must have: uuid, uniqueUUID, application_id, childrenIds (optional)
+ *   Must have: uuid, uniqueUUID, application_id, children_ids (optional)
  * 
  * @param {any} [EventData={}] - Event data to be available in the handler
  *   Typically: { event: DOMEvent, ...customData }
@@ -205,7 +205,7 @@ export function setupRuntimeContext(context: IRuntimeContext, component: any, Ev
   context.Current = component;
 
   // Initialize children array if needed
-  if (!component.children && component.childrenIds && Array.isArray(component.childrenIds)) {
+  if (!component.children && component.children_ids && Array.isArray(component.children_ids)) {
     component.children = [];
     // Children will be populated in registerApplications
   }

@@ -4,8 +4,8 @@ export const enum ComponentType {
   TextInput = "text_input",
   Menu = "menu",
   Button = "button_input",
-  Collection = "Collection",
-  Container = "vertical-container-block",
+  Collection = "collection",
+  Container = "container",
   ColorPicker = "color_picker",
   NumberInput = "number_input",
   IconButton = "icon_button",
@@ -14,48 +14,48 @@ export const enum ComponentType {
   BorderRadius = "border_radius",
   BoxModel = "box_model",
   Event = "event", //TODO: this is an event not a component type
-  Table = "Table",
+  Table = "table",
   Checkbox = "checkbox",
-  DatePicker = "Datepicker",
-  Icon = "Icon",
-  Image = "Image",
-  MicroApp = "MicroApp",
-  RadioButton = "RadioButton",
-  IconPicker = "IconPicker",
-  RefComponent = "RefComponent",
-  Code = "code-block",
-  RichText = "rich-text",
-  EmbedURL = "embed-url",
+  DatePicker = "date_picker",
+  Icon = "icon",
+  Image = "image",
+  MicroApp = "micro_app",
+  RadioButton = "radio_button",
+  IconPicker = "icon_picker",
+  RefComponent = "ref_component",
+  Code = "code",
+  RichText = "rich_text",
+  EmbedURL = "embed_url",
   Link = "link",
   Document = "document",
   Video = "video",
-  FileUpload = "file-upload",
-  RichTextEditor = "rich-text-editor",
-  UsersDropdown = "UsersDropdown",
-  InsertDropdown = "InsertDropdown",
-  Collapse = "Collapse",
-  Handlers = "Handlers",
-  AI = "AI",
-  Divider = "Divider",
-  ExportImport = "ExportImport",
-  InvokeFunction = "InvokeFunction",
+  FileUpload = "file_upload",
+  RichTextEditor = "rich_text_editor",
+  UsersDropdown = "users_dropdown",
+  InsertDropdown = "insert_dropdown",
+  Collapse = "collapse",
+  Handlers = "handlers",
+  AI = "ai",
+  Divider = "divider",
+  ExportImport = "export_import",
+  InvokeFunction = "invoke_function",
   Dropdown = "dropdown",
-  Textarea = "Textarea",
-  Badge = "Badge",
-  Card = "Card",
-  Tag = "Tag",
-  Slider = "Slider",
-  Alert = "Alert",
-  Modal = "modal-block",
-  Toast = "Toast",
-  Panel = "Panel",
-  GridRow = "grid-row-block",
-  GridCol = "grid-col-block",
+  Textarea = "textarea",
+  Badge = "badge",
+  Card = "card",
+  Tag = "tag",
+  Slider = "slider",
+  Alert = "alert",
+  Modal = "modal",
+  Toast = "toast",
+  Panel = "panel",
+  GridRow = "grid_row",
+  GridCol = "grid_col",
   Form = "form",
   ValidationRules = "validation_rules",
   BorderManager = "border_manager",
   AccessRoles = "access_roles",
-  FunctionsPanel = "FunctionsPanel",
+  FunctionsPanel = "functions_panel",
 }
 
 export interface DraggingComponentInfo {
@@ -69,26 +69,21 @@ export interface DraggingComponentInfo {
 export interface ComponentElement {
   parent: ComponentElement;
   root?: boolean;
-  values?: any;
   uuid: string;
   name: string;
-  component_type: ComponentType | string;  // Allow string for custom component types
+  type: ComponentType | string;  // Allow string for custom component types
   style?: { [key: string]: string };
   breakpoints?: any;
-  styleHandlers: { [key: string]: string };
-  parameters?: { [key: string]: string };
+  style_handlers: { [key: string]: string };
   event?: { [key: string]: string };
   input?: { [key: string]: any };
   errors?: { [key: string]: string };
-  childrens?: ComponentElement[];
-  childrenIds?: string[];
-  headerChildrenIds?: string[];  // For modal header slot
-  footerChildrenIds?: string[];  // For modal footer slot
+  children_ids?: string[];
+  children?: ComponentElement[];
   pageId?: string;
   application_id?: string;
   uniqueUUID?: string;
   Instance?: any; // Component instance state (reactive proxy)
-  children?: ComponentElement[]; // Resolved children components
   __microAppContext?: {
     Vars: any;
     runtimeContext: any;

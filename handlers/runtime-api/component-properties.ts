@@ -64,7 +64,7 @@ export function createComponentPropertyFunctions() {
      * Updates component style handlers
      */
     updateStyleHandlers: (component: ComponentElement, symbol: string, value: any) => {
-      updateComponentAttributes(component.application_id, component.uuid, "styleHandlers", { [symbol]: value });
+      updateComponentAttributes(component.application_id, component.uuid, "style_handlers", { [symbol]: value });
     },
   };
 }

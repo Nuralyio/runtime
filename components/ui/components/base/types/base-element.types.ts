@@ -20,7 +20,7 @@ export interface BaseElementHost extends ReactiveControllerHost {
   style: CSSStyleDeclaration;
 
   // State
-  inputHandlersValue: Record<string, any>;
+  resolvedInputs: Record<string, any>;
   stylesHandlersValue: Record<string, any>;
   calculatedStyles: Record<string, any>;
   errors: Record<string, any>;

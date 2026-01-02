@@ -18,7 +18,7 @@ export class InsertDropdownBlock extends BaseElementBlock {
 
 
   renderComponent() {
-    const options = this.inputHandlersValue?.options || [];
+    const options = this.resolvedInputs?.options || [];
     
     return html`
       <nr-dropdown
@@ -26,20 +26,20 @@ export class InsertDropdownBlock extends BaseElementBlock {
         style=${styleMap({ 
           ...this.getStyles(),
           "--nuraly-icon-color": "#515161",
-          "--nuraly-select-local-dropdown-max-height": this.inputHandlersValue?.maxHeight || "auto",
+          "--nuraly-select-local-dropdown-max-height": this.resolvedInputs?.maxHeight || "auto",
         })}
         .items=${options}
-        .trigger=${this.inputHandlersValue?.trigger || 'click'}
-        .placement=${this.inputHandlersValue?.placement || 'bottom-start'}
-        .animation=${this.inputHandlersValue?.animation || 'fade'}
-        .disabled=${this.inputHandlersValue?.state === 'disabled'}
-        .arrow=${this.inputHandlersValue?.arrow || false}
-        .autoClose=${this.inputHandlersValue?.autoClose !== false}
-        .closeOnOutsideClick=${this.inputHandlersValue?.closeOnOutsideClick !== false}
-        .closeOnEscape=${this.inputHandlersValue?.closeOnEscape !== false}
-        .offset=${this.inputHandlersValue?.offset || 4}
-        .delay=${this.inputHandlersValue?.delay || 50}
-        .minWidth=${this.inputHandlersValue?.minWidth || 'auto'}
+        .trigger=${this.resolvedInputs?.trigger || 'click'}
+        .placement=${this.resolvedInputs?.placement || 'bottom-start'}
+        .animation=${this.resolvedInputs?.animation || 'fade'}
+        .disabled=${this.resolvedInputs?.state === 'disabled'}
+        .arrow=${this.resolvedInputs?.arrow || false}
+        .autoClose=${this.resolvedInputs?.autoClose !== false}
+        .closeOnOutsideClick=${this.resolvedInputs?.closeOnOutsideClick !== false}
+        .closeOnEscape=${this.resolvedInputs?.closeOnEscape !== false}
+        .offset=${this.resolvedInputs?.offset || 4}
+        .delay=${this.resolvedInputs?.delay || 50}
+        .minWidth=${this.resolvedInputs?.minWidth || 'auto'}
         @nr-dropdown-item-click=${(e: CustomEvent) => {
           // e.detail contains { item, dropdown }
           // item has properties: { label, value, additionalData, icon, etc. }
@@ -64,7 +64,7 @@ export class InsertDropdownBlock extends BaseElementBlock {
             "--nuraly-label-local-font-weight": "400",
           })}
         >
-          ${this.inputHandlersValue?.title} ${this.inputHandlersValue?.icon ? html`<nr-button style="--nuraly-button-min-width: 47px;" type="default" .iconLeft="${this.inputHandlersValue.icon}" size="small"></nr-button>` : nothing}
+          ${this.resolvedInputs?.title} ${this.resolvedInputs?.icon ? html`<nr-button style="--nuraly-button-min-width: 47px;" type="default" .iconLeft="${this.resolvedInputs.icon}" size="small"></nr-button>` : nothing}
         </nr-label>
       </nr-dropdown>
     `;

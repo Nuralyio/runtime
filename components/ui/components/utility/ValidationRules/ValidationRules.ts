@@ -234,19 +234,19 @@ export class ValidationRulesDisplay extends BaseElementBlock {
     });
 
     // Optimistically update local state for immediate UI feedback
-    if (this.inputHandlersValue?.value) {
-      this.inputHandlersValue = {
-        ...this.inputHandlersValue,
-        value: { ...this.inputHandlersValue.value, rules }
+    if (this.resolvedInputs?.value) {
+      this.resolvedInputs = {
+        ...this.resolvedInputs,
+        value: { ...this.resolvedInputs.value, rules }
       };
     } else {
-      this.inputHandlersValue = { ...this.inputHandlersValue, rules };
+      this.resolvedInputs = { ...this.resolvedInputs, rules };
     }
     this.requestUpdate();
   }
 
   private getRulesFromHandlers(): ValidationRule[] {
-    const handlers = this.inputHandlersValue;
+    const handlers = this.resolvedInputs;
     if (handlers?.value?.rules) {
       return handlers.value.rules;
     }

@@ -21,14 +21,14 @@ export class UsersDropdownBlock extends BaseElementBlock {
   render() {
     return html`
       <nr-dropdown
-        trigger=${this.inputHandlersValue?.trigger ?? nothing}
-        .options=${this.inputHandlersValue?.users ?? []}
+        trigger=${this.resolvedInputs?.trigger ?? nothing}
+        .options=${this.resolvedInputs?.users ?? []}
         @click-item=${(e: CustomEvent) => this.executeEvent('onClickItem', e, { value: e.detail })}
       >
         <nr-image
-          .src="${this.inputHandlersValue?.userImage ?? nothing}"
-          .width="${this.inputHandlersValue?.imageWidth ?? nothing}"
-          .height="${this.inputHandlersValue?.imageHeight ?? nothing}"
+          .src="${this.resolvedInputs?.userImage ?? nothing}"
+          .width="${this.resolvedInputs?.imageWidth ?? nothing}"
+          .height="${this.resolvedInputs?.imageHeight ?? nothing}"
         >
         </nr-image>
       </nr-dropdown>

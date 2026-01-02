@@ -21,11 +21,11 @@ export function moveDraggedComponentInside(
     if (component.uuid === dropInComponentId) {
       dropInComponent = component;
     }
-    parentDraggedComponent = components.find((c) => c.childrenIds?.includes(draggedComponentId));
+    parentDraggedComponent = components.find((c) => c.children_ids?.includes(draggedComponentId));
     if (!draggedComponent || !dropInComponent) {
       // If both components are not found yet, continue searching in children.
-      if (component.childrenIds) {
-        for (const childId of component.childrenIds) {
+      if (component.children_ids) {
+        for (const childId of component.children_ids) {
           const child = components.find((c) => c.id === childId);
           if (child) {
             findComponentsRecursively(child);
@@ -42,18 +42,18 @@ export function moveDraggedComponentInside(
 
   // If both components are found and they are not the same, and draggedComponent is not already in dropInComponent, update their relationship.
   if (draggedComponent && dropInComponent && draggedComponent !== dropInComponent) {
-    if (!dropInComponent.childrenIds) {
-      dropInComponent.childrenIds = [];
+    if (!dropInComponent.children_ids) {
+      dropInComponent.children_ids = [];
     }
 
     // Check if draggedComponent is not already in dropInComponent.
-    if (!dropInComponent.childrenIds.includes(draggedComponentId)) {
-      dropInComponent.childrenIds.push(draggedComponentId);
+    if (!dropInComponent.children_ids.includes(draggedComponentId)) {
+      dropInComponent.children_ids.push(draggedComponentId);
 
       removeComponentToCurrentPageAction(draggedComponentId);
 
-      if (parentDraggedComponent && parentDraggedComponent.childrenIds) {
-        parentDraggedComponent.childrenIds = parentDraggedComponent.childrenIds.filter(
+      if (parentDraggedComponent && parentDraggedComponent.children_ids) {
+        parentDraggedComponent.children_ids = parentDraggedComponent.children_ids.filter(
           (childId) => childId !== draggedComponentId
         );
       }

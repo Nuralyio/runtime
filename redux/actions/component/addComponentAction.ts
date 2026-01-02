@@ -26,7 +26,7 @@ export const addComponentAction = (
     uuid:componentId,
     pageId: pageUUID,
     application_id: currentApplicationId,
-    childrenIds: component.childrenIds ?? [], // Initialize childrenIds if necessary
+    children_ids: component.children_ids ?? [], // Initialize children_ids if necessary
   };
 
   // Container types that can have children
@@ -42,33 +42,33 @@ export const addComponentAction = (
 
   if (
     !currentComponentId ||
-    !containerTypes.includes(currentComponent?.component_type)
+    !containerTypes.includes(currentComponent?.type)
   ) {
     newComponent.root = true;
   }
 
   if (currentComponentId) {
     if (
-      currentComponent?.component_type === ComponentType.Container ||
-      currentComponent?.component_type === ComponentType.Dropdown ||
-      currentComponent?.component_type === ComponentType.Link ||
-      currentComponent?.component_type === ComponentType.Collection ||
-      currentComponent?.component_type === ComponentType.GridRow ||
-      currentComponent?.component_type === ComponentType.GridCol ||
-      currentComponent?.component_type === ComponentType.Form ||
-      currentComponent?.component_type === ComponentType.Modal
+      currentComponent?.type === ComponentType.Container ||
+      currentComponent?.type === ComponentType.Dropdown ||
+      currentComponent?.type === ComponentType.Link ||
+      currentComponent?.type === ComponentType.Collection ||
+      currentComponent?.type === ComponentType.GridRow ||
+      currentComponent?.type === ComponentType.GridCol ||
+      currentComponent?.type === ComponentType.Form ||
+      currentComponent?.type === ComponentType.Modal
     ) {
       // Add as child of the current component
       //addComponentAsChildOf(componentId, currentComponentId, currentApplicationId);
-      // Update parent component's childrenIds
+      // Update parent component's children_ids
       if (updateParent) {
         const parentComponent = components.find((comp) => comp.uuid === currentComponentId);
         if (parentComponent) {
-          // Add to childrenIds (body slot for all container types including Modal)
-          if (!parentComponent.childrenIds) {
-            parentComponent.childrenIds = [];
+          // Add to children_ids (body slot for all container types including Modal)
+          if (!parentComponent.children_ids) {
+            parentComponent.children_ids = [];
           }
-          parentComponent.childrenIds.push(componentId);
+          parentComponent.children_ids.push(componentId);
 
           // Update the components store with the modified parent component
           componentsStore[currentApplicationId] = components.map((comp) =>

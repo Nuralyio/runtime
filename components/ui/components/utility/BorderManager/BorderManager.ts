@@ -116,12 +116,12 @@ export class BorderManagerDisplay extends BaseElementBlock {
   }
 
   private getCurrentState(): string {
-    const handlers = this.inputHandlersValue;
+    const handlers = this.resolvedInputs;
     return handlers?.currentState || handlers?.value?.currentState || 'default';
   }
 
   private getBorderFromHandlers(): BorderState {
-    const handlers = this.inputHandlersValue;
+    const handlers = this.resolvedInputs;
     const style = handlers?.value?.style || handlers?.style || {};
 
     // Parse existing border values
@@ -477,7 +477,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
 
   override renderComponent() {
     // Only initialize from handlers once we have data, or when state changes
-    const handlers = this.inputHandlersValue;
+    const handlers = this.resolvedInputs;
     const hasHandlerData = handlers?.value?.style || handlers?.style;
     const currentState = this.getCurrentState();
 

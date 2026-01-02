@@ -68,7 +68,7 @@ export class FormBlock extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }).filter(Boolean) ?? [];
   }
@@ -270,13 +270,13 @@ export class FormBlock extends BaseElementBlock {
           ${ref(this.inputRef)}
           class="${`drop-${this.component.uuid}`}"
           style=${Object.entries(inputStyles).map(([k, v]) => `${k}:${v}`).join(';')}
-          .disabled=${this.inputHandlersValue?.disabled || false}
-          .validateOnChange=${this.inputHandlersValue?.validateOnChange ?? false}
-          .validateOnBlur=${this.inputHandlersValue?.validateOnBlur ?? true}
-          .preventInvalidSubmission=${this.inputHandlersValue?.preventInvalidSubmission ?? true}
-          .resetOnSuccess=${this.inputHandlersValue?.resetOnSuccess ?? false}
-          .action=${this.inputHandlersValue?.action ?? nothing}
-          .method=${this.inputHandlersValue?.method ?? 'POST'}
+          .disabled=${this.resolvedInputs?.disabled || false}
+          .validateOnChange=${this.resolvedInputs?.validateOnChange ?? false}
+          .validateOnBlur=${this.resolvedInputs?.validateOnBlur ?? true}
+          .preventInvalidSubmission=${this.resolvedInputs?.preventInvalidSubmission ?? true}
+          .resetOnSuccess=${this.resolvedInputs?.resetOnSuccess ?? false}
+          .action=${this.resolvedInputs?.action ?? nothing}
+          .method=${this.resolvedInputs?.method ?? 'POST'}
           @nr-form-submit-success=${(e: CustomEvent) => {
             this.executeEvent('onSubmitSuccess', e, {
               formData: e.detail?.formData,
@@ -313,13 +313,13 @@ export class FormBlock extends BaseElementBlock {
         ${ref(this.inputRef)}
         class="${`drop-${this.component.uuid}`}"
         style=${Object.entries(inputStyles).map(([k, v]) => `${k}:${v}`).join(';')}
-        .disabled=${this.inputHandlersValue?.disabled || false}
-        .validateOnChange=${this.inputHandlersValue?.validateOnChange ?? false}
-        .validateOnBlur=${this.inputHandlersValue?.validateOnBlur ?? true}
-        .preventInvalidSubmission=${this.inputHandlersValue?.preventInvalidSubmission ?? true}
-        .resetOnSuccess=${this.inputHandlersValue?.resetOnSuccess ?? false}
-        .action=${this.inputHandlersValue?.action ?? nothing}
-        .method=${this.inputHandlersValue?.method ?? 'POST'}
+        .disabled=${this.resolvedInputs?.disabled || false}
+        .validateOnChange=${this.resolvedInputs?.validateOnChange ?? false}
+        .validateOnBlur=${this.resolvedInputs?.validateOnBlur ?? true}
+        .preventInvalidSubmission=${this.resolvedInputs?.preventInvalidSubmission ?? true}
+        .resetOnSuccess=${this.resolvedInputs?.resetOnSuccess ?? false}
+        .action=${this.resolvedInputs?.action ?? nothing}
+        .method=${this.resolvedInputs?.method ?? 'POST'}
         @nr-form-submit-success=${(e: CustomEvent) => {
           this.executeEvent('onSubmitSuccess', e, {
             formData: e.detail?.formData,

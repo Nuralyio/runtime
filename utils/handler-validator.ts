@@ -437,8 +437,8 @@ export function validateComponentHandlers(component: any): ValidationResult {
   // Validate inputHandlers (direct string handlers)
   validateStringHandlers(component.inputHandlers, 'inputHandlers', allErrors);
 
-  // Validate styleHandlers (direct string handlers)
-  validateStringHandlers(component.styleHandlers, 'styleHandlers', allErrors);
+  // Validate style_handlers (direct string handlers)
+  validateStringHandlers(component.style_handlers, 'style_handlers', allErrors);
 
   return {
     valid: allErrors.length === 0,

@@ -10,7 +10,7 @@ export const addComponentHandler = ({ component }: AddComponentRequest, currentA
 
   delete component.parent;
   delete component.children ;
-  delete component.childrens;
+  delete component.children;
   fetch(FRONT_API_URLS.COMPONENTS, {
     method: "POST",
     headers: {

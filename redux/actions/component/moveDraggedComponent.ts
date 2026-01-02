@@ -28,8 +28,8 @@ export function moveDraggedComponent(
       draggedComponent = { ...comp };
       return;
     }
-    if (comp.childrenIds) {
-      for (const childId of comp.childrenIds) {
+    if (comp.children_ids) {
+      for (const childId of comp.children_ids) {
         const child = components.find((c) => c.uuid === childId);
         if (child) {
           findDraggedRecursively(child);
@@ -39,7 +39,7 @@ export function moveDraggedComponent(
     }
   }
 
-  parentOfDragged = components.find((c) => c.childrenIds?.includes(draggedComponentId));
+  parentOfDragged = components.find((c) => c.children_ids?.includes(draggedComponentId));
 
   for (const rootComp of components) {
     findDraggedRecursively(rootComp);
@@ -61,8 +61,8 @@ export function moveDraggedComponent(
   const page = pagesForApp[pageIndex];
 
   if (parentOfDragged) {
-    oldIndexInParent = parentOfDragged.childrenIds?.indexOf(draggedComponentId) ?? -1;
-    parentOfDragged.childrenIds = parentOfDragged.childrenIds?.filter(id => id !== draggedComponentId);
+    oldIndexInParent = parentOfDragged.children_ids?.indexOf(draggedComponentId) ?? -1;
+    parentOfDragged.children_ids = parentOfDragged.children_ids?.filter(id => id !== draggedComponentId);
     updateComponentHandler(parentOfDragged, appUUID);
   } else {
     oldIndexInParent = page.component_ids.indexOf(draggedComponentId);
@@ -81,26 +81,26 @@ export function moveDraggedComponent(
     page.component_ids.splice(insertionIndex, 0, draggedComponentId);
     draggedComponent.root = true;
   } else {
-    const dropInIsContainer = Array.isArray(dropInComponent.childrenIds);
+    const dropInIsContainer = Array.isArray(dropInComponent.children_ids);
 
     if (position === "inside" && dropInIsContainer) {
-      dropInComponent.childrenIds = dropInComponent.childrenIds || [];
-      const insertionIndex = oldIndexInParent >= 0 && oldIndexInParent <= dropInComponent.childrenIds.length
+      dropInComponent.children_ids = dropInComponent.children_ids || [];
+      const insertionIndex = oldIndexInParent >= 0 && oldIndexInParent <= dropInComponent.children_ids.length
         ? oldIndexInParent
-        : dropInComponent.childrenIds.length;
-      dropInComponent.childrenIds.splice(insertionIndex, 0, draggedComponentId);
+        : dropInComponent.children_ids.length;
+      dropInComponent.children_ids.splice(insertionIndex, 0, draggedComponentId);
       updateComponentHandler(dropInComponent, appUUID);
     } else {
-      const parentOfDropIn = components.find((c) => c.childrenIds?.includes(dropInComponentId));
+      const parentOfDropIn = components.find((c) => c.children_ids?.includes(dropInComponentId));
       if (parentOfDropIn) {
-        const indexOfDropIn = parentOfDropIn.childrenIds?.indexOf(dropInComponentId);
+        const indexOfDropIn = parentOfDropIn.children_ids?.indexOf(dropInComponentId);
         if (indexOfDropIn != null && indexOfDropIn >= 0) {
           let insertIndex = indexOfDropIn;
           if (position === "after") insertIndex += 1;
           else if (position === "before") insertIndex = Math.max(0, insertIndex);
-          parentOfDropIn.childrenIds?.splice(insertIndex, 0, draggedComponentId);
+          parentOfDropIn.children_ids?.splice(insertIndex, 0, draggedComponentId);
         } else {
-          parentOfDropIn.childrenIds?.push(draggedComponentId);
+          parentOfDropIn.children_ids?.push(draggedComponentId);
         }
         updateComponentHandler(parentOfDropIn, appUUID);
       } else {
