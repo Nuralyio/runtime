@@ -64,7 +64,7 @@ Input handlers in TextInput allow dynamic evaluation of properties. They are eva
 graph LR
     A["inputHandlers defined"] --> B["Component mounts"]
     B --> C["Handler code evaluated"]
-    C --> D["Result stored in inputHandlersValue"]
+    C --> D["Result stored in resolvedInputs"]
     D --> E["Component re-renders"]
     F["Dependencies change"] --> C
 ```

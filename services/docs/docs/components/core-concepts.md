@@ -70,7 +70,7 @@ inputHandlers: {
 **Evaluation Process:**
 1. Component mounts in the UI
 2. Input handlers are evaluated immediately
-3. Results stored in `inputHandlersValue`
+3. Results stored in `resolvedInputs`
 4. Component renders with these values
 5. On dependency changes, handlers re-evaluate
 6. Component updates automatically
