@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 // Static import: rely on CodeEditor to be SSR-safe internally
 import "../../../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
+import Editor from "../../../../../../runtime/state/editor";
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
   static styles = [
@@ -43,6 +44,8 @@ export class SmartAttributeCodeeditor extends LitElement {
     if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout);
     }
+    // Clear the flag when the component is removed
+    Editor.isEditingHandler = false;
   }
 
   render() {
@@ -57,6 +60,14 @@ export class SmartAttributeCodeeditor extends LitElement {
                     detail: { value }
                   } = event;
                   this.debounce(() => this.handleCodeEditorChange(value), 1000);
+                }}
+                @focusin=${() => { Editor.isEditingHandler = true; }}
+                @focusout=${() => {
+                  // Only clear the flag if no debounce is pending
+                  // This prevents the editor from closing while a save is in progress
+                  if (!this.debounceTimeout) {
+                    Editor.isEditingHandler = false;
+                  }
                 }}
                 .code=${this.value}
                 language="javascript"
@@ -84,6 +95,14 @@ export class SmartAttributeCodeeditor extends LitElement {
     this.debounceTimeout = setTimeout(() => {
       this.debounceTimeout = null;
       callback();
+      // Keep the flag true for a short time after save to allow the update to complete
+      // without triggering tab regeneration
+      setTimeout(() => {
+        // Only clear if no new debounce has started
+        if (!this.debounceTimeout) {
+          Editor.isEditingHandler = false;
+        }
+      }, 500);
     }, delay);
   }
 }
