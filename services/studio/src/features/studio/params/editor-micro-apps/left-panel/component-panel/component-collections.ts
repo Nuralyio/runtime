@@ -3,7 +3,7 @@ export const componentCollection = {
   uuid: "component_collection",
   name: "Component Collection",
   application_id: "1",
-  component_type: "Collection",
+  type: "collection",
   style: {
     "--columns": "9",
     "margin-left": "10px",
@@ -19,34 +19,34 @@ export const componentCollection = {
           { id: "select", icon: "list-video", label: "Select" },
           { id: "dropdown", icon: "grip-vertical", label: "Dropdown" },
           { id: "menu", icon: "menu", label: "Menu" },
-          { id: "file-upload", icon: "file-up", label: "File Upload" },
+          { id: "file_upload", icon: "file-up", label: "File Upload" },
           { id: "datepicker", icon: "calendar", label: "DatePicker" },
-          { id: "textarea", icon: "align-left", label: "Textarea" },
-          { id: "slider", icon: "sliders", label: "Slider" },
+          { id: "textarea", icon: "align-left", label: "textarea" },
+          { id: "slider", icon: "sliders", label: "slider" },
           { id: "form", icon: "file-text", label: "Form" }
         ];
 
         const displayOptions = [
           { id: "text_label", icon: "case-sensitive", label: "Text Label" },
-          { id: "rich-text", icon: "whole-word", label: "Rich Text" },
-          { id: "badge", icon: "badge", label: "Badge" },
-          { id: "tag", icon: "tag", label: "Tag" },
-          { id: "card", icon: "credit-card", label: "Card" },
-          { id: "icon", icon: "badge", label: "Icon" },
-          { id: "code-block", icon: "file-code", label: "Code" },
-          { id: "embed-url", icon: "file-code", label: "Embed URL" },
+          { id: "rich_text", icon: "whole-word", label: "Rich Text" },
+          { id: "badge", icon: "badge", label: "badge" },
+          { id: "tag", icon: "tag", label: "tag" },
+          { id: "card", icon: "credit-card", label: "card" },
+          { id: "icon", icon: "badge", label: "icon" },
+          { id: "code", icon: "file-code", label: "Code" },
+          { id: "embed_url", icon: "file-code", label: "Embed URL" },
           { id: "link", icon: "link", label: "Link" }
         ];
 
         const dataOptions = [
-          { id: "table", icon: "table", label: "Table" },
-          { id: "collection", icon: "database", label: "Collection" }
+          { id: "table", icon: "table", label: "table" },
+          { id: "collection", icon: "database", label: "collection" }
         ];
 
         const layoutOptions = [
           { id: "container", icon: "grip-vertical", label: "Container" },
-          { id: "grid-row-block", icon: "rows-3", label: "Grid Row" },
-          { id: "grid-col-block", icon: "columns-3", label: "Grid Col" },
+          { id: "grid_row", icon: "rows-3", label: "Grid Row" },
+          { id: "grid_col", icon: "columns-3", label: "Grid Col" },
           { id: "ref-component", icon: "asterisk", label: "Ref Component" }
         ];
 
@@ -55,13 +55,13 @@ export const componentCollection = {
         ];
 
         const mediaOptions = [
-          { id: "image", icon: "image", label: "Image" },
+          { id: "image", icon: "image", label: "image" },
           { id: "video", icon: "video", label: "Video" },
           { id: "document", icon: "asterisk", label: "Document" }
         ];
 
         const applicationOptions = [
-          { id: "microapp", icon: "microchip", label: "MicroApp" }
+          { id: "microapp", icon: "microchip", label: "micro_app" }
         ];
 
         return [
@@ -76,7 +76,7 @@ export const componentCollection = {
       `
     }
   },
-  childrenIds: ["component_item_container"]
+  children_ids: ["component_item_container"]
 };
 
 // Container for each component item - card style
@@ -84,7 +84,7 @@ export const componentItemContainer = {
   uuid: "component_item_container",
   name: "Component Item Container",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: {
       type: "string",
@@ -115,7 +115,7 @@ export const componentItemContainer = {
       // AddComponentToCanvas(Item.id);
     `
   },
-  childrenIds: ["component_item_icon", "component_item_label"]
+  children_ids: ["component_item_icon", "component_item_label"]
 };
 
 // Icon for each component
@@ -123,7 +123,7 @@ export const componentItemIcon = {
   uuid: "component_item_icon",
   name: "Component Item Icon",
   application_id: "1",
-  component_type: "Icon",
+  type: "icon",
   input: {
     icon: {
       type: "handler",
@@ -146,7 +146,7 @@ export const componentItemLabel = {
   uuid: "component_item_label",
   name: "Component Item Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "handler",

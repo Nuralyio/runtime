@@ -5,13 +5,13 @@ export const StudioFunctionContainer = [
     uuid: "studio_function_container",
     application_id: "1",
     name: "Parent Color Container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: [
+    children_ids: [
       "studio_function_collection"
     ]
   }

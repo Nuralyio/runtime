@@ -197,7 +197,7 @@ export class ComponentResizeOverlay extends LitElement {
     
     const deltaX = e.clientX - this.startMouse.x;
     const deltaY = e.clientY - this.startMouse.y;
-    const canResizeHeight = !this.onlyWidthResizableComponents.includes(this.component.component_type);
+    const canResizeHeight = !this.onlyWidthResizableComponents.includes(this.component.type);
     const minSize = 20;
     
     let newWidth = this.originalSize.width;
@@ -243,7 +243,7 @@ export class ComponentResizeOverlay extends LitElement {
     const el = this.componentRef.value;
     if (!el) return;
     
-    const { component_type: type, uuid, application_id: appId } = this.component;
+    const { type: type, uuid, application_id: appId } = this.component;
     const styleUpdates: any = {};
     
     switch(type) {
@@ -276,7 +276,7 @@ export class ComponentResizeOverlay extends LitElement {
 
     const tagColor = '#49c0b6';
     const hasEventHandlers = this.component.event && Object.keys(this.component.event).length > 0;
-    const canResizeHeight = !this.onlyWidthResizableComponents.includes(this.component.component_type);
+    const canResizeHeight = !this.onlyWidthResizableComponents.includes(this.component.type);
 
     return html`
       <div 

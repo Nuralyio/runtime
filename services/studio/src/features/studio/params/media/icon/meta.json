@@ -3,7 +3,7 @@
   "name": "Parent Icon Container",
   "themeContainerId": "studio_icon_theme_container",
   "configKey": "iconFields",
-  "childrenIds": [
+  "children_ids": [
     "icon_collapse_container"
   ]
 }

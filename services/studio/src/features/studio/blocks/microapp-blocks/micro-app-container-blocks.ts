@@ -5,13 +5,13 @@ export default [
     uuid: "micro_app_container_blocks",
     application_id: "1",
     name: "micro_app_container_blocks",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: ["micro_app_selection"]
+    children_ids: ["micro_app_selection"]
   }
 
 ];

@@ -28,7 +28,7 @@ export interface PropertyConfig {
   };
   // Handler support (code icon)
   hasHandler?: boolean;  // Whether this property supports handlers
-  handlerType?: 'style' | 'input';  // Type of handler (styleHandlers or inputHandlers)
+  handlerType?: 'style' | 'input';  // Type of handler (style_handlers or inputHandlers)
   handlerProperty?: string;  // The property name in the handlers object
   handlerValueGetter?: string | { ref: string; params?: any[] };  // Code to get handler value
   handlerEventUpdate?: string | { ref: string; params?: any[] };  // Code to update handler

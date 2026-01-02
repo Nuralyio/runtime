@@ -2,7 +2,7 @@ export const leftPanelContainer = {
   uuid: "331",
   application_id: "1",
   name: "Left panel",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: {
       type: "string",
@@ -14,5 +14,5 @@ export const leftPanelContainer = {
     height: "100%",
     display: "grid",
   },
-  childrenIds: ["left_panel_tabs"]
+  children_ids: ["left_panel_tabs"]
 };

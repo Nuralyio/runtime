@@ -5,7 +5,7 @@ export default [{
   uuid: "right_panel_function_tabs",
   application_id: "1",
   name: "right_panel_function_tabs",
-  component_type: "tabs",
+  type: "tabs",
   event: {},
   style: {
     width: "100%",
@@ -51,19 +51,19 @@ export default [{
     uuid: "right_panel_function_tabs_block",
     application_id: "1",
     name: "Parent Color Container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: ["right_panel_function_invoke"]
+    children_ids: ["right_panel_function_invoke"]
   },
    {
     application_id: "1",
     uuid: "files_micro__right_app_block",
     name: "function_micro_app",
-    component_type: "MicroApp",
+    type: "micro_app",
     input: {
       appUUID: {
         type: "string",

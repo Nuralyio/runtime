@@ -6,7 +6,7 @@ export default [{
   uuid: "top-bar",
   application_id: "1",
   name: "top bar",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "fluid" },
@@ -14,13 +14,13 @@ export default [{
   style: {
     "border-bottom": "1px solid #d6d6d6",
   },
-  childrenIds: ["info-top-bar", "settings-top-bar", "app_settings_modal"]
+  children_ids: ["info-top-bar", "settings-top-bar", "app_settings_modal"]
 },
 {
   uuid: "info-top-bar",
   name: "info top bar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "fluid" },
@@ -30,20 +30,20 @@ export default [{
   style: {
     width: "60vw",
   },
-  childrenIds: ["app_details_top_bar", "mode_topbar"]
+  children_ids: ["app_details_top_bar", "mode_topbar"]
 },
 {
   uuid: "app_details_top_bar",
   name: "details top bar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "boxed" },
     align: { type: "string", value: "center" },
     gap: { type: "string", value: "5px" },
   },
-  childrenIds: ["app_logo2", "app_back_top_bar", "app_name_top_bar_backed", "website-name"]
+  children_ids: ["app_logo2", "app_back_top_bar", "app_name_top_bar_backed", "website-name"]
 },
 {
   uuid: "app_insert_top_bar",
@@ -52,7 +52,7 @@ export default [{
   style: {
         "height": "24px"
   },
-  component_type: "InsertDropdown",
+  type: "insert_dropdown",
   input: {
     label: {
       type: "handler",
@@ -115,7 +115,7 @@ export default [{
       "height": "24px",
       "margin-left": "5px",
   },
-  component_type: "InsertDropdown",
+  type: "insert_dropdown",
   input: {
     label: {
       type: "handler",
@@ -172,7 +172,7 @@ export default [{
       "height": "24px",
       "margin-left": "5px",
   },
-  component_type: "InsertDropdown",
+  type: "insert_dropdown",
   input: {
     icon:{
       type: "string",
@@ -221,7 +221,7 @@ export default [{
     "border-left": "1px solid grey",
     "padding-left": "14px",
   },
-  component_type: "InsertDropdown",
+  type: "insert_dropdown",
   input: {
     label: {
       type: "handler",
@@ -270,7 +270,7 @@ export default [{
 {
   uuid: "app_logo",
   name: "app name top bar",
-  component_type: "Image",
+  type: "image",
   input: {
     darkSrc: {
       type: "handler",
@@ -302,7 +302,7 @@ export default [{
   name: "app name top bar",
   application_id: "1",
 
-  component_type: "button_input",
+  type: "button_input",
   style: {
     "margin-left": "5px",
     "type": "ghost",
@@ -335,7 +335,7 @@ export default [{
   name: "app name top bar",
   application_id: "1",
 
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "handler",
@@ -351,7 +351,7 @@ export default [{
   uuid: "settings-top-bar",
   name: "settings top bar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "fluid" },
@@ -361,25 +361,25 @@ export default [{
   style: {
     width: "40vw",
   },
-  childrenIds: [ "platform_top_bar",  "vdivider","app_logout_top_bar"]
+  children_ids: [ "platform_top_bar",  "vdivider","app_logout_top_bar"]
 },
 {
   uuid: "zoom_top_bar",
   name: "zoom top bar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "boxed" },
   },
-  childrenIds: ["zoom_input"]
+  children_ids: ["zoom_input"]
 },
 {
   uuid: "zoom_input",
   name: "zoom input",
   application_id: "1",
 
-  component_type: "text_input",
+  type: "text_input",
   style: {
     "size": "small",
     "width": "90px"
@@ -423,7 +423,7 @@ export default [{
   uuid: "mode_topbar",
   name: "mode_topbar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "boxed" },
@@ -432,7 +432,7 @@ export default [{
   style: {
     "margin-right": "14px",
   },
-  childrenIds: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode"]
+  children_ids: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode"]
 },
 
 {
@@ -440,7 +440,7 @@ export default [{
   name: "website-name",
   application_id: "1",
 
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -465,7 +465,7 @@ export default [{
   name: "edit_mode platform button",
   application_id: "1",
 
-  component_type: "button_input",
+  type: "button_input",
   event: {
     onClick: /* js */`
       $currentEditingMode = "edit";
@@ -504,7 +504,7 @@ export default [{
   name: "preview_mode platform button",
   application_id: "1",
 
-  component_type: "button_input",
+  type: "button_input",
   event: {
     onClick: /* js */`
       $currentEditingMode = "preview"
@@ -549,7 +549,7 @@ export default [{
   uuid: "platform_top_bar",
   name: "platform radio button",
   application_id: "1",
-  component_type: "RadioButton",
+  type: "radio_button",
   input: {
     autoWidth: {
       type: "boolean",
@@ -623,20 +623,20 @@ export default [{
   uuid: "prev_next_top_bar",
   name: "prev next top bar",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "boxed" },
     gap: { type: "string", value: "4px" },
   },
-  childrenIds: ["previous_button", "next_button"]
+  children_ids: ["previous_button", "next_button"]
 },
 {
   uuid: "previous_button",
   name: "previous button",
   application_id: "1",
 
-  component_type: "button_input",
+  type: "button_input",
   input: {
     iconOnly: {
       type: "boolean",
@@ -687,7 +687,7 @@ export default [{
   name: "next button",
   application_id: "1",
 
-  component_type: "button_input",
+  type: "button_input",
   input: {
     size: {
       type: "string",
@@ -743,7 +743,7 @@ export default [{
   application_id: "1",
 
   name: "logout",
-  component_type: "button_input",
+  type: "button_input",
   input: {
     size:{
       type : "string",
@@ -776,7 +776,7 @@ export default [{
   name: "app page top bar",
   application_id: "1",
 
-  component_type: "text_label",
+  type: "text_label",
   style: {
     "margin-left": "15px",
     "margin-top": "9px",
@@ -811,7 +811,7 @@ export default [{
   uuid: "app_settings_modal",
   name: "Application Settings Modal",
   application_id: "1",
-  component_type: "modal-block",
+  type: "modal",
   input: {
     open: {
       type: "handler",
@@ -845,13 +845,13 @@ export default [{
       $applicationSettingsModalOpen = false
     `
   },
-  childrenIds: ["app_settings_modal_content"]
+  children_ids: ["app_settings_modal_content"]
 },
 {
   uuid: "app_settings_modal_content",
   name: "Settings Modal Content",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "vertical" },
     layout: { type: "string", value: "fluid" },
@@ -860,13 +860,13 @@ export default [{
   style: {
     width: "100%"
   },
-  childrenIds: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_settings_danger_section"]
+  children_ids: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_settings_danger_section"]
 },
 {
   uuid: "app_settings_name_section",
   name: "App Name Section",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "vertical" },
     layout: { type: "string", value: "fluid" },
@@ -875,13 +875,13 @@ export default [{
   style: {
     width: "100%"
   },
-  childrenIds: ["app_settings_name_label", "app_settings_name_input"]
+  children_ids: ["app_settings_name_label", "app_settings_name_input"]
 },
 {
   uuid: "app_settings_name_label",
   name: "App Name Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -897,7 +897,7 @@ export default [{
   uuid: "app_settings_name_input",
   name: "App Name Input",
   application_id: "1",
-  component_type: "text_input",
+  type: "text_input",
   style: {
     width: "100%"
   },
@@ -932,7 +932,7 @@ export default [{
   uuid: "app_settings_description_section",
   name: "App Description Section",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "vertical" },
     layout: { type: "string", value: "fluid" },
@@ -941,13 +941,13 @@ export default [{
   style: {
     width: "100%"
   },
-  childrenIds: ["app_settings_description_label", "app_settings_description_input"]
+  children_ids: ["app_settings_description_label", "app_settings_description_input"]
 },
 {
   uuid: "app_settings_description_label",
   name: "App Description Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -963,7 +963,7 @@ export default [{
   uuid: "app_settings_description_input",
   name: "App Description Input",
   application_id: "1",
-  component_type: "text_input",
+  type: "text_input",
   style: {
     width: "100%"
   },
@@ -998,7 +998,7 @@ export default [{
   uuid: "app_settings_subdomain_section",
   name: "App Subdomain Section",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "vertical" },
     layout: { type: "string", value: "fluid" },
@@ -1007,13 +1007,13 @@ export default [{
   style: {
     width: "100%"
   },
-  childrenIds: ["app_settings_subdomain_label", "app_settings_subdomain_input_row"]
+  children_ids: ["app_settings_subdomain_label", "app_settings_subdomain_input_row"]
 },
 {
   uuid: "app_settings_subdomain_label",
   name: "App Subdomain Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -1029,7 +1029,7 @@ export default [{
   uuid: "app_settings_subdomain_input_row",
   name: "App Subdomain Input Row",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: { type: "string", value: "horizontal" },
     layout: { type: "string", value: "fluid" },
@@ -1039,13 +1039,13 @@ export default [{
   style: {
     width: "100%"
   },
-  childrenIds: ["app_settings_subdomain_input", "app_settings_subdomain_suffix"]
+  children_ids: ["app_settings_subdomain_input", "app_settings_subdomain_suffix"]
 },
 {
   uuid: "app_settings_subdomain_input",
   name: "App Subdomain Input",
   application_id: "1",
-  component_type: "text_input",
+  type: "text_input",
   style: {
     width: "200px"
   },
@@ -1080,7 +1080,7 @@ export default [{
   uuid: "app_settings_subdomain_suffix",
   name: "App Subdomain Suffix",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -1096,17 +1096,17 @@ export default [{
   uuid: "app_settings_access_section",
   name: "App Access Section",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     gap: { type: "string", value: "8px" },
   },
-  childrenIds: ["app_settings_access_label", "app_settings_access_roles"]
+  children_ids: ["app_settings_access_label", "app_settings_access_roles"]
 },
 {
   uuid: "app_settings_access_label",
   name: "App Access Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -1122,7 +1122,7 @@ export default [{
   uuid: "app_settings_access_roles",
   name: "App Access Roles",
   application_id: "1",
-  component_type: "access_roles",
+  type: "access_roles",
   input: {
     value: {
       type: "handler",
@@ -1146,7 +1146,7 @@ export default [{
   uuid: "app_settings_danger_section",
   name: "Danger Zone Section",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   style: {
     gap: "12px",
     display: "flex",
@@ -1156,13 +1156,13 @@ export default [{
     "padding-top": "24px",
     "border-top": "1px solid #fee2e2"
   },
-  childrenIds: ["app_settings_danger_label", "app_settings_danger_description", "app_settings_delete_btn"]
+  children_ids: ["app_settings_danger_label", "app_settings_danger_description", "app_settings_delete_btn"]
 },
 {
   uuid: "app_settings_danger_label",
   name: "Danger Zone Label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -1179,7 +1179,7 @@ export default [{
   uuid: "app_settings_danger_description",
   name: "Danger Zone Description",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   input: {
     value: {
       type: "string",
@@ -1195,7 +1195,7 @@ export default [{
   uuid: "app_settings_delete_btn",
   name: "Delete Application Button",
   application_id: "1",
-  component_type: "button_input",
+  type: "button_input",
   input: {
     label: {
       type: "string",

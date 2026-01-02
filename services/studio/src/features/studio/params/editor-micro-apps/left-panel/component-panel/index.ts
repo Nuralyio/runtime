@@ -4,7 +4,7 @@ export const componentPanel = {
   application_id: "1",
   uuid: "component_panel",
   name: "Files panel",
-  component_type: "Panel",
+  type: "panel",
   input: {
     title: {
       type: "string",
@@ -38,7 +38,7 @@ export const componentPanel = {
     "overflow-y": "auto",
     
 },
-  childrenIds: ["component_collection"]
+  children_ids: ["component_collection"]
 };
 
 export const componentPanelComponents = [

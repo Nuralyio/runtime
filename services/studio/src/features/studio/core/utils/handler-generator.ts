@@ -13,18 +13,18 @@ export const createHandlersFromEvents = (
       uuid: collapseContainerUUID,
       application_id: "1",
       name: "position collapse container",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "13px"
       },
-      childrenIds: [collapseUUID]
+      children_ids: [collapseUUID]
     },
     {
       uuid: collapseUUID,
       application_id: "1",
       name: "collapse",
-      component_type: "Collapse",
+      type: "collapse",
       style: {
         "--nuraly-spacing-collapse-padding": "0px",
         "--nuraly-spacing-collapse-content-padding": "6px",
@@ -47,7 +47,7 @@ export const createHandlersFromEvents = (
       uuid: handlerUUID,
       application_id: "1",
       name: "Dynamic Event Handler Container",
-      component_type: "Handlers",
+      type: "handlers",
       input: {
         allowedEvents: {
           type: "array",
@@ -66,13 +66,13 @@ export const createHandlersFromEvents = (
       uuid: containerUUID,
       application_id: "1",
       name: "Dynamic Event Handler Container",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
         "flex-direction": "column"
       },
-      childrenIds: [`${collapseContainerUUID}`]
+      children_ids: [`${collapseContainerUUID}`]
     }
   ];
 };

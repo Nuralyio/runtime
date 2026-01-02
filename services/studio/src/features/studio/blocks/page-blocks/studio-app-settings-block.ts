@@ -12,7 +12,7 @@ export default [
     uuid: "app_settings_container_block",
     application_id: "1",
     name: "app settings container block",
-    component_type: "Panel",
+    type: "panel",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "100%",
@@ -37,13 +37,13 @@ export default [
       resizable: { type: "boolean", value: false },
       draggable: { type: "boolean", value: false }
     },
-    childrenIds: ["app_settings_content_container"]
+    children_ids: ["app_settings_content_container"]
   },
   {
     uuid: "app_settings_content_container",
     application_id: "1",
     name: "app settings content container",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -55,14 +55,14 @@ export default [
     input: {
       direction: { type: "string", value: "vertical" }
     },
-    childrenIds: ["app_subdomain_block"]
+    children_ids: ["app_subdomain_block"]
   },
   // Subdomain input row
   {
     uuid: "app_subdomain_block",
     application_id: "1",
     name: "app subdomain block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -70,12 +70,12 @@ export default [
       gap: "4px",
       width: "100%"
     },
-    childrenIds: ["app_subdomain_label", "app_subdomain_input_row"]
+    children_ids: ["app_subdomain_label", "app_subdomain_input_row"]
   },
   {
     uuid: "app_subdomain_label",
     name: "app subdomain label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -95,7 +95,7 @@ export default [
     uuid: "app_subdomain_input_row",
     application_id: "1",
     name: "app subdomain input row",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -107,13 +107,13 @@ export default [
     input: {
       direction: { type: "string", value: "horizontal" }
     },
-    childrenIds: ["app_subdomain_input", "app_subdomain_suffix"]
+    children_ids: ["app_subdomain_input", "app_subdomain_suffix"]
   },
   {
     uuid: "app_subdomain_input",
     name: "app subdomain input",
     application_id: "1",
-    component_type: "text_input",
+    type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small",
@@ -151,7 +151,7 @@ export default [
   {
     uuid: "app_subdomain_suffix",
     name: "app subdomain suffix",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {

@@ -18,5 +18,5 @@ Each component folder contains:
 - `config.json` - Properties configuration
 - `handlers.json` - Event handlers
 - `theme.json` - Theme variables
-- `meta.json` - Metadata (uuid, childrenIds, etc.)
+- `meta.json` - Metadata (uuid, children_ids, etc.)
 - `advanced/` - (Optional) Complex TypeScript logic

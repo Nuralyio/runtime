@@ -287,7 +287,7 @@ export const ValueHandlers = {
  * **Common Pattern:**
  * ```typescript
  * // Check if property has an active handler
- * const hasHandler = selectedComponent?.styleHandlers?.['propertyName'];
+ * const hasHandler = selectedComponent?.style_handlers?.['propertyName'];
  * 
  * // Disable input if handler is active (user should use code editor instead)
  * return hasHandler ? 'disabled' : 'enabled';
@@ -322,7 +322,7 @@ export const ValueHandlers = {
  * }
  * 
  * // Generated code:
- * // If component.styleHandlers.fontSize exists -> 'disabled'
+ * // If component.style_handlers.fontSize exists -> 'disabled'
  * // Otherwise -> 'enabled'
  * ```
  * 
@@ -353,7 +353,7 @@ export const StateHandlers = {
    * - Standard property inputs
    * 
    * **Behavior:**
-   * - Checks `component.styleHandlers[propertyName]`
+   * - Checks `component.style_handlers[propertyName]`
    * - Returns 'disabled' if handler exists
    * - Returns 'enabled' otherwise
    * 
@@ -372,7 +372,7 @@ export const StateHandlers = {
    */
   defaultStyle: (propertyName: string) => `
     const selectedComponent = Utils.first($selectedComponents);
-    return selectedComponent?.styleHandlers?.['${propertyName}'] ? 'disabled' : 'enabled';
+    return selectedComponent?.style_handlers?.['${propertyName}'] ? 'disabled' : 'enabled';
   `,
   
   /**

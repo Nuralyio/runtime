@@ -5,7 +5,7 @@ export default [
     uuid: "page_default_checkbox_block",
     application_id: "1",
     name: "page default checkbox block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -14,12 +14,12 @@ export default [
       width: "250px",
       gap: "8px"
     },
-    childrenIds: ["page_default_checkbox_label", "page_default_checkbox_input"]
+    children_ids: ["page_default_checkbox_label", "page_default_checkbox_input"]
   },
   {
     uuid: "page_default_checkbox_label",
     name: "page default checkbox label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -37,7 +37,7 @@ export default [
     uuid: "page_default_checkbox_input",
     name: "page default checkbox input",
     application_id: "1",
-    component_type: "checkbox",
+    type: "checkbox",
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small"

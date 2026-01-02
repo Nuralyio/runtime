@@ -387,11 +387,11 @@ async onSearchChange(query: string) {
 ```typescript
 // BAD - No type safety
 @property({ type: Object }) component;
-@state() inputHandlersValue: any = {};
+@state() resolvedInputs: any = {};
 
 // GOOD - Proper typing
 @property({ type: Object }) component: ComponentElement;
-@state() inputHandlersValue: Record<string, unknown> = {};
+@state() resolvedInputs: Record<string, unknown> = {};
 ```
 
 ---
@@ -422,7 +422,7 @@ For components extending `BaseElementBlock`:
 
 #### What to check:
 - Implements `renderComponent()` method
-- Uses `this.inputHandlersValue` for reactive inputs
+- Uses `this.resolvedInputs` for reactive inputs
 - Uses `this.executeEvent()` for triggering events
 - Uses `this.inputRef` for main element reference
 - Uses `this.registerCallback()` for value callbacks
@@ -441,7 +441,7 @@ export class MyComponent extends BaseElementBlock {
   }
 
   renderComponent() {
-    const value = this.inputHandlersValue?.value ?? '';
+    const value = this.resolvedInputs?.value ?? '';
 
     return html`
       <nr-my-component
@@ -533,7 +533,7 @@ export class MyInput extends BaseElementBlock {
 
 3. **Should extend BaseElementBlock pattern**
    - Use `renderComponent()` instead of `render()`
-   - Use `this.inputHandlersValue` for reactive input values
+   - Use `this.resolvedInputs` for reactive input values
 
 ### Code Quality Summary
 This component has critical memory management issues and doesn't follow the BaseElementBlock patterns used in this codebase. Immediate fixes needed for the subscription leak and missing super call.

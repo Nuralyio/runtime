@@ -3,7 +3,7 @@
   "name": "Parent Checkbox Container",
   "themeContainerId": "checkbox_button_theme_container",
   "configKey": "checkboxFields",
-  "childrenIds": [
+  "children_ids": [
     "checkbox_collapse_container"
   ]
 }

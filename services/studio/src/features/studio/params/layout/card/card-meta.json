@@ -3,7 +3,7 @@
   "name": "Parent Card Container",
   "themeContainerId": "card_theme_container",
   "configKey": "cardFields",
-  "childrenIds": [
+  "children_ids": [
     "card_fields_collapse_container"
   ]
 }

@@ -3,7 +3,7 @@ export default [
   {
     name: "font icon",
     uuid: "font_icon",
-    component_type: "Icon",
+    type: "icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -21,7 +21,7 @@ export default [
   {
     name: "font icon",
     uuid: "font_size_icon",
-    component_type: "Icon",
+    type: "icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -40,7 +40,7 @@ export default [
   {
     name: "width_icon",
     uuid: "width_icon",
-    component_type: "Icon",
+    type: "icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -58,7 +58,7 @@ export default [
   {
     name: "height_icon",
     uuid: "height_icon",
-    component_type: "Icon",
+    type: "icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -75,7 +75,7 @@ export default [
   {
     name: "font icon",
     uuid: "bold_icon",
-    component_type: "Icon",
+    type: "icon",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     style: {
@@ -94,8 +94,8 @@ export default [
     uuid: "quick-action-wrapper",
     application_id: "1",
     name: "helper text block",
-    component_type: "vertical-container-block",
-    styleHandlers: {},
+    type: "container",
+    style_handlers: {},
     ...COMMON_ATTRIBUTES,
     input: {
 
@@ -104,7 +104,7 @@ export default [
     style: {
       padding: "6px 5px 0 5px"
     },
-    childrenIds: [
+    children_ids: [
       "text_label_quick_action",
       "text_input_quick_action",
       "checkbox_quick_action",
@@ -122,186 +122,186 @@ export default [
   {
     uuid: "text_input_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "text_input";
+          return selectedComponent?.type == "text_input";
         `
       },
     },
-    childrenIds: ["input_type_radio", "label_font_size_input", "font_size_input", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["input_type_radio", "label_font_size_input", "font_size_input", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
   {
     uuid: "checkbox_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "select";
+          return selectedComponent?.type == "select";
         `
       },
     },
-    childrenIds: ["select_selectionmode_radio", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["select_selectionmode_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
   {
     uuid: "select_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "checkbox";
+          return selectedComponent?.type == "checkbox";
         `
       },
     },
-    childrenIds: ["checkbox_checked_radio", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["checkbox_checked_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
   {
     uuid: "datepicker_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "Datepicker";
+          return selectedComponent?.type == "date_picker";
         `
       },
     },
-    childrenIds: ["datepicker_format_select", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["datepicker_format_select", "width_icon", "width_input", "height_icon", "height_input"]
   },
   {
     uuid: "container_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "vertical-container-block";
+          return selectedComponent?.type == "container";
         `
       },
     },
-    childrenIds: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar2"]
+    children_ids: ["table_direction_select", "width_icon", "width_input", "height_icon", "height_input", "app_insert_top_bar2"]
   },
   {
     uuid: "icon_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "Icon";
+          return selectedComponent?.type == "icon";
         `
       },
     },
-    childrenIds: ["icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
   },
   {
     uuid: "image_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "Image";
+          return selectedComponent?.type == "image";
         `
       },
     },
-    childrenIds: ["width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["width_icon", "width_input", "height_icon", "height_input"]
   },
   {
     uuid: "collection_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
         
-          return selectedComponent?.component_type == "Collection";
+          return selectedComponent?.type == "collection";
         `
       },
     },
-    childrenIds: ["table_direction_select","label_collection_column_input", "column_input_2","width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["table_direction_select","label_collection_column_input", "column_input_2","width_icon", "width_input", "height_icon", "height_input"]
   },
   {
     uuid: "text_label_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
-          return selectedComponent?.component_type === "text_label";
+          return selectedComponent?.type === "text_label";
         `
       },
     },
-    childrenIds: ["font_icon", "font_family_select", "font_size_icon", "font_size_input_2", "bold_icon", "font_weight_content"]
+    children_ids: ["font_icon", "font_family_select", "font_size_icon", "font_size_input_2", "bold_icon", "font_weight_content"]
 
   },
   {
     uuid: "button_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
-          return selectedComponent?.component_type === "button_input";
+          return selectedComponent?.type === "button_input";
         `
       },
     },
-    childrenIds: ["input_type_radio", "label_icon_input", "icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["input_type_radio", "label_icon_input", "icon_picker_content", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
   {
     uuid: "table_quick_action",
     application_id: "1",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     input: {
       display: {
         type: "handler",
         value: /* js */`
         const selectedComponent = Utils.first($selectedComponents);
-          return selectedComponent?.component_type === "Table";
+          return selectedComponent?.type === "table";
         `
       },
     },
-    childrenIds: ["table_selectionmode_radio", "table_filter_radio", "width_icon", "width_input", "height_icon", "height_input"]
+    children_ids: ["table_selectionmode_radio", "table_filter_radio", "width_icon", "width_input", "height_icon", "height_input"]
 
   },
 
@@ -309,7 +309,7 @@ export default [
     name: "text label font size",
     uuid: "label_font_size_input",
     application_id: "1",
-    component_type: "text_label",
+    type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -326,12 +326,12 @@ export default [
     name: "text label font size",
     uuid: "label_icon_input",
     application_id: "1",
-    component_type: "text_label",
+    type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
         type: "string",
-        value: "Icon"
+        value: "icon"
       }
     },
     style: {
@@ -343,7 +343,7 @@ export default [
     name: "text label font size",
     uuid: "label_collection_column_input",
     application_id: "1",
-    component_type: "text_label",
+    type: "text_label",
     ...COMMON_ATTRIBUTES,
     input: {
       value: {
@@ -358,13 +358,13 @@ export default [
   {
     name: "name",
     application_id: "1",
-    component_type: "AI"
+    type: "ai"
   },
   {
     uuid: "export-import-block-wrapper",
     application_id: "1",
     name: "export-import-block-wrapper",
-    component_type: "ExportImport"
+    type: "export_import"
   },
 
 ];

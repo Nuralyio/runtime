@@ -6,30 +6,30 @@ export default [
     uuid: "icon_picker_block",
     application_id: "1",
     name: "icon picker block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["icon_picker_input_block", "icon_picker_handler_block"]
+    children_ids: ["icon_picker_input_block", "icon_picker_handler_block"]
   },
   {
     uuid: "icon_picker_input_block",
     application_id: "1",
     name: "placeholder block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "align-items": "center",
       "justify-content": "space-between"
     },
-    childrenIds: ["icon_picker_label"]
+    children_ids: ["icon_picker_label"]
   },
   {
     uuid: "icon_picker_label",
     name: "icon picker label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -45,9 +45,9 @@ export default [
   {
     uuid: "icon_picker_content",
     application_id: "1",
-    component_type: "IconPicker",
+    type: "icon_picker",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "icon picker content",
     input: {
       value: {
@@ -87,20 +87,20 @@ export default [
     uuid: "icon_picker_handler_block",
     application_id: "1",
     name: "icon picker handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["icon_picker_content", "icon_picker_handler"]
+    children_ids: ["icon_picker_content", "icon_picker_handler"]
   },
   {
     uuid: "icon_picker_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "icon picker handler",
     style: {
       display: "block",

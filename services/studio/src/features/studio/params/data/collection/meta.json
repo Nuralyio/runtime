@@ -3,7 +3,7 @@
   "name": "Parent Collection Container",
   "themeContainerId": "studio_collection_theme_container",
   "configKey": "collectionFields",
-  "childrenIds": [
+  "children_ids": [
     "collection_collapse_container"
   ]
 }

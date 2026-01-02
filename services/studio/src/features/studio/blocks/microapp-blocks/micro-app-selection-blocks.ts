@@ -5,18 +5,18 @@ export default [
     uuid: "micro_app_selection_blocks",
     application_id: "1",
     name: "micro_app_selection_blocks",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "flex-direction": "column"
     },
-    childrenIds: ["micro_app_selection_label", "micro_app_selection_select"]
+    children_ids: ["micro_app_selection_label", "micro_app_selection_select"]
   },
   {
     uuid: "micro_app_selection_label",
     name: "label image src",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -29,9 +29,9 @@ export default [
   {
     uuid: "micro_app_selection_select",
     application_id: "1",
-    component_type: "select",
+    type: "select",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "label font family select",
     input: {
       value: {

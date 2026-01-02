@@ -5,7 +5,7 @@ export default [
     uuid: "page_url_block",
     application_id: "1",
     name: "page url block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
@@ -14,12 +14,12 @@ export default [
       width: "250px"
     },
 
-    childrenIds: ["page_url_text_label", "page_url_text_input"]
+    children_ids: ["page_url_text_label", "page_url_text_input"]
   },
   {
     uuid: "page_url_text_label",
     name: "page url text label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -37,7 +37,7 @@ export default [
     uuid: "page_url_text_input",
     name: "page url text input",
     application_id: "1",
-    component_type: "text_input",
+    type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       size: "small",

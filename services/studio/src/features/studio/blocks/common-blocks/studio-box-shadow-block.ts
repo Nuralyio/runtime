@@ -6,18 +6,18 @@ export default [
     uuid: "box_shadow_block",
     name: "name",
     application_id: "1",
-    component_type: "vertical-container-block",
-    styleHandlers: {},
+    type: "container",
+    style_handlers: {},
     ...COMMON_ATTRIBUTES,
     style: {
       "margin-top": "10px"
     },
-    childrenIds: ["box_shadow_label", "box_shadow_values", "box_shadow_handler_block"]
+    children_ids: ["box_shadow_label", "box_shadow_values", "box_shadow_handler_block"]
   },
   {
     uuid: "box_shadow_label",
     name: "box shadow label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -36,8 +36,8 @@ export default [
     uuid: "box_shadow_valuess",
     name: "name",
     application_id: "1",
-    component_type: "shadow_box",
-    styleHandlers: {},
+    type: "shadow_box",
+    style_handlers: {},
     ...COMMON_ATTRIBUTES,
     event: {
       boxShadowChanged:  /* js */ `
@@ -96,7 +96,7 @@ export default [
                         
                         
                         let state ='enabled'
-                        if(selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow']){
+                        if(selectedComponent?.style_handlers && selectedComponent?.style_handlers['box-shadow']){
                                state='disabled'
                         }
                         return state;
@@ -110,21 +110,21 @@ export default [
     uuid: "box_shadow_handler_block",
     application_id: "1",
     name: "box shadow handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       width: "220px",
       display: "flex",
       "justify-content": "space-between"
     },
-    childrenIds: ["box_shadow_handler"]
+    children_ids: ["box_shadow_handler"]
   },
   {
     uuid: "box_shadow_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "box shadow handler",
     style: {
       display: "block",
@@ -140,7 +140,7 @@ export default [
                     const selectedComponent = Utils.first($selectedComponents);
                     
                         
-                    boxShadowHandler= selectedComponent?.styleHandlers && selectedComponent?.styleHandlers['box-shadow'] || ''  
+                    boxShadowHandler= selectedComponent?.style_handlers && selectedComponent?.style_handlers['box-shadow'] || ''  
                 
                 return [parameter,boxShadowHandler];
             `

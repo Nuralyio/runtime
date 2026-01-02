@@ -3,7 +3,7 @@
   "name": "Parent Select Container",
   "themeContainerId": "studio_select_theme_container",
   "configKey": "selectFields",
-  "childrenIds": [
+  "children_ids": [
     "select_collapse_container"
   ]
 }

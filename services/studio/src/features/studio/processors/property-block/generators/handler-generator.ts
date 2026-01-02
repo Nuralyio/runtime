@@ -24,8 +24,8 @@ export class HandlerGenerator {
 
         if (selectedComponent) {
           ${handlerType === 'style'
-            ? `// Check styleHandlers first, then static handler definition
-               handlerValue = selectedComponent?.styleHandlers?.['${handlerProperty}'] || '';
+            ? `// Check style_handlers first, then static handler definition
+               handlerValue = selectedComponent?.style_handlers?.['${handlerProperty}'] || '';
                if (!handlerValue && selectedComponent?.style?.['${handlerProperty}']?.type === 'handler') {
                  handlerValue = selectedComponent.style['${handlerProperty}'].value || '';
                }`
@@ -57,7 +57,7 @@ export class HandlerGenerator {
       uuid: handlerUuid,
       application_id: "1",
       name: `${property.label} Handler`,
-      component_type: "event",
+      type: "event",
       ...COMMON_ATTRIBUTES,
       style: {
         display: "block",

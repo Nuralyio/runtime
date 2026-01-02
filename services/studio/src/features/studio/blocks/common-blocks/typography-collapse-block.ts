@@ -20,7 +20,7 @@ const generatedTypographyComponents = generateFromConfig(
 const divider = {
   uuid: "divider",
   name: "divider",
-  component_type: "Divider",
+  type: "divider",
   application_id: "1",
   input: {}
 };

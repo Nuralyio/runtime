@@ -11,7 +11,9 @@
       "Bash(tree:*)",
       "Bash(git stash:*)",
       "Bash(ls:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(head -5 grep -r childrenIds /Users/aymen/Desktop/projects/nuraly/stack/services/studio/src/features/studio --include=*.ts)",
+      "Bash(head -5 grep -r childrenIds /Users/aymen/Desktop/projects/nuraly/stack/services/api/src --include=*.ts)"
     ],
     "deny": [],
     "ask": []

@@ -5,7 +5,7 @@ const containerComponent = {
   uuid: "box_model_vertical_container",
   name: "Box Model Container",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   ...COMMON_ATTRIBUTES,
   style: {
     display: "flex",
@@ -13,14 +13,14 @@ const containerComponent = {
     "justify-content": "space-between",
     width: "100%"
   },
-  childrenIds: ["box_model_label", "box_model_display_block"]
+  children_ids: ["box_model_label", "box_model_display_block"]
 };
 
 const labelComponent = {
   uuid: "box_model_label",
   name: "text_label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   ...COMMON_ATTRIBUTES,
   parameters: { value: " " },
   input: {
@@ -36,7 +36,7 @@ const boxModelComponent = {
   uuid: "box_model_display_block",
   name: "box model display block",
   application_id: "1",
-  component_type: "box_model",
+  type: "box_model",
   ...COMMON_ATTRIBUTES,
   style: { width: "100%", display: "block" },
   input: {
@@ -104,7 +104,7 @@ const collapseComponent = {
   uuid: "box_model_collapse",
   name: "Box Model Collapse",
   application_id: "1",
-  component_type: "Collapse",
+  type: "collapse",
   ...COMMON_ATTRIBUTES,
   style: {
     marginTop: "16px",
@@ -129,7 +129,7 @@ const collapseComponent = {
       }]
     }
   },
-  childrenIds: ["box_model_vertical_container"]
+  children_ids: ["box_model_vertical_container"]
 };
 
 export default [

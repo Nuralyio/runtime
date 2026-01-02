@@ -5,20 +5,20 @@ export default [
     uuid: "table_columns_block",
     application_id: "1",
     name: "table columns block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "flex-direction": "column"
     },
 
-    childrenIds: ["table_column_label", "table_columns_select", "font_family_block", "font_size_vertical_container"]
+    children_ids: ["table_column_label", "table_columns_select", "font_family_block", "font_size_vertical_container"]
   },
 
   {
     uuid: "table_column_label",
     name: "button type label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -36,7 +36,7 @@ export default [
   {
     uuid: "table_columns_select",
     application_id: "1",
-    component_type: "select",
+    type: "select",
     name: "Columns",
     input: {
       type: {

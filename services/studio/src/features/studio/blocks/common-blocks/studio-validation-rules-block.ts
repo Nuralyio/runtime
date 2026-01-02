@@ -5,7 +5,7 @@ const containerComponent = {
   uuid: "validation_rules_vertical_container",
   name: "Validation Rules Container",
   application_id: "1",
-  component_type: "vertical-container-block",
+  type: "container",
   ...COMMON_ATTRIBUTES,
   style: {
     display: "flex",
@@ -13,14 +13,14 @@ const containerComponent = {
     "justify-content": "space-between",
     width: "100%"
   },
-  childrenIds: ["validation_rules_label", "validation_rules_display_block"]
+  children_ids: ["validation_rules_label", "validation_rules_display_block"]
 };
 
 const labelComponent = {
   uuid: "validation_rules_label",
   name: "text_label",
   application_id: "1",
-  component_type: "text_label",
+  type: "text_label",
   ...COMMON_ATTRIBUTES,
   parameters: { value: " " },
   input: {
@@ -36,7 +36,7 @@ const validationRulesComponent = {
   uuid: "validation_rules_display_block",
   name: "validation rules display block",
   application_id: "1",
-  component_type: "validation_rules",
+  type: "validation_rules",
   ...COMMON_ATTRIBUTES,
   style: { width: "100%", display: "block" },
   input: {
@@ -79,7 +79,7 @@ const collapseComponent = {
   uuid: "validation_rules_collapse",
   name: "Validation Rules Collapse",
   application_id: "1",
-  component_type: "Collapse",
+  type: "collapse",
   ...COMMON_ATTRIBUTES,
   style: {
     marginTop: "8px",
@@ -104,7 +104,7 @@ const collapseComponent = {
       }]
     }
   },
-  childrenIds: ["validation_rules_vertical_container"]
+  children_ids: ["validation_rules_vertical_container"]
 };
 
 export const studioValidationRulesBlock = [

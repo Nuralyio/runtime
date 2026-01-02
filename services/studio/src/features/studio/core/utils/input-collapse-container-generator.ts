@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid"; // Import UUID package
 
 export function generateDynamicContainer(
   mainUuid: string,
-  childrenIds: string[],
+  children_ids: string[],
   collapseUuid: string = uuidv4(),
   collapseLabel: string = "Properties"
 ) {
@@ -13,18 +13,18 @@ export function generateDynamicContainer(
       uuid: mainUuid,
       application_id: "1",
       name: "position collapse container",
-      component_type: "vertical-container-block",
+      type: "container",
       ...COMMON_ATTRIBUTES,
       style: {
         marginTop: "15px"
       },
-      childrenIds: [collapseUuid] // Attach the collapse container as the child
+      children_ids: [collapseUuid] // Attach the collapse container as the child
     },
     {
       uuid: collapseUuid,
       application_id: "1",
       name: collapseUuid,
-      component_type: "Collapse",
+      type: "collapse",
       style: {
         marginTop: "16px",
         marginBottom: "16px",
@@ -48,16 +48,16 @@ export function generateDynamicContainer(
           }]
         }
       },
-      childrenIds: [`${collapseUuid}_children`]
+      children_ids: [`${collapseUuid}_children`]
     },
 
     {
       uuid: `${collapseUuid}_children`,
       application_id: "1",
       name: "Left panel",
-      component_type: "vertical-container-block",
+      type: "container",
       style: {},
-      childrenIds: [...childrenIds] // Pass the dynamic children here
+      children_ids: [...children_ids] // Pass the dynamic children here
     }
   ];
 }

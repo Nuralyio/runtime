@@ -2,7 +2,7 @@ export const pagesPanelContainer = {
   uuid: "pages_panel",
   application_id: "1",
   name: "Pages panel",
-  component_type: "vertical-container-block",
+  type: "container",
   input: {
     direction: {
       type: "string",
@@ -14,5 +14,5 @@ export const pagesPanelContainer = {
     height: "100%",
     "--nuraly-button-font-size": "12px"
   },
-  childrenIds: ["menu_heade2r", "menu_1", "xcomponent_panel", "xapp_access_control_panel_block"]
+  children_ids: ["menu_heade2r", "menu_1", "xcomponent_panel", "xapp_access_control_panel_block"]
 };

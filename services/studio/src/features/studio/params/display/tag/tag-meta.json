@@ -3,7 +3,7 @@
   "name": "Parent Tag Container",
   "themeContainerId": "tag_theme_container",
   "configKey": "tagFields",
-  "childrenIds": [
+  "children_ids": [
     "tag_fields_collapse_container"
   ]
 }

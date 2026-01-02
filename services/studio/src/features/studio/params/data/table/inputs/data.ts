@@ -6,18 +6,18 @@ export default [
     uuid: "table_values_handler_block",
     application_id: "1",
     name: "value handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       ...InputBlockContainerTheme
     },
 
-    childrenIds: ["table_values_handler_label", "table_values_handler"]
+    children_ids: ["table_values_handler_label", "table_values_handler"]
   },
   {
     uuid: "table_values_handler_label",
     name: "table values handler label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     ...COMMON_ATTRIBUTES,
     input: {
@@ -33,9 +33,9 @@ export default [
   {
     uuid: "table_values_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "table value handler",
     style: {
       display: "block"

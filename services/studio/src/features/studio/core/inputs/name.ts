@@ -6,29 +6,29 @@ export const StudioComponentNameInput = [
     uuid: "component_value_text_block",
     application_id: "1",
     name: "value text block",
-    component_type: "vertical-container-block",
+    type: "container",
     style: {
       ...InputBlockContainerTheme
     },
-    childrenIds: ["component_value_text_label", "component_value_handler_block"]
+    children_ids: ["component_value_text_label", "component_value_handler_block"]
   },
   {
     uuid: "component_value_handler_block",
     application_id: "1",
     name: "icon picker handler block",
-    component_type: "vertical-container-block",
+    type: "container",
     ...COMMON_ATTRIBUTES,
     style: {
       display: "flex",
       "justify-content": "space-between",
       "margin-right" :  "30px"
     },
-    childrenIds: ["component_value_text_input"]
+    children_ids: ["component_value_text_input"]
   },
   {
     uuid: "component_value_text_label",
     name: "value text label",
-    component_type: "text_label",
+    type: "text_label",
     application_id: "1",
     style: {
       ...InputTextLabelTheme
@@ -44,7 +44,7 @@ export const StudioComponentNameInput = [
     uuid: "component_value_text_input",
     name: "value text input",
     application_id: "1",
-    component_type: "text_input",
+    type: "text_input",
     ...COMMON_ATTRIBUTES,
     style: {
       ...TextInputTheme
@@ -84,9 +84,9 @@ export const StudioComponentNameInput = [
   {
     uuid: "component_value_handler",
     application_id: "1",
-    component_type: "event",
+    type: "event",
     ...COMMON_ATTRIBUTES,
-    styleHandlers: {},
+    style_handlers: {},
     name: "value handler",
     style: {
       display: "block"
