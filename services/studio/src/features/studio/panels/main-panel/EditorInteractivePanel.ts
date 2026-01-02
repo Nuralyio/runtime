@@ -35,20 +35,25 @@ export class EditorInteractivePanel extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.initializeSubscriptions();
+    // Set initial width
+    this.style.width = this.mode === ViewMode.Edit ? "calc(100vw - 650px)" : "100vw";
+  }
+
+  updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('mode')) {
+      const width = this.mode === ViewMode.Edit ? "calc(100vw - 650px)" : "100vw";
+      this.style.width = width;
+    }
   }
 
   render() {
     return html`
-      <style>
-        :host {
-          width: ${this.mode == ViewMode.Edit ? "calc(100vw - 650px)" : "100vw"};
-        }
-      </style>
       <div class="iframe-wrapper">
         <preview-iframe-panel
-        
+
           .applicationId=${$currentApplication.get()?.uuid || ''}
-          .pageUrl=${ExecuteInstance.$currentPage || ''}
+          .pageUrl=${ExecuteInstance.Vars.currentPage || ''}
           @component-selected-from-iframe=${this.handleComponentSelectedFromIframe}
         ></preview-iframe-panel>
       </div>
@@ -67,7 +72,7 @@ export class EditorInteractivePanel extends LitElement {
 
   private initializeSubscriptions() {
     eventDispatcher.on('Vars:currentEditingMode', () => {
-      this.mode = ExecuteInstance.$currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
+      this.mode = ExecuteInstance.Vars.currentEditingMode === "edit" ? ViewMode.Edit : ViewMode.Preview;
     });
 
     // Listen for selection changes from structure panel or other sources

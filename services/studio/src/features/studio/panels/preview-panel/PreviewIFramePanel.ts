@@ -215,7 +215,7 @@ export class PreviewIFramePanel extends LitElement {
 
   private setupModeListener() {
     eventDispatcher.on('Vars:currentEditingMode', () => {
-      const mode = ExecuteInstance.$currentEditingMode;
+      const mode = ExecuteInstance.Vars.currentEditingMode;
       this.sendMessageToIframe({
         type: 'SET_MODE',
         payload: mode
@@ -263,7 +263,7 @@ export class PreviewIFramePanel extends LitElement {
   private handleReady() {
     this.iframeReady = true;
     this.isLoading = false;
-    const initialMode = ExecuteInstance.$currentEditingMode || 'edit';
+    const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
     this.sendMessageToIframe({ type: 'SET_MODE', payload: initialMode });
   }
 
