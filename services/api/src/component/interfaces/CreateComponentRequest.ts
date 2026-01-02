@@ -7,8 +7,8 @@ export interface CreateComponentRequest {
 
 // export interface Component {
 //     name: string
-//     component_type: string
-//     styleHandlers: StyleHandlers
+//     type: string
+//     style_handlers: StyleHandlers
 //     parameters: Parameters
 //     event: Event
 //     input: Input
@@ -17,7 +17,7 @@ export interface CreateComponentRequest {
 //     inputHandlers: InputHandlers
 //     attributesHandlers: AttributesHandlers
 //     errors: Errors
-//     childrenIds: any[]
+//     children_ids: any[]
 //     uuid: string
 //     pageId: string
 //     application_id: string
