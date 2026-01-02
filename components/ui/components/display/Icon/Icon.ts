@@ -23,8 +23,6 @@ export class IconBlock extends BaseElementBlock {
 
   constructor() {
     super();
-    this.registerCallback("icon", () => {
-    });
   }
   override connectedCallback() {
     super.connectedCallback();
