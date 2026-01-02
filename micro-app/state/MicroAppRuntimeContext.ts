@@ -222,8 +222,8 @@ export class MicroAppRuntimeContext {
 
     // Resolve component hierarchy
     components.forEach((component: ComponentElement) => {
-      if (component.childrenIds && component.childrenIds.length > 0) {
-        component.children = component.childrenIds
+      if (component.children_ids && component.children_ids.length > 0) {
+        component.children = component.children_ids
           .map(childId => {
             const child = this.getComponentByUUID(childId)
             return child

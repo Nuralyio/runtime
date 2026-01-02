@@ -44,7 +44,7 @@ export class DropdownBlock extends BaseElementBlock {
     }
 
     private updateChildrenComponents(): void {
-        this.childrenComponents = this.component?.childrenIds
+        this.childrenComponents = this.component?.children_ids
             ?.map((id) => {
                 return $components.get()[this.component?.application_id]?.find(
                     (component) => component.uuid === id
@@ -60,7 +60,7 @@ export class DropdownBlock extends BaseElementBlock {
     }
 
     override renderComponent() {
-        const options = this.inputHandlersValue?.value?.[0] ?? [];
+        const options = this.resolvedInputs?.value?.[0] ?? [];
         const dropdownStyles = this.component?.style || {};
         const size = (dropdownStyles.size as 'small' | 'medium' | 'large') || 'medium';
         const placement = (dropdownStyles.placement as 'bottom' | 'top' | 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'auto') || 'bottom';
@@ -69,7 +69,7 @@ export class DropdownBlock extends BaseElementBlock {
 
         return html`
       <nr-dropdown  
-        .open=${this.inputHandlersValue.show || false}
+        .open=${this.resolvedInputs.show || false}
         ${ref(this.inputRef)}
         style=${styleMap({
           ...this.getStyles(),
@@ -78,19 +78,19 @@ export class DropdownBlock extends BaseElementBlock {
         .placement=${placement}
         .size=${size}
         .animation=${animation}
-        .disabled=${this.inputHandlersValue?.state == "disabled"}
-        .items=${this.inputHandlersValue.options || options}
-        .arrow=${dropdownStyles.arrow === 'true' || this.inputHandlersValue.arrow || false}
-        .autoClose=${dropdownStyles.autoClose !== 'false' && this.inputHandlersValue.autoClose !== false}
-        .closeOnOutsideClick=${dropdownStyles.closeOnOutsideClick !== 'false' && this.inputHandlersValue.closeOnOutsideClick !== false}
-        .closeOnEscape=${dropdownStyles.closeOnEscape !== 'false' && this.inputHandlersValue.closeOnEscape !== false}
-        .offset=${this.inputHandlersValue.offset || 4}
-        .delay=${this.inputHandlersValue.delay || 50}
-        .maxHeight=${this.inputHandlersValue.maxHeight || '300px'}
-        .minWidth=${this.inputHandlersValue.minWidth || 'auto'}
-        .cascadeDirection=${this.inputHandlersValue.cascadeDirection || 'auto'}
-        .cascadeDelay=${this.inputHandlersValue.cascadeDelay || 50}
-        .cascadeOnHover=${this.inputHandlersValue.cascadeOnHover !== false}
+        .disabled=${this.resolvedInputs?.state == "disabled"}
+        .items=${this.resolvedInputs.options || options}
+        .arrow=${dropdownStyles.arrow === 'true' || this.resolvedInputs.arrow || false}
+        .autoClose=${dropdownStyles.autoClose !== 'false' && this.resolvedInputs.autoClose !== false}
+        .closeOnOutsideClick=${dropdownStyles.closeOnOutsideClick !== 'false' && this.resolvedInputs.closeOnOutsideClick !== false}
+        .closeOnEscape=${dropdownStyles.closeOnEscape !== 'false' && this.resolvedInputs.closeOnEscape !== false}
+        .offset=${this.resolvedInputs.offset || 4}
+        .delay=${this.resolvedInputs.delay || 50}
+        .maxHeight=${this.resolvedInputs.maxHeight || '300px'}
+        .minWidth=${this.resolvedInputs.minWidth || 'auto'}
+        .cascadeDirection=${this.resolvedInputs.cascadeDirection || 'auto'}
+        .cascadeDelay=${this.resolvedInputs.cascadeDelay || 50}
+        .cascadeOnHover=${this.resolvedInputs.cascadeOnHover !== false}
         @nr-dropdown-item-click=${(e: CustomEvent) => {
           // e.detail contains { item, dropdown }
           // item has properties: { label, value, additionalData, icon, etc. }
@@ -117,7 +117,7 @@ export class DropdownBlock extends BaseElementBlock {
                   style=${styleMap({
                     "--resolved-text-label-color": this.getStyles()["title-color"],
                   })}
-                >${this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? nothing}</nr-label>
+                >${this.resolvedInputs?.label ?? this.resolvedInputs?.placeholder ?? nothing}</nr-label>
                   
                 <drag-wrapper
                   .where=${"inside"}

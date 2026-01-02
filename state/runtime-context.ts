@@ -63,7 +63,7 @@
  *         ├─▶ 1. Index all components by app ID and name
  *         ├─▶ 2. Initialize children arrays
  *         ├─▶ 3. Attach Instance (values) properties
- *         ├─▶ 4. Resolve childrenIds to children objects
+ *         ├─▶ 4. Resolve children_ids to children objects
  *         ├─▶ 5. Set parent references
  *         └─▶ 6. Update Editor.components
  *         │
@@ -254,7 +254,7 @@ import { RuntimeContextHelpers } from "../utils/RuntimeContextHelpers";
  *    - Builds parent-child relationships
  * 
  * 2. **Hierarchy Management**
- *    - Resolves component.childrenIds to actual children
+ *    - Resolves component.children_ids to actual children
  *    - Sets component.parent references
  *    - Maintains bidirectional relationships
  * 
@@ -747,8 +747,8 @@ class RuntimeContext implements IRuntimeContext {
     });
   
     componentsList.forEach((component: any) => {
-      if (component.childrenIds && Array.isArray(component.childrenIds) && component.childrenIds.length > 0) {
-        component.childrenIds.forEach((childId: string) => {
+      if (component.children_ids && Array.isArray(component.children_ids) && component.children_ids.length > 0) {
+        component.children_ids.forEach((childId: string) => {
           const childComponent = componentsList.find((c: any) => c.uuid === childId);
           if (childComponent) {
             component.children.push(childComponent);

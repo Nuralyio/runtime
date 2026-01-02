@@ -2,10 +2,10 @@ import type { ComponentElement } from "./component.interface";
 
 
 /**
- * Fills the `childrens` property of a component based on its `childrenIds` while preserving the original order.
+ * Fills the `children` property of a component based on its `children_ids` while preserving the original order.
  * @param components - Array of all components in the application.
- * @param component - The component whose `childrens` property is to be filled.
- * @returns The updated component with `childrens` populated.
+ * @param component - The component whose `children` property is to be filled.
+ * @returns The updated component with `children` populated.
  */
 export const fillComponentChildren = (
   components: ComponentElement[],
@@ -21,17 +21,17 @@ export const fillComponentChildren = (
   while (stack.length > 0) {
     const currentComponent = stack.pop();
 
-    // Ensure the `childrens` array is initialized
-    if (!currentComponent.childrens) currentComponent.childrens = [];
+    // Ensure the `children` array is initialized
+    if (!currentComponent.children) currentComponent.children = [];
 
-    // Populate `childrens` based on `childrenIds`, preserving the original order
-    if (currentComponent.childrenIds) {
-      currentComponent.childrens = currentComponent.childrenIds
+    // Populate `children` based on `children_ids`, preserving the original order
+    if (currentComponent.children_ids) {
+      currentComponent.children = currentComponent.children_ids
         .map((childId: string) => componentMap.get(childId)) // Map each childId to its corresponding component
         .filter(Boolean); // Remove any undefined components due to invalid IDs
 
       // Push all valid children onto the stack for further processing
-      stack.push(...currentComponent.childrens);
+      stack.push(...currentComponent.children);
     }
   }
 
@@ -64,11 +64,11 @@ export const extractAllChildrenIds = (
   while (stack.length > 0) {
     const current = stack.pop();
 
-    if (current?.childrenIds) {
-      result.push(...current.childrenIds);
+    if (current?.children_ids) {
+      result.push(...current.children_ids);
 
       // Add valid children to the stack for further traversal
-      stack.push(...current.childrenIds
+      stack.push(...current.children_ids
         .map(childId => componentMap.get(childId))
         .filter(Boolean) as ComponentElement[]);
     }

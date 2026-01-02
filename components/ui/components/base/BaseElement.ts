@@ -49,7 +49,7 @@ export class BaseElementCore extends LitElement {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Computed values from input handlers */
-  @state() inputHandlersValue: Record<string, any> = {};
+  @state() resolvedInputs: Record<string, any> = {};
 
   /** Computed values from style handlers */
   @state() stylesHandlersValue: Record<string, any> = {};
@@ -288,7 +288,7 @@ export class BaseElementCore extends LitElement {
    * Whether component should be displayed based on display input
    */
   protected get shouldDisplay(): boolean {
-    return this.inputHandlersValue?.display !== false;
+    return this.resolvedInputs?.display !== false;
   }
 
   /**
@@ -312,9 +312,9 @@ export class BaseElementCore extends LitElement {
 
     // Update component styles
     this.componentStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
+    const labelStyleHandlers = this.component?.style_handlers
       ? Object.fromEntries(
-          Object.entries(this.component.styleHandlers).filter(([_, value]) => value)
+          Object.entries(this.component.style_handlers).filter(([_, value]) => value)
         )
       : {};
     this.componentStyles = { ...this.componentStyles, ...labelStyleHandlers };
@@ -339,9 +339,9 @@ export class BaseElementBlock extends EditorModeMixin(BaseElementCore) {
 
     // Update component styles
     this.componentStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
+    const labelStyleHandlers = this.component?.style_handlers
       ? Object.fromEntries(
-          Object.entries(this.component.styleHandlers).filter(([_, value]) => value)
+          Object.entries(this.component.style_handlers).filter(([_, value]) => value)
         )
       : {};
     this.componentStyles = { ...this.componentStyles, ...labelStyleHandlers };

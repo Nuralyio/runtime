@@ -78,10 +78,10 @@ export class TextInputBlock extends BaseElementBlock {
                 ...this.getStyles(),
                 display: "block"
               })}
-              language="${this.inputHandlersValue?.language ?? "javascript"}"
-              theme="${this.inputHandlersValue?.theme ?? "vs-dark"}"
-              .readonly=${this.inputHandlersValue?.readonly ?? this.isViewMode === true}
-              .code=${this.inputHandlersValue?.value ?? ""}
+              language="${this.resolvedInputs?.language ?? "javascript"}"
+              theme="${this.resolvedInputs?.theme ?? "vs-dark"}"
+              .readonly=${this.resolvedInputs?.readonly ?? this.isViewMode === true}
+              .code=${this.resolvedInputs?.value ?? ""}
               @click=${(e: MouseEvent) => {
                 this.executeEvent("onClick", e);
               }}

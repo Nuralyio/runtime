@@ -40,16 +40,16 @@ export class VideoBlock extends BaseElementBlock {
 
   renderComponent() {
     const videoStyles = this.getStyles() || {};
-    const videoStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+    const videoStyleHandlers = this.component?.style_handlers ? Object.fromEntries(
+      Object.entries(this.component?.style_handlers).filter(([key, value]) => value)) : {};
 
-    const src = this.inputHandlersValue?.src;
-    const poster = this.inputHandlersValue?.poster;
-    const autoplay = this.inputHandlersValue?.autoplay ?? false;
-    const controls = this.inputHandlersValue?.controls ?? true;
-    const loop = this.inputHandlersValue?.loop ?? false;
-    const muted = this.inputHandlersValue?.muted ?? false;
-    const preload = this.inputHandlersValue?.preload ?? 'metadata';
+    const src = this.resolvedInputs?.src;
+    const poster = this.resolvedInputs?.poster;
+    const autoplay = this.resolvedInputs?.autoplay ?? false;
+    const controls = this.resolvedInputs?.controls ?? true;
+    const loop = this.resolvedInputs?.loop ?? false;
+    const muted = this.resolvedInputs?.muted ?? false;
+    const preload = this.resolvedInputs?.preload ?? 'metadata';
 
     // Show placeholder when no video source
     if (!src) {

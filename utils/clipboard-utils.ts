@@ -7,7 +7,7 @@ import { ExecuteInstance } from '../state/runtime-context';
 export function copyCpmponentToClipboard(component : any) {
     delete component.parent;
     delete component.children;
-    delete component.childrens;
+    delete component.children;
     const application_id = component.application_id;
     const currentApplicationComponents = $applicationComponents(application_id).get();
     const currentComponent :any = currentApplicationComponents.find(c => c.uuid === component.uuid);
@@ -15,7 +15,7 @@ export function copyCpmponentToClipboard(component : any) {
     const childrenComponents = componentChildrenIDs.map(childId => currentApplicationComponents.find(c => c.uuid === childId));
     delete currentComponent.parent;
     delete currentComponent.children;
-    delete currentComponent.childrens;
+    delete currentComponent.children;
     const schema = generateNuralyClipboardStructure(currentComponent, childrenComponents);
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2)).then(() => {
     }).catch(err => {
@@ -95,9 +95,9 @@ function transformSchemaWithNewUUIDs(schema) {
         component.uuid = newUUID;
     });
 
-    // Update childrenIds with the new UUIDs
+    // Update children_ids with the new UUIDs
     schema.components.forEach(component => {
-        component.childrenIds = component.childrenIds.map(oldUUID => uuidMap.get(oldUUID) || oldUUID);
+        component.children_ids = component.children_ids.map(oldUUID => uuidMap.get(oldUUID) || oldUUID);
 
         // Generate a cryptographically secure random suffix
         const randomBytes = crypto.getRandomValues(new Uint8Array(2));
@@ -110,7 +110,7 @@ function transformSchemaWithNewUUIDs(schema) {
 
 function findRootAndChildren(data) {
     const allComponents = data.components;
-    const childIds = new Set(allComponents.flatMap(comp => comp.childrenIds));
+    const childIds = new Set(allComponents.flatMap(comp => comp.children_ids));
   
     // Find all root components (those that don't have any parent)
     const rootComponents = allComponents.filter(comp => !childIds.has(comp.uuid));

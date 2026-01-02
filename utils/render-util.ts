@@ -12,7 +12,7 @@ const textLabelTemplate = (props: any, isViewMode: boolean)  => html`<text-label
 const buttonTemplate = (props: any, isViewMode: boolean)  => html`<button-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></button-block>`;
 const tabsTemplate = (props: any, isViewMode: boolean)  => html`<tabs-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></tabs-block>`;
 const menuTemplate = (props: any, isViewMode: boolean)  => html`<menu-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></menu-block>`;
-const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<vertical-container-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></vertical-container-block>`;
+const verticalContainerTemplate = (props: any, isViewMode: boolean) => html`<container-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></container-block>`;
 const collectionViewerTemplate = (props: any, isViewMode: boolean) => html`<collection-viewer .isViewMode=${isViewMode} .parentcomponent=${props.parent} .component=${props.component}></collection-viewer>`;
 const checkboxTemplate = (props: any, isViewMode: boolean)  => html`<checkbox-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></checkbox-block>`;
 const datePickerTemplate = (props: any, isViewMode: boolean)  => html`<date-picker-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></date-picker-block>`;
@@ -49,7 +49,7 @@ function renderComponentElement(component: ComponentElement, commonProps: any, i
 }
 
 function getComponentTemplate(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
-  switch (component?.component_type) {
+  switch (component?.type) {
     case ComponentType.Select:
       return selectTemplate(commonProps, isViewMode);
     case ComponentType.IconButton:
@@ -131,7 +131,7 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
     case ComponentType.Modal:
       return modalTemplate(commonProps, isViewMode);
     default:
-      const registeredTemplate = ComponentRegistry.getTemplate(component?.component_type as string);
+      const registeredTemplate = ComponentRegistry.getTemplate(component?.type as string);
       if (registeredTemplate) {
         const renderProps: ComponentRenderProps = {
           component: commonProps.component,

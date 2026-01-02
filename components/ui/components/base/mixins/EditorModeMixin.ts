@@ -6,7 +6,7 @@
 
 import { html, nothing } from "lit";
 import { state } from "lit/decorators.js";
-import type { LitElement, PropertyValues } from "lit";
+import type { LitElement } from "lit";
 import type { Ref } from "lit/directives/ref.js";
 import { SelectionController } from "../controllers/SelectionController";
 import { DragDropController } from "../controllers/DragDropController";
@@ -26,7 +26,7 @@ export interface EditorModeHost extends LitElement {
   uniqueUUID: string;
   errors: Record<string, any>;
   callbacks: Record<string, (val: any) => void>;
-  inputHandlersValue: Record<string, any>;
+  resolvedInputs: Record<string, any>;
   stylesHandlersValue: Record<string, any>;
   calculatedStyles: Record<string, any>;
 }

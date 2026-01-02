@@ -27,18 +27,18 @@ export class SliderBlock extends BaseElementBlock {
     const sliderStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const value = this.component?.input?.value?.value ?? this.inputHandlersValue?.value ?? 0;
-    const min = this.component?.input?.min?.value ?? this.inputHandlersValue?.min ?? 0;
-    const max = this.component?.input?.max?.value ?? this.inputHandlersValue?.max ?? 100;
-    const step = this.component?.input?.step?.value ?? this.inputHandlersValue?.step ?? 1;
-    const disabled = this.component?.input?.disabled?.value ?? this.inputHandlersValue?.disabled ?? false;
-    const vertical = this.component?.input?.vertical?.value ?? this.inputHandlersValue?.vertical ?? false;
-    const showTooltip = this.component?.input?.showTooltip?.value ?? this.inputHandlersValue?.showTooltip ?? true;
-    const showMarks = this.component?.input?.showMarks?.value ?? this.inputHandlersValue?.showMarks ?? false;
-    const range = this.component?.input?.range?.value ?? this.inputHandlersValue?.range ?? false;
+    const value = this.component?.input?.value?.value ?? this.resolvedInputs?.value ?? 0;
+    const min = this.component?.input?.min?.value ?? this.resolvedInputs?.min ?? 0;
+    const max = this.component?.input?.max?.value ?? this.resolvedInputs?.max ?? 100;
+    const step = this.component?.input?.step?.value ?? this.resolvedInputs?.step ?? 1;
+    const disabled = this.component?.input?.disabled?.value ?? this.resolvedInputs?.disabled ?? false;
+    const vertical = this.component?.input?.vertical?.value ?? this.resolvedInputs?.vertical ?? false;
+    const showTooltip = this.component?.input?.showTooltip?.value ?? this.resolvedInputs?.showTooltip ?? true;
+    const showMarks = this.component?.input?.showMarks?.value ?? this.resolvedInputs?.showMarks ?? false;
+    const range = this.component?.input?.range?.value ?? this.resolvedInputs?.range ?? false;
     
     // Get marks from inputHandlers (complex object)
-    const marks = this.inputHandlersValue?.marks;
+    const marks = this.resolvedInputs?.marks;
 
     return html`
       <nr-slider-input

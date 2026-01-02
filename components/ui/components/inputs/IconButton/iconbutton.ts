@@ -32,9 +32,9 @@ export class IconButtonBlock extends BaseElementBlock {
 
   renderComponent() {
     const buttonStyles = this.getStyles();
-    const { icon } = this.component?.parameters ?? {};
+    const icon = this.resolvedInputs?.icon;
     const iconArray = icon ? [icon] : [];
-    const type = this.inputHandlersValue.value || buttonStyles?.type || 'default';
+    const type = this.resolvedInputs.value || buttonStyles?.type || 'default';
     const size = buttonStyles?.size || 'medium';
 
     return html`
@@ -42,12 +42,12 @@ export class IconButtonBlock extends BaseElementBlock {
         ${ref(this.inputRef)}
         .size=${size}
         .type=${type}
-        .disabled=${this.inputHandlersValue.state == "disabled"}
-        .loading=${this.inputHandlersValue.loading || false}
-        .block=${this.inputHandlersValue.block || false}
-        .dashed=${this.inputHandlersValue.dashed || false}
+        .disabled=${this.resolvedInputs.state == "disabled"}
+        .loading=${this.resolvedInputs.loading || false}
+        .block=${this.resolvedInputs.block || false}
+        .dashed=${this.resolvedInputs.dashed || false}
         .icon=${iconArray}
-        .iconPosition=${this.inputHandlersValue.iconPosition || 'left'}
+        .iconPosition=${this.resolvedInputs.iconPosition || 'left'}
         @click=${this.handleClick}
         style=${styleMap({ 
           ...this.getStyles(),

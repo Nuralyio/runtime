@@ -64,7 +64,7 @@ export class GridCol extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }).filter(Boolean) ?? [];
   }
@@ -94,7 +94,7 @@ export class GridCol extends BaseElementBlock {
    * Get all column properties from input handlers
    */
   private getColProps(): ColProps {
-    const input = this.inputHandlersValue;
+    const input = this.resolvedInputs;
     return {
       span: this.parseNumeric(input?.span),
       offset: this.parseNumeric(input?.offset, 0)!,

@@ -126,7 +126,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
   /** Get the value input which contains resource config */
   private getValueInput() {
-    return this.inputHandlersValue?.value || this.inputHandlersValue || {};
+    return this.resolvedInputs?.value || this.resolvedInputs || {};
   }
 
   override firstUpdated(): void {

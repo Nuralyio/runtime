@@ -57,7 +57,7 @@ export class Collapse extends BaseElementBlock {
       <nr-collapse
         style=${styleMap(this.component.style)}
         .sections=${[...this.sections]}
-        .size=${this.inputHandlersValue?.size ?? nothing}
+        .size=${this.resolvedInputs?.size ?? nothing}
         @section-toggled=${this.handleSectionToggled}
       ></nr-collapse>
     `;
@@ -79,7 +79,7 @@ export class Collapse extends BaseElementBlock {
   }
 
   private generateSection() {
-    const components = this.inputHandlersValue?.components;
+    const components = this.resolvedInputs?.components;
     if (!components || !Array.isArray(components)) {
       return [];
     }

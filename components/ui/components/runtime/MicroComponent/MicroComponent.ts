@@ -22,8 +22,8 @@ import { MicroAppRuntimeContext } from '../../../../../micro-app/state/MicroAppR
  * // Simple usage (shared global vars)
  * <micro-component
  *   .components=${[
- *     { uuid: '1', component_type: 'vertical_container', root: true },
- *     { uuid: '2', component_type: 'text', input: { value: 'Hello' } }
+ *     { uuid: '1', type: 'vertical_container', root: true },
+ *     { uuid: '2', type: 'text', input: { value: 'Hello' } }
  *   ]}
  *   .vars=${{ userName: 'John' }}
  * ></micro-component>

@@ -12,7 +12,7 @@ export async function traitInputHandler(
   ctx: {
     component: any;
     item: any;
-    inputHandlersValue: Record<string, any>;
+    resolvedInputs: Record<string, any>;
     callbacks?: Record<string, (val: any) => void>;
     errors?: Record<string, any>;
     ExecuteInstance: any;
@@ -34,8 +34,8 @@ export async function traitInputHandler(
 
   const proxy = (ctx.ExecuteInstance.PropertiesProxy[ctx.component.name] ??= {});
   const setResult = (val: any) => {
-    if (ctx.inputHandlersValue[inputName] !== val) {
-      ctx.inputHandlersValue[inputName] = val;
+    if (ctx.resolvedInputs[inputName] !== val) {
+      ctx.resolvedInputs[inputName] = val;
       proxy[inputName] = val;
       ctx.callbacks?.[inputName]?.(val);
     }

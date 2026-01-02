@@ -19,16 +19,16 @@ export class CheckboxBlock extends BaseElementBlock {
       <nr-checkbox
         class="${`drop-${this.component.uuid}`}"
         ${ref(this.inputRef)}
-        .checked=${this.inputHandlersValue?.value === true}
-        .indeterminate=${this.inputHandlersValue?.value === "indeterminate"}
-        .disabled=${this.inputHandlersValue?.disabled}
-        .size=${this.inputHandlersValue?.size || 'medium'}
-        .name=${this.inputHandlersValue?.name || ''}
-        .value=${this.inputHandlersValue?.value || ''}
-        .autoFocus=${this.inputHandlersValue?.autoFocus || false}
-        .id=${this.inputHandlersValue?.id || ''}
-        .title=${this.inputHandlersValue?.title || ''}
-        .tabIndex=${this.inputHandlersValue?.tabIndex || 0}
+        .checked=${this.resolvedInputs?.value === true}
+        .indeterminate=${this.resolvedInputs?.value === "indeterminate"}
+        .disabled=${this.resolvedInputs?.disabled}
+        .size=${this.resolvedInputs?.size || 'medium'}
+        .name=${this.resolvedInputs?.name || ''}
+        .value=${this.resolvedInputs?.value || ''}
+        .autoFocus=${this.resolvedInputs?.autoFocus || false}
+        .id=${this.resolvedInputs?.id || ''}
+        .title=${this.resolvedInputs?.title || ''}
+        .tabIndex=${this.resolvedInputs?.tabIndex || 0}
         @nr-change=${(e : CustomEvent) => {
           this.executeEvent('onChange', e , {
             checked: e.detail.checked
@@ -50,7 +50,7 @@ export class CheckboxBlock extends BaseElementBlock {
           this.executeEvent('onMouseLeave', e);
         }}
       >
-       <nr-label .size=${this.inputHandlersValue?.size || 'medium'}> ${this.inputHandlersValue?.label ?? ""}</nr-label>
+       <nr-label .size=${this.resolvedInputs?.size || 'medium'}> ${this.resolvedInputs?.label ?? ""}</nr-label>
       </nr-checkbox>
     `;
   }

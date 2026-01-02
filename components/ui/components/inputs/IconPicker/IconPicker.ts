@@ -20,16 +20,16 @@ export class IconPicker extends BaseElementBlock {
   }
 
   renderComponent() {
-    const inputValue = this.inputHandlersValue.value ?? EMPTY_STRING;
-    const size = this.inputHandlersValue?.size || 'small';
-    const placement = this.inputHandlersValue?.placement || 'auto';
-    const trigger = this.inputHandlersValue?.trigger || 'manual';
-    const disabled = this.inputHandlersValue?.disable === 'disabled' || this.inputHandlersValue?.disable === true;
-    const readonly = this.inputHandlersValue?.readonly || false;
-    const placeholder = this.inputHandlersValue?.placeholder || 'Select icon';
-    const showSearch = this.inputHandlersValue?.showSearch !== false;
-    const showClear = this.inputHandlersValue?.showClear !== false;
-    const maxVisible = this.inputHandlersValue?.maxVisible || 500;
+    const inputValue = this.resolvedInputs.value ?? EMPTY_STRING;
+    const size = this.resolvedInputs?.size || 'small';
+    const placement = this.resolvedInputs?.placement || 'auto';
+    const trigger = this.resolvedInputs?.trigger || 'manual';
+    const disabled = this.resolvedInputs?.disable === 'disabled' || this.resolvedInputs?.disable === true;
+    const readonly = this.resolvedInputs?.readonly || false;
+    const placeholder = this.resolvedInputs?.placeholder || 'Select icon';
+    const showSearch = this.resolvedInputs?.showSearch !== false;
+    const showClear = this.resolvedInputs?.showClear !== false;
+    const maxVisible = this.resolvedInputs?.maxVisible || 500;
 
     return html`
       <nr-icon-picker

@@ -33,22 +33,22 @@ export class ColorPickerBlock extends BaseElementBlock {
           height: "28px",
           ...this.getStyles(),
         })}
-        .color=${this.inputHandlersValue.value ?? EMPTY_STRING}
-        .disabled=${this.inputHandlersValue?.state == "disabled"}
+        .color=${this.resolvedInputs.value ?? EMPTY_STRING}
+        .disabled=${this.resolvedInputs?.state == "disabled"}
         .size=${size}
-        .trigger=${this.inputHandlersValue?.trigger || 'click'}
-        .placement=${this.inputHandlersValue?.placement || 'auto'}
-        .animation=${this.inputHandlersValue?.animation || 'fade'}
-        .closeOnSelect=${this.inputHandlersValue?.closeOnSelect || false}
-        .closeOnOutsideClick=${this.inputHandlersValue?.closeOnOutsideClick !== false}
-        .closeOnEscape=${this.inputHandlersValue?.closeOnEscape !== false}
-        .showInput=${this.inputHandlersValue?.showInput !== false}
-        .showCopyButton=${this.inputHandlersValue?.showCopyButton !== false}
-        .format=${this.inputHandlersValue?.format || 'hex'}
-        .inputPlaceholder=${this.inputHandlersValue?.inputPlaceholder || 'Enter color'}
-        .label=${this.inputHandlersValue?.label || ''}
-        .helperText=${this.inputHandlersValue?.helperText || ''}
-        .defaultColorSets=${this.inputHandlersValue?.defaultColorSets || []}
+        .trigger=${this.resolvedInputs?.trigger || 'click'}
+        .placement=${this.resolvedInputs?.placement || 'auto'}
+        .animation=${this.resolvedInputs?.animation || 'fade'}
+        .closeOnSelect=${this.resolvedInputs?.closeOnSelect || false}
+        .closeOnOutsideClick=${this.resolvedInputs?.closeOnOutsideClick !== false}
+        .closeOnEscape=${this.resolvedInputs?.closeOnEscape !== false}
+        .showInput=${this.resolvedInputs?.showInput !== false}
+        .showCopyButton=${this.resolvedInputs?.showCopyButton !== false}
+        .format=${this.resolvedInputs?.format || 'hex'}
+        .inputPlaceholder=${this.resolvedInputs?.inputPlaceholder || 'Enter color'}
+        .label=${this.resolvedInputs?.label || ''}
+        .helperText=${this.resolvedInputs?.helperText || ''}
+        .defaultColorSets=${this.resolvedInputs?.defaultColorSets || []}
         @nr-color-change=${(e) => {
           this.executeEvent('onChange', e, { value: e.detail.color });
         }}

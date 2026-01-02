@@ -69,7 +69,7 @@ constructor() {
     return html`
       <smart-attribute-handler
         .component=${{ ...this.component }}
-        .attributeName=${this.inputHandlersValue.value ? this.inputHandlersValue.value[0] : nothing}
+        .attributeName=${this.resolvedInputs.value ? this.resolvedInputs.value[0] : nothing}
         .attributeValue=${eventValue}
         .attributeScope=${"event"}
         .handlerScope=${"event"}
@@ -89,7 +89,7 @@ constructor() {
           style=${styleMap({
         "--nuraly-button-text-color": "#b8b8b8",
         "--nuraly-button-height": "39px",
-        "--nuraly-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+        "--nuraly-button-width": this.resolvedInputs?.triggerText ? "auto" : "30px",
         "--nuraly-button-background-color": "transparent",
         "--nuraly-button-border-left": "none",
         "--nuraly-button-border-right": "none",
@@ -98,8 +98,8 @@ constructor() {
       })}
           .icon=${["code"]}
           class="unit"
-          iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
-        >${this.inputHandlersValue?.triggerText ?? ""}
+          iconPosition=${!this.resolvedInputs?.triggerText ? "left" : "right"}
+        >${this.resolvedInputs?.triggerText ?? ""}
         </nr-button>
         <div slot="content" style="padding: 12px; min-width: 700px;">
           ${this.renderCodeEditorTemplate(eventName, eventValue)}
@@ -109,8 +109,8 @@ constructor() {
   }
 
   renderComponent() {
-    const eventsHandlers = {...this.inputHandlersValue?.events ?? {}};
-    const allowedEvents = this.inputHandlersValue?.allowedEvents ?? [];
+    const eventsHandlers = {...this.resolvedInputs?.events ?? {}};
+    const allowedEvents = this.resolvedInputs?.allowedEvents ?? [];
 
     return html`
     ${allowedEvents.length === 0
@@ -131,7 +131,7 @@ constructor() {
               style=${styleMap({
         "--nuraly-button-text-color": "#b8b8b8",
         "--nuraly-button-height": "39px",
-        "--nuraly-button-width": this.inputHandlersValue?.triggerText ? "auto" : "30px",
+        "--nuraly-button-width": this.resolvedInputs?.triggerText ? "auto" : "30px",
         "--nuraly-button-background-color": "transparent",
         "--nuraly-button-border-left": "none",
         "--nuraly-button-border-right": "none",
@@ -141,11 +141,11 @@ constructor() {
               .icon=${["plus"]}
               size="small"
               class="unit"
-            >${this.inputHandlersValue?.triggerText ?? ""}
+            >${this.resolvedInputs?.triggerText ?? ""}
             </nr-button>
             <div slot="content">
               ${allowedEvents.filter(
-          event => !this.inputHandlersValue?.events[event.name]
+          event => !this.resolvedInputs?.events[event.name]
         ).map((event) => {
           return html`
             <button 
@@ -164,8 +164,8 @@ constructor() {
             </div>
           </nr-dropdown>
           <div>
-            ${Object.keys(this.inputHandlersValue?.events).map((eventName) => {
-        if (this.inputHandlersValue?.events[eventName] === null) return;
+            ${Object.keys(this.resolvedInputs?.events).map((eventName) => {
+        if (this.resolvedInputs?.events[eventName] === null) return;
 
         return html`
                 <div class="container">

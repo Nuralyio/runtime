@@ -8,7 +8,6 @@ import { $components } from '../../../../../redux/store/component/store.ts';
 import { renderComponent } from '../../../../../utils/render-util';
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
 
-// Import @nuralyui/modal
 import "@nuralyui/modal";
 import { ModalSize, ModalPosition, ModalAnimation, ModalBackdrop } from "@nuralyui/modal";
 
@@ -241,7 +240,7 @@ export class ModalBlock extends BaseElementBlock {
     const appComponents = $components.get()[this.component?.application_id] ?? [];
 
     // Body children (default slot)
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return appComponents.find((component) => component.uuid === id);
     }).filter(Boolean) ?? [];
   }
@@ -296,17 +295,17 @@ export class ModalBlock extends BaseElementBlock {
     const modalStyles = this.component?.style || {};
 
     // Get properties from input or inputHandlers
-    const open = this.inputHandlersValue?.open ?? false;
-    const size = this.inputHandlersValue?.size || ModalSize.Medium;
-    const position =  this.inputHandlersValue?.position || ModalPosition.Center;
-    const backdrop = this.inputHandlersValue?.backdrop || ModalBackdrop.Closable;
-    const closable =  this.inputHandlersValue?.closable ?? true;
-    const animation =  this.inputHandlersValue?.animation || ModalAnimation.None;
-    const modalTitle = this.component?.input?.modalTitle?.value || this.inputHandlersValue?.modalTitle || 'Modal';
-    const showCloseButton =  this.inputHandlersValue?.showCloseButton ?? true;
-    const modalDraggable =  this.inputHandlersValue?.modalDraggable ?? false;
-    const width = this.inputHandlersValue?.width || '';
-    const height =  this.inputHandlersValue?.height || '';
+    const open = this.resolvedInputs?.open ?? false;
+    const size = this.resolvedInputs?.size || ModalSize.Medium;
+    const position =  this.resolvedInputs?.position || ModalPosition.Center;
+    const backdrop = this.resolvedInputs?.backdrop || ModalBackdrop.Closable;
+    const closable =  this.resolvedInputs?.closable ?? true;
+    const animation =  this.resolvedInputs?.animation || ModalAnimation.None;
+    const modalTitle = this.component?.input?.modalTitle?.value || this.resolvedInputs?.modalTitle || 'Modal';
+    const showCloseButton =  this.resolvedInputs?.showCloseButton ?? true;
+    const modalDraggable =  this.resolvedInputs?.modalDraggable ?? false;
+    const width = this.resolvedInputs?.width || '';
+    const height =  this.resolvedInputs?.height || '';
 
     // In editor mode: show card at top-right corner of page (outside layout) + modal when editing
     if (!this.isViewMode) {

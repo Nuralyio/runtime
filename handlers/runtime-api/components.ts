@@ -33,7 +33,7 @@ export function createComponentFunctions(runtimeContext: any) {
      */
     AddComponent: ({ application_id, pageId, componentType, additionalData }): any => {
       const generatedName = GenerateName(componentType);
-      addComponentAction({ name: generatedName, component_type: componentType, ...additionalData }, pageId, application_id);
+      addComponentAction({ name: generatedName, type: componentType, ...additionalData }, pageId, application_id);
     },
 
     /**

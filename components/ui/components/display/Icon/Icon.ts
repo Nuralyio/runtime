@@ -34,15 +34,15 @@ export class IconBlock extends BaseElementBlock {
     return html`
       <nr-icon
       ${ref(this.inputRef)}
-        .name=${this.inputHandlersValue.icon ?? "smile"}
-        .type=${this.inputHandlersValue.type || 'solid'}
-        .alt=${this.inputHandlersValue.alt || ''}
-        .size=${this.inputHandlersValue.size || nothing}
-        .color=${this.inputHandlersValue.color || nothing}
+        .name=${this.resolvedInputs.icon ?? "smile"}
+        .type=${this.resolvedInputs.type || 'solid'}
+        .alt=${this.resolvedInputs.alt || ''}
+        .size=${this.resolvedInputs.size || nothing}
+        .color=${this.resolvedInputs.color || nothing}
         .width=${iconStyles?.width || nothing}
         .height=${iconStyles?.height || nothing}
-        .clickable=${this.inputHandlersValue.clickable || false}
-        .disabled=${this.inputHandlersValue.state === "disabled"}
+        .clickable=${this.resolvedInputs.clickable || false}
+        .disabled=${this.resolvedInputs.state === "disabled"}
         @click=${(e) => {
           this.executeEvent("onClick", e);
         }}

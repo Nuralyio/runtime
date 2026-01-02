@@ -63,13 +63,13 @@ export class EmbedUrlBlock extends BaseElementBlock {
 
   private handleIframeLoad(e: Event) {
     this.executeEvent('onLoad', e, {
-      url: this.currentUrl || this.inputHandlersValue?.url || ""
+      url: this.currentUrl || this.resolvedInputs?.url || ""
     });
   }
 
   private handleIframeError(e: Event) {
     this.executeEvent('onError', e, {
-      url: this.currentUrl || this.inputHandlersValue?.url || "",
+      url: this.currentUrl || this.resolvedInputs?.url || "",
       error: 'Failed to load iframe content'
     });
   }
@@ -99,10 +99,10 @@ export class EmbedUrlBlock extends BaseElementBlock {
 
   override renderComponent() {
     const embedStyles = this.getStyles() || {};
-    const embedStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+    const embedStyleHandlers = this.component?.style_handlers ? Object.fromEntries(
+      Object.entries(this.component?.style_handlers).filter(([key, value]) => value)) : {};
 
-    const url = this.currentUrl || this.inputHandlersValue?.url || "";
+    const url = this.currentUrl || this.resolvedInputs?.url || "";
 
     // Show placeholder when no URL
     if (!url) {
