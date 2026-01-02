@@ -381,15 +381,19 @@ class RuntimeContext implements IRuntimeContext {
   /** Current platform information */
   currentPlatform: any;
 
-  /** Property change listeners map */
-  private listeners: Record<string, Set<string>> = {};
-  
+  /**
+   * Shared listener registry for reactivity (Vars + Component values).
+   * Key: property name (e.g., "username") or "ComponentName.propName" (e.g., "Input1.value")
+   * Value: Set of component names that depend on this value
+   */
+  listeners: Record<string, Set<string>> = {};
+
   /** Cache for style proxies to avoid recreation */
   styleProxyCache = new WeakMap();
-  
+
   /** Cache for values proxies to avoid recreation */
   valuesProxyCache = new WeakMap();
-  
+
   /** Function to set component runtime style attributes */
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   
@@ -517,8 +521,22 @@ class RuntimeContext implements IRuntimeContext {
         }
       },
       (id: string, prop: string, value: any) => {
-        // Emit event when value changes
+        // Emit event when value changes (for the component itself)
         eventDispatcher.emit(`component:value:set:${id}`, { prop, value });
+
+        // Notify dependent components (cross-component reactivity)
+        // Uses same listeners registry as VarsProxy
+        const depKey = `${component.name}.${prop}`;
+        const dependents = this.listeners[depKey];
+        if (dependents) {
+          dependents.forEach((dependentComponentName: string) => {
+            eventDispatcher.emit(`component-property-changed:${dependentComponentName}`, {
+              prop: depKey,
+              value,
+              source: component.name
+            });
+          });
+        }
       },
       this.valuesProxyCache
     );

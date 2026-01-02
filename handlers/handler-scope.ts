@@ -31,6 +31,8 @@
  * ```
  */
 
+import { RuntimeInstance } from '../state/runtime-context';
+
 /**
  * Set of reserved parameter names that should NOT be routed to $
  * These are the built-in handler parameters and global objects.
@@ -202,6 +204,15 @@ export interface HandlerScopeConfig {
 
   /** All handler parameters as key-value pairs */
   parameters: Record<string, any>;
+
+  /** Apps registry for component lookup by name */
+  Apps?: Record<string, Record<string, any>>;
+
+  /** Current component executing the handler (for dependency tracking) */
+  Current?: any;
+
+  /** Shared listener registry (same as VarsProxy uses) */
+  listeners?: Record<string, Set<string>>;
 }
 
 /**
@@ -216,6 +227,107 @@ function isReactiveVar(prop: string): boolean {
  */
 function stripPrefix(prop: string): string {
   return prop.slice(1);
+}
+
+/**
+ * Find a component by name across all apps
+ * @param Apps - The Apps registry
+ * @param name - Component name to find
+ * @returns The component or null if not found
+ */
+function findComponentByName(Apps: Record<string, Record<string, any>> | undefined, name: string): any | null {
+  if (!Apps) return null;
+  for (const appName in Apps) {
+    if (Apps[appName]?.[name]) {
+      return Apps[appName][name];
+    }
+  }
+  return null;
+}
+
+/**
+ * Ensures a component has Instance attached for runtime values.
+ * This is called lazily when accessing a component that doesn't have Instance yet.
+ *
+ * @param component - The component to ensure Instance for
+ */
+function ensureInstanceAttached(component: any): void {
+  if (!component.Instance && component.uniqueUUID) {
+    // Lazily attach Instance when first accessed
+    RuntimeInstance.attachValuesProperty(component);
+  }
+}
+
+/**
+ * Create a merged proxy for a component that exposes Instance values directly
+ *
+ * This allows `Input1.value` instead of `Input1.Instance.value`
+ * - Get: Instance values first, then component properties (+ registers dependency)
+ * - Set: Always writes to Instance (runtime values)
+ *
+ * @param component - The component to wrap
+ * @param currentComponent - The component currently executing (for dependency tracking)
+ * @param listeners - Shared listener registry (same as VarsProxy uses)
+ * @returns A proxy that merges Instance values with component properties
+ */
+function createComponentProxy(
+  component: any,
+  currentComponent?: any,
+  listeners?: Record<string, Set<string>>
+): any {
+  return new Proxy(component, {
+    get(target, prop) {
+      const propStr = String(prop);
+
+      // Symbol properties go directly to target
+      if (typeof prop === 'symbol') {
+        return target[prop];
+      }
+
+      // Ensure Instance is attached before accessing values
+      ensureInstanceAttached(target);
+
+      // Register dependency using same pattern as VarsProxy
+      // Key format: "ComponentName.propName" (e.g., "Input1.value")
+      if (currentComponent?.name && listeners && target.name) {
+        const depKey = `${target.name}.${propStr}`;
+        if (!listeners[depKey]) {
+          listeners[depKey] = new Set();
+        }
+        listeners[depKey].add(currentComponent.name);
+      }
+
+      // Instance values take priority (runtime values)
+      if (target.Instance?.[propStr] !== undefined) {
+        return target.Instance[propStr];
+      }
+
+      // Fall back to component properties
+      return target[propStr];
+    },
+
+    set(target, prop, value) {
+      const propStr = String(prop);
+
+      // Symbol properties go directly to target
+      if (typeof prop === 'symbol') {
+        target[prop] = value;
+        return true;
+      }
+
+      // Ensure Instance is attached before setting values
+      ensureInstanceAttached(target);
+
+      // Always write to Instance (runtime values)
+      if (!target.Instance) {
+        console.warn(`Component ${target.name} has no Instance property (uniqueUUID: ${target.uniqueUUID})`);
+        return false;
+      }
+
+      target.Instance[propStr] = value;
+      return true;
+    }
+  });
 }
 
 /**
@@ -248,7 +360,7 @@ function stripPrefix(prop: string): string {
  * ```
  */
 export function createHandlerScope(config: HandlerScopeConfig): any {
-  const { VarsProxy, parameters } = config;
+  const { VarsProxy, parameters, Apps, Current, listeners } = config;
 
   return new Proxy(parameters, {
     /**
@@ -256,6 +368,7 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
      * We claim to have:
      * - All reserved names (handler parameters)
      * - All $-prefixed names (reactive variables)
+     * - Component names (for direct component access like Input1.value)
      */
     has(target, prop) {
       const propStr = String(prop);
@@ -275,6 +388,11 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
         return true;
       }
 
+      // Check if it's a component name (for direct component access)
+      if (findComponentByName(Apps, propStr)) {
+        return true;
+      }
+
       // For other names, let them resolve normally (local vars, globals)
       // Returning false lets the `with` statement fall through to outer scope
       return false;
@@ -284,6 +402,7 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
      * Get property value.
      * - Reserved names get their actual values
      * - $-prefixed names get from VarsProxy (without the $ prefix)
+     * - Component names return merged proxy (Instance + component props)
      * - Other names shouldn't reach here (has() returns false)
      */
     get(target, prop, receiver) {
@@ -320,6 +439,12 @@ export function createHandlerScope(config: HandlerScopeConfig): any {
       // Check if it's a handler parameter
       if (propStr in target) {
         return target[propStr];
+      }
+
+      // Check if it's a component name - return merged proxy with dependency tracking
+      const component = findComponentByName(Apps, propStr);
+      if (component) {
+        return createComponentProxy(component, Current, listeners);
       }
 
       // Fallback to undefined (shouldn't normally reach here)

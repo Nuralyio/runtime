@@ -107,9 +107,7 @@ export class PopconfirmContainer extends LitElement {
       return null;
     }
 
-    console.log('[PopconfirmContainer] Calling show() with:', { config, position });
     const result = this.managerElement.show(config, position);
-    console.log('[PopconfirmContainer] show() returned:', result);
     return result;
   }
 

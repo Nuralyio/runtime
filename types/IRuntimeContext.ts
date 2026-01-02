@@ -200,4 +200,15 @@ export interface IRuntimeContext {
    * Uses WeakMap for automatic garbage collection.
    */
   valuesProxyCache: WeakMap<any, any>;
+
+  // ============================================================================
+  // Reactivity
+  // ============================================================================
+
+  /**
+   * Shared listener registry for Vars and Component values.
+   * Key: property name (e.g., "username") or "ComponentName.propName" (e.g., "Input1.value")
+   * Value: Set of component names that depend on this value
+   */
+  listeners?: Record<string, Set<string>>;
 }
