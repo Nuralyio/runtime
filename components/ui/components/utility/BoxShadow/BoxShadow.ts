@@ -90,17 +90,17 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
   }
 
   override render() {
-    const isDisabled = this.inputHandlersValue?.state == "disabled" ? true : false;
-    this.horizontalValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[0] : 0;
-    this.verticalValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[1] : 0;
-    this.blurValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[2] : 0;
-    this.spreadValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[3] : 0;
-    this.insetValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false;
-    this.colorValue = this.inputHandlersValue?.value ? this.inputHandlersValue.value[5] : "#000000";
+    const isDisabled = this.resolvedInputs?.state == "disabled" ? true : false;
+    this.horizontalValue = this.resolvedInputs?.value ? this.resolvedInputs.value[0] : 0;
+    this.verticalValue = this.resolvedInputs?.value ? this.resolvedInputs.value[1] : 0;
+    this.blurValue = this.resolvedInputs?.value ? this.resolvedInputs.value[2] : 0;
+    this.spreadValue = this.resolvedInputs?.value ? this.resolvedInputs.value[3] : 0;
+    this.insetValue = this.resolvedInputs?.value ? this.resolvedInputs.value[4] : false;
+    this.colorValue = this.resolvedInputs?.value ? this.resolvedInputs.value[5] : "#000000";
     return html`
 		<nr-checkbox 
 		.disabled=${isDisabled}
-		.checked=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[4] : false} 
+		.checked=${this.resolvedInputs?.value ? this.resolvedInputs.value[4] : false} 
 		@checkbox-changed=${(e) => {
 			this.handleColorChange(e);
     }}
@@ -117,7 +117,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          .min=${-50}
 			          .max=${50}
 					  .disabled=${isDisabled}
-			          .value=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[0] : 0}
+			          .value=${this.resolvedInputs?.value ? this.resolvedInputs.value[0] : 0}
 			           @changed="${(e) => {
       this.horizontalValue = e.detail.value;
       this.boxShadow();
@@ -148,7 +148,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          .min=${-50}
 			          .max=${50}
 					  .disabled=${isDisabled}
-			          .value=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[1] : 0}
+			          .value=${this.resolvedInputs?.value ? this.resolvedInputs.value[1] : 0}
 			           @changed="${(e) => {
       this.verticalValue = e.detail.value;
       this.boxShadow();
@@ -180,7 +180,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          .min=${-50}
 			          .max=${50}
 					  .disabled=${isDisabled}
-			          .value=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[2] : 0}
+			          .value=${this.resolvedInputs?.value ? this.resolvedInputs.value[2] : 0}
 					  @changed="${(e) => {
       this.blurValue = e.detail.value;
       this.boxShadow();
@@ -212,7 +212,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			          .min=${-50}
 			          .max=${50}
 					  .disabled=${isDisabled}
-			          .value=${this.inputHandlersValue?.value ? this.inputHandlersValue.value[3] : 0}
+			          .value=${this.resolvedInputs?.value ? this.resolvedInputs.value[3] : 0}
 			           @changed="${(e) => {
       this.spreadValue = e.detail.value;
       this.boxShadow();
@@ -236,7 +236,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 			<nr-color-picker
 			style="height: 100px; width: 100%;"
 			.disabled=${isDisabled}
-            .color="${this.inputHandlersValue?.value ? this.inputHandlersValue.value[5] : "#000000"}"
+            .color="${this.resolvedInputs?.value ? this.resolvedInputs.value[5] : "#000000"}"
             @color-changed="${this.handleColorChange}"
              >
 			 </nr-color-picker>

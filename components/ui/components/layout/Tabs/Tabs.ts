@@ -53,12 +53,12 @@ export class TabsBlock extends BaseElementBlock {
           style=${styleMap({
             ...tabStyle
           })}
-          .activeTab=${this.inputHandlersValue.index ?? 0}
+          .activeTab=${this.resolvedInputs.index ?? 0}
           .tabs=${this.editableTabs}
-          size=${this.inputHandlersValue?.size ?? 'medium'}
-          align=${this.inputHandlersValue?.align ?? nothing}
-          .panelConfig=${this.inputHandlersValue?.panelConfig ?? nothing}
-          .popOut=${this.inputHandlersValue?.popOut ?? nothing}
+          size=${this.resolvedInputs?.size ?? 'medium'}
+          align=${this.resolvedInputs?.align ?? nothing}
+          .panelConfig=${this.resolvedInputs?.panelConfig ?? nothing}
+          .popOut=${this.resolvedInputs?.popOut ?? nothing}
           @nr-tab-click=${(e: CustomEvent) => {
             //@todo pass the object
           this.executeEvent('onTabChanged', e, {
@@ -108,7 +108,7 @@ export class TabsBlock extends BaseElementBlock {
   }
 
   private generateTabs() {
-    return (this.inputHandlersValue.tabs)?.map(tab => ({
+    return (this.resolvedInputs.tabs)?.map(tab => ({
       label: tab.label.value,
       key: tab.key,
       icon: tab.icon?.value || null,

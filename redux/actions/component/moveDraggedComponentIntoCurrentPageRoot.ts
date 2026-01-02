@@ -13,11 +13,11 @@ export function moveDraggedComponentIntoCurrentPageRoot(
       if (component.uuid === draggedComponentId) {
         draggedComponent = component;
       }
-      parentDraggedComponent = components.find((c) => c.childrenIds?.includes(draggedComponentId));
+      parentDraggedComponent = components.find((c) => c.children_ids?.includes(draggedComponentId));
       if (!draggedComponent) {
         // If both components are not found yet, continue searching in children.
-        if (component.childrenIds) {
-          for (const childId of component.childrenIds) {
+        if (component.children_ids) {
+          for (const childId of component.children_ids) {
             const child = components.find((c) => c.uuid === childId);
             if (child) {
               findComponentsRecursively(child);
@@ -39,8 +39,8 @@ export function moveDraggedComponentIntoCurrentPageRoot(
 
       addComponentToCurrentPageAction(draggedComponentId);
 
-      if (parentDraggedComponent && parentDraggedComponent.childrenIds) {
-        parentDraggedComponent.childrenIds = parentDraggedComponent.childrenIds.filter(
+      if (parentDraggedComponent && parentDraggedComponent.children_ids) {
+        parentDraggedComponent.children_ids = parentDraggedComponent.children_ids.filter(
           (childId) => childId !== draggedComponentId
         );
       }

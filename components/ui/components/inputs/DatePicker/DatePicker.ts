@@ -66,21 +66,21 @@ export class DatepickertBlock extends BaseElementBlock {
         ${ref(this.inputRef)}
              class="${`drop-${this.component.uuid}`}"
 
-        .helper=${this.inputHandlersValue.helper || ''}
-        .label=${this.inputHandlersValue.label || ''}
-        .placeholder=${this.inputHandlersValue.placeholder || ''}
-        .locale=${this.inputHandlersValue.locale || 'en'}
+        .helper=${this.resolvedInputs.helper || ''}
+        .label=${this.resolvedInputs.label || ''}
+        .placeholder=${this.resolvedInputs.placeholder || ''}
+        .locale=${this.resolvedInputs.locale || 'en'}
         .state=${state}
-        .size=${this.inputHandlersValue.size ?? size}
+        .size=${this.resolvedInputs.size ?? size}
         .variant=${variant}
         .placement=${placement}
-        ?disabled=${this.inputHandlersValue.disabled ?? false}
-        .dateValue=${this.inputHandlersValue.value || ''}
-        .fieldFormat=${this.inputHandlersValue.format || 'DD/MM/YYYY'}
-        ?range=${this.inputHandlersValue.range ?? false}
-        .minDate=${this.inputHandlersValue.minDate}
-        .maxDate=${this.inputHandlersValue.maxDate}
-        ?required=${this.inputHandlersValue.required ?? false}
+        ?disabled=${this.resolvedInputs.disabled ?? false}
+        .dateValue=${this.resolvedInputs.value || ''}
+        .fieldFormat=${this.resolvedInputs.format || 'DD/MM/YYYY'}
+        ?range=${this.resolvedInputs.range ?? false}
+        .minDate=${this.resolvedInputs.minDate}
+        .maxDate=${this.resolvedInputs.maxDate}
+        ?required=${this.resolvedInputs.required ?? false}
         @nr-date-change=${this.handleDateChange}
         @nr-range-change=${this.handleRangeChange}
         @nr-calendar-open=${this.handleCalendarOpen}

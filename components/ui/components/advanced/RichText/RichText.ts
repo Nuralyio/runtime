@@ -83,12 +83,12 @@ export class RichTextContainer extends BaseElementBlock {
               @content-change=${(e: CustomEvent) => {
                 this.handleCodeEditorChange(e.detail.value);
               }}
-                .content=${this.inputHandlersValue.value}
+                .content=${this.resolvedInputs.value}
               ></rich-text-editor-block>
             `
           : html`
               <p @dblclick=${this.handleDoubleClick}>
-                ${unsafeHTML(this.inputHandlersValue.value)}
+                ${unsafeHTML(this.resolvedInputs.value)}
               </p>
             `}
       </div>

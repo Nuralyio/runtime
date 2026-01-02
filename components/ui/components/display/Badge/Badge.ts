@@ -27,22 +27,22 @@ export class BadgeBlock extends BaseElementBlock {
     const badgeStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const count = this.component?.input?.count?.value ?? this.inputHandlersValue?.count;
-    const text = this.component?.input?.text?.value || this.inputHandlersValue?.text || '';
-    const dot = this.component?.input?.dot?.value ?? this.inputHandlersValue?.dot ?? false;
-    const showZero = this.component?.input?.showZero?.value ?? this.inputHandlersValue?.showZero ?? false;
-    const overflowCount = this.component?.input?.overflowCount?.value || this.inputHandlersValue?.overflowCount || 99;
+    const count = this.component?.input?.count?.value ?? this.resolvedInputs?.count;
+    const text = this.component?.input?.text?.value || this.resolvedInputs?.text || '';
+    const dot = this.component?.input?.dot?.value ?? this.resolvedInputs?.dot ?? false;
+    const showZero = this.component?.input?.showZero?.value ?? this.resolvedInputs?.showZero ?? false;
+    const overflowCount = this.component?.input?.overflowCount?.value || this.resolvedInputs?.overflowCount || 99;
     
     // Get styling properties
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || 'default';
-    const color = this.component?.input?.color?.value || this.inputHandlersValue?.color;
-    const status = this.component?.input?.status?.value || this.inputHandlersValue?.status;
-    const ribbon = this.component?.input?.ribbon?.value || this.inputHandlersValue?.ribbon;
-    const ribbonPlacement = this.component?.input?.ribbonPlacement?.value || this.inputHandlersValue?.ribbonPlacement || 'end';
+    const size = this.component?.input?.size?.value || this.resolvedInputs?.size || 'default';
+    const color = this.component?.input?.color?.value || this.resolvedInputs?.color;
+    const status = this.component?.input?.status?.value || this.resolvedInputs?.status;
+    const ribbon = this.component?.input?.ribbon?.value || this.resolvedInputs?.ribbon;
+    const ribbonPlacement = this.component?.input?.ribbonPlacement?.value || this.resolvedInputs?.ribbonPlacement || 'end';
     
     // Get offset
-    const offsetX = this.component?.input?.offsetX?.value || this.inputHandlersValue?.offsetX;
-    const offsetY = this.component?.input?.offsetY?.value || this.inputHandlersValue?.offsetY;
+    const offsetX = this.component?.input?.offsetX?.value || this.resolvedInputs?.offsetX;
+    const offsetY = this.component?.input?.offsetY?.value || this.resolvedInputs?.offsetY;
     const offset: [number, number] | undefined = offsetX || offsetY ? [offsetX || 0, offsetY || 0] : undefined;
 
     return html`

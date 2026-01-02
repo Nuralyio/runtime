@@ -10,7 +10,7 @@ export const updateComponentHandler = (component: any, application_id) => {
   const ucomponent = { ...component };
   delete ucomponent.parent
   delete ucomponent.children
-  delete ucomponent.childrens
+  delete ucomponent.children
   fetch(`${FRONT_API_URLS.COMPONENTS}/${ucomponent.uuid}`, {
     method: "PUT",
     headers: {

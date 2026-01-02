@@ -17,16 +17,16 @@ export async function deleteComponentAction(componentId: string, application_id:
     if (componentToDelete.root) {
       removeComponentToCurrentPageAction(componentId);
     } else {
-      // Traverse all components and remove the componentId from their childrenIds arrays
+      // Traverse all components and remove the componentId from their children_ids arrays
       components.forEach((component) => {
-        if (component.childrenIds) {
-          const originalChildrenIds = [...component.childrenIds];
-          component.childrenIds = component.childrenIds.filter(
+        if (component.children_ids) {
+          const originalChildrenIds = [...component.children_ids];
+          component.children_ids = component.children_ids.filter(
             (childId) => childId !== componentId
           );
 
           // If the componentId was removed, dispatch the handler
-          if (originalChildrenIds.length !== component.childrenIds.length) {
+          if (originalChildrenIds.length !== component.children_ids.length) {
             updateComponentHandler(component, application_id);  // Dispatch the handler
           }
         }

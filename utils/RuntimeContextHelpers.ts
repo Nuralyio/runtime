@@ -534,7 +534,7 @@ export class RuntimeContextHelpers {
   /**
    * Register component hierarchy (parent-child relationships).
    *
-   * This shared logic resolves component childrenIds into actual component
+   * This shared logic resolves component children_ids into actual component
    * references and sets up bidirectional parent-child relationships.
    *
    * @param components - Array of components to process
@@ -561,9 +561,9 @@ export class RuntimeContextHelpers {
         component.children = [];
       }
 
-      // Resolve childrenIds to actual component references
-      if (component.childrenIds && Array.isArray(component.childrenIds) && component.childrenIds.length > 0) {
-        component.children = component.childrenIds
+      // Resolve children_ids to actual component references
+      if (component.children_ids && Array.isArray(component.children_ids) && component.children_ids.length > 0) {
+        component.children = component.children_ids
           .map(childId => {
             const child = getComponentByUUID(childId);
 

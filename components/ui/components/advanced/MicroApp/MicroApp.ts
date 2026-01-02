@@ -74,14 +74,14 @@ export class MicroAppBlock extends BaseElementBlock {
   
 
   render() {
-    const isPreviewMode = this.inputHandlersValue.mode === ViewMode.Preview;
+    const isPreviewMode = this.resolvedInputs.mode === ViewMode.Preview;
 
     return html`
-      ${this.inputHandlersValue.appUUID
+      ${this.resolvedInputs.appUUID
       ? html`
           <micro-app
-            uuid=${this.inputHandlersValue.appUUID}
-            componentToRenderUUID=${this.inputHandlersValue.componentToRenderUUID ?? nothing}
+            uuid=${this.resolvedInputs.appUUID}
+            componentToRenderUUID=${this.resolvedInputs.componentToRenderUUID ?? nothing}
             style=${styleMap({
         pointerEvents: isPreviewMode ? "auto" : "none"
       })}

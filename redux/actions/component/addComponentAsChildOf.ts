@@ -10,13 +10,13 @@ export function addComponentAsChildOf(componentId: string, parentComponentId: st
   const parentComponent = components.find((component) => component.uuid === parentComponentId);
 
   if (parentComponent) {
-    // Ensure the parent component has a childrenIds array
-    if (!parentComponent.childrenIds) {
-      parentComponent.childrenIds = [];
+    // Ensure the parent component has a children_ids array
+    if (!parentComponent.children_ids) {
+      parentComponent.children_ids = [];
     }
 
-    // Add the new component ID to the parent's childrenIds array
-    parentComponent.childrenIds.push(componentId);
+    // Add the new component ID to the parent's children_ids array
+    parentComponent.children_ids.push(componentId);
     setTimeout(() => {
       updateComponentHandler(parentComponent, application_id);
     }, 0);

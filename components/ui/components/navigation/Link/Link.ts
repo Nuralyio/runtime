@@ -25,7 +25,7 @@ export class LinkBlock extends BaseElementBlock {
     }
 
     private updateChildrenComponents(): void {
-        this.childrenComponents = this.component?.childrenIds
+        this.childrenComponents = this.component?.children_ids
             ?.map((id) => {
                 return $components.get()[this.component?.application_id]?.find(
                     (component) => component.uuid === id
@@ -42,9 +42,9 @@ export class LinkBlock extends BaseElementBlock {
 
 
     override renderComponent() {
-        const url = this.inputHandlersValue?.url ?? '#';
-        const target = this.inputHandlersValue?.target ?? '_self';
-        const label = this.inputHandlersValue?.label ?? this.inputHandlersValue?.placeholder ?? '';
+        const url = this.resolvedInputs?.url ?? '#';
+        const target = this.resolvedInputs?.target ?? '_self';
+        const label = this.resolvedInputs?.label ?? this.resolvedInputs?.placeholder ?? '';
 
         return html`
       <a
