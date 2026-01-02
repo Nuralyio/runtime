@@ -75,7 +75,7 @@ export class ComponentRepository implements IComponentRepository {
         const parentComponents = await prisma.components.findMany({
           where: {
             component: {
-              path: ["childrenIds"],
+              path: ["children_ids"],
               array_contains: { hasSome: uniqueUuids },
             },
           },
@@ -83,7 +83,7 @@ export class ComponentRepository implements IComponentRepository {
       
         for (const parent of parentComponents) {
           const updatedComponent = { ...(parent.component as any) };
-          updatedComponent.childrenIds = updatedComponent.childrenIds.filter(
+          updatedComponent.children_ids = updatedComponent.children_ids.filter(
             (id: string) => !uniqueUuids.includes(id)
           );
       
@@ -139,7 +139,7 @@ export class ComponentRepository implements IComponentRepository {
 async function getChildComponentsRecursive(parentUuids: string[], allChildren: string[] = []): Promise<string[]> {
     if (parentUuids.length === 0) return allChildren;
 
-    // Récupérer les composants avec les 'childrenIds' qui correspondent aux UUIDs des parents
+    // Récupérer les composants avec les 'children_ids' qui correspondent aux UUIDs des parents
     const components = await prisma.components.findMany({
         where: {
             uuid: {
@@ -152,8 +152,8 @@ async function getChildComponentsRecursive(parentUuids: string[], allChildren: s
         },
     });
 
-    // Extraire les enfants (childrenIds) de chaque composant
-    const childUuids = components.flatMap(component => (component.component as any)?.childrenIds || []);
+    // Extraire les enfants (children_ids) de chaque composant
+    const childUuids = components.flatMap(component => (component.component as any)?.children_ids || []);
     console.log("Parents traités:", parentUuids, "Enfants trouvés:", childUuids);
 
     // Ajouter les enfants à la liste finale de tous les enfants

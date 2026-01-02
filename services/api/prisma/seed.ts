@@ -210,7 +210,7 @@ async function main() {
         values: { value: 'Text label' },
         applicationId: '52eb1876-d5ac-48fd-a2c4-658fecb36e22',
         application_id: '52eb1876-d5ac-48fd-a2c4-658fecb36e22',
-        component_type: 'text_label',
+        type: 'text_label',
       },
     },
   ];
