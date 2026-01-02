@@ -139,7 +139,6 @@ export class PreviewEditorPanel extends LitElement {
           style=${styleMap({
             margin: "0 auto",
             width: this.currentPageViewPort,
-            scale: this.zoomLevel / 100,
           })}
         >
           <slot></slot>

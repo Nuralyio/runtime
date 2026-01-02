@@ -114,6 +114,7 @@ export class PreviewIFramePanel extends LitElement {
   @state() private isLoading = true;
   @state() private iframeReady = false;
   @state() private currentPlatform: { platform: string; width: string; height?: string } = Editor.currentPlatform;
+  @state() private zoomLevel: number = 100;
 
   // Track current page to avoid sending duplicate SET_PAGE messages
   private currentPageId: string = '';
@@ -130,11 +131,21 @@ export class PreviewIFramePanel extends LitElement {
     this.setupModeListener();
     this.setupPageChangeListener();
     this.setupPlatformListener();
+    this.setupZoomListener();
   }
 
   private setupPlatformListener() {
     eventDispatcher.on('Vars:currentPlatform', () => {
       this.currentPlatform = Editor.currentPlatform;
+    });
+  }
+
+  private setupZoomListener() {
+    eventDispatcher.on('Vars:EditorZoom', () => {
+      const zoom = ExecuteInstance.Vars.EditorZoom;
+      if (zoom !== undefined) {
+        this.zoomLevel = Number(zoom) || 100;
+      }
     });
   }
 
@@ -392,6 +403,7 @@ export class PreviewIFramePanel extends LitElement {
     const platform = this.currentPlatform?.platform || 'desktop';
     const iframeWidth = this.currentPlatform?.width || '100%';
     const iframeHeight = this.currentPlatform?.height || '100%';
+    const scale = this.zoomLevel / 100;
 
     return html`
       <div class="iframe-container">
@@ -400,7 +412,15 @@ export class PreviewIFramePanel extends LitElement {
             <div class="loading-spinner"></div>
           </div>
         ` : ''}
-        <div class="iframe-wrapper ${platform}" style="width: ${iframeWidth}; height: ${iframeHeight};">
+        <div
+          class="iframe-wrapper ${platform}"
+          style="
+            width: ${iframeWidth};
+            height: ${iframeHeight};
+            transform: scale(${scale});
+            transform-origin: top center;
+          "
+        >
           <iframe
             src=${previewUrl}
             @load=${this.handleIframeLoad}
