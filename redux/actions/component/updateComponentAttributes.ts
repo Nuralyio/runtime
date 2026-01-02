@@ -180,10 +180,14 @@ export function updateComponentAttributes(
       }
 
       // Update selected components if needed
-      const selectedComponents = ExecuteInstance.VarsProxy.selectedComponents;
-      const index = selectedComponents.findIndex((c: ComponentElement) => c.uuid === componentToUpdate.uuid);
-      if (index !== -1) {
-          ExecuteInstance.VarsProxy.selectedComponents[index] = componentToUpdate;
+      // Use Vars directly instead of VarsProxy to avoid triggering change events
+      // This prevents the editor from closing when editing handler code
+      const selectedComponents = ExecuteInstance.Vars.selectedComponents;
+      if (selectedComponents) {
+        const index = selectedComponents.findIndex((c: ComponentElement) => c.uuid === componentToUpdate.uuid);
+        if (index !== -1) {
+          selectedComponents[index] = componentToUpdate;
+        }
       }
 
       // Trigger a refresh event for any listeners - ONLY when actual update occurred
