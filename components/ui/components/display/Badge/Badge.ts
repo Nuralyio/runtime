@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/badge
-try {
-  await import("@nuralyui/badge");
-} catch (error) {
-  console.warn('[@nuralyui/badge] Package not found or failed to load.');
-}
-
+import "@nuralyui/badge";
 
 @customElement("badge-block")
 export class BadgeBlock extends BaseElementBlock {

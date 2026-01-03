@@ -2,13 +2,7 @@ import type { ComponentElement } from '../../../../../redux/store/component/comp
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-// Safely import @nuralyui/menu
-try {
-  await import("@nuralyui/menu");
-} catch (error) {
-  console.warn('[@nuralyui/menu] Package not found or failed to load. Menu functionality may be limited.');
-}
-
+import "@nuralyui/menu";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 

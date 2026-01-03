@@ -5,12 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/video
-try {
-  await import("@nuralyui/video");
-} catch (error) {
-  console.warn('[@nuralyui/video] Package not found or failed to load.');
-}
+import "@nuralyui/video";
 
 @customElement("video-block")
 export class VideoBlock extends BaseElementBlock {
