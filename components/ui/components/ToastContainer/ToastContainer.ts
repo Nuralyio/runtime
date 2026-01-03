@@ -1,13 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-// Safely import @nuralyui/toast
-try {
-  await import('@nuralyui/toast');
-} catch (error) {
-  console.warn('[@nuralyui/toast] Package not found or failed to load. Toast functionality may be limited.');
-}
-
+import '@nuralyui/toast';
 import { $toasts, type Toast } from '../../../../redux/store/toast';
 import { hideToast } from '../../../../utils/toast';
 

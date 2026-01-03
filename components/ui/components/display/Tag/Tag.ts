@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/tag
-try {
-  await import("@nuralyui/tag");
-} catch (error) {
-  console.warn('[@nuralyui/tag] Package not found or failed to load.');
-}
-
+import "@nuralyui/tag";
 
 @customElement("tag-block")
 export class TagBlock extends BaseElementBlock {

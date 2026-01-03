@@ -5,14 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/button
-try {
-  await import("@nuralyui/button");
-} catch (error) {
-  console.warn('[@nuralyui/button] Package not found or failed to load. Button functionality may be limited.');
-}
-
-
+import "@nuralyui/button";
 
 @customElement("button-block")
 export class ButtonBlock extends BaseElementBlock {

@@ -5,14 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/input
-try {
-  await import("@nuralyui/input");
-} catch (error) {
-  console.warn('[@nuralyui/input] Package not found or failed to load.');
-}
-
-
+import "@nuralyui/input";
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {

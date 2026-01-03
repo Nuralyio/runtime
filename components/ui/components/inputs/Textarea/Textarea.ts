@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/textarea
-try {
-  await import("@nuralyui/textarea");
-} catch (error) {
-  console.warn('[@nuralyui/textarea] Package not found or failed to load.');
-}
-
+import "@nuralyui/textarea";
 
 @customElement("textarea-block")
 export class TextareaBlock extends BaseElementBlock {

@@ -3,13 +3,7 @@ import { customElement } from "lit/decorators.js";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/checkbox
-try {
-  await import("@nuralyui/checkbox");
-} catch (error) {
-  console.warn('[@nuralyui/checkbox] Package not found or failed to load.');
-}
-
+import "@nuralyui/checkbox";
 
 @customElement("checkbox-block")
 export class CheckboxBlock extends BaseElementBlock {

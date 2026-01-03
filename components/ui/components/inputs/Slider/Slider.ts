@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/slider-input
-try {
-  await import("@nuralyui/slider-input");
-} catch (error) {
-  console.warn('[@nuralyui/slider-input] Package not found or failed to load.');
-}
-
+import "@nuralyui/slider-input";
 
 @customElement("slider-block")
 export class SliderBlock extends BaseElementBlock {

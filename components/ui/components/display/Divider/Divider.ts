@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/divider
-try {
-  await import("@nuralyui/divider");
-} catch (error) {
-  console.warn('[@nuralyui/divider] Package not found or failed to load.');
-}
-
+import "@nuralyui/divider";
 
 @customElement("divider-block")
 export class DividerBlock extends BaseElementBlock {

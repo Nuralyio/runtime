@@ -5,12 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/image
-try {
-  await import("@nuralyui/image");
-} catch (error) {
-  console.warn('[@nuralyui/image] Package not found or failed to load.');
-}
+import "@nuralyui/image";
 
 @customElement("image-block")
 export class ImageBlock extends BaseElementBlock {

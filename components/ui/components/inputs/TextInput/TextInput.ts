@@ -5,13 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 import { registerWithParentForm, unregisterFromParentForm } from "../../base/FormRegisterable.ts";
 
-// Safely import @nuralyui/input
-try {
-  await import("@nuralyui/input");
-} catch (error) {
-  console.warn('[@nuralyui/input] Package not found or failed to load.');
-}
-
+import "@nuralyui/input";
 
 @customElement("text-input-block")
 export class TextInputBlock extends BaseElementBlock {

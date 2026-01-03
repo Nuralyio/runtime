@@ -3,13 +3,7 @@
 import { html, nothing, type PropertyValues } from "lit";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 
-// Safely import @nuralyui/collapse
-try {
-  await import("@nuralyui/collapse");
-} catch (error) {
-  console.warn('[@nuralyui/collapse] Package not found or failed to load. Collapse functionality may be limited.');
-}
-
+import "@nuralyui/collapse";
 import { customElement, state } from "lit/decorators.js";
 import { renderComponent } from '../../../../../utils/render-util';
 import type { ComponentElement } from '../../../../../redux/store/component/component.interface.ts';

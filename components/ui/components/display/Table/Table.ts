@@ -5,15 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/table
-try {
-  await import("@nuralyui/table");
-} catch (error) {
-  console.warn('[@nuralyui/table] Package not found or failed to load.');
-}
-
-
-
+import "@nuralyui/table";
 
 @customElement("table-block")
 export class TextInputBlock extends BaseElementBlock {

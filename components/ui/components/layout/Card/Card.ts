@@ -11,12 +11,7 @@ import { setCurrentComponentIdAction } from '../../../../../redux/actions/compon
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 import { RuntimeHelpers } from '../../../../../utils/runtime-helpers.ts';
 
-try {
-  await import("@nuralyui/card");
-} catch (error) {
-  console.warn('[@nuralyui/card] Package not found or failed to load.');
-}
-
+import "@nuralyui/card";
 
 @customElement("card-block")
 export class CardBlock extends BaseElementBlock {

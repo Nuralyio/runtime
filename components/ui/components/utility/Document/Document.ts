@@ -5,12 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/document
-try {
-  await import("@nuralyui/document");
-} catch (error) {
-  console.warn('[@nuralyui/document] Package not found or failed to load.');
-}
+import "@nuralyui/document";
 
 @customElement("document-block")
 export class DocumentBlock extends BaseElementBlock {
