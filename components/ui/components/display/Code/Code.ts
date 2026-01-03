@@ -30,7 +30,10 @@ export class TextInputBlock extends BaseElementBlock {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.loadEditor();
+    // Only load editor on client side
+    if (typeof window !== 'undefined') {
+      this.loadEditor();
+    }
   }
 
   private async loadEditor() {
@@ -69,49 +72,49 @@ export class TextInputBlock extends BaseElementBlock {
   }
 
   renderComponent() {
+    if (!this.isEditorLoaded) {
+      return html`<div style="padding: 10px; color: #888;">Loading editor...</div>`;
+    }
+
     return html`
-      ${this.isEditorLoaded
-        ? html`
-            <code-editor
-              ${ref(this.inputRef)}
-              style=${styleMap({
-                ...this.getStyles(),
-                display: "block"
-              })}
-              language="${this.resolvedInputs?.language ?? "javascript"}"
-              theme="${this.resolvedInputs?.theme ?? "vs-dark"}"
-              .readonly=${this.resolvedInputs?.readonly ?? this.isViewMode === true}
-              .code=${this.resolvedInputs?.value ?? ""}
-              @click=${(e: MouseEvent) => {
-                this.executeEvent("onClick", e);
-              }}
-              @change=${(event: CustomEvent) => {
-                this.handleCodeEditorChange(event);
-              }}
-              @editor-keydown=${(event: CustomEvent) => {
-                this.executeEvent("onKeyDown", event, {
-                  key: event.detail.key,
-                  code: event.detail.code,
-                  ctrlKey: event.detail.ctrlKey,
-                  shiftKey: event.detail.shiftKey,
-                  altKey: event.detail.altKey,
-                  metaKey: event.detail.metaKey
-                });
-              }}
-              @editor-keyup=${(event: CustomEvent) => {
-                this.executeEvent("onKeyUp", event, {
-                  key: event.detail.key,
-                  code: event.detail.code,
-                  ctrlKey: event.detail.ctrlKey,
-                  shiftKey: event.detail.shiftKey,
-                  altKey: event.detail.altKey,
-                  metaKey: event.detail.metaKey
-                });
-              }}
-            >
-            </code-editor>
-          `
-        : html`<p>Loading editor...</p>`}
+      <code-editor
+        ${ref(this.inputRef)}
+        style=${styleMap({
+          ...this.getStyles(),
+          display: "block"
+        })}
+        language="${this.resolvedInputs?.language ?? "javascript"}"
+        theme="${this.resolvedInputs?.theme ?? "vs-dark"}"
+        .readonly=${this.resolvedInputs?.readonly ?? this.isViewMode === true}
+        .code=${this.resolvedInputs?.value ?? ""}
+        @click=${(e: MouseEvent) => {
+          this.executeEvent("onClick", e);
+        }}
+        @change=${(event: CustomEvent) => {
+          this.handleCodeEditorChange(event);
+        }}
+        @editor-keydown=${(event: CustomEvent) => {
+          this.executeEvent("onKeyDown", event, {
+            key: event.detail.key,
+            code: event.detail.code,
+            ctrlKey: event.detail.ctrlKey,
+            shiftKey: event.detail.shiftKey,
+            altKey: event.detail.altKey,
+            metaKey: event.detail.metaKey
+          });
+        }}
+        @editor-keyup=${(event: CustomEvent) => {
+          this.executeEvent("onKeyUp", event, {
+            key: event.detail.key,
+            code: event.detail.code,
+            ctrlKey: event.detail.ctrlKey,
+            shiftKey: event.detail.shiftKey,
+            altKey: event.detail.altKey,
+            metaKey: event.detail.metaKey
+          });
+        }}
+      >
+      </code-editor>
     `;
   }
 }

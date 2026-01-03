@@ -4,13 +4,7 @@ import { BaseElementBlock } from '../../base/BaseElement';
 import { ref } from "lit/directives/ref.js";
 import { styleMap } from "lit/directives/style-map.js";
 
-// Safely import @nuralyui/file-upload
-try {
-  await import("@nuralyui/file-upload");
-} catch (error) {
-  console.warn('[@nuralyui/file-upload] Package not found or failed to load.');
-}
-
+import "@nuralyui/file-upload";
 
 @customElement("file-upload-block")
 export class FileUploadBlock extends BaseElementBlock {

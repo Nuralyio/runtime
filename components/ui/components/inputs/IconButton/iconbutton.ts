@@ -7,13 +7,7 @@ import { executeHandler } from '../../../../../state/runtime-context.ts';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/button
-try {
-  await import("@nuralyui/button");
-} catch (error) {
-  console.warn('[@nuralyui/button] Package not found or failed to load.');
-}
-
+import "@nuralyui/button";
 
 @customElement("icon-button-block")
 export class IconButtonBlock extends BaseElementBlock {

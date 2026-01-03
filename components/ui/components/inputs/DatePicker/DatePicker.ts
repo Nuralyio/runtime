@@ -3,13 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
-// Safely import @nuralyui/datepicker
-try {
-  await import("@nuralyui/datepicker");
-} catch (error) {
-  console.warn('[@nuralyui/datepicker] Package not found or failed to load.');
-}
-
+import "@nuralyui/datepicker";
 
 @customElement("date-picker-block")
 export class DatepickertBlock extends BaseElementBlock {
