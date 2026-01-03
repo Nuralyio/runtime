@@ -70,11 +70,18 @@ local opts = {
 
 
 local function authenticateWithKeycloakPass(customRedirectUri)
+    -- Trust existing X-USER header from internal services (e.g., Studio SSR)
+    local existing_x_user = ngx.var.http_x_user
+    if existing_x_user and existing_x_user ~= "" then
+        ngx.log(ngx.INFO, "Trusting existing X-USER header from internal service")
+        return
+    end
+
     ngx.log(ngx.INFO, "host: " .. tostring(host) )
     ngx.log(ngx.INFO, "scheme: " .. tostring(scheme) )
     ngx.log(ngx.INFO, "request_uri: " .. ngx.var.request_uri)
     local redirectUriToUse = ""
-    if customRedirectUri then 
+    if customRedirectUri then
         redirectUriToUse = scheme .. "://"..host.."/cb"
     else
         redirectUriToUse = opts.redirect_uri
@@ -92,7 +99,7 @@ local function authenticateWithKeycloakPass(customRedirectUri)
     }
 
     local res, err = require("resty.openidc").authenticate(optsWithCustomRedirect, nil, "pass")
-    
+
     if err then
         if string.find(err, "no  state found") then
             ngx.redirect(redirectUriToUse)
