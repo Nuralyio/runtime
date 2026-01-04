@@ -106,12 +106,17 @@ public class ContainerManager {
 
             System.out.println("Docker image built successfully: " + imageId);
 
-            // Call the push method and check if it was successful
-            boolean isPushSuccessful = pushDockerImage(imageName);
-            if (isPushSuccessful) {
-                System.out.println("Docker image pushed successfully: " + imageName);
+            // Skip push if configured (for local minikube development)
+            if (configuration.SkipRegistryPush) {
+                System.out.println("Skipping registry push (using local minikube Docker daemon)");
             } else {
-                System.out.println("Docker image push failed: " + imageName);
+                // Call the push method and check if it was successful
+                boolean isPushSuccessful = pushDockerImage(imageName);
+                if (isPushSuccessful) {
+                    System.out.println("Docker image pushed successfully: " + imageName);
+                } else {
+                    System.out.println("Docker image push failed: " + imageName);
+                }
             }
 
             return imageId;
@@ -142,8 +147,8 @@ public class ContainerManager {
     public boolean pushDockerImage(String imageName) throws ImagePublishError {
         try {
             this.authConfig = new AuthConfig()
-                    .withUsername(configuration.RegistryUsername)
-                    .withPassword(configuration.RegistryPassword)
+                    .withUsername(configuration.RegistryUsername.orElse(""))
+                    .withPassword(configuration.RegistryPassword.orElse(""))
                     .withRegistryAddress(configuration.RegistryURL);
 
             // Push the Docker image to the registry and wait for the push to finish
