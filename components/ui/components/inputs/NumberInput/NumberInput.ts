@@ -5,14 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/input
-try {
-  await import("@nuralyui/input");
-} catch (error) {
-  console.warn('[@nuralyui/input] Package not found or failed to load.');
-}
-
-
+import "@nuralyui/input";
 
 @customElement("number-input-block")
 export class NumberInputBlock extends BaseElementBlock {
@@ -41,23 +34,23 @@ export class NumberInputBlock extends BaseElementBlock {
             "--nuraly-input-local-border-bottom-left-radius": inputStyles?.["border-bottom-left-radius"] ?? "",
             "--nuraly-input-local-border-bottom-right-radius": inputStyles?.["border-bottom-right-radius"] ?? "",
           })}
-          .value=${this.inputHandlersValue?.value ?? nothing}
+          .value=${this.resolvedInputs?.value ?? nothing}
           .size=${size}
-          .state=${this.inputHandlersValue?.status ?? nothing}
+          .state=${this.resolvedInputs?.status ?? nothing}
           .type=${"number"}
-          .variant=${this.inputHandlersValue?.variant ?? nothing}
-          .disabled=${this.inputHandlersValue?.state === "disabled"}
-          .readonly=${this.inputHandlersValue?.readonly || false}
-          .placeholder=${this.inputHandlersValue?.placeholder ?? "Number input"}
-          .step=${this.inputHandlersValue?.step ?? nothing}
-          .min=${this.inputHandlersValue?.min ?? "0"}
-          .max=${this.inputHandlersValue?.max ?? nothing}
-          .name=${this.inputHandlersValue?.name ?? nothing}
-          .required=${this.inputHandlersValue?.required || false}
-          .rules=${this.inputHandlersValue?.rules ?? []}
-          .validateOnChangeInput=${this.inputHandlersValue?.validateOnChange !== false}
-          .validateOnBlurInput=${this.inputHandlersValue?.validateOnBlur !== false}
-          .hasFeedback=${this.inputHandlersValue?.hasFeedback || false}
+          .variant=${this.resolvedInputs?.variant ?? nothing}
+          .disabled=${this.resolvedInputs?.state === "disabled"}
+          .readonly=${this.resolvedInputs?.readonly || false}
+          .placeholder=${this.resolvedInputs?.placeholder ?? "Number input"}
+          .step=${this.resolvedInputs?.step ?? nothing}
+          .min=${this.resolvedInputs?.min ?? "0"}
+          .max=${this.resolvedInputs?.max ?? nothing}
+          .name=${this.resolvedInputs?.name ?? nothing}
+          .required=${this.resolvedInputs?.required || false}
+          .rules=${this.resolvedInputs?.rules ?? []}
+          .validateOnChangeInput=${this.resolvedInputs?.validateOnChange !== false}
+          .validateOnBlurInput=${this.resolvedInputs?.validateOnBlur !== false}
+          .hasFeedback=${this.resolvedInputs?.hasFeedback || false}
           @nr-input=${(e) => {
             this.executeEvent('onChange', e, {
               value: e.detail.value,
@@ -75,10 +68,10 @@ export class NumberInputBlock extends BaseElementBlock {
           }}
         >
           <span slot="label">
-            ${this.inputHandlersValue?.label ?? ""}
+            ${this.resolvedInputs?.label ?? ""}
           </span>
           <span slot="helper-text">
-            ${this.inputHandlersValue?.helper ?? ""}
+            ${this.resolvedInputs?.helper ?? ""}
           </span>
         </nr-input>
       </span>

@@ -38,8 +38,8 @@ export class ParameterEventLabel extends BaseElementBlock {
     return html`
     <smart-attribute-handler
       .component=${{ ...this.component }}
-      .attributeName=${this.inputHandlersValue.value ? this.inputHandlersValue.value[0] : nothing}
-      .attributeValue=${this.inputHandlersValue.value ? this.inputHandlersValue.value[1] : nothing}
+      .attributeName=${this.resolvedInputs.value ? this.resolvedInputs.value[0] : nothing}
+      .attributeValue=${this.resolvedInputs.value ? this.resolvedInputs.value[1] : nothing}
       .attributeScope=${"event"}
       .handlerScope=${"event"}
       @code-change=${this.handleCodeChange}
@@ -67,14 +67,14 @@ export class ParameterEventLabel extends BaseElementBlock {
           "--nuraly-button-padding-small" : "0px",
           "--nuraly-button-min-width": "30px"
         })}
-        iconPosition=${!this.inputHandlersValue?.triggerText ? "left" : "right"}
-         >${this.inputHandlersValue?.triggerText ?? ""}</nr-button>
+        iconPosition=${!this.resolvedInputs?.triggerText ? "left" : "right"}
+         >${this.resolvedInputs?.triggerText ?? ""}</nr-button>
 
         <div slot="content" >
           ${this.isDropdownOpen ? this.renderCodeEditorTemplate() : nothing}
         </div>
 
-      <nr-tooltip position=${this.inputHandlersValue?.triggerText ? "left" : "right"} alignement=${"start"}>
+      <nr-tooltip position=${this.resolvedInputs?.triggerText ? "left" : "right"} alignement=${"start"}>
         Set the value programmatically using Javascript script
       </nr-tooltip>
     </nr-dropdown>

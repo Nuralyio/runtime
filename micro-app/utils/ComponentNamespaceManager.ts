@@ -28,7 +28,7 @@ export class ComponentNamespaceManager {
       // Keep UUID unchanged as it's already unique
       uuid: component.uuid,
       // Namespace children IDs if present
-      childrenIds: component.childrenIds?.map(id => id) // UUIDs don't need namespacing
+      children_ids: component.children_ids?.map(id => id) // UUIDs don't need namespacing
     }
   }
 

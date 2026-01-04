@@ -77,7 +77,7 @@ export class InputHandlerController implements ReactiveController, Disposable {
     this.subscription.add(
       eventDispatcher.on(`component:value:set:${uniqueUUID}`, () => {
         this.processInputs();
-        component.childrenIds?.forEach((childId) => {
+        component.children_ids?.forEach((childId) => {
           eventDispatcher.emit(`component:request:refresh:${childId}`);
         });
       })
@@ -87,7 +87,7 @@ export class InputHandlerController implements ReactiveController, Disposable {
     this.subscription.add(
       eventDispatcher.on(`component:request:refresh:${component.uuid}`, () => {
         this.processInputs();
-        component.childrenIds?.forEach((childId) => {
+        component.children_ids?.forEach((childId) => {
           eventDispatcher.emit(`component:request:refresh:${childId}`);
         });
       })
@@ -98,7 +98,7 @@ export class InputHandlerController implements ReactiveController, Disposable {
       eventDispatcher.on(`component-property-changed:${String(component.name)}`, () => {
         this.processInputs();
         this.styleController?.processStyles();
-        component.childrenIds?.forEach((childId) => {
+        component.children_ids?.forEach((childId) => {
           eventDispatcher.emit(`component:request:refresh:${childId}`);
         });
       })
@@ -147,14 +147,33 @@ export class InputHandlerController implements ReactiveController, Disposable {
     this.host.errors = {};
 
     const inputs = Editor.getComponentBreakpointInputs(this.host.component);
-    if (!inputs) return;
 
-    // Process all inputs in parallel - same as original
-    await Promise.all(
-      Object.keys(inputs).map((name) =>
-        traitInputHandler(this.host, inputs[name], name)
-      )
-    );
+    // Process all defined inputs in parallel - same as original
+    if (inputs) {
+      await Promise.all(
+        Object.keys(inputs).map((name) =>
+          traitInputHandler(this.host, inputs[name], name)
+        )
+      );
+    }
+
+    // Apply Instance values directly to resolvedInputs
+    // This handles runtime values set via Component.value even when no input is defined
+    const instance = this.host.component?.Instance;
+    if (instance) {
+      // Get all Instance keys and apply them to resolvedInputs
+      const instanceKeys = Object.keys(instance);
+      for (const key of instanceKeys) {
+        const value = instance[key];
+        if (value !== undefined && this.host.resolvedInputs[key] !== value) {
+          this.host.resolvedInputs[key] = value;
+        }
+      }
+    }
+
+    // Trigger re-render since resolvedInputs is mutated, not replaced
+    // Lit's @state() only detects reference changes, so we need explicit update
+    this.host.requestUpdate();
 
     // Log debug info
     addlogDebug({

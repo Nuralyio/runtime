@@ -49,7 +49,7 @@ export class BaseElementCore extends LitElement {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /** Computed values from input handlers */
-  @state() inputHandlersValue: Record<string, any> = {};
+  @state() resolvedInputs: Record<string, any> = {};
 
   /** Computed values from style handlers */
   @state() stylesHandlersValue: Record<string, any> = {};
@@ -171,6 +171,35 @@ export class BaseElementCore extends LitElement {
     if (this.component) {
       this.component.uniqueUUID = this.uniqueUUID;
       this.component.parent = this.parentcomponent;
+      this.syncToAppsRegistry();
+    }
+  }
+
+  /**
+   * Syncs the component's uniqueUUID to the Apps registry and attaches Instance.
+   * This is needed because the Apps registry is populated before DOM elements are created,
+   * so uniqueUUID isn't available at that time.
+   */
+  private syncToAppsRegistry(): void {
+    if (!this.component?.name || !this.uniqueUUID) return;
+
+    // Attach Instance to this.component (the one used by traitInputHandler)
+    this.ExecuteInstance.attachValuesProperty(this.component);
+
+    // Also sync to the Apps registry for cross-component access (e.g., text_label_8136.value = "aa")
+    const Apps = this.ExecuteInstance.Apps;
+    for (const appName in Apps) {
+      const appComponents = Apps[appName];
+      if (appComponents?.[this.component.name]) {
+        const registeredComponent = appComponents[this.component.name];
+        // Only update if it's the same component (by uuid)
+        if (registeredComponent.uuid === this.component.uuid) {
+          registeredComponent.uniqueUUID = this.uniqueUUID;
+          // Share the same Instance proxy between both component references
+          registeredComponent.Instance = this.component.Instance;
+        }
+        break;
+      }
     }
   }
 
@@ -259,7 +288,7 @@ export class BaseElementCore extends LitElement {
    * Whether component should be displayed based on display input
    */
   protected get shouldDisplay(): boolean {
-    return this.inputHandlersValue?.display !== false;
+    return this.resolvedInputs?.display !== false;
   }
 
   /**
@@ -283,9 +312,9 @@ export class BaseElementCore extends LitElement {
 
     // Update component styles
     this.componentStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
+    const labelStyleHandlers = this.component?.style_handlers
       ? Object.fromEntries(
-          Object.entries(this.component.styleHandlers).filter(([_, value]) => value)
+          Object.entries(this.component.style_handlers).filter(([_, value]) => value)
         )
       : {};
     this.componentStyles = { ...this.componentStyles, ...labelStyleHandlers };
@@ -310,9 +339,9 @@ export class BaseElementBlock extends EditorModeMixin(BaseElementCore) {
 
     // Update component styles
     this.componentStyles = this.calculatedStyles || {};
-    const labelStyleHandlers = this.component?.styleHandlers
+    const labelStyleHandlers = this.component?.style_handlers
       ? Object.fromEntries(
-          Object.entries(this.component.styleHandlers).filter(([_, value]) => value)
+          Object.entries(this.component.style_handlers).filter(([_, value]) => value)
         )
       : {};
     this.componentStyles = { ...this.componentStyles, ...labelStyleHandlers };

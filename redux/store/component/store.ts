@@ -237,14 +237,14 @@ export const getAllChildrenRecursive = ($application_id: string, componentId?: s
     
     // Helper function to recursively collect descendants
     const collectDescendants = (component: ComponentElement): ComponentElement[] => {
-      if (!component.childrenIds || component.childrenIds.length === 0) {
+      if (!component.children_ids || component.children_ids.length === 0) {
         return [];
       }
       
       const children: ComponentElement[] = [];
       
       // Get all direct children
-      for (const childId of component.childrenIds) {
+      for (const childId of component.children_ids) {
         const childComponent = componentMap.get(childId);
         if (childComponent) {
           children.push(childComponent);
@@ -288,13 +288,13 @@ export const getDirectChildren = ($application_id: string, componentId: string) 
   (components: ComponentElement[]) => {
     // Find the parent component
     const parentComponent = components.find(component => component.uuid === componentId);
-    if (!parentComponent || !parentComponent.childrenIds) {
+    if (!parentComponent || !parentComponent.children_ids) {
       return [];
     }
     
-    // Return all components that match the childrenIds
+    // Return all components that match the children_ids
     return components.filter(component => 
-      parentComponent.childrenIds.includes(component.uuid)
+      parentComponent.children_ids.includes(component.uuid)
     );
   }
 );

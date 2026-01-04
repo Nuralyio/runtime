@@ -9,7 +9,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 import "@nuralyui/container";
-@customElement("vertical-container-block")
+@customElement("container-block")
 export class VerticalContainer extends BaseElementBlock {
   static styles = styles;
 
@@ -39,7 +39,7 @@ export class VerticalContainer extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }) ?? [];
   }
@@ -48,8 +48,8 @@ export class VerticalContainer extends BaseElementBlock {
    * Get container layout type based on input
    */
   private getLayout(): 'fluid' | 'boxed' | 'fixed' {
-    if (this.inputHandlersValue.layout === "boxed") return "boxed";
-    if (this.inputHandlersValue.layout === "fixed") return "fixed";
+    if (this.resolvedInputs.layout === "boxed") return "boxed";
+    if (this.resolvedInputs.layout === "fixed") return "fixed";
     return "fluid";
   }
 
@@ -58,8 +58,8 @@ export class VerticalContainer extends BaseElementBlock {
    */
   private getDirection(): 'row' | 'column' {
     // Check input direction first
-    if (this.inputHandlersValue.direction === "horizontal") return "row";
-    if (this.inputHandlersValue.direction === "vertical") return "column";
+    if (this.resolvedInputs.direction === "horizontal") return "row";
+    if (this.resolvedInputs.direction === "vertical") return "column";
     // Fallback: if display:flex is set in styles, default to row (browser default)
     const styles = this.component?.style || {};
     if (styles['display'] === 'flex' && !styles['flex-direction']) return "row";
@@ -72,7 +72,7 @@ export class VerticalContainer extends BaseElementBlock {
    * Get justify content value from input handlers
    */
   private getJustify(): '' | 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'space-evenly' {
-    const value = this.inputHandlersValue.justify;
+    const value = this.resolvedInputs.justify;
     if (value === 'flex-start' || value === 'flex-end' || value === 'center' ||
         value === 'space-between' || value === 'space-around' || value === 'space-evenly') {
       return value;
@@ -84,7 +84,7 @@ export class VerticalContainer extends BaseElementBlock {
    * Get align items value from input handlers
    */
   private getAlign(): '' | 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch' {
-    const value = this.inputHandlersValue.align;
+    const value = this.resolvedInputs.align;
     if (value === 'flex-start' || value === 'flex-end' || value === 'center' ||
         value === 'baseline' || value === 'stretch') {
       return value;
@@ -96,7 +96,7 @@ export class VerticalContainer extends BaseElementBlock {
    * Get gap value from input handlers
    */
   private getGap(): number | string {
-    return this.inputHandlersValue.gap || 0;
+    return this.resolvedInputs.gap || 0;
   }
 
   renderView() {
@@ -104,7 +104,7 @@ export class VerticalContainer extends BaseElementBlock {
 
     return html`
       <nr-container
-        id=${this.inputHandlersValue.id ?? nothing}
+        id=${this.resolvedInputs.id ?? nothing}
         ${ref(this.inputRef)}
         data-component-uuid=${this.component?.uuid}
         data-component-name=${this.component?.name}
@@ -113,7 +113,7 @@ export class VerticalContainer extends BaseElementBlock {
         justify=${this.getJustify()}
         align=${this.getAlign()}
         .gap=${this.getGap()}
-        ?wrap=${this.inputHandlersValue.wrap}
+        ?wrap=${this.resolvedInputs.wrap}
         width=${componentStyles.width || ''}
         height=${componentStyles.height || ''}
         min-height=${this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px'}
@@ -150,7 +150,7 @@ export class VerticalContainer extends BaseElementBlock {
               justify=${this.getJustify()}
               align=${this.getAlign()}
               .gap=${this.getGap()}
-              ?wrap=${this.inputHandlersValue.wrap}
+              ?wrap=${this.resolvedInputs.wrap}
               width=${componentStyles.width || ''}
               height=${componentStyles.height || ''}
               min-height=${this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px'}

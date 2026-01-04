@@ -59,12 +59,12 @@ export class CollectionViewer extends BaseElementBlock {
 
   private updateChildrenComponents(): void {
     const applicationComponents = $components.get()[this.component?.application_id];
-    if (!applicationComponents || !this.component?.childrenIds?.length) {
+    if (!applicationComponents || !this.component?.children_ids?.length) {
       this.childrenComponents = [];
       return;
     }
 
-    this.childrenComponents = this.component.childrenIds
+    this.childrenComponents = this.component.children_ids
       .map(id => applicationComponents.find(component => component.uuid === id))
       .filter(Boolean);
   }
@@ -94,8 +94,8 @@ export class CollectionViewer extends BaseElementBlock {
   }
 
   private getData() {
-    if (Array.isArray(this.inputHandlersValue.data)) {
-      return this.inputHandlersValue.data;
+    if (Array.isArray(this.resolvedInputs.data)) {
+      return this.resolvedInputs.data;
     }
     
     return this.component.input?.data ? [] : [
@@ -106,7 +106,7 @@ export class CollectionViewer extends BaseElementBlock {
   }
 
   override renderComponent() {
-    const isVertical = this.inputHandlersValue.direction?.value === "vertical";
+    const isVertical = this.resolvedInputs.direction?.value === "vertical";
     const data = this.getData();
 
     return html`

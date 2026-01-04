@@ -431,7 +431,7 @@ export class BoxModelDisplay extends BaseElementBlock {
   }
 
   override renderComponent() {
-    const handlers = this.inputHandlersValue?.value;
+    const handlers = this.resolvedInputs?.value;
 
     if (!handlers) {
       return html`

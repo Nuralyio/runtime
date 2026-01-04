@@ -18,19 +18,19 @@ export class RadioButtonBlock extends BaseElementBlock {
     const radioStyles = this.component?.style || {};
     
     // Extract values from the handler structure (object format)
-    const options = this.inputHandlersValue?.value?.options || [];
-    const defaultValue = this.inputHandlersValue?.value?.currentValue ?? '';
-    const type = this.inputHandlersValue?.value?.type || 'default';
+    const options = this.resolvedInputs?.value?.options || [];
+    const defaultValue = this.resolvedInputs?.value?.currentValue ?? '';
+    const type = this.resolvedInputs?.value?.type || 'default';
     
     // Get other properties
-    const direction = this.inputHandlersValue?.direction || 'vertical';
-    const position = this.inputHandlersValue?.position || 'left';
-    const size = this.inputHandlersValue?.size?.value || this.inputHandlersValue?.size || 'medium';
-    const disabled = this.inputHandlersValue?.state === 'disabled';
-    const required = this.inputHandlersValue?.required || false;
-    const name = this.inputHandlersValue?.name || 'radioGroup';
+    const direction = this.resolvedInputs?.direction || 'vertical';
+    const position = this.resolvedInputs?.position || 'left';
+    const size = this.resolvedInputs?.size?.value || this.resolvedInputs?.size || 'medium';
+    const disabled = this.resolvedInputs?.state === 'disabled';
+    const required = this.resolvedInputs?.required || false;
+    const name = this.resolvedInputs?.name || 'radioGroup';
     // Get autoWidth from the input handler structure
-    const autoWidth = this.inputHandlersValue?.autoWidth?.value || this.inputHandlersValue?.autoWidth || false;
+    const autoWidth = this.resolvedInputs?.autoWidth?.value || this.resolvedInputs?.autoWidth || false;
 
 
     return html`
@@ -57,7 +57,7 @@ export class RadioButtonBlock extends BaseElementBlock {
           }}
         >
           <span slot="helper-text" style="display: block; margin-top: 4px;">
-            ${this.inputHandlersValue?.helper ?? ""}
+            ${this.resolvedInputs?.helper ?? ""}
           </span>
         </nr-radio-group>
       </span>

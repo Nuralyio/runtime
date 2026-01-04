@@ -88,7 +88,7 @@ export class ExportImportBlock extends BaseElementBlock {
 
         let components = $componentsByUUIDs($currentApplication.get().uuid, Array.from(uuidSet)).get();
         components = components.map((component) => {
-          delete component.childrens;
+          delete component.children;
           return component;
         });
 

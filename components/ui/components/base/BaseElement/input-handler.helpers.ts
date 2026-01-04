@@ -12,7 +12,7 @@ export async function traitInputHandler(
   ctx: {
     component: any;
     item: any;
-    inputHandlersValue: Record<string, any>;
+    resolvedInputs: Record<string, any>;
     callbacks?: Record<string, (val: any) => void>;
     errors?: Record<string, any>;
     ExecuteInstance: any;
@@ -34,12 +34,20 @@ export async function traitInputHandler(
 
   const proxy = (ctx.ExecuteInstance.PropertiesProxy[ctx.component.name] ??= {});
   const setResult = (val: any) => {
-    if (ctx.inputHandlersValue[inputName] !== val) {
-      ctx.inputHandlersValue[inputName] = val;
+    if (ctx.resolvedInputs[inputName] !== val) {
+      ctx.resolvedInputs[inputName] = val;
       proxy[inputName] = val;
       ctx.callbacks?.[inputName]?.(val);
     }
   };
+
+  // CHECK INSTANCE VALUE FIRST - Instance always wins over input handlers
+  // This allows runtime values set via Component.value to take precedence
+  const instanceValue = ctx.component.Instance?.[inputName];
+  if (instanceValue !== undefined) {
+    setResult(instanceValue);
+    return;
+  }
 
   // Check inputHandlers first (prioritize dynamic handlers over static input)
   const inputHandler = ctx.component?.inputHandlers?.[inputName];

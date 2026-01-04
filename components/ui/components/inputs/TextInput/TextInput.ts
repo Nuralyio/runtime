@@ -5,13 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 import { registerWithParentForm, unregisterFromParentForm } from "../../base/FormRegisterable.ts";
 
-// Safely import @nuralyui/input
-try {
-  await import("@nuralyui/input");
-} catch (error) {
-  console.warn('[@nuralyui/input] Package not found or failed to load.');
-}
-
+import "@nuralyui/input";
 
 @customElement("text-input-block")
 export class TextInputBlock extends BaseElementBlock {
@@ -51,7 +45,7 @@ export class TextInputBlock extends BaseElementBlock {
     this._inputElement = this.renderRoot.querySelector("nr-input");
 
     // Register with parent form if this input has a name
-    if (this._inputElement && this.inputHandlersValue?.name) {
+    if (this._inputElement && this.resolvedInputs?.name) {
       registerWithParentForm(this, this._inputElement);
     }
   }
@@ -62,7 +56,7 @@ export class TextInputBlock extends BaseElementBlock {
     if (this._focusResetTimeout) clearTimeout(this._focusResetTimeout);
 
     // Unregister from parent form
-    if (this.inputHandlersValue?.name) {
+    if (this.resolvedInputs?.name) {
       unregisterFromParentForm(this);
     }
   }
@@ -86,29 +80,29 @@ export class TextInputBlock extends BaseElementBlock {
         ${ref(this.inputRef)}
      class="${`drop-${this.component.uuid}`}"
          
-          .value=${this.inputHandlersValue?.value ?? nothing}
-          .size=${this.inputHandlersValue?.size ?? "medium"}
-          .state=${this.inputHandlersValue.status ?? nothing}
-          .type=${this.inputHandlersValue.type ?? nothing}
-          .variant=${this.inputHandlersValue.variant ?? nothing}
-          .disabled=${this.inputHandlersValue.state === "disabled"}
-          .readonly=${this.inputHandlersValue.readonly || false}
-          .placeholder=${this.inputHandlersValue?.placeholder ?? "Text input"}
-          .step=${this.inputHandlersValue?.step ?? nothing}
-          .min=${this.inputHandlersValue?.min ?? nothing}
-          .max=${this.inputHandlersValue?.max ?? nothing}
-          .name=${this.inputHandlersValue?.name ?? nothing}
-          .required=${this.inputHandlersValue?.required || false}
-          .withCopy=${this.inputHandlersValue?.withCopy || false}
-          .allowClear=${this.inputHandlersValue?.allowClear || false}
-          .showCount=${this.inputHandlersValue?.showCount || false}
-          .maxLength=${this.inputHandlersValue?.maxLength ?? nothing}
-          .rules=${this.inputHandlersValue?.rules ?? []}
-          .validateOnChangeInput=${this.inputHandlersValue?.validateOnChange !== false}
-          .validateOnBlurInput=${this.inputHandlersValue?.validateOnBlur !== false}
-          .hasFeedback=${this.inputHandlersValue?.hasFeedback || false}
-          .autocomplete=${this.inputHandlersValue?.autocomplete ?? 'off'}
-          .debounce=${this.inputHandlersValue?.debounce ?? 0}
+          .value=${this.resolvedInputs?.value ?? nothing}
+          .size=${this.resolvedInputs?.size ?? "medium"}
+          .state=${this.resolvedInputs.status ?? nothing}
+          .type=${this.resolvedInputs.type ?? nothing}
+          .variant=${this.resolvedInputs.variant ?? nothing}
+          .disabled=${this.resolvedInputs.state === "disabled"}
+          .readonly=${this.resolvedInputs.readonly || false}
+          .placeholder=${this.resolvedInputs?.placeholder ?? "Text input"}
+          .step=${this.resolvedInputs?.step ?? nothing}
+          .min=${this.resolvedInputs?.min ?? nothing}
+          .max=${this.resolvedInputs?.max ?? nothing}
+          .name=${this.resolvedInputs?.name ?? nothing}
+          .required=${this.resolvedInputs?.required || false}
+          .withCopy=${this.resolvedInputs?.withCopy || false}
+          .allowClear=${this.resolvedInputs?.allowClear || false}
+          .showCount=${this.resolvedInputs?.showCount || false}
+          .maxLength=${this.resolvedInputs?.maxLength ?? nothing}
+          .rules=${this.resolvedInputs?.rules ?? []}
+          .validateOnChangeInput=${this.resolvedInputs?.validateOnChange !== false}
+          .validateOnBlurInput=${this.resolvedInputs?.validateOnBlur !== false}
+          .hasFeedback=${this.resolvedInputs?.hasFeedback || false}
+          .autocomplete=${this.resolvedInputs?.autocomplete ?? 'off'}
+          .debounce=${this.resolvedInputs?.debounce ?? 0}
           @nr-input=${(e) => {
             this._isUserFocused = true;
             this.executeEvent('onChange', e , 
@@ -153,13 +147,13 @@ export class TextInputBlock extends BaseElementBlock {
             slot="label"
            
           >
-            ${this.inputHandlersValue?.label ?? ""}
+            ${this.resolvedInputs?.label ?? ""}
           </span>
           <span
             slot="helper-text"
            
           >
-            ${this.inputHandlersValue?.helper ?? ""}
+            ${this.resolvedInputs?.helper ?? ""}
           </span>
         </nr-input>
     `;

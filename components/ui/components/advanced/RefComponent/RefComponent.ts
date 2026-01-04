@@ -72,7 +72,7 @@ export class RefComponentContainer extends BaseElementBlock {
 
     override renderComponent() {
         const componentToRender = this.components?.find(
-            component => component.uuid === this.inputHandlersValue?.ref &&  this.component.uuid !== this.inputHandlersValue?.ref
+            component => component.uuid === this.resolvedInputs?.ref &&  this.component.uuid !== this.resolvedInputs?.ref
         )
         return html`
         ${

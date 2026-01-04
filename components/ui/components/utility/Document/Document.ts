@@ -1,16 +1,11 @@
-import { html, css, nothing } from "lit";
+import { html, css } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/document
-try {
-  await import("@nuralyui/document");
-} catch (error) {
-  console.warn('[@nuralyui/document] Package not found or failed to load.');
-}
+import "@nuralyui/document";
 
 @customElement("document-block")
 export class DocumentBlock extends BaseElementBlock {
@@ -36,12 +31,12 @@ export class DocumentBlock extends BaseElementBlock {
 
   renderComponent() {
     const documentStyles = this.getStyles() || {};
-    const documentStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+    const documentStyleHandlers = this.component?.style_handlers ? Object.fromEntries(
+      Object.entries(this.component?.style_handlers).filter(([key, value]) => value)) : {};
 
-    const src = this.inputHandlersValue?.src;
-    const type = this.inputHandlersValue?.type ?? 'pdf';
-    const previewable = this.inputHandlersValue?.previewable ?? false;
+    const src = this.resolvedInputs?.src;
+    const type = this.resolvedInputs?.type ?? 'pdf';
+    const previewable = this.resolvedInputs?.previewable ?? false;
 
     // Show placeholder when no document source
     if (!src) {

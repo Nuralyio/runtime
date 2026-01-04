@@ -7,7 +7,7 @@
 import { LitElement } from "lit";
 
 export interface FormRegisterableElement extends LitElement {
-  inputHandlersValue?: any;
+  resolvedInputs?: any;
   inputRef?: { value: HTMLElement | null };
 }
 
@@ -19,7 +19,7 @@ export function registerWithParentForm(
   element: FormRegisterableElement,
   nrElement: HTMLElement | null
 ): void {
-  const name = element.inputHandlersValue?.name;
+  const name = element.resolvedInputs?.name;
 
   if (!name || !nrElement) {
     return;
@@ -42,7 +42,7 @@ export function registerWithParentForm(
 export function unregisterFromParentForm(
   element: FormRegisterableElement
 ): void {
-  const name = element.inputHandlersValue?.name;
+  const name = element.resolvedInputs?.name;
 
   if (!name) {
     return;
@@ -65,7 +65,7 @@ export function notifyFieldValueChange(
   element: FormRegisterableElement,
   value: any
 ): void {
-  const name = element.inputHandlersValue?.name;
+  const name = element.resolvedInputs?.name;
 
   if (!name) {
     return;

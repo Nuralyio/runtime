@@ -5,15 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/table
-try {
-  await import("@nuralyui/table");
-} catch (error) {
-  console.warn('[@nuralyui/table] Package not found or failed to load.');
-}
-
-
-
+import "@nuralyui/table";
 
 @customElement("table-block")
 export class TextInputBlock extends BaseElementBlock {
@@ -117,18 +109,18 @@ export class TextInputBlock extends BaseElementBlock {
 
   renderComponent() {
     const tableStyles = this.component?.style || {};
-    const tableAutoWidth = this.inputHandlersValue?.width;
-    const tableAutoHeight = this.inputHandlersValue?.height;
+    const tableAutoWidth = this.resolvedInputs?.width;
+    const tableAutoHeight = this.resolvedInputs?.height;
     
     // Get data from inputHandlers or use defaults
-    const headers = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.headers : this.headers;
-    const rows = this.inputHandlersValue?.data ? this.inputHandlersValue?.data?.rows : this.rows;
+    const headers = this.resolvedInputs?.data ? this.resolvedInputs?.data?.headers : this.headers;
+    const rows = this.resolvedInputs?.data ? this.resolvedInputs?.data?.rows : this.rows;
     
     // Properly type the size (from style)
     const size = (tableStyles.size as 'small' | 'normal' | 'large') || 'normal';
     
     // Get selection mode from input or inputHandlers
-    const selectionModeValue = this.component?.input?.selectionMode?.value || this.inputHandlersValue?.selectionMode;
+    const selectionModeValue = this.component?.input?.selectionMode?.value || this.resolvedInputs?.selectionMode;
     const selectionMode = selectionModeValue === "multiple" 
       ? "multiple" as const
       : selectionModeValue === "single" 
@@ -136,14 +128,14 @@ export class TextInputBlock extends BaseElementBlock {
         : undefined;
     
     // Get other properties from input or inputHandlers
-    const filter = this.inputHandlersValue?.filter ;
-    const fixedHeader = this.inputHandlersValue?.fixedHeader ?? false;
-    const loading = this.inputHandlersValue?.loading ?? false;
-    const expandable = this.inputHandlersValue?.expandable ?? false;
-    const emptyText = this.inputHandlersValue?.emptyText ?? 'No data available';
-    const emptyIcon = this.inputHandlersValue?.emptyIcon;
-    const expansionRenderer = this.inputHandlersValue?.expansionRenderer;
-    const scrollConfig = this.inputHandlersValue?.scrollConfig;
+    const filter = this.resolvedInputs?.filter ;
+    const fixedHeader = this.resolvedInputs?.fixedHeader ?? false;
+    const loading = this.resolvedInputs?.loading ?? false;
+    const expandable = this.resolvedInputs?.expandable ?? false;
+    const emptyText = this.resolvedInputs?.emptyText ?? 'No data available';
+    const emptyIcon = this.resolvedInputs?.emptyIcon;
+    const expansionRenderer = this.resolvedInputs?.expansionRenderer;
+    const scrollConfig = this.resolvedInputs?.scrollConfig;
     
     return html`
       <nr-table

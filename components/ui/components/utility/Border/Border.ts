@@ -6,8 +6,8 @@ import { executeHandler } from '../../../../../state/runtime-context';
 import { getNestedAttribute } from '../../../../../utils/object.utils.ts';
 import { styleMap } from "lit/directives/style-map.js";
 import {
-  SelectTheme,
-  SingleButtonTheme,
+    SelectTheme,
+    SingleButtonTheme,
 } from '../../../../../../studio/core/utils/common-editor-theme';
 
 // Debounce function
@@ -452,13 +452,13 @@ export class AttributeBorderValue extends BaseElementBlock {
     }
   }
   override renderComponent() {
-    const handlers = this.inputHandlersValue.value;
-    const border = this.inputHandlersValue.border;
-    this.borderRadius = this.inputHandlersValue.value
-      ? this.inputHandlersValue.value["border-radius"]?.value
+    const handlers = this.resolvedInputs.value;
+    const border = this.resolvedInputs.border;
+    this.borderRadius = this.resolvedInputs.value
+      ? this.resolvedInputs.value["border-radius"]?.value
       : 0;
-    this.unity = this.inputHandlersValue.value
-      ? this.inputHandlersValue.value["border-radius"]?.unit
+    this.unity = this.resolvedInputs.value
+      ? this.resolvedInputs.value["border-radius"]?.unit
       : "px";
     // Initialize Margin
     this.cassAttributes["margin-top"] =
@@ -487,7 +487,7 @@ export class AttributeBorderValue extends BaseElementBlock {
       `${handlers?.["border-top-left-radius"]?.value ?? 0}${handlers?.["padding-left"]?.unit ?? "px"}`;
 
     const isDisabled =
-      this.inputHandlersValue.state == "disabled" ? true : false;
+      this.resolvedInputs.state == "disabled" ? true : false;
     return html`
       ${this.renderBorder()}
       <div class="container-outside">

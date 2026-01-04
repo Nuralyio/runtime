@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/tag
-try {
-  await import("@nuralyui/tag");
-} catch (error) {
-  console.warn('[@nuralyui/tag] Package not found or failed to load.');
-}
-
+import "@nuralyui/tag";
 
 @customElement("tag-block")
 export class TagBlock extends BaseElementBlock {
@@ -27,11 +21,11 @@ export class TagBlock extends BaseElementBlock {
     const tagStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const label = this.component?.input?.label?.value || this.inputHandlersValue?.label || '';
-    const closable = this.component?.input?.closable?.value ?? this.inputHandlersValue?.closable ?? false;
-    const color = this.component?.input?.color?.value || this.inputHandlersValue?.color;
-    const icon = this.component?.input?.icon?.value || this.inputHandlersValue?.icon;
-    const bordered = this.component?.input?.bordered?.value ?? this.inputHandlersValue?.bordered ?? true;
+    const label = this.component?.input?.label?.value || this.resolvedInputs?.label || '';
+    const closable = this.component?.input?.closable?.value ?? this.resolvedInputs?.closable ?? false;
+    const color = this.component?.input?.color?.value || this.resolvedInputs?.color;
+    const icon = this.component?.input?.icon?.value || this.resolvedInputs?.icon;
+    const bordered = this.component?.input?.bordered?.value ?? this.resolvedInputs?.bordered ?? true;
 
     return html`
       <nr-tag

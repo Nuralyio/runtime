@@ -11,12 +11,7 @@ import { setCurrentComponentIdAction } from '../../../../../redux/actions/compon
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 import { RuntimeHelpers } from '../../../../../utils/runtime-helpers.ts';
 
-try {
-  await import("@nuralyui/card");
-} catch (error) {
-  console.warn('[@nuralyui/card] Package not found or failed to load.');
-}
-
+import "@nuralyui/card";
 
 @customElement("card-block")
 export class CardBlock extends BaseElementBlock {
@@ -50,7 +45,7 @@ export class CardBlock extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }) ?? [];
   }
@@ -59,15 +54,15 @@ export class CardBlock extends BaseElementBlock {
     const cardStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const title = this.component?.input?.title?.value || this.inputHandlersValue?.title || '';
-    const bordered = this.component?.input?.bordered?.value ?? this.inputHandlersValue?.bordered ?? true;
-    const hoverable = this.component?.input?.hoverable?.value ?? this.inputHandlersValue?.hoverable ?? false;
-    const loading = this.component?.input?.loading?.value ?? this.inputHandlersValue?.loading ?? false;
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || 'default';
+    const title = this.component?.input?.title?.value || this.resolvedInputs?.title || '';
+    const bordered = this.component?.input?.bordered?.value ?? this.resolvedInputs?.bordered ?? true;
+    const hoverable = this.component?.input?.hoverable?.value ?? this.resolvedInputs?.hoverable ?? false;
+    const loading = this.component?.input?.loading?.value ?? this.resolvedInputs?.loading ?? false;
+    const size = this.component?.input?.size?.value || this.resolvedInputs?.size || 'default';
 
     return html`
       <nr-card
-        id=${this.inputHandlersValue.id ?? nothing}
+        id=${this.resolvedInputs.id ?? nothing}
         ${ref(this.inputRef)}
         data-component-uuid=${this.component?.uuid}
         data-component-name=${this.component?.name}
@@ -100,11 +95,11 @@ export class CardBlock extends BaseElementBlock {
     const cardStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const title = this.component?.input?.title?.value || this.inputHandlersValue?.title || '';
-    const bordered = this.component?.input?.bordered?.value ?? this.inputHandlersValue?.bordered ?? true;
-    const hoverable = this.component?.input?.hoverable?.value ?? this.inputHandlersValue?.hoverable ?? false;
-    const loading = this.component?.input?.loading?.value ?? this.inputHandlersValue?.loading ?? false;
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || 'default';
+    const title = this.component?.input?.title?.value || this.resolvedInputs?.title || '';
+    const bordered = this.component?.input?.bordered?.value ?? this.resolvedInputs?.bordered ?? true;
+    const hoverable = this.component?.input?.hoverable?.value ?? this.resolvedInputs?.hoverable ?? false;
+    const loading = this.component?.input?.loading?.value ?? this.resolvedInputs?.loading ?? false;
+    const size = this.component?.input?.size?.value || this.resolvedInputs?.size || 'default';
 
     return html`
       ${this.isViewMode

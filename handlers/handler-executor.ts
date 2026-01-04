@@ -377,6 +377,7 @@ export function executeHandler(
     globalFunctions.HasRole,
     globalFunctions.HasAnyRole,
     globalFunctions.HasAllRoles,
-    globalFunctions.GetCurrentUser() // CurrentUser - direct access to user object
+    globalFunctions.GetCurrentUser(), // CurrentUser - direct access to user object
+    context.listeners || {} // Shared listener registry for reactivity
   );
 }

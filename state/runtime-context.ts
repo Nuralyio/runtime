@@ -63,7 +63,7 @@
  *         ├─▶ 1. Index all components by app ID and name
  *         ├─▶ 2. Initialize children arrays
  *         ├─▶ 3. Attach Instance (values) properties
- *         ├─▶ 4. Resolve childrenIds to children objects
+ *         ├─▶ 4. Resolve children_ids to children objects
  *         ├─▶ 5. Set parent references
  *         └─▶ 6. Update Editor.components
  *         │
@@ -254,7 +254,7 @@ import { RuntimeContextHelpers } from "../utils/RuntimeContextHelpers";
  *    - Builds parent-child relationships
  * 
  * 2. **Hierarchy Management**
- *    - Resolves component.childrenIds to actual children
+ *    - Resolves component.children_ids to actual children
  *    - Sets component.parent references
  *    - Maintains bidirectional relationships
  * 
@@ -381,15 +381,19 @@ class RuntimeContext implements IRuntimeContext {
   /** Current platform information */
   currentPlatform: any;
 
-  /** Property change listeners map */
-  private listeners: Record<string, Set<string>> = {};
-  
+  /**
+   * Shared listener registry for reactivity (Vars + Component values).
+   * Key: property name (e.g., "username") or "ComponentName.propName" (e.g., "Input1.value")
+   * Value: Set of component names that depend on this value
+   */
+  listeners: Record<string, Set<string>> = {};
+
   /** Cache for style proxies to avoid recreation */
   styleProxyCache = new WeakMap();
-  
+
   /** Cache for values proxies to avoid recreation */
   valuesProxyCache = new WeakMap();
-  
+
   /** Function to set component runtime style attributes */
   setcomponentRuntimeStyleAttribute: (componentId: string, attribute: string, value: string) => void;
   
@@ -517,8 +521,22 @@ class RuntimeContext implements IRuntimeContext {
         }
       },
       (id: string, prop: string, value: any) => {
-        // Emit event when value changes
+        // Emit event when value changes (for the component itself)
         eventDispatcher.emit(`component:value:set:${id}`, { prop, value });
+
+        // Notify dependent components (cross-component reactivity)
+        // Uses same listeners registry as VarsProxy
+        const depKey = `${component.name}.${prop}`;
+        const dependents = this.listeners[depKey];
+        if (dependents) {
+          dependents.forEach((dependentComponentName: string) => {
+            eventDispatcher.emit(`component-property-changed:${dependentComponentName}`, {
+              prop: depKey,
+              value,
+              source: component.name
+            });
+          });
+        }
       },
       this.valuesProxyCache
     );
@@ -729,8 +747,8 @@ class RuntimeContext implements IRuntimeContext {
     });
   
     componentsList.forEach((component: any) => {
-      if (component.childrenIds && Array.isArray(component.childrenIds) && component.childrenIds.length > 0) {
-        component.childrenIds.forEach((childId: string) => {
+      if (component.children_ids && Array.isArray(component.children_ids) && component.children_ids.length > 0) {
+        component.children_ids.forEach((childId: string) => {
           const childComponent = componentsList.find((c: any) => c.uuid === childId);
           if (childComponent) {
             component.children.push(childComponent);

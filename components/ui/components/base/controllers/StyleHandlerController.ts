@@ -65,10 +65,10 @@ export class StyleHandlerController implements ReactiveController, Disposable {
 
     const { component } = this.host;
 
-    if (component?.styleHandlers) {
+    if (component?.style_handlers) {
       this.host.stylesHandlersValue = {};
       await Promise.all(
-        Object.entries(component.styleHandlers).map(
+        Object.entries(component.style_handlers).map(
           ([name, style]) => traitStyleHandler(this.host, style, name)
         )
       );
@@ -83,7 +83,7 @@ export class StyleHandlerController implements ReactiveController, Disposable {
    * Matches original calculateStyles behavior
    */
   private calculateStyles(): void {
-    const { component, inputHandlersValue } = this.host;
+    const { component, resolvedInputs } = this.host;
 
     // Merge component styles with existing calculated styles
     this.host.calculatedStyles = {
@@ -92,7 +92,7 @@ export class StyleHandlerController implements ReactiveController, Disposable {
     };
 
     // Apply alignment styles to host element
-    const { innerAlignment } = inputHandlersValue;
+    const { innerAlignment } = resolvedInputs;
     const hostStyle = this.host.style;
 
     // Reset alignment properties

@@ -132,10 +132,29 @@ export class MicroApp extends LitElement {
     // Initialize popconfirm container singleton (ensures it exists globally)
     PopconfirmContainer.getInstance();
 
+    // Schedule initialization check after Lit has processed properties
+    // This handles the case where properties are set before adding to DOM
+    this.updateComplete.then(() => {
+      this._initializeAfterConnect();
+    });
+  }
+
+  /**
+   * Initialize the micro-app after connection and property processing
+   * Called after updateComplete to ensure all properties are available
+   */
+  private _initializeAfterConnect(): void {
+    // Skip if already initialized
+    if (this.useIsolatedContext && this.storeContext) {
+      return;
+    }
+    if (!this.useIsolatedContext && this.subscription.closed === false && this.components.length > 0) {
+      return;
+    }
+
     // Initialize isolated context if feature is enabled
     if (this.useIsolatedContext) {
       // Only initialize now if we have pre-loaded data
-      // Otherwise, wait for properties to be set (handled in updated())
       if (this.appComponents || this.appPages) {
         this.initializeIsolatedContext();
       }

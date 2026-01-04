@@ -32,7 +32,6 @@ import "../components/ui/components/display/Code/Code";
 import "../components/ui/components/display/Video/Video";
 import "../components/ui/components/display/Badge/Badge";
 import "../components/ui/components/display/Tag/Tag";
-import "../components/ui/components/advanced/AIChat/AIChat";
 import "../components/ui/components/advanced/MicroApp/MicroApp";
 import "../components/ui/components/advanced/Collapse/Collapse";
 import "../components/ui/components/advanced/Collections/Collections";

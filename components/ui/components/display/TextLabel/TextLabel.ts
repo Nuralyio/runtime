@@ -5,13 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styles } from "./TextLabel.style.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/label
-try {
-  await import("@nuralyui/label");
-} catch (error) {
-  console.warn('[@nuralyui/label] Package not found or failed to load.');
-}
-
+import "@nuralyui/label";
 
 @customElement("text-label-block")
 export class TextLabelBlock extends BaseElementBlock {
@@ -32,7 +26,7 @@ export class TextLabelBlock extends BaseElementBlock {
   
     this.registerCallback("innerAlignment", (value: any) => {
       if (this.closestGenericComponentWrapper) {
-        if (this.inputHandlersValue?.innerAlignment === "end") {
+        if (this.resolvedInputs?.innerAlignment === "end") {
           this.closestGenericComponentWrapper.style.marginLeft = "auto";
         } else {
           this.closestGenericComponentWrapper.style.marginLeft = "unset";
@@ -53,12 +47,12 @@ export class TextLabelBlock extends BaseElementBlock {
      }}
           ${ref(this.inputRef)}
             id=${this.component.uuid}
-            .size=${this.inputHandlersValue.size ?? "medium"}
-            .variant=${this.inputHandlersValue.variant || 'default'}
-            .required=${this.inputHandlersValue.required || false}
-            .disabled=${this.inputHandlersValue.state === "disabled"}
-            .for=${this.inputHandlersValue.for || nothing}
-            .value=${this.inputHandlersValue.value || ""}
+            .size=${this.resolvedInputs.size ?? "medium"}
+            .variant=${this.resolvedInputs.variant || 'default'}
+            .required=${this.resolvedInputs.required || false}
+            .disabled=${this.resolvedInputs.state === "disabled"}
+            .for=${this.resolvedInputs.for || nothing}
+            .value=${this.resolvedInputs.value || ""}
             contentEditable="${this.isEditable}"
             @click=${(e) => {
         this.executeEvent("onClick", e);
@@ -73,7 +67,7 @@ export class TextLabelBlock extends BaseElementBlock {
             @dblclick=${(e) => {
         e.preventDefault();
         this.isEditable = true;
-      }}>${this.inputHandlersValue.value || "Text label"}</nr-label>
+      }}>${this.resolvedInputs.value || "Text label"}</nr-label>
     `;
   }
 }

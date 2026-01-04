@@ -5,14 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/icon
-try {
-  await import("@nuralyui/icon");
-} catch (error) {
-  console.warn('[@nuralyui/icon] Package not found or failed to load.');
-}
-
-
+import "@nuralyui/icon";
 
 @customElement("icon-block")
 export class IconBlock extends BaseElementBlock {
@@ -23,8 +16,6 @@ export class IconBlock extends BaseElementBlock {
 
   constructor() {
     super();
-    this.registerCallback("icon", () => {
-    });
   }
   override connectedCallback() {
     super.connectedCallback();
@@ -36,15 +27,15 @@ export class IconBlock extends BaseElementBlock {
     return html`
       <nr-icon
       ${ref(this.inputRef)}
-        .name=${this.inputHandlersValue.icon ?? "smile"}
-        .type=${this.inputHandlersValue.type || 'solid'}
-        .alt=${this.inputHandlersValue.alt || ''}
-        .size=${this.inputHandlersValue.size || nothing}
-        .color=${this.inputHandlersValue.color || nothing}
+        .name=${this.resolvedInputs.icon ?? "smile"}
+        .type=${this.resolvedInputs.type || 'solid'}
+        .alt=${this.resolvedInputs.alt || ''}
+        .size=${this.resolvedInputs.size || nothing}
+        .color=${this.resolvedInputs.color || nothing}
         .width=${iconStyles?.width || nothing}
         .height=${iconStyles?.height || nothing}
-        .clickable=${this.inputHandlersValue.clickable || false}
-        .disabled=${this.inputHandlersValue.state === "disabled"}
+        .clickable=${this.resolvedInputs.clickable || false}
+        .disabled=${this.resolvedInputs.state === "disabled"}
         @click=${(e) => {
           this.executeEvent("onClick", e);
         }}

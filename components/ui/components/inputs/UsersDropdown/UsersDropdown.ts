@@ -1,13 +1,7 @@
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 
-// Safely import @nuralyui/image
-try {
-  await import("@nuralyui/image");
-} catch (error) {
-  console.warn('[@nuralyui/image] Package not found or failed to load.');
-}
-
+import "@nuralyui/image";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 
@@ -21,14 +15,14 @@ export class UsersDropdownBlock extends BaseElementBlock {
   render() {
     return html`
       <nr-dropdown
-        trigger=${this.inputHandlersValue?.trigger ?? nothing}
-        .options=${this.inputHandlersValue?.users ?? []}
+        trigger=${this.resolvedInputs?.trigger ?? nothing}
+        .options=${this.resolvedInputs?.users ?? []}
         @click-item=${(e: CustomEvent) => this.executeEvent('onClickItem', e, { value: e.detail })}
       >
         <nr-image
-          .src="${this.inputHandlersValue?.userImage ?? nothing}"
-          .width="${this.inputHandlersValue?.imageWidth ?? nothing}"
-          .height="${this.inputHandlersValue?.imageHeight ?? nothing}"
+          .src="${this.resolvedInputs?.userImage ?? nothing}"
+          .width="${this.resolvedInputs?.imageWidth ?? nothing}"
+          .height="${this.resolvedInputs?.imageHeight ?? nothing}"
         >
         </nr-image>
       </nr-dropdown>

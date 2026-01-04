@@ -56,7 +56,7 @@ export class GridRow extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }).filter(Boolean) ?? [];
   }
@@ -75,7 +75,7 @@ export class GridRow extends BaseElementBlock {
    * Get all row properties from input handlers
    */
   private getRowProps(): RowProps {
-    const input = this.inputHandlersValue;
+    const input = this.resolvedInputs;
     return {
       gutter: this.parseGutter(input?.gutter),
       align: input?.align || '',

@@ -5,13 +5,7 @@ import { type ComponentElement } from '../../../../../redux/store/component/comp
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/divider
-try {
-  await import("@nuralyui/divider");
-} catch (error) {
-  console.warn('[@nuralyui/divider] Package not found or failed to load.');
-}
-
+import "@nuralyui/divider";
 
 @customElement("divider-block")
 export class DividerBlock extends BaseElementBlock {
@@ -55,7 +49,7 @@ export class DividerBlock extends BaseElementBlock {
   }
 
   private updateHostAttribute() {
-    const direction = this.inputHandlersValue?.direction ?? "horizontal";
+    const direction = this.resolvedInputs?.direction ?? "horizontal";
     this.setAttribute('data-type', direction);
   }
 
@@ -66,9 +60,9 @@ export class DividerBlock extends BaseElementBlock {
 
   render() {
     const dividerStyles = this.component?.style || {};
-    const dividerAutoWidth = this.inputHandlersValue?.width;
-    const dividerAutoHeight = this.inputHandlersValue?.height;
-    const isVertical = (this.inputHandlersValue?.direction ?? "horizontal") === "vertical";
+    const dividerAutoWidth = this.resolvedInputs?.width;
+    const dividerAutoHeight = this.resolvedInputs?.height;
+    const isVertical = (this.resolvedInputs?.direction ?? "horizontal") === "vertical";
 
     // Filter out height from styles if it's a vertical divider to avoid conflicts
     const filteredStyles = { ...dividerStyles };
@@ -77,7 +71,7 @@ export class DividerBlock extends BaseElementBlock {
     }
 
     return html`
-    ${!this.inputHandlersValue?.display || this.inputHandlersValue.display == "show" ?
+    ${!this.resolvedInputs?.display || this.resolvedInputs.display == "show" ?
       html`
       <nr-divider
         ${ref(this.inputRef)}
@@ -86,18 +80,18 @@ export class DividerBlock extends BaseElementBlock {
           width: dividerAutoWidth ? "100%" : dividerStyles.width,
           height: !isVertical && dividerAutoHeight ? "auto" : filteredStyles.height
         })}
-        type=${this.inputHandlersValue?.direction ?? "horizontal"}
-        .variant=${this.inputHandlersValue?.variant || 'solid'}
-        .orientation=${this.inputHandlersValue?.textOrientation || 'center'}
-        .orientationMargin=${this.inputHandlersValue?.orientationMargin ?? nothing}
-        .plain=${this.inputHandlersValue?.plain !== false}
-        .size=${this.inputHandlersValue?.size ?? nothing}
-        .dashed=${this.inputHandlersValue?.dashed || false}
+        type=${this.resolvedInputs?.direction ?? "horizontal"}
+        .variant=${this.resolvedInputs?.variant || 'solid'}
+        .orientation=${this.resolvedInputs?.textOrientation || 'center'}
+        .orientationMargin=${this.resolvedInputs?.orientationMargin ?? nothing}
+        .plain=${this.resolvedInputs?.plain !== false}
+        .size=${this.resolvedInputs?.size ?? nothing}
+        .dashed=${this.resolvedInputs?.dashed || false}
         @click=${(e) => {
           this.executeEvent("onClick", e);
         }}
       >
-        ${this.inputHandlersValue?.text || ''}
+        ${this.resolvedInputs?.text || ''}
       </nr-divider>
       ` : nothing}
     `;

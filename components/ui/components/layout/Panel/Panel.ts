@@ -4,13 +4,7 @@ import { styleMap } from "lit/directives/style-map.js";
 import { type ComponentElement } from '../../../../../redux/store/component/component.interface.ts';
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 
-// Safely import @nuralyui/panel
-try {
-  await import("@nuralyui/panel");
-} catch (error) {
-  console.warn('[@nuralyui/panel] Package not found or failed to load. Panel functionality may be limited.');
-}
-
+import "@nuralyui/panel";
 import { ref } from "lit/directives/ref.js";
 import { PanelMode, PanelSize, PanelPosition, MaximizePosition } from "@nuralyui/panel";
 import { $components } from '../../../../../redux/store/component/store.ts';
@@ -45,7 +39,7 @@ export class PanelBlock extends BaseElementBlock {
   }
 
   private updateChildrenComponents(): void {
-    this.childrenComponents = this.component?.childrenIds?.map((id) => {
+    this.childrenComponents = this.component?.children_ids?.map((id) => {
       return $components.get()[this.component?.application_id]?.find((component) => component.uuid === id);
     }) ?? [];
   }
@@ -54,21 +48,21 @@ export class PanelBlock extends BaseElementBlock {
     const panelStyles = this.component?.style || {};
     
     // Get properties from input or inputHandlers
-    const mode = this.component?.input?.mode?.value || this.inputHandlersValue?.mode || PanelMode.Panel;
-    const size = this.component?.input?.size?.value || this.inputHandlersValue?.size || PanelSize.Medium;
-    const position = this.component?.input?.position?.value || this.inputHandlersValue?.position || PanelPosition.Right;
-    const maximizePosition = this.component?.input?.maximizePosition?.value || this.inputHandlersValue?.maximizePosition || MaximizePosition.Center;
-    const draggable = this.component?.input?.draggable?.value ?? this.inputHandlersValue?.draggable ?? true;
-    const resizable = this.component?.input?.resizable?.value ?? this.inputHandlersValue?.resizable ?? false;
-    const collapsible = this.component?.input?.collapsible?.value ?? this.inputHandlersValue?.collapsible ?? false;
-    const minimizable = this.component?.input?.minimizable?.value ?? this.inputHandlersValue?.minimizable ?? true;
-    const closable = this.component?.input?.closable?.value ?? this.inputHandlersValue?.closable ?? true;
-    const animated = this.component?.input?.animated?.value ?? this.inputHandlersValue?.animated ?? false;
-    const title = this.component?.input?.title?.value || this.inputHandlersValue?.title || '';
-    const icon = this.component?.input?.icon?.value || this.inputHandlersValue?.icon || '';
-    const width = this.component?.input?.width?.value || this.inputHandlersValue?.width || '';
-    const height = this.component?.input?.height?.value || this.inputHandlersValue?.height || '';
-    const open = this.component?.input?.open?.value ?? this.inputHandlersValue?.open ?? true;
+    const mode = this.component?.input?.mode?.value || this.resolvedInputs?.mode || PanelMode.Panel;
+    const size = this.component?.input?.size?.value || this.resolvedInputs?.size || PanelSize.Medium;
+    const position = this.component?.input?.position?.value || this.resolvedInputs?.position || PanelPosition.Right;
+    const maximizePosition = this.component?.input?.maximizePosition?.value || this.resolvedInputs?.maximizePosition || MaximizePosition.Center;
+    const draggable = this.component?.input?.draggable?.value ?? this.resolvedInputs?.draggable ?? true;
+    const resizable = this.component?.input?.resizable?.value ?? this.resolvedInputs?.resizable ?? false;
+    const collapsible = this.component?.input?.collapsible?.value ?? this.resolvedInputs?.collapsible ?? false;
+    const minimizable = this.component?.input?.minimizable?.value ?? this.resolvedInputs?.minimizable ?? true;
+    const closable = this.component?.input?.closable?.value ?? this.resolvedInputs?.closable ?? true;
+    const animated = this.component?.input?.animated?.value ?? this.resolvedInputs?.animated ?? false;
+    const title = this.component?.input?.title?.value || this.resolvedInputs?.title || '';
+    const icon = this.component?.input?.icon?.value || this.resolvedInputs?.icon || '';
+    const width = this.component?.input?.width?.value || this.resolvedInputs?.width || '';
+    const height = this.component?.input?.height?.value || this.resolvedInputs?.height || '';
+    const open = this.component?.input?.open?.value ?? this.resolvedInputs?.open ?? true;
 
     return html`
       <nr-panel
@@ -135,7 +129,7 @@ export class PanelBlock extends BaseElementBlock {
    * Render custom header slot if content is provided
    */
   private renderHeaderSlot() {
-    const headerContent = this.component?.input?.headerContent?.value || this.inputHandlersValue?.headerContent;
+    const headerContent = this.component?.input?.headerContent?.value || this.resolvedInputs?.headerContent;
     
     if (!headerContent) return nothing;
     
@@ -150,7 +144,7 @@ export class PanelBlock extends BaseElementBlock {
    * Render custom footer slot if content is provided
    */
   private renderFooterSlot() {
-    const footerContent = this.component?.input?.footerContent?.value || this.inputHandlersValue?.footerContent;
+    const footerContent = this.component?.input?.footerContent?.value || this.resolvedInputs?.footerContent;
     
     if (!footerContent) return nothing;
     

@@ -5,12 +5,7 @@ import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
 import { ref } from "lit/directives/ref.js";
 
-// Safely import @nuralyui/image
-try {
-  await import("@nuralyui/image");
-} catch (error) {
-  console.warn('[@nuralyui/image] Package not found or failed to load.');
-}
+import "@nuralyui/image";
 
 @customElement("image-block")
 export class ImageBlock extends BaseElementBlock {
@@ -52,12 +47,12 @@ export class ImageBlock extends BaseElementBlock {
   renderComponent() {
     const fallbackStyles = this.getStyles();
     const imageStyles = this.getStyles() || {};
-    const imageStyleHandlers = this.component?.styleHandlers ? Object.fromEntries(
-      Object.entries(this.component?.styleHandlers).filter(([key, value]) => value)) : {};
+    const imageStyleHandlers = this.component?.style_handlers ? Object.fromEntries(
+      Object.entries(this.component?.style_handlers).filter(([key, value]) => value)) : {};
 
     const imageSrc = this.isDarkMode
-      ? this.inputHandlersValue?.darkSrc ?? this.inputHandlersValue?.src
-      : this.inputHandlersValue?.src;
+      ? this.resolvedInputs?.darkSrc ?? this.resolvedInputs?.src
+      : this.resolvedInputs?.src;
 
     // Show placeholder when no image source
     if (!imageSrc) {
@@ -89,13 +84,13 @@ export class ImageBlock extends BaseElementBlock {
           "--nuraly-image-local-border-bottom-right-radius": fallbackStyles?.["border-bottom-right-radius"] ?? "",
         })}
         .src=${imageSrc}
-        .fallback=${this.inputHandlersValue?.fallback ?? nothing}
-        .previewable=${this.inputHandlersValue?.previewable ?? false}
-        .fit=${this.inputHandlersValue?.fit ?? nothing}
-        .block=${this.inputHandlersValue?.block ?? false}
+        .fallback=${this.resolvedInputs?.fallback ?? nothing}
+        .previewable=${this.resolvedInputs?.previewable ?? false}
+        .fit=${this.resolvedInputs?.fit ?? nothing}
+        .block=${this.resolvedInputs?.block ?? false}
         .width=${imageStyleHandlers?.width || imageStyles?.width}
         .height=${imageStyleHandlers?.height || imageStyles?.height}
-        .alt=${this.inputHandlersValue?.alt ?? "image"}
+        .alt=${this.resolvedInputs?.alt ?? "image"}
         @click=${(e: MouseEvent) => this.executeEvent("onClick", e)}
         @nr-image-error=${(e: Event) => this.executeEvent("onError", e)}
         @nr-image-load=${(e: Event) => this.executeEvent("onLoad", e)}
