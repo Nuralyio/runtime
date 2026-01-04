@@ -7,8 +7,8 @@ import { isServer } from "@nuraly/runtime/utils/envirement";
  let filesAppUUID = "" ;
  let rightMenuUUID = "" ;
 if(!isServer){
- filesAppUUID = window.__MODULES_CONFIG__.files.app_uuid;
- rightMenuUUID = window.__MODULES_CONFIG__.files.right_file_component_uuid;
+ filesAppUUID = window.__MODULES_CONFIG__?.files?.app_uuid ?? "";
+ rightMenuUUID = window.__MODULES_CONFIG__?.files?.right_file_component_uuid ?? "";
 }
 
 /**

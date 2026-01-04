@@ -4,14 +4,13 @@ import { TabsPanel } from '../../../features/studio/panels/main-panel/TabsPanel'
 import { TopbarPanelWrapper } from '../../../features/studio/panels/top-bar/TopbarWrapper/TopbarWrapper';
 import { LeftPanel } from '../../../features/studio/panels/layout/LeftPanel';
 import { RightPanel } from '../../../features/studio/panels/layout/RightPanel';
-import { $pages, $currentPageId , $currentPageViewPort} from '../redux//store/page';
+import { $pages, $currentPageId , $currentPageViewPort} from '../../../features/runtime/redux/store/page';
 import { allTasks } from "nanostores";
-import { $componentWithChildren, $components } from '../redux//store/component/store';
-import "@studio/params/page/Page";
+import { $componentWithChildren, $components } from '../../../features/runtime/redux/store/component/store';
 import { PageContent } from '../../../features/studio/params/page/Page';
 import { processHeaders } from '../../../features/runtime/utils/api-calls-utils';
 import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '../../../services';
-import { $applications } from '../redux//store/apps';
+import { $applications } from '../../../features/runtime/redux/store/apps';
 // TODO: handle error
 const { app } = Astro.props;
 const processedHeaders = processHeaders(Astro.request.headers);

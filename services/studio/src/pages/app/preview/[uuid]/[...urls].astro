@@ -2,8 +2,8 @@
 import MakeLayout from "../../../_layouts/MakeLayout.astro";
 
 import { PageContent } from "../../../../features/studio/params/page/Page";
-import { $pages } from '../../../../features/runtime/redux//store/page'
-import { $components } from '../../../../features/runtime/redux//store/component/store';
+import { $pages } from '../../../../features/runtime/redux/store/page'
+import { $components } from '../../../../features/runtime/redux/store/component/store';
 import { $applications } from '../../../../features/runtime/redux/store/apps';
 import { processHeaders } from '../../../../features/runtime/utils/api-calls-utils';
 import { fetchApplicationById, fetchApplicationPagesById, fetchApplicationComponentById } from '../../../../services';
@@ -14,7 +14,7 @@ const { title, uuid, urls = "" } = Astro.params;
 const functionAppUUID = process.env.FUNCTION_APP_UUID;
 const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
 const files_modules_config = process.env.FILES_MODULES_CONFIG;
-let FILES_MODULES_CONFIG;
+let FILES_MODULES_CONFIG = { files: {} };
 try {
   if (files_modules_config) {
     FILES_MODULES_CONFIG = JSON.parse(files_modules_config);

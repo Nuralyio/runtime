@@ -77,9 +77,13 @@ const processedHeaders = processHeaders(Astro.request.headers);
     </script>
 
     <script>
-      // CRITICAL: Import components first to register all component types
+      // Import MicroApp directly to prevent tree-shaking in production
+      import { MicroApp } from "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+      // Import all runtime components for child components
       import "../features/runtime/components";
-      import "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+
+      // Ensure MicroApp is not tree-shaken (side effect)
+      void MicroApp;
 
       async function initializeDashboardMicroApp() {
         // Wait for the custom element to be defined

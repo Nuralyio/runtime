@@ -5,8 +5,8 @@ import { isServer } from '../../../runtime/utils/envirement';
  let filesAppUUID = "" ;
  let filesPageUUID = "" ;
 if(!isServer){
- filesAppUUID = window.__MODULES_CONFIG__.files.app_uuid;
- filesPageUUID = window.__MODULES_CONFIG__.files.main_file_component_uuid;
+ filesAppUUID = window.__MODULES_CONFIG__?.files?.app_uuid ?? "";
+ filesPageUUID = window.__MODULES_CONFIG__?.files?.main_file_component_uuid ?? "";
 }
 
 @customElement("files-page")

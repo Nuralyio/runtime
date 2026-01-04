@@ -8,10 +8,23 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install dependencies (including dev dependencies needed for build)
-RUN npm ci --legacy-peer-deps
+# Use --force to handle platform-specific packages
+RUN npm ci --legacy-peer-deps --force || npm install --legacy-peer-deps
 
 # Copy the rest of the app
 COPY . .
+
+# Build args for env vars needed at build time
+ARG DASHBOARD_APP_UUID
+ARG DASHBOARD_PAGE_UUID
+ARG HOME_APP_UUID
+ARG HOME_PAGE_UUID
+
+# Set env vars for build
+ENV DASHBOARD_APP_UUID=$DASHBOARD_APP_UUID
+ENV DASHBOARD_PAGE_UUID=$DASHBOARD_PAGE_UUID
+ENV HOME_APP_UUID=$HOME_APP_UUID
+ENV HOME_PAGE_UUID=$HOME_PAGE_UUID
 
 # Build the project
 RUN npm run build

@@ -4,8 +4,8 @@ export let filesAppUUID = "";
 export let filesPageUUID = "";
 
 if (!isServer) {
-  filesAppUUID = window.__MODULES_CONFIG__.files.app_uuid;
-  filesPageUUID = window.__MODULES_CONFIG__.files.left_file_component_uuid;
+  filesAppUUID = window.__MODULES_CONFIG__?.files?.app_uuid ?? "";
+  filesPageUUID = window.__MODULES_CONFIG__?.files?.left_file_component_uuid ?? "";
 }
 
 export const filesMicroApp = {

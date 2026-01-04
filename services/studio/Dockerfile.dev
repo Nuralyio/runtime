@@ -21,7 +21,7 @@ RUN chown -R nodeuser:nodeuser /app
 USER nodeuser
 
 # Expose the dev server port
-EXPOSE 3000
+EXPOSE 4321
 
 # Start development server
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
