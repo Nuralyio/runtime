@@ -1,7 +1,7 @@
 {
   "id": "nuraly-prod",
   "realm": "nuraly-prod",
-  "displayName": "Nuraly Production",
+  "displayName": "Nuraly",
   "enabled": true,
   "loginTheme": "keywind",
   "accountTheme": "keywind",
