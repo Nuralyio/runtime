@@ -103,7 +103,7 @@ services:
       context: ./services/gateway
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8094:80"
     environment:
       - NODE_ENV=production
       - API_URL=http://api:8000
