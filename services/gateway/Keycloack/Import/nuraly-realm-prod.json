@@ -37,12 +37,15 @@
       "redirectUris": [
         "http://localhost/*",
         "http://localhost/cb",
-        "https://yourdomain.com/*",
-        "https://yourdomain.com/cb"
+        "https://nuraly.io/*",
+        "https://nuraly.io/cb",
+        "https://stage.nuraly.io/*",
+        "https://stage.nuraly.io/cb"
       ],
       "webOrigins": [
         "http://localhost",
-        "https://yourdomain.com"
+        "https://nuraly.io",
+        "https://stage.nuraly.io"
       ],
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
