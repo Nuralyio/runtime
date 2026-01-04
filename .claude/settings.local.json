@@ -27,7 +27,13 @@
       "Bash(npm install:*)",
       "Bash(docker inspect:*)",
       "Bash(cat:*)",
-      "Bash(make dev-detached:*)"
+      "Bash(make dev-detached:*)",
+      "Bash(minikube ssh:*)",
+      "Bash(kubectl get:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl rollout:*)",
+      "Bash(kubectl wait:*)",
+      "Bash(kubectl delete:*)"
     ],
     "deny": [],
     "ask": []

@@ -94,7 +94,7 @@ dev-detached:
 # Production environment
 prod:
 	@echo "Starting production environment..."
-	docker-compose -f docker-compose.prod.yml up -d --build
+	docker-compose -f docker-compose.prod.yml --env-file config/prod.env up -d --build
 
 # Stop all services
 stop:
@@ -115,7 +115,7 @@ logs:
 	docker-compose -f docker-compose.dev.yml logs -f
 
 logs-prod:
-	docker-compose -f docker-compose.prod.yml logs -f
+	docker-compose -f docker-compose.prod.yml --env-file config/prod.env logs -f
 
 # Open shell in a service
 shell:
@@ -141,7 +141,7 @@ build:
 
 build-prod:
 	@echo "Building production images..."
-	docker-compose -f docker-compose.prod.yml build
+	docker-compose -f docker-compose.prod.yml --env-file config/prod.env build
 
 # Deploy to production
 deploy:
