@@ -1,7 +1,9 @@
 import { css } from "lit";
 
 export default css`
-
+  :host {
+    display: contents;
+  }
 
   /* Placeholder shown when container is empty */
   .container-placeholder {
