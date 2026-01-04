@@ -85,37 +85,37 @@ init-dev:
 # Development environment
 dev:
 	@echo "Starting development environment..."
-	docker compose -f docker compose.dev.yml up --build
+	docker compose -f docker-compose.dev.yml up --build
 
 dev-detached:
 	@echo "Starting development environment in detached mode..."
-	docker compose -f docker compose.dev.yml up -d --build
+	docker compose -f docker-compose.dev.yml up -d --build
 
 # Production environment
 prod:
 	@echo "Starting production environment..."
-	docker compose -f docker compose.prod.yml --env-file config/prod.env up -d --build
+	docker compose -f docker-compose.prod.yml --env-file config/prod.env up -d --build
 
 # Stop all services
 stop:
 	@echo "Stopping all services..."
-	docker compose -f docker compose.dev.yml down
-	docker compose -f docker compose.prod.yml down
+	docker compose -f docker-compose.dev.yml down
+	docker compose -f docker-compose.prod.yml down
 
 # Clean up containers and volumes (keeps images)
 clean:
 	@echo "Cleaning up containers and volumes..."
-	docker compose -f docker compose.dev.yml down -v --remove-orphans
-	docker compose -f docker compose.prod.yml down -v --remove-orphans
+	docker compose -f docker-compose.dev.yml down -v --remove-orphans
+	docker compose -f docker-compose.prod.yml down -v --remove-orphans
 	docker container prune -f
 	docker volume prune -f
 
 # View logs
 logs:
-	docker compose -f docker compose.dev.yml logs -f
+	docker compose -f docker-compose.dev.yml logs -f
 
 logs-prod:
-	docker compose -f docker compose.prod.yml --env-file config/prod.env logs -f
+	docker compose -f docker-compose.prod.yml --env-file config/prod.env logs -f
 
 # Open shell in a service
 shell:
@@ -123,25 +123,25 @@ shell:
 		echo "Usage: make shell SERVICE=<service-name>"; \
 		echo "Available services: studio, api, functions, gateway, docs"; \
 	else \
-		docker compose -f docker compose.dev.yml exec $(SERVICE) /bin/sh; \
+		docker compose -f docker-compose.dev.yml exec $(SERVICE) /bin/sh; \
 	fi
 
 # Run tests
 test:
 	@echo "Running tests for all services..."
-	docker compose -f docker compose.dev.yml exec studio npm test
-	docker compose -f docker compose.dev.yml exec api npm test
-	docker compose -f docker compose.dev.yml exec functions npm test
-	docker compose -f docker compose.dev.yml exec gateway npm test
+	docker compose -f docker-compose.dev.yml exec studio npm test
+	docker compose -f docker-compose.dev.yml exec api npm test
+	docker compose -f docker-compose.dev.yml exec functions npm test
+	docker compose -f docker-compose.dev.yml exec gateway npm test
 
 # Build all services
 build:
 	@echo "Building all services..."
-	docker compose -f docker compose.dev.yml build
+	docker compose -f docker-compose.dev.yml build
 
 build-prod:
 	@echo "Building production images..."
-	docker compose -f docker compose.prod.yml --env-file config/prod.env build
+	docker compose -f docker-compose.prod.yml --env-file config/prod.env build
 
 # Deploy to production
 deploy:
@@ -174,11 +174,11 @@ status:
 # Database operations
 db-migrate:
 	@echo "Running database migrations..."
-	docker compose -f docker compose.dev.yml exec api npm run migrate
+	docker compose -f docker-compose.dev.yml exec api npm run migrate
 
 db-reset:
 	@echo "Resetting database..."
-	docker compose -f docker compose.dev.yml exec api npm run db:reset
+	docker compose -f docker-compose.dev.yml exec api npm run db:reset
 
 # Backup operations
 backup:
@@ -393,7 +393,7 @@ k8s-refresh:
 	@echo "  Domain:         default.$$(minikube ip).sslip.io"
 	@echo ""
 	@echo "IMPORTANT: Restart the functions service to apply changes:"
-	@echo "  docker compose -f docker compose.dev.yml restart functions"
+	@echo "  docker compose -f docker-compose.dev.yml restart functions"
 	@echo ""
 	@echo "NOTE: Existing deployed functions will need to be redeployed"
 	@echo "      as their Knative services use the old domain."
