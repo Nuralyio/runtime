@@ -4,6 +4,7 @@ import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderComponent } from '../../../../../utils/render-util';
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
+import { styleMap } from "lit/directives/style-map.js";
 import styles from "./Container.style.ts";
 import { BaseElementBlock } from "../../base/BaseElement.ts";
 import { setCurrentComponentIdAction } from '../../../../../redux/actions/component/setCurrentComponentIdAction.ts';
@@ -114,9 +115,10 @@ export class VerticalContainer extends BaseElementBlock {
         align=${this.getAlign()}
         .gap=${this.getGap()}
         ?wrap=${this.inputHandlersValue.wrap}
-        width=${componentStyles.width || ''}
-        height=${componentStyles.height || ''}
-        min-height=${this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px'}
+        style=${styleMap({
+          ...componentStyles,
+          'min-height': this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px',
+        })}
         class="drop-${this.component.uuid}"
         @mouseenter="${(e: Event) => this.executeEvent("onMouseEnter", e)}"
         @mouseleave="${(e: Event) => this.executeEvent("onMouseLeave", e)}"
@@ -151,9 +153,10 @@ export class VerticalContainer extends BaseElementBlock {
               align=${this.getAlign()}
               .gap=${this.getGap()}
               ?wrap=${this.inputHandlersValue.wrap}
-              width=${componentStyles.width || ''}
-              height=${componentStyles.height || ''}
-              min-height=${this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px'}
+              style=${styleMap({
+                ...componentStyles,
+                'min-height': this.childrenComponents.length ? (componentStyles['min-height'] || '') : '300px',
+              })}
               class="drop-${this.component.uuid}"
               @click="${(e: Event) => {
                 setContextMenuEvent(null);
