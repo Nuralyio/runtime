@@ -37,13 +37,13 @@ pull:
 # Build Docker image using docker-compose
 build:
 	@echo "Building Docker image..."
-	docker-compose -f $(COMPOSE_FILE) build
+	docker compose -f $(COMPOSE_FILE) build
 	@echo "Build complete!"
 
 # Force rebuild without cache
 rebuild:
 	@echo "Rebuilding Docker image (no cache)..."
-	docker-compose -f $(COMPOSE_FILE) build --no-cache
+	docker compose -f $(COMPOSE_FILE) build --no-cache
 	@echo "Rebuild complete!"
 
 # Build standalone image (using build-image.sh)
@@ -63,39 +63,39 @@ redeploy: pull rebuild restart
 # Start development environment (attached)
 dev:
 	@echo "Starting development environment..."
-	docker-compose -f $(COMPOSE_FILE) up --build
+	docker compose -f $(COMPOSE_FILE) up --build
 
 # Start service (detached)
 start:
 	@echo "Starting service..."
-	docker-compose -f $(COMPOSE_FILE) up -d
+	docker compose -f $(COMPOSE_FILE) up -d
 	@echo "Service started!"
 
 # Stop service
 stop:
 	@echo "Stopping service..."
-	docker-compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) down
 	@echo "Service stopped!"
 
 # Restart service
 restart:
 	@echo "Restarting service..."
-	docker-compose -f $(COMPOSE_FILE) down
-	docker-compose -f $(COMPOSE_FILE) up -d
+	docker compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) up -d
 	@echo "Service restarted!"
 
 # View logs
 logs:
-	docker-compose -f $(COMPOSE_FILE) logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
 # Open shell in container
 shell:
-	docker-compose -f $(COMPOSE_FILE) exec $(CONTAINER_NAME) /bin/sh
+	docker compose -f $(COMPOSE_FILE) exec $(CONTAINER_NAME) /bin/sh
 
 # Show container status
 status:
 	@echo "Container status:"
-	@docker-compose -f $(COMPOSE_FILE) ps
+	@docker compose -f $(COMPOSE_FILE) ps
 	@echo ""
 	@echo "Docker image:"
 	@docker images | grep -E "$(IMAGE_NAME)|veeapp" || echo "No images found"
@@ -103,7 +103,7 @@ status:
 # Clean up containers and volumes
 clean:
 	@echo "Cleaning up..."
-	docker-compose -f $(COMPOSE_FILE) down -v --remove-orphans
+	docker compose -f $(COMPOSE_FILE) down -v --remove-orphans
 	@echo "Cleanup complete!"
 
 # Quick redeploy (without pulling - useful for local changes)
