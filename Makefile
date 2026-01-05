@@ -171,22 +171,22 @@ update:
 redeploy-studio:
 	@cd services/studio && git pull --rebase && cd ../.. && \
 	docker compose -f docker-compose.dev.yml build --no-cache studio && \
-	docker compose -f docker-compose.dev.yml up -d studio
+	docker compose -f docker-compose.dev.yml up -d --no-deps studio
 
 redeploy-api:
 	@cd services/api && git pull --rebase && cd ../.. && \
 	docker compose -f docker-compose.dev.yml build --no-cache api && \
-	docker compose -f docker-compose.dev.yml up -d api
+	docker compose -f docker-compose.dev.yml up -d --no-deps api
 
 redeploy-functions:
 	@cd services/functions && git pull --rebase && cd ../.. && \
 	docker compose -f docker-compose.dev.yml build --no-cache functions && \
-	docker compose -f docker-compose.dev.yml up -d functions
+	docker compose -f docker-compose.dev.yml up -d --no-deps functions
 
 redeploy-gateway:
 	@cd services/gateway && git pull --rebase && cd ../.. && \
 	docker compose -f docker-compose.dev.yml build --no-cache gateway && \
-	docker compose -f docker-compose.dev.yml up -d gateway
+	docker compose -f docker-compose.dev.yml up -d --no-deps gateway
 
 # Check submodule status
 status:
