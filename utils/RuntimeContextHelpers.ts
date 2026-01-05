@@ -469,7 +469,8 @@ export class RuntimeContextHelpers {
 
     // IMPORTANT: Use uniqueUUID first because InputHandlerController listens on uniqueUUID
     // The uniqueUUID is the runtime instance ID, while uuid is the static component definition ID
-    const componentId = (component as any).uniqueUUID;
+    // Fall back to uuid for MicroApp context where components are plain data objects before rendering
+    const componentId = (component as any).uniqueUUID || component.uuid;
 
     if (!componentId) {
       console.error('Cannot create values proxy: component UUID is undefined', component);
