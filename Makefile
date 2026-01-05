@@ -164,6 +164,30 @@ update:
 	git submodule update --remote --merge
 	@echo "✅ Submodules updated!"
 
+# =============================================================================
+# Service Redeploy Targets
+# =============================================================================
+
+redeploy-studio:
+	@cd services/studio && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache studio && \
+	docker compose -f docker-compose.dev.yml up -d studio
+
+redeploy-api:
+	@cd services/api && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache api && \
+	docker compose -f docker-compose.dev.yml up -d api
+
+redeploy-functions:
+	@cd services/functions && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache functions && \
+	docker compose -f docker-compose.dev.yml up -d functions
+
+redeploy-gateway:
+	@cd services/gateway && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache gateway && \
+	docker compose -f docker-compose.dev.yml up -d gateway
+
 # Check submodule status
 status:
 	@echo "Checking submodule status..."
