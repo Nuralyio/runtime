@@ -10,6 +10,7 @@ MINIKUBE_K8S_VERSION ?= stable
 KNATIVE_VERSION ?= 1.12.0
 
 .PHONY: help init init-dev dev prod stop clean logs shell test build deploy update status
+.PHONY: redeploy-studio redeploy-api redeploy-functions redeploy-gateway
 .PHONY: minikube-start minikube-stop minikube-delete minikube-status minikube-dashboard
 .PHONY: knative-install knative-install-serving knative-install-eventing knative-status knative-uninstall
 .PHONY: knative-configure-domain knative-expose-kourier
@@ -32,6 +33,12 @@ help:
 	@echo "  make deploy     - Deploy to production"
 	@echo "  make update     - Update git submodules"
 	@echo "  make status     - Check submodule status"
+	@echo ""
+	@echo "Service Redeploy:"
+	@echo "  make redeploy-studio    - Pull, rebuild and restart studio"
+	@echo "  make redeploy-api       - Pull, rebuild and restart api"
+	@echo "  make redeploy-functions - Pull, rebuild and restart functions"
+	@echo "  make redeploy-gateway   - Pull, rebuild and restart gateway"
 	@echo ""
 	@echo "Kubernetes (Minikube):"
 	@echo "  make minikube-start     - Start minikube cluster"
