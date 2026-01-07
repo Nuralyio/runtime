@@ -1,6 +1,7 @@
 import { FRONT_API_URLS } from '../api-urls';
 import { validateAndEmitErrors } from "./validation-handler";
 import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
+import { showError } from '../../../../runtime/utils/toast';
 
 export const updateComponentHandler = (component: any, application_id) => {
   // Validate handlers before saving
@@ -19,12 +20,35 @@ export const updateComponentHandler = (component: any, application_id) => {
     body: JSON.stringify({
       component: { ...ucomponent, application_id }
     })
-  }).then(res => res.json())
+  }).then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const errorMessage = data.error || `Failed to save component (${res.status})`;
+
+        // Show toast for permission errors
+        if (res.status === 403) {
+          showError(errorMessage);
+        } else {
+          showError(errorMessage);
+        }
+
+        // Dispatch error event
+        eventDispatcher.emit("component:save-error", {
+          componentId: component.uuid,
+          error: errorMessage
+        });
+        return;
+      }
+      return res.json();
+    })
     .catch((err) => {
       // Dispatch error
+      const errorMessage = err.message || "Failed to save component";
+      showError(errorMessage);
+
       eventDispatcher.emit("component:save-error", {
         componentId: component.uuid,
-        error: err.message || "Failed to save component"
+        error: errorMessage
       });
 
       console.error(err);
