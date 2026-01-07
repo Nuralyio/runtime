@@ -285,6 +285,11 @@ export const HANDLER_PARAMETERS = [
   "ShowWarningConfirm",
   "ClosePopconfirm",
   "CloseAllPopconfirms",
+  "OpenModal",
+  "CloseModal",
+  "ToggleModal",
+  "ShowShareModal",
+  "CloseShareModal",
   "__createScope__", // For transparent variable access
   // Namespaced API object (new clean API)
   "Nav",
@@ -457,6 +462,7 @@ export function compileHandlerFunction(code: string): Function {
             HideToast, ClearAllToasts,
             ShowPopconfirm, Confirm, ShowDeleteConfirm, ShowWarningConfirm,
             ClosePopconfirm, CloseAllPopconfirms,
+            OpenModal, CloseModal, ToggleModal, ShowShareModal, CloseShareModal,
             Nav, UI, Component, Data, Page, App, Var,
             GetCurrentUser, IsAuthenticated, HasRole, HasAnyRole, HasAllRoles, CurrentUser
           }

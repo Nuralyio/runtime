@@ -362,6 +362,11 @@ export function executeHandler(
     globalFunctions.ShowWarningConfirm,
     globalFunctions.ClosePopconfirm,
     globalFunctions.CloseAllPopconfirms,
+    globalFunctions.OpenModal,
+    globalFunctions.CloseModal,
+    globalFunctions.ToggleModal,
+    globalFunctions.ShowShareModal,
+    globalFunctions.CloseShareModal,
     createHandlerScope,
     // Namespaced APIs (new clean API)
     handlerAPI.Nav,
