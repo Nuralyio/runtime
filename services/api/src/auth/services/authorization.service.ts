@@ -2,6 +2,7 @@ import { singleton } from 'tsyringe';
 import { ApplicationMemberService } from '../../application-member/services/application-member.service';
 import { ResourcePermissionService } from '../../resource-permission/services/resource-permission.service';
 import { PermissionType } from '../../resource-permission/models/resource-permission';
+import { ApplicationRepository } from '../../application/repositories/application.repository';
 
 export interface IUser {
   uuid: string;
@@ -13,7 +14,8 @@ export interface IUser {
 export class AuthorizationService {
   constructor(
     private readonly memberService: ApplicationMemberService,
-    private readonly resourcePermissionService: ResourcePermissionService
+    private readonly resourcePermissionService: ResourcePermissionService,
+    private readonly applicationRepository: ApplicationRepository
   ) {}
 
   /**
@@ -37,6 +39,22 @@ export class AuthorizationService {
     permission: string,
     applicationId?: string
   ): Promise<boolean> {
+    // Determine the application ID for this resource
+    const appId = resourceType === 'application' ? resourceId : applicationId;
+
+    // 0. Check if application allows any authenticated user
+    // For read permissions on apps with requiresAuthOnly=true, allow any authenticated user
+    if (appId && !user.anonymous) {
+      try {
+        const app = await this.applicationRepository.findApplicationById(appId);
+        if (app.requiresAuthOnly && permission.endsWith(':read')) {
+          return true;
+        }
+      } catch {
+        // Application not found, continue with other checks
+      }
+    }
+
     // 1. Check direct resource permissions (user, public, anonymous)
     // Permission is stored in full format: "function:read", "page:write", etc.
     const hasResourcePermission = await this.resourcePermissionService.hasAccess(
@@ -54,7 +72,6 @@ export class AuthorizationService {
     // 2. Check application membership
     // For applications, the resource IS the application
     // For pages/components, use the provided applicationId
-    const appId = resourceType === 'application' ? resourceId : applicationId;
 
     if (appId && !user.anonymous) {
       const hasRolePermission = await this.memberService.hasPermission(

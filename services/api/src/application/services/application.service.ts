@@ -47,7 +47,7 @@ export class ApplicationService {
     return await this.applicationRepository.findApplicationBySubdomain(subdomain);
   }
 
-  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string): Promise<Application> {
+  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string, requiresAuthOnly?: boolean): Promise<Application> {
     // Get current application to preserve unchanged fields
     const currentApp = await this.applicationRepository.findApplicationById(uuid!);
 
@@ -56,7 +56,8 @@ export class ApplicationService {
       name ?? currentApp.name,
       uuid!,
       user_id ?? currentApp.user_id,
-      subdomain !== undefined ? (subdomain === '' ? null : subdomain) : currentApp.subdomain
+      subdomain !== undefined ? (subdomain === '' ? null : subdomain) : currentApp.subdomain,
+      requiresAuthOnly ?? currentApp.requiresAuthOnly
     );
     return await this.applicationRepository.update(uuid!, application);
   }

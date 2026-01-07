@@ -33,6 +33,7 @@ model applications {
   //user        User @relation(fields: [user_id], references: [id])
   default_page_uuid String?
   subdomain         String?  @unique // Unique subdomain for accessing the app (e.g., "myapp" for myapp.domain.com)
+  requiresAuthOnly  Boolean  @default(false) @map("requires_auth_only") // When true, any authenticated user can access (no role/member check needed)
 }
 
 // ============================================
@@ -51,12 +52,33 @@ model ApplicationRole {
   hierarchy     Int       @default(0) // Higher = more permissions (owner=100, admin=80, etc.)
   createdAt     DateTime  @default(now()) @map("created_at")
 
-  members ApplicationMember[]
+  members        ApplicationMember[]
+  pendingInvites PendingInvite[]
 
   @@unique([applicationId, name])
   @@index([applicationId])
   @@index([isSystem])
   @@map("application_roles")
+}
+
+// Pending Invites - Email invites for users not yet registered
+model PendingInvite {
+  id            Int       @id @default(autoincrement())
+  email         String
+  applicationId String    @map("application_id")
+  roleId        Int       @map("role_id")
+  invitedBy     String    @map("invited_by")  // User ID of inviter
+  token         String    @unique @default(uuid())  // For invite link
+  expiresAt     DateTime  @map("expires_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  role ApplicationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([email, applicationId])
+  @@index([email])
+  @@index([applicationId])
+  @@index([token])
+  @@map("pending_invites")
 }
 
 // Application Members - User role assignments within applications

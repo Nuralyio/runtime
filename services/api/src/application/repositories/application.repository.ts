@@ -25,7 +25,7 @@ export class ApplicationRepository implements IApplicationRepository {
         in: applicationIds
       } } }
     );
-    return applications.map((application) => new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain));
+    return applications.map((application) => new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain, application.requiresAuthOnly));
   }
 
   public async findApplicationById(uuid: string): Promise<Application> {
@@ -35,7 +35,7 @@ export class ApplicationRepository implements IApplicationRepository {
     if(!application) {
       throw new ApplicationNotFound("Application not found");
     }
-    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain);
+    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain, application.requiresAuthOnly);
   }
 
   /**
@@ -50,7 +50,7 @@ export class ApplicationRepository implements IApplicationRepository {
     if (!application) {
       return null;
     }
-    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain);
+    return new Application(application.published ?? false, application.name, application.uuid, application.user_id, application.subdomain, application.requiresAuthOnly);
   }
 
   public async update(uuid: string, application: Application): Promise<Application> {
@@ -60,17 +60,18 @@ export class ApplicationRepository implements IApplicationRepository {
         published: application.published,
         name: application.name,
         user_id: application.user_id,
-        subdomain: application.subdomain
+        subdomain: application.subdomain,
+        requiresAuthOnly: application.requiresAuthOnly
       }
     });
-    return new Application(updatedApplication.published ?? false, updatedApplication.name, updatedApplication.uuid, updatedApplication.user_id, updatedApplication.subdomain);
+    return new Application(updatedApplication.published ?? false, updatedApplication.name, updatedApplication.uuid, updatedApplication.user_id, updatedApplication.subdomain, updatedApplication.requiresAuthOnly);
   }
 
   public async delete(uuid: string ): Promise<Application> {
     const deleteApplication = await prisma.applications.delete({
       where: { uuid }
     });
-    return new Application(deleteApplication.published ?? false, deleteApplication.name, deleteApplication.uuid, deleteApplication.user_id, deleteApplication.subdomain);
+    return new Application(deleteApplication.published ?? false, deleteApplication.name, deleteApplication.uuid, deleteApplication.user_id, deleteApplication.subdomain, deleteApplication.requiresAuthOnly);
   }
 
 

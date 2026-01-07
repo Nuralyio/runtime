@@ -2,13 +2,16 @@ import { singleton } from 'tsyringe';
 import { ApplicationMember } from '../models/application-member';
 import { ApplicationMemberRepository } from '../repositories/application-member.repository';
 import { ApplicationRoleService } from '../../application-role/services/application-role.service';
-import { InviteMemberDto, UpdateMemberRoleDto } from '../interfaces/application-member.interface';
+import { InviteMemberDto, UpdateMemberRoleDto, InviteMemberResult } from '../interfaces/application-member.interface';
 import { UserService } from '../../auth/application/user.service';
 import { UserRepositoryPrismaPgSQL } from '../../auth/infrastructure/user.repository';
+import { PendingInviteService } from '../../pending-invite/services/pending-invite.service';
+import { PendingInviteRepository } from '../../pending-invite/repositories/pending-invite.repository';
 
 @singleton()
 export class ApplicationMemberService {
   private readonly userService: UserService;
+  private readonly pendingInviteService: PendingInviteService;
 
   constructor(
     private readonly repository: ApplicationMemberRepository,
@@ -16,6 +19,18 @@ export class ApplicationMemberService {
   ) {
     // Initialize UserService (not using DI here to avoid circular deps)
     this.userService = new UserService(new UserRepositoryPrismaPgSQL());
+    // Initialize PendingInviteService
+    this.pendingInviteService = new PendingInviteService(
+      new PendingInviteRepository(),
+      this.roleService
+    );
+  }
+
+  /**
+   * Get the repository (for internal use by PendingInviteService)
+   */
+  getRepository(): ApplicationMemberRepository {
+    return this.repository;
   }
 
   /**
@@ -62,26 +77,16 @@ export class ApplicationMemberService {
   /**
    * Invite a user to an application with a specific role.
    * User can be identified by userId or email.
+   * If user doesn't exist, creates a pending invite instead.
    */
   async inviteMember(
     applicationId: string,
     dto: InviteMemberDto,
     invitedBy: ApplicationMember
-  ): Promise<ApplicationMember> {
+  ): Promise<InviteMemberResult> {
     // Check if inviter has permission
     if (!invitedBy.hasPermission('member:invite')) {
       throw new Error('You do not have permission to invite members');
-    }
-
-    // Resolve userId from email if needed
-    let resolvedUserId: string;
-    if (dto.userId) {
-      resolvedUserId = dto.userId;
-    } else if (dto.email) {
-      const user = await this.userService.findUserByEmail(dto.email);
-      resolvedUserId = user.id!;
-    } else {
-      throw new Error('Either userId or email must be provided');
     }
 
     // Get the target role
@@ -95,6 +100,40 @@ export class ApplicationMemberService {
       throw new Error('Cannot assign a role with equal or higher hierarchy than your own');
     }
 
+    // Resolve userId from email if needed
+    let resolvedUserId: string | null = null;
+    let email: string | null = null;
+
+    if (dto.userId) {
+      resolvedUserId = dto.userId;
+    } else if (dto.email) {
+      email = dto.email.toLowerCase();
+      try {
+        const user = await this.userService.findUserByEmail(dto.email);
+        // Use keycloakId (Keycloak UUID) for consistency across the system
+        resolvedUserId = user.keycloakId || user.id!;
+      } catch {
+        // User doesn't exist - will create pending invite
+        resolvedUserId = null;
+      }
+    } else {
+      throw new Error('Either userId or email must be provided');
+    }
+
+    // If user doesn't exist and we have an email, create pending invite
+    if (!resolvedUserId && email) {
+      const pendingInvite = await this.pendingInviteService.createPendingInvite(
+        applicationId,
+        { email, roleId: dto.roleId },
+        invitedBy
+      );
+      return { status: 'pending', invite: pendingInvite };
+    }
+
+    if (!resolvedUserId) {
+      throw new Error('User not found and no email provided for pending invite');
+    }
+
     // Check if user is already a member
     const existingMember = await this.repository.findByUserAndApplication(resolvedUserId, applicationId);
     if (existingMember) {
@@ -102,7 +141,8 @@ export class ApplicationMemberService {
     }
 
     const member = new ApplicationMember(resolvedUserId, applicationId, dto.roleId);
-    return this.repository.create(member);
+    const createdMember = await this.repository.create(member);
+    return { status: 'accepted', member: createdMember };
   }
 
   /**
