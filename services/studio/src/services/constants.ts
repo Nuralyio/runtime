@@ -4,6 +4,7 @@ const API_BASE = typeof window === 'undefined'
   : '';
 
 export const APIS_URL = {
+  // Applications
   getApplication: (id: any) => `${API_BASE}/api/applications/${id}`,
   getApplicationComponents: (id: any) => `${API_BASE}/api/components/application/${id}`,
   fetchAllApplications: () => `${API_BASE}/api/applications`,
@@ -18,5 +19,22 @@ export const APIS_URL = {
   createRevision: (applicationUuid: string) => `${API_BASE}/api/applications/${applicationUuid}/revisions`,
   publishRevision: (applicationUuid: string, revision: number) => `${API_BASE}/api/applications/${applicationUuid}/revisions/${revision}/publish`,
   restoreRevision: (applicationUuid: string, revision: number) => `${API_BASE}/api/applications/${applicationUuid}/revisions/${revision}/restore`,
-  deleteRevision: (applicationUuid: string, revision: number) => `${API_BASE}/api/applications/${applicationUuid}/revisions/${revision}`
+  deleteRevision: (applicationUuid: string, revision: number) => `${API_BASE}/api/applications/${applicationUuid}/revisions/${revision}`,
+
+  // Members
+  getApplicationMembers: (appId: string) => `${API_BASE}/api/applications/${appId}/members`,
+  inviteMember: (appId: string) => `${API_BASE}/api/applications/${appId}/members`,
+  updateMember: (appId: string, userId: string) => `${API_BASE}/api/applications/${appId}/members/${userId}`,
+  removeMember: (appId: string, userId: string) => `${API_BASE}/api/applications/${appId}/members/${userId}`,
+
+  // Pending Invites
+  getPendingInvites: (appId: string) => `${API_BASE}/api/applications/${appId}/pending-invites`,
+  cancelPendingInvite: (appId: string, inviteId: number) => `${API_BASE}/api/applications/${appId}/pending-invites/${inviteId}`,
+
+  // Roles
+  getApplicationRoles: (appId: string) => `${API_BASE}/api/applications/${appId}/roles`,
+  getSystemRoles: () => `${API_BASE}/api/roles/system`,
+  createRole: (appId: string) => `${API_BASE}/api/applications/${appId}/roles`,
+  updateRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
+  deleteRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
 };
