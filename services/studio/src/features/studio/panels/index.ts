@@ -9,3 +9,6 @@ export { default as RightPanelFunctionTab } from "./right-panel/right_panel_func
 
 // Left Panel
 export { StudioFunction } from "./left-panel/functions/index.ts";
+
+// Revision Panel
+export { RevisionHistoryPanel } from "./revision-panel/index.ts";

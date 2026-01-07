@@ -26,6 +26,8 @@ export * from './components';
 // Re-export all page services
 export * from './pages';
 
+// Re-export all revision services
+export * from './revisions';
 
 // Re-export constants
 export { APIS_URL } from './constants';
