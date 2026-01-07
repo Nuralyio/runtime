@@ -14,7 +14,7 @@ export default [{
   style: {
     "border-bottom": "1px solid #d6d6d6",
   },
-  children_ids: ["info-top-bar", "settings-top-bar", "app_settings_modal"]
+  children_ids: ["info-top-bar", "settings-top-bar", "app_settings_modal", "share_application_modal"]
 },
 {
   uuid: "info-top-bar",
@@ -361,7 +361,7 @@ export default [{
   style: {
     width: "40vw",
   },
-  children_ids: [ "platform_top_bar",  "vdivider","app_logout_top_bar"]
+  children_ids: ["share_button_top_bar", "platform_top_bar", "vdivider", "app_logout_top_bar"]
 },
 {
   uuid: "zoom_top_bar",
@@ -542,6 +542,27 @@ export default [{
             return iconName;
             `
     }
+  }
+},
+
+{
+  uuid: "share_button_top_bar",
+  name: "Share Button",
+  application_id: "1",
+  type: "button_input",
+  input: {
+    size: { type: "string", value: "small" },
+    label: { type: "string", value: "Share" },
+    icon: { type: "string", value: "share-2" },
+    type: { type: "string", value: "primary" }
+  },
+  style: {
+    "margin-right": "12px"
+  },
+  event: {
+    onClick: /* js */`
+      $shareApplicationModalOpen = true;
+    `
   }
 },
 
@@ -1100,7 +1121,7 @@ export default [{
   input: {
     gap: { type: "string", value: "8px" },
   },
-  children_ids: ["app_settings_access_label", "app_settings_access_roles"]
+  children_ids: ["app_settings_access_roles"]
 },
 {
   uuid: "app_settings_access_label",
@@ -1224,4 +1245,51 @@ export default [{
       );
     `
   }
+},
+{
+  uuid: "share_application_modal",
+  name: "Share Application Modal",
+  application_id: "1",
+  type: "modal",
+  input: {
+    open: {
+      type: "handler",
+      value: /* js */`
+        $shareApplicationModalOpen;
+      `
+    },
+    modalTitle: {
+      type: "string",
+      value: "Share Application"
+    },
+    size: {
+      type: "string",
+      value: "large"
+    },
+    position: {
+      type: "string",
+      value: "center"
+    },
+    closable: {
+      type: "boolean",
+      value: true
+    },
+    showCloseButton: {
+      type: "boolean",
+      value: true
+    }
+  },
+  event: {
+    onModalClose: /* js */`
+      $shareApplicationModalOpen = false;
+    `
+  },
+  children_ids: ["share_application_modal_content"]
+},
+{
+  uuid: "share_application_modal_content",
+  name: "Share Modal Content",
+  application_id: "1",
+  type: "share_modal",
+  input: {}
 }];

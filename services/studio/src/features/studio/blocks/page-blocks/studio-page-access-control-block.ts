@@ -81,13 +81,13 @@ export default [
         value: /* js */`
           // Get current resource context (page, component, or application)
           const currentPageId = $currentPage;
-          const currentEditingApplication = $currentEditingApplication;
+          const currentEditingApplication = GetVar("currentEditingApplication");
 
           // Determine resource type and id
           let resourceType = 'page';
           let resourceId = currentPageId;
 
-         
+
           // Return current permission state
           // This data should come from API response stored in context
           const permissionsKey = resourceType + '_' + resourceId + '_permissions';

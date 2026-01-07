@@ -55,7 +55,7 @@ export default [
     input: {
       direction: { type: "string", value: "vertical" }
     },
-    children_ids: ["app_subdomain_block"]
+    children_ids: ["app_subdomain_block", "app_access_settings_block"]
   },
   // Subdomain input row
   {
@@ -164,6 +164,143 @@ export default [
       "font-size": "12px",
       color: "var(--nuraly-color-text-secondary)",
       "white-space": "nowrap"
+    }
+  },
+  // Access Settings Block
+  {
+    uuid: "app_access_settings_block",
+    application_id: "1",
+    name: "app access settings block",
+    type: "container",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column",
+      gap: "8px",
+      width: "100%",
+      "margin-top": "8px",
+      "padding-top": "12px",
+      "border-top": "1px solid var(--nuraly-color-border)"
+    },
+    children_ids: ["app_access_settings_label", "app_access_settings_row"]
+  },
+  {
+    uuid: "app_access_settings_label",
+    name: "app access settings label",
+    type: "text_label",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Access Settings"
+      }
+    },
+    style: {
+      width: "100%",
+      "font-size": "12px",
+      "font-weight": "600",
+      color: "var(--nuraly-color-text-primary)"
+    }
+  },
+  {
+    uuid: "app_access_settings_row",
+    application_id: "1",
+    name: "app access settings row",
+    type: "container",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "row",
+      "align-items": "center",
+      "justify-content": "space-between",
+      gap: "8px",
+      width: "100%",
+      padding: "8px",
+      "background-color": "var(--nuraly-color-background-secondary)",
+      "border-radius": "6px"
+    },
+    children_ids: ["app_access_settings_text", "app_access_settings_toggle"]
+  },
+  {
+    uuid: "app_access_settings_text",
+    application_id: "1",
+    name: "app access settings text",
+    type: "container",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column",
+      gap: "2px",
+      flex: "1"
+    },
+    children_ids: ["app_access_settings_title", "app_access_settings_description"]
+  },
+  {
+    uuid: "app_access_settings_title",
+    name: "app access settings title",
+    type: "text_label",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Allow all authenticated users"
+      }
+    },
+    style: {
+      "font-size": "12px",
+      "font-weight": "500",
+      color: "var(--nuraly-color-text-primary)"
+    }
+  },
+  {
+    uuid: "app_access_settings_description",
+    name: "app access settings description",
+    type: "text_label",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Any logged-in user can view this app without being a member"
+      }
+    },
+    style: {
+      "font-size": "11px",
+      color: "var(--nuraly-color-text-secondary)",
+      "line-height": "1.4"
+    }
+  },
+  {
+    uuid: "app_access_settings_toggle",
+    name: "app access settings toggle",
+    type: "checkbox",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      "--nuraly-checkbox-size": "18px"
+    },
+    input: {
+      checked: {
+        type: "handler",
+        value: /* js */ `
+          const currentEditingApplication = GetVar("currentEditingApplication");
+          return currentEditingApplication?.requiresAuthOnly || false;
+        `
+      },
+      toggle: { type: "boolean", value: true }
+    },
+    event: {
+      onChange: /* js */ `
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        if (currentEditingApplication) {
+          UpdateApplication({
+            ...currentEditingApplication,
+            requiresAuthOnly: EventData.checked
+          });
+        }
+      `
     }
   }
 ];

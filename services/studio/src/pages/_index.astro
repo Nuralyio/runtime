@@ -1,12 +1,11 @@
 ---
-import Layout from './_layouts/LandingLayout.astro';
-import "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
-import { MicroApp } from '../features/runtime/components/ui/components/runtime/MicroApp/MicroApp';
 import { processHeaders } from '../features/runtime/utils/api-calls-utils';
 import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '../services';
-const { page_url } = Astro.props;
+
+export const prerender = false;
+
 const homeAppUUID = process.env.HOME_APP_UUID;
-const homeAppPageUUID = process.env.HOME_PAGE_UUID;
+let homeAppPageUUID = process.env.HOME_PAGE_UUID;
 let pageData, componentData, applications, application;
 
 const processedHeaders = processHeaders(Astro.request.headers);
@@ -20,6 +19,11 @@ const processedHeaders = processHeaders(Astro.request.headers);
   ]);
   pageData = pageRequest.data;
 
+  // Use first page if HOME_PAGE_UUID is not set
+  if (!homeAppPageUUID && pageData?.length > 0) {
+    homeAppPageUUID = pageData[0].uuid;
+  }
+
   applications = applicationsRequest.data;
   application = applications.find((application) => application.uuid === homeAppUUID);
 
@@ -27,26 +31,113 @@ const processedHeaders = processHeaders(Astro.request.headers);
 
 ---
 
-<script is:inline define:vars={{ pageData, componentData , application}}>
-  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
-  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
-  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
-  document.documentElement.style.setProperty('--nuraly-page-background-color', pageData[0]?.style?.['--nuraly-page-background-color'] || '#ffffff');
-  document.documentElement.style.setProperty('--nuraly-page-background-color-dark', pageData[0]?.style?.['--nuraly-page-background-color-dark'] || '#000000');
-</script>
-<Layout title={pageData[0]?.name}  description={pageData[0]?.description}>
-  <MicroApp
-  client:load
-  .prod={true}
-  mode="preview"
-  .uuid={homeAppUUID}
-  .page_uuid={homeAppPageUUID}
- ></MicroApp>
- <style is:inline is:global>
-    html {
-    background-color : var(--nuraly-page-background-color, #ffffff);
-  }
-  
-</style>
-</Layout>
+<!doctype html>
+<html lang="en" data-theme="default-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageData?.[0]?.name || 'Home'}</title>
+    <meta name="description" content={pageData?.[0]?.description || ''} />
 
+    <!-- Nuraly UI Theme CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        background-color: var(--nuraly-page-background-color, #ffffff);
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        min-height: 100vh;
+      }
+
+      .home-container {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      micro-app {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="home-container" id="home-micro-app-container">
+      <!-- MicroApp will be created dynamically after properties are ready -->
+    </div>
+
+    <script is:inline define:vars={{ homeAppUUID, homeAppPageUUID, componentData, pageData }}>
+      window.__HOME_DATA__ = {
+        uuid: homeAppUUID,
+        page_uuid: homeAppPageUUID,
+        components: componentData,
+        pages: pageData,
+      };
+      // Set page background color
+      if (pageData?.[0]?.style) {
+        document.documentElement.style.setProperty('--nuraly-page-background-color', pageData[0].style['--nuraly-page-background-color'] || '#ffffff');
+        document.documentElement.style.setProperty('--nuraly-page-background-color-dark', pageData[0].style['--nuraly-page-background-color-dark'] || '#000000');
+      }
+    </script>
+
+    <script>
+      // Import MicroApp directly to prevent tree-shaking in production
+      import { MicroApp } from "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+      // Import all runtime components for child components
+      import "../features/runtime/components";
+
+      // Ensure MicroApp is not tree-shaken (side effect)
+      void MicroApp;
+
+      async function initializeHomeMicroApp() {
+        // Wait for the custom element to be defined
+        await customElements.whenDefined('micro-app');
+
+        const data = (window as any).__HOME_DATA__;
+
+        if (!data || !data.uuid) {
+          console.error('[Home] Missing required data:', data);
+          return;
+        }
+
+        // Create the micro-app element
+        const microApp = document.createElement('micro-app') as any;
+        microApp.id = 'home-micro-app';
+
+        // Set properties BEFORE adding to DOM
+        microApp.uuid = data.uuid;
+        microApp.page_uuid = data.page_uuid;
+        microApp.useIsolatedContext = true;
+        microApp.appComponents = data.components;
+        microApp.appPages = data.pages;
+        microApp.mode = "preview";
+        microApp.prod = true;
+
+        // Add to DOM - this triggers connectedCallback
+        const container = document.getElementById('home-micro-app-container');
+        if (container) {
+          container.appendChild(microApp);
+        } else {
+          console.error('[Home] Container not found!');
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", initializeHomeMicroApp);
+      } else {
+        // DOM already loaded
+        initializeHomeMicroApp();
+      }
+    </script>
+  </body>
+</html>
