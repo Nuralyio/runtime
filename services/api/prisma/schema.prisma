@@ -133,3 +133,89 @@ model databaseproviders {
 
   @@map("databaseproviders")
 }
+
+// ============================================
+// REVISION SYSTEM - Version History
+// ============================================
+
+// Application metadata versions
+model ApplicationVersion {
+  id            String   @id @default(uuid())
+  applicationId String   @map("application_id")
+  version       Int
+  name          String
+  subdomain     String?
+  defaultPageId String?  @map("default_page_id")
+  createdBy     String   @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([applicationId, version])
+  @@index([applicationId])
+  @@map("application_versions")
+}
+
+// Page versions
+model PageVersion {
+  id            String   @id @default(uuid())
+  pageId        String   @map("page_id")
+  applicationId String   @map("application_id")
+  version       Int
+  name          String
+  url           String
+  description   String   @default("")
+  style         Json     @default("{}")
+  needAuth      Boolean  @default(false) @map("need_authentication")
+  componentIds  String[] @map("component_ids")
+  createdBy     String   @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([pageId, version])
+  @@index([pageId])
+  @@index([applicationId])
+  @@map("page_versions")
+}
+
+// Component versions
+model ComponentVersion {
+  id            String   @id @default(uuid())
+  componentId   String   @map("component_id")
+  applicationId String   @map("application_id")
+  version       Int
+  componentData Json     @map("component_data")
+  createdBy     String   @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([componentId, version])
+  @@index([componentId])
+  @@index([applicationId])
+  @@map("component_versions")
+}
+
+// Application revision - references specific versions
+model ApplicationRevision {
+  id            String   @id @default(uuid())
+  applicationId String   @map("application_id")
+  revision      Int
+  versionLabel  String?  @map("version_label")
+  description   String?
+  appVersion    Int      @map("app_version")
+  pageRefs      Json     @map("page_refs")       // [{ pageId, version }, ...]
+  componentRefs Json     @map("component_refs")  // [{ componentId, version }, ...]
+  createdBy     String   @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([applicationId, revision])
+  @@index([applicationId])
+  @@map("application_revisions")
+}
+
+// Published version tracker
+model PublishedVersion {
+  id            String   @id @default(uuid())
+  applicationId String   @unique @map("application_id")
+  revision      Int
+  publishedBy   String   @map("published_by")
+  publishedAt   DateTime @default(now()) @map("published_at")
+
+  @@map("published_versions")
+}
