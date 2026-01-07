@@ -5,14 +5,16 @@ export class Application {
     user_id: string;
     name: string;
     subdomain?: string | null;
+    requiresAuthOnly: boolean; // When true, any authenticated user can access (no role/member check needed)
 
-    constructor(published: boolean, name: string, uuid: string, user_id: string, subdomain?: string | null) {
+    constructor(published: boolean, name: string, uuid: string, user_id: string, subdomain?: string | null, requiresAuthOnly: boolean = false) {
 
       this.published = published;
       this.name = name;
       this.uuid = uuid;
       this.user_id = user_id;
       this.subdomain = subdomain;
+      this.requiresAuthOnly = requiresAuthOnly;
     }
   }
   

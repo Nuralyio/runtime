@@ -1,4 +1,5 @@
 import { ApplicationMember } from '../models/application-member';
+import { PendingInvite } from '../../pending-invite/models/pending-invite';
 
 export interface IApplicationMemberRepository {
   findById(id: number): Promise<ApplicationMember | null>;
@@ -20,3 +21,8 @@ export interface InviteMemberDto {
 export interface UpdateMemberRoleDto {
   roleId: number;
 }
+
+// Result of inviteMember - either accepted (user exists) or pending (user doesn't exist)
+export type InviteMemberResult =
+  | { status: 'accepted'; member: ApplicationMember }
+  | { status: 'pending'; invite: PendingInvite };

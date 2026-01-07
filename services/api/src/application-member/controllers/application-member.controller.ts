@@ -5,6 +5,8 @@ import { ApplicationMemberService } from "../services/application-member.service
 import { AuthorizationService } from "../../auth/services/authorization.service";
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
 import { InviteMemberDto, UpdateMemberRoleDto } from "../interfaces/application-member.interface";
+import { PendingInvite } from "../../pending-invite/models/pending-invite";
+import { PendingInviteResponse } from "../../pending-invite/interfaces/pending-invite.interface";
 
 interface MemberResponse {
   id: number;
@@ -19,6 +21,10 @@ interface MemberResponse {
   createdAt: Date;
 }
 
+type InviteResponse =
+  | { status: 'accepted'; member: MemberResponse }
+  | { status: 'pending'; invite: PendingInviteResponse };
+
 function toResponse(member: ApplicationMember): MemberResponse {
   return {
     id: member.id!,
@@ -31,6 +37,23 @@ function toResponse(member: ApplicationMember): MemberResponse {
       hierarchy: member.role?.hierarchy || 0,
     },
     createdAt: member.createdAt!,
+  };
+}
+
+function toPendingResponse(invite: PendingInvite): PendingInviteResponse {
+  return {
+    id: invite.id!,
+    email: invite.email,
+    applicationId: invite.applicationId,
+    role: {
+      id: invite.role?.id || invite.roleId,
+      name: invite.role?.name || '',
+      displayName: invite.role?.displayName || '',
+      hierarchy: invite.role?.hierarchy || 0,
+    },
+    invitedBy: invite.invitedBy,
+    expiresAt: invite.expiresAt,
+    createdAt: invite.createdAt!,
   };
 }
 
@@ -90,14 +113,15 @@ export class ApplicationMemberController extends Controller {
   }
 
   /**
-   * Invite a user to an application with a specific role
+   * Invite a user to an application with a specific role.
+   * If user doesn't exist, creates a pending invite that will be accepted when user signs up.
    */
   @Post()
   public async inviteMember(
     @Request() request: NRequest,
     @Path() applicationId: string,
     @Body() body: InviteMemberDto
-  ): Promise<MemberResponse> {
+  ): Promise<InviteResponse> {
     // Get the inviter's membership
     const inviter = await this.memberService.getMember(request.user.uuid, applicationId);
     if (!inviter) {
@@ -105,8 +129,13 @@ export class ApplicationMemberController extends Controller {
       throw new Error('You are not a member of this application');
     }
 
-    const member = await this.memberService.inviteMember(applicationId, body, inviter);
-    return toResponse(member);
+    const result = await this.memberService.inviteMember(applicationId, body, inviter);
+
+    if (result.status === 'accepted') {
+      return { status: 'accepted', member: toResponse(result.member) };
+    } else {
+      return { status: 'pending', invite: toPendingResponse(result.invite) };
+    }
   }
 
   /**
