@@ -98,6 +98,38 @@ export {
 } from './app-members';
 export type { AppMember, AppRole, PendingInvite, AppMembersData } from './app-members';
 
+// Editor Theme Store
+export {
+  $editorTheme,
+  $editorThemeVariant,
+  $isEditorDark,
+  $systemPreference,
+  initSystemPreferenceListener,
+  createEditorThemePayload
+} from './editor-theme';
+export type { ThemeMode, DesignSystem, ThemeVariant, EditorThemeSettings } from './editor-theme';
+
+// Runtime Theme Store
+export {
+  $runtimeSystemTheme,
+  $appTheme,
+  $pageTheme,
+  $componentThemes,
+  $resolvedAppTheme,
+  $resolvedPageTheme,
+  $isRuntimeDark,
+  setAppTheme,
+  setPageTheme,
+  setComponentTheme,
+  clearComponentTheme,
+  getResolvedComponentTheme,
+  initRuntimeSystemListener,
+  initRuntimeThemeFromData,
+  resetRuntimeTheme,
+  resolveTheme
+} from './runtime-theme';
+export type { RuntimeThemeValue, ResolvedTheme } from './runtime-theme';
+
 // Type Definitions
 export type { ComponentElement } from './component/component.interface';
 export type { PageElement } from '../handlers/pages/page.interface';
