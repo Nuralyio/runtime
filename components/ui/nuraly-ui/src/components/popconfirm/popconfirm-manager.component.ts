@@ -311,7 +311,7 @@ export class NrPopconfirmManagerElement extends NuralyUIBaseMixin(LitElement) {
    * Generate unique ID
    */
   private generateId(): string {
-    return `popconfirm-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `popconfirm-${crypto.randomUUID()}`;
   }
 
   /**
