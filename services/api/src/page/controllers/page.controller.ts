@@ -116,7 +116,7 @@ export class PageController extends Controller {
 
         pageToUpdate = { ...pageToUpdate, ...page };
         pageToUpdate = removeNullProperties(pageToUpdate);
-        return await this.pageService.update(page);
+        return await this.pageService.update(pageToUpdate as Page, request.user.uuid);
     }
 
     @Delete("{id}")

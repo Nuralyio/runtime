@@ -123,7 +123,7 @@ export class ApplicationController extends Controller {
       }
     }
 
-    return await this.applicationService.update(published, uuid, name, user_id, subdomain, requiresAuthOnly);
+    return await this.applicationService.update(published, uuid, name, user_id, subdomain, requiresAuthOnly, request.user.uuid);
   }
 
   @Delete("{uuid}")

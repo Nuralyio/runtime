@@ -4,6 +4,7 @@ import { ApplicationRepository } from '../repositories/application.repository';
 import { ApplicationMemberService } from '../../application-member/services/application-member.service';
 import { ResourcePermissionService } from '../../resource-permission/services/resource-permission.service';
 import { PageService } from '../../page/services/page.service';
+import { RevisionService } from '../../revision/services/revision.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @singleton()
@@ -16,7 +17,8 @@ export class ApplicationService {
     applicationRepository: ApplicationRepository,
     memberService: ApplicationMemberService,
     resourcePermissionService: ResourcePermissionService,
-    @inject(delay(() => PageService)) private pageService: PageService
+    @inject(delay(() => PageService)) private pageService: PageService,
+    @inject(delay(() => RevisionService)) private revisionService: RevisionService
   ) {
     this.applicationRepository = applicationRepository;
     this.memberService = memberService;
@@ -47,7 +49,7 @@ export class ApplicationService {
     return await this.applicationRepository.findApplicationBySubdomain(subdomain);
   }
 
-  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string, requiresAuthOnly?: boolean): Promise<Application> {
+  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string, requiresAuthOnly?: boolean, updatedBy?: string): Promise<Application> {
     // Get current application to preserve unchanged fields
     const currentApp = await this.applicationRepository.findApplicationById(uuid!);
 
@@ -59,7 +61,28 @@ export class ApplicationService {
       subdomain !== undefined ? (subdomain === '' ? null : subdomain) : currentApp.subdomain,
       requiresAuthOnly ?? currentApp.requiresAuthOnly
     );
-    return await this.applicationRepository.update(uuid!, application);
+    const updated = await this.applicationRepository.update(uuid!, application);
+
+    // Auto-create application version on update (if updatedBy is provided)
+    if (updatedBy) {
+      this.autoCreateApplicationVersion(updated, updatedBy);
+    }
+
+    return updated;
+  }
+
+  /**
+   * Auto-create an application version (non-blocking)
+   * This tracks the individual application change, NOT a full snapshot
+   */
+  private autoCreateApplicationVersion(app: Application, userId: string): void {
+    this.revisionService.createApplicationVersion(
+      app.uuid,
+      app.name,
+      userId,
+      app.subdomain,
+      null // defaultPageId - could be added later
+    ).catch(err => console.error('Auto-version failed:', err));
   }
 
   public async delete(uuid: string): Promise<Application> {

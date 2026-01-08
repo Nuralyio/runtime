@@ -119,7 +119,7 @@ export class ComponentController extends Controller {
 
     componentToUpdate.component = { ...componentToUpdate.component, ...component };
     componentToUpdate = removeNullProperties(componentToUpdate);
-    return await this.componentService.update(componentToUpdate as Component, uuid);
+    return await this.componentService.update(componentToUpdate as Component, uuid, request.user.uuid);
   }
 
   @Delete("{uuid}")
