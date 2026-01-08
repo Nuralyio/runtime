@@ -20,11 +20,12 @@ export const styles = css`
     font-size: var(--nuraly-font-size-base, 14px);
     line-height: 1.5715;
     color: var(--nuraly-color-text);
+    min-height: 0;
   }
 
   .timeline {
     margin: 0;
-    padding: 0;
+    padding: 8px 0 0 8px;
     list-style: none;
   }
 
@@ -111,7 +112,6 @@ export const styles = css`
   /* Timeline Content */
   .timeline-item-content {
     position: relative;
-    top: calc(-1 * var(--nuraly-font-size-base, 14px) * 1.5715 - 2px);
     margin: 0 0 0 26px;
     word-break: break-word;
   }
