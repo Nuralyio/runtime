@@ -72,6 +72,32 @@ export { $debug } from './debug';
 // Provider Store
 export { $providers } from './provider';
 
+// Permissions Store
+export {
+  $permissionsCache,
+  $permissionsLoading,
+  getResourcePermissions,
+  refreshResourcePermissions,
+  invalidateResourcePermissions,
+  getCachedPermissions,
+  subscribeToPermissions,
+  clearPermissionsCache
+} from './permissions';
+export type { ResourcePermission, ParsedPermissions } from './permissions';
+
+// App Members Store
+export {
+  $appMembersCache,
+  getAppMembersData,
+  refreshAppMembersData,
+  invalidateAppMembersCache,
+  getCachedAppMembersData,
+  updateCachedMembers,
+  updateCachedPendingInvites,
+  updateCachedRoles
+} from './app-members';
+export type { AppMember, AppRole, PendingInvite, AppMembersData } from './app-members';
+
 // Type Definitions
 export type { ComponentElement } from './component/component.interface';
 export type { PageElement } from '../handlers/pages/page.interface';
