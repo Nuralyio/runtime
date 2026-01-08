@@ -56,6 +56,7 @@ export const enum ComponentType {
   BorderManager = "border_manager",
   AccessRoles = "access_roles",
   FunctionsPanel = "functions_panel",
+  ShareModal = "share_modal",
 }
 
 export interface DraggingComponentInfo {

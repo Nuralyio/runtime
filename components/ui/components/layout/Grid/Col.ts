@@ -157,7 +157,6 @@ export class GridCol extends BaseElementBlock {
           data-component-uuid=${this.component?.uuid}
           data-component-name=${this.component?.name}
           style=${styleMap(this.getStyles())}
-          span=${props.span ?? nothing}
           offset=${props.offset}
           order=${props.order ?? nothing}
           pull=${props.pull}
@@ -189,7 +188,6 @@ export class GridCol extends BaseElementBlock {
           ...this.getStyles(),
           "min-height": this.childrenComponents.length ? "auto" : "60px",
         })}
-        span=${props.span ?? nothing}
         offset=${props.offset}
         order=${props.order ?? nothing}
         pull=${props.pull}

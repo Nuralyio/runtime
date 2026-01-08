@@ -6,6 +6,7 @@
 
 import { updateComponentAttributes } from '../../redux/actions/component';
 import type { ComponentElement } from '../../redux/store/component';
+import { $showShareApplicationModal } from '../../redux/store/apps';
 
 export function createModalFunctions() {
   return {
@@ -71,6 +72,26 @@ export function createModalFunctions() {
         "input",
         { open: { type: "static", value: !currentOpen } }
       );
+    },
+
+    /**
+     * Opens the Share Application modal
+     * @example
+     * // In event handler:
+     * ShowShareModal();
+     */
+    ShowShareModal: () => {
+      $showShareApplicationModal.set(true);
+    },
+
+    /**
+     * Closes the Share Application modal
+     * @example
+     * // In event handler:
+     * CloseShareModal();
+     */
+    CloseShareModal: () => {
+      $showShareApplicationModal.set(false);
     },
   };
 }

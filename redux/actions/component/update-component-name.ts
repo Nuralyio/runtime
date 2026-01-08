@@ -36,7 +36,10 @@ export function updateComponentName(
       componentToUpdate.name = updatedName;
 
       // Directly update the component in the store
-      $components.setKey(`${application_id}[${componentIndex}]`, componentToUpdate);
+      // Note: deepMap.setKey doesn't support array index notation, so we update the entire array
+      const updatedComponents = [...applicationComponents];
+      updatedComponents[componentIndex] = componentToUpdate;
+      $components.setKey(application_id, updatedComponents);
 
       // Optionally save the update to persistent store / DB
       if (save) {

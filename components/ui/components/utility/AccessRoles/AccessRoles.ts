@@ -3,18 +3,14 @@ import { BaseElementBlock } from '../../base/BaseElement';
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { accessRolesStyles } from './AccessRoles.style';
-
-/**
- * ResourcePermission interface matching backend model
- */
-interface _ResourcePermission {
-  id?: number;
-  resource_id: string;
-  resource_type: 'page' | 'component' | 'application';
-  grantee_type: 'user' | 'role' | 'public' | 'anonymous';
-  grantee_id: string | null;
-  permission: 'read' | 'write' | 'delete' | 'share';
-}
+import {
+  getResourcePermissions,
+  refreshResourcePermissions,
+  getCachedPermissions,
+  $permissionsCache,
+  type ParsedPermissions
+} from '../../../../../redux/store/permissions';
+import { $currentApplication } from '../../../../../redux/store/apps';
 
 /**
  * ApplicationRole interface matching backend model
@@ -99,28 +95,50 @@ export class AccessRolesDisplay extends BaseElementBlock {
   private initialized: boolean = false;
 
   @state()
-  private loadedPermissions: {
-    is_public: boolean;
-    is_anonymous: boolean;
-    role_permissions: any[];
-  } | null = null;
+  private loadedPermissions: ParsedPermissions | null = null;
+
+  @state()
+  private requiresAuthOnly: boolean = false;
 
   /** Track the last resource_id we loaded permissions for */
   private lastLoadedResourceId: string | null = null;
+
+  /** Store subscription cleanup function */
+  private storeUnsubscribe: (() => void) | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     this.registerCallback('value', (val: any) => {
-      if (val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
+      // Only reload permissions if resource_id changed AND we've already initialized
+      // (to avoid double-loading during mount)
+      if (this.initialized && val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
         this.lastLoadedResourceId = val.resource_id;
         this.loadPermissions();
+      }
+    });
+
+    // Subscribe to permissions store changes for reactive updates
+    this.storeUnsubscribe = $permissionsCache.subscribe(() => {
+      const h = this.getValueInput();
+      const resourceId = h.resource_id;
+      const resourceType = h.resource_type || 'page';
+
+      if (resourceId && resourceType) {
+        const cached = getCachedPermissions(resourceType, resourceId);
+        if (cached && cached !== this.loadedPermissions) {
+          this.loadedPermissions = cached;
+        }
       }
     });
   }
 
   override disconnectedCallback(): void {
     this.unregisterCallback('value');
+    if (this.storeUnsubscribe) {
+      this.storeUnsubscribe();
+      this.storeUnsubscribe = null;
+    }
     super.disconnectedCallback();
   }
 
@@ -131,14 +149,27 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
   override firstUpdated(): void {
     const h = this.getValueInput();
+
     if (h.resource_id && h.resource_id !== this.lastLoadedResourceId) {
       this.lastLoadedResourceId = h.resource_id;
       void this.loadPermissions();
     }
 
+    // Load app settings from store (synchronous)
+    this.loadAppSettings();
+
     requestAnimationFrame(() => {
       this.initialized = true;
     });
+  }
+
+  /** Load application's requiresAuthOnly setting from store */
+  private loadAppSettings() {
+    // Use the centralized store instead of making API calls
+    const currentApp = $currentApplication.get() as any;
+    if (currentApp) {
+      this.requiresAuthOnly = currentApp.requiresAuthOnly || false;
+    }
   }
 
   private async loadPermissions() {
@@ -148,38 +179,26 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
     if (!resourceId) return;
 
-    try {
-      const response = await fetch(`/api/resources/${resourceType}/${resourceId}/permissions`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-      });
-
-      if (!response.ok) return;
-
-      const permissions = await response.json();
-
-      if (permissions && Array.isArray(permissions)) {
-        const is_public = permissions.some((p: any) => p.granteeType === 'public');
-        const is_anonymous = permissions.some((p: any) => p.granteeType === 'anonymous');
-        const role_permissions = permissions
-          .filter((p: any) => p.granteeType === 'role')
-          .map((p: any) => ({
-            role_name: p.granteeId,
-            permission: p.permission,
-            is_system: ['owner', 'admin', 'editor', 'viewer'].includes(p.granteeId)
-          }));
-
-        this.loadedPermissions = { is_public, is_anonymous, role_permissions };
-      }
-    } catch (error) {
-      console.error('Failed to load permissions:', error);
+    // Use centralized store - handles caching and deduplication
+    const permissions = await getResourcePermissions(resourceType, resourceId);
+    if (permissions) {
+      this.loadedPermissions = permissions;
     }
   }
 
   /** Public method to refresh permissions - called after changes */
   public async refreshPermissions() {
-    await this.loadPermissions();
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    // Force refresh from API and update cache
+    const permissions = await refreshResourcePermissions(resourceType, resourceId);
+    if (permissions) {
+      this.loadedPermissions = permissions;
+    }
   }
 
   private emitChange(action: string, data: any) {
@@ -188,6 +207,30 @@ export class AccessRolesDisplay extends BaseElementBlock {
       return;
     }
     this.executeEvent("onChange", new CustomEvent('change'), { action, ...data });
+  }
+
+  private async handleRequiresAuthOnlyToggle(checked: boolean) {
+    const currentApp = $currentApplication.get() as any;
+    const applicationId = currentApp?.uuid;
+
+    if (!applicationId) return;
+
+    try {
+      const response = await fetch(`/api/applications/${applicationId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ requiresAuthOnly: checked })
+      });
+
+      if (response.ok) {
+        this.requiresAuthOnly = checked;
+        // Update the store with the new value
+        $currentApplication.set({ ...currentApp, requiresAuthOnly: checked });
+      }
+    } catch (error) {
+      console.error('Failed to update requiresAuthOnly:', error);
+    }
   }
 
   private getConfig() {
@@ -202,35 +245,6 @@ export class AccessRolesDisplay extends BaseElementBlock {
       available_roles: h.available_roles || SYSTEM_ROLES.map((r, i) => ({ ...r, id: i + 1, application_id: null }))
     };
     return config;
-  }
-
-  private async handlePublicToggle(checked: boolean) {
-    const h = this.getValueInput();
-    const resourceId = h.resource_id;
-    const resourceType = h.resource_type || 'page';
-
-    if (!resourceId) return;
-
-    const baseUrl = `/api/resources/${resourceType}/${resourceId}`;
-    // Use full permission format: resourceType:read
-    const permission = `${resourceType}:read`;
-
-    try {
-      const response = checked
-        ? await fetch(`${baseUrl}/make-public`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ permission })
-          })
-        : await fetch(`${baseUrl}/make-public`, { method: 'DELETE', credentials: 'include' });
-
-      if (response.ok) await this.loadPermissions();
-    } catch (error) {
-      console.error('Failed to toggle public access:', error);
-    }
-
-    this.emitChange('toggle_public', { is_public: checked, grantee_type: 'public', permission });
   }
 
   private async handleAnonymousToggle(checked: boolean) {
@@ -256,7 +270,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
           })
         : await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE', credentials: 'include' });
 
-      if (response.ok) await this.loadPermissions();
+      if (response.ok) await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to toggle anonymous access:', error);
     }
@@ -281,7 +295,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName: role.name, permission: this.selectedPermission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to add role permission:', error);
     }
@@ -317,7 +331,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName, permission: this.selectedPermission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to add custom role permission:', error);
     }
@@ -350,7 +364,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName, permission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to update role permission:', error);
     }
@@ -370,7 +384,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         method: 'DELETE',
         credentials: 'include'
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to remove role permission:', error);
     }
@@ -431,12 +445,12 @@ export class AccessRolesDisplay extends BaseElementBlock {
             </div>
             <nr-checkbox size="small" .checked=${config.is_anonymous} @nr-change=${(e: CustomEvent) => this.handleAnonymousToggle(e.detail?.checked || false)}></nr-checkbox>
           </div>
-          <div class="access-toggle-row ${config.is_public && !config.is_anonymous ? 'active' : ''}">
+          <div class="access-toggle-row ${this.requiresAuthOnly ? 'active' : ''}">
             <div class="toggle-content">
-              <div class="toggle-label">Public with Link</div>
-              <div class="toggle-description">Anyone with the page link can view</div>
+              <div class="toggle-label">Allow All Authenticated Users</div>
+              <div class="toggle-description">Any logged-in user can view this app without being a member</div>
             </div>
-            <nr-checkbox size="small" .checked=${config.is_public} .disabled=${config.is_anonymous} @nr-change=${(e: CustomEvent) => this.handlePublicToggle(e.detail?.checked || false)}></nr-checkbox>
+            <nr-checkbox size="small" .checked=${this.requiresAuthOnly} .disabled=${config.is_anonymous} @nr-change=${(e: CustomEvent) => this.handleRequiresAuthOnlyToggle(e.detail?.checked || false)}></nr-checkbox>
           </div>
         </div>
 
