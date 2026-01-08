@@ -190,6 +190,7 @@ import Editor from "./editor";
 import { executeHandler } from "../handlers/handler-executor";
 import type { IRuntimeContext } from "../types/IRuntimeContext";
 import { RuntimeContextHelpers } from "../utils/RuntimeContextHelpers";
+import { $locale, setLocale } from './locale.store';
 
 
 /**
@@ -421,6 +422,15 @@ class RuntimeContext implements IRuntimeContext {
     $components.subscribe(() => this.registerApplications());
     eventDispatcher.on("component:refresh", () => this.registerApplications())
     eventDispatcher.on("component:updated", () => this.registerApplications())
+
+    // Expose locale in VarsProxy for handler access
+    // Allows handlers to use: Vars.locale to get, Vars.locale = 'fr' to set
+    Object.defineProperty(this.Vars, 'locale', {
+      get: () => $locale.get(),
+      set: (value: string) => setLocale(value),
+      enumerable: true,
+      configurable: true
+    });
   }
 
   /**
