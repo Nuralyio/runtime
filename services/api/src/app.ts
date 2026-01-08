@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer } from 'http';
 import { RegisterRoutes } from '../build/routes';
 import swaggerUi from 'swagger-ui-express';
 import * as swaggerDocument from '../build/swagger.json';
@@ -7,11 +8,16 @@ import dotenv from 'dotenv';
 import authMiddleware from './middlewares/user.middleware';
 import { schema } from '../prisma/prisma';
 import { createHandler } from 'graphql-http/lib/use/express';
+import { PresenceGateway } from './presence';
 var { ruruHTML } = require("ruru/server")
 
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+
+// Initialize presence gateway (Socket.IO)
+const presenceGateway = new PresenceGateway(httpServer);
 
 app.use(express.json());
 
@@ -30,6 +36,7 @@ app.get("/api/graphql-ide", (_req, res) => {
 })
 app.use(errorHandler);
 
-app.listen(process.env.BACKEND_PORT, () => {
+httpServer.listen(process.env.BACKEND_PORT, () => {
   console.log(`Server is running at http://localhost:${process.env.BACKEND_PORT}`);
+  console.log(`Presence WebSocket available at /socket.io/presence`);
 });
