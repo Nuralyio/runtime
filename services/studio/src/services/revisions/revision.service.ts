@@ -127,6 +127,34 @@ export async function fetchPublishedVersion(
 }
 
 /**
+ * Fetch published snapshot (app, pages, components) for end-user view
+ */
+export async function fetchPublishedSnapshot(
+  applicationUuid: string,
+  headers: Record<string, string>
+): Promise<{ status: string; data?: RevisionSnapshot | null; error?: any }> {
+  try {
+    const response = await fetch(APIS_URL.getPublishedSnapshot(applicationUuid), { headers });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return { status: "OK", data: null };
+      }
+      throw new Error(`Failed to fetch published snapshot: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    // Handle empty response (no published version)
+    if (!data || Object.keys(data).length === 0) {
+      return { status: "OK", data: null };
+    }
+    return { status: "OK", data };
+  } catch (error) {
+    return { status: "ERROR", error };
+  }
+}
+
+/**
  * Create a new revision (save version)
  */
 export async function createRevision(
