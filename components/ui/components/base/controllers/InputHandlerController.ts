@@ -2,6 +2,10 @@
  * @file InputHandlerController.ts
  * @description Controller for processing component input handlers
  * Matches original BaseElement behavior without debouncing
+ *
+ * Enhanced with i18n support:
+ * - Subscribes to locale changes
+ * - Applies translations after input resolution
  */
 
 import type { ReactiveController } from "lit";
@@ -13,6 +17,8 @@ import { addlogDebug } from "../../../../../redux/actions/debug/store";
 import type { InputHandlerHost, Disposable } from "../types/base-element.types";
 import { traitInputHandler } from "../BaseElement/input-handler.helpers";
 import type { StyleHandlerController } from "./StyleHandlerController";
+import { $locale } from "../../../../../state/locale.store";
+import { resolveTranslation } from "../../../../../utils/i18n";
 
 /**
  * Controller responsible for processing input handlers
@@ -25,6 +31,9 @@ export class InputHandlerController implements ReactiveController, Disposable {
 
   /** Reference to style controller for coordinated updates */
   styleController: StyleHandlerController | null = null;
+
+  /** Unsubscribe function for locale store subscription */
+  private localeUnsubscribe: (() => void) | null = null;
 
   constructor(host: InputHandlerHost) {
     this.host = host;
@@ -39,11 +48,25 @@ export class InputHandlerController implements ReactiveController, Disposable {
   hostConnected(): void {
     this.isConnected = true;
     this.setupEventListeners();
+    this.setupLocaleSubscription();
   }
 
   hostDisconnected(): void {
     this.isConnected = false;
     this.dispose();
+  }
+
+  /**
+   * Subscribe to locale changes for i18n support
+   * Re-processes all inputs when locale changes to apply translations
+   */
+  private setupLocaleSubscription(): void {
+    // Subscribe to Nanostore locale changes
+    this.localeUnsubscribe = $locale.subscribe(() => {
+      if (this.isConnected) {
+        this.processInputs();
+      }
+    });
   }
 
   /**
@@ -139,6 +162,7 @@ export class InputHandlerController implements ReactiveController, Disposable {
   /**
    * Process all component inputs
    * Matches original traitInputsHandlers behavior exactly
+   * Enhanced with i18n translation support
    */
   async processInputs(): Promise<void> {
     if (isServer || !this.isConnected) return;
@@ -171,6 +195,9 @@ export class InputHandlerController implements ReactiveController, Disposable {
       }
     }
 
+    // Apply translations to resolved inputs (i18n support)
+    this.applyTranslations();
+
     // Trigger re-render since resolvedInputs is mutated, not replaced
     // Lit's @state() only detects reference changes, so we need explicit update
     this.host.requestUpdate();
@@ -187,10 +214,50 @@ export class InputHandlerController implements ReactiveController, Disposable {
   }
 
   /**
+   * Apply translations to resolved inputs based on current locale
+   * Called after input resolution in processInputs()
+   *
+   * For each property in component.translations:
+   * - Gets the original resolved value
+   * - Resolves the translated value based on current locale
+   * - Updates resolvedInputs with translated value
+   */
+  private applyTranslations(): void {
+    const translations = this.host.component?.translations;
+
+    // Skip if no translations defined
+    if (!translations || Object.keys(translations).length === 0) {
+      return;
+    }
+
+    // Apply translation to each property that has translations
+    for (const propertyName of Object.keys(translations)) {
+      const original = this.host.resolvedInputs[propertyName];
+
+      // Only translate if we have a resolved value
+      if (original !== undefined) {
+        const translated = resolveTranslation(
+          original,
+          translations[propertyName]
+        );
+
+        // Update resolved input with translated value
+        this.host.resolvedInputs[propertyName] = translated;
+      }
+    }
+  }
+
+  /**
    * Clean up all resources
    */
   dispose(): void {
     this.subscription.unsubscribe();
     this.subscription = new Subscription();
+
+    // Clean up locale subscription
+    if (this.localeUnsubscribe) {
+      this.localeUnsubscribe();
+      this.localeUnsubscribe = null;
+    }
   }
 }
