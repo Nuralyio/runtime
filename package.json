@@ -10,41 +10,97 @@
       "import": "./index.ts",
       "types": "./index.ts"
     },
+    "./*": {
+      "import": "./*.ts",
+      "types": "./*.ts"
+    },
     "./redux": {
       "import": "./redux/index.ts",
       "types": "./redux/index.ts"
+    },
+    "./redux/*": {
+      "import": "./redux/*.ts",
+      "types": "./redux/*.ts"
     },
     "./redux/store": {
       "import": "./redux/store/index.ts",
       "types": "./redux/store/index.ts"
     },
+    "./redux/store/*": {
+      "import": "./redux/store/*.ts",
+      "types": "./redux/store/*.ts"
+    },
+    "./redux/store/component": {
+      "import": "./redux/store/component/index.ts",
+      "types": "./redux/store/component/index.ts"
+    },
+    "./redux/store/component/*": {
+      "import": "./redux/store/component/*.ts",
+      "types": "./redux/store/component/*.ts"
+    },
     "./redux/actions": {
       "import": "./redux/actions/index.ts",
       "types": "./redux/actions/index.ts"
+    },
+    "./redux/actions/*": {
+      "import": "./redux/actions/*.ts",
+      "types": "./redux/actions/*.ts"
     },
     "./redux/handlers": {
       "import": "./redux/handlers/index.ts",
       "types": "./redux/handlers/index.ts"
     },
+    "./redux/handlers/*": {
+      "import": "./redux/handlers/*.ts",
+      "types": "./redux/handlers/*.ts"
+    },
     "./handlers": {
       "import": "./handlers/index.ts",
       "types": "./handlers/index.ts"
+    },
+    "./handlers/*": {
+      "import": "./handlers/*.ts",
+      "types": "./handlers/*.ts"
     },
     "./state": {
       "import": "./state/index.ts",
       "types": "./state/index.ts"
     },
+    "./state/*": {
+      "import": "./state/*.ts",
+      "types": "./state/*.ts"
+    },
     "./utils": {
       "import": "./utils/index.ts",
       "types": "./utils/index.ts"
+    },
+    "./utils/*": {
+      "import": "./utils/*.ts",
+      "types": "./utils/*.ts"
     },
     "./types": {
       "import": "./types/index.ts",
       "types": "./types/index.ts"
     },
+    "./types/*": {
+      "import": "./types/*.ts",
+      "types": "./types/*.ts"
+    },
     "./components": {
       "import": "./components/index.ts",
       "types": "./components/index.ts"
+    },
+    "./components/*": {
+      "import": "./components/*.ts",
+      "types": "./components/*.ts"
+    },
+    "./presence": {
+      "import": "./presence/index.ts",
+      "types": "./presence/index.ts"
+    },
+    "./presence/*": {
+      "import": "./presence/*.ts",
+      "types": "./presence/*.ts"
     },
     "./micro-app/bundle": {
       "import": "./dist/micro-app.bundle.js",
