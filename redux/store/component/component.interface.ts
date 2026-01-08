@@ -57,6 +57,7 @@ export const enum ComponentType {
   AccessRoles = "access_roles",
   FunctionsPanel = "functions_panel",
   ShareModal = "share_modal",
+  RevisionPanel = "revision_panel",
 }
 
 export interface DraggingComponentInfo {
