@@ -17,6 +17,7 @@ import "../runtime/components/ui/components/utility/ValidationRules/ValidationRu
 import "../runtime/components/ui/components/utility/BorderManager/BorderManager";
 import "../runtime/components/ui/components/utility/AccessRoles/AccessRoles";
 import "../runtime/components/ui/components/utility/ShareModal/ShareModal";
+import "../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel";
 import "../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel";
 import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
 
@@ -35,6 +36,7 @@ export function registerStudioComponents(): void {
   ComponentRegistry.register({ type: ComponentType.BorderManager, tagName: "border-manager-display" });
   ComponentRegistry.register({ type: ComponentType.AccessRoles, tagName: "access-roles-display" });
   ComponentRegistry.register({ type: ComponentType.ShareModal, tagName: "share-modal" });
+  ComponentRegistry.register({ type: ComponentType.RevisionPanel, tagName: "revision-panel" });
   ComponentRegistry.register({
     type: ComponentType.FunctionsPanel,
     tagName: "functions-panel",

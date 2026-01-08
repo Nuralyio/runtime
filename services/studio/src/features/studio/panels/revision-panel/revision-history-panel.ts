@@ -13,13 +13,38 @@ const COMMON_ATTRIBUTES = {
   event: {},
 };
 
+// Helper function to fetch revisions - will be called on mount
+const FETCH_REVISIONS_HANDLER = /* js */ `
+  const applicationId = $currentApplication;
+  if (!applicationId) {
+    console.warn('No application selected for revision fetch');
+    $revisions = [];
+    return;
+  }
+
+  fetch('/api/applications/' + applicationId + '/revisions', {
+    headers: window.__AUTH_HEADERS__ || {}
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Failed to fetch revisions');
+    return res.json();
+  })
+  .then(data => {
+    $revisions = data.revisions || [];
+    console.log('Loaded revisions:', $revisions);
+  })
+  .catch(err => {
+    console.error('Failed to fetch revisions:', err);
+    $revisions = [];
+  });
+`;
+
 // Main revision history container
 export const revisionHistoryContainer = {
   uuid: "revision_history_container",
   name: "Revision History Container",
   application_id: "1",
   type: "container",
-  ...COMMON_ATTRIBUTES,
   style: {
     display: "flex",
     flexDirection: "column",
@@ -28,6 +53,12 @@ export const revisionHistoryContainer = {
     padding: "16px",
     gap: "16px",
     overflowY: "auto",
+  },
+  event: {
+    onMount: {
+      type: "handler",
+      value: FETCH_REVISIONS_HANDLER
+    }
   },
   children_ids: [
     "revision_history_header",
@@ -64,7 +95,7 @@ export const revisionHistoryTitle = {
     color: "var(--nuraly-text-primary)",
   },
   input: {
-    text: {
+    value: {
       type: "string",
       value: "Version History"
     }
@@ -82,11 +113,11 @@ export const revisionSaveButton = {
     width: "100%",
   },
   input: {
-    text: {
+    label: {
       type: "string",
       value: "Save Version"
     },
-    variant: {
+    type: {
       type: "string",
       value: "primary"
     },
@@ -117,15 +148,24 @@ export const revisionSaveButton = {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...window.__AUTH_HEADERS__
+            ...(window.__AUTH_HEADERS__ || {})
           },
           body: JSON.stringify({ description })
         })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to create revision');
+          return res.json();
+        })
         .then(data => {
           console.log('Revision created:', data);
           // Refresh the revision list
-          window.dispatchEvent(new CustomEvent('revision-created', { detail: data }));
+          fetch('/api/applications/' + applicationId + '/revisions', {
+            headers: window.__AUTH_HEADERS__ || {}
+          })
+          .then(res => res.json())
+          .then(listData => {
+            $revisions = listData.revisions || [];
+          });
           alert('Version saved successfully!');
         })
         .catch(err => {
@@ -205,7 +245,7 @@ export const revisionList = {
                   fontWeight: "600",
                 },
                 input: {
-                  text: {
+                  value: {
                     type: "handler",
                     value: "'v' + $item.revision + ($item.isPublished ? ' (Published)' : '')"
                   }
@@ -219,7 +259,7 @@ export const revisionList = {
                   color: "var(--nuraly-text-secondary)",
                 },
                 input: {
-                  text: {
+                  value: {
                     type: "handler",
                     value: "new Date($item.createdAt).toLocaleDateString()"
                   }
@@ -235,7 +275,7 @@ export const revisionList = {
               color: "var(--nuraly-text-secondary)",
             },
             input: {
-              text: {
+              value: {
                 type: "handler",
                 value: "$item.description || 'No description'"
               }
@@ -255,8 +295,8 @@ export const revisionList = {
                 type: "button_input",
                 style: { flex: "1" },
                 input: {
-                  text: { type: "string", value: "Preview" },
-                  variant: { type: "string", value: "secondary" },
+                  label: { type: "string", value: "Preview" },
+                  type: { type: "string", value: "secondary" },
                   size: { type: "string", value: "small" }
                 },
                 event: {
@@ -275,8 +315,8 @@ export const revisionList = {
                 type: "button_input",
                 style: { flex: "1" },
                 input: {
-                  text: { type: "string", value: "Publish" },
-                  variant: { type: "string", value: "primary" },
+                  label: { type: "string", value: "Publish" },
+                  type: { type: "string", value: "primary" },
                   size: { type: "string", value: "small" },
                   disabled: { type: "handler", value: "$item.isPublished" }
                 },
@@ -289,11 +329,21 @@ export const revisionList = {
                       if (confirm('Are you sure you want to publish version ' + revision + '?')) {
                         fetch('/api/applications/' + applicationId + '/revisions/' + revision + '/publish', {
                           method: 'POST',
-                          headers: window.__AUTH_HEADERS__
+                          headers: window.__AUTH_HEADERS__ || {}
                         })
-                        .then(res => res.json())
+                        .then(res => {
+                          if (!res.ok) throw new Error('Failed to publish');
+                          return res.json();
+                        })
                         .then(data => {
-                          window.dispatchEvent(new CustomEvent('revision-published', { detail: data }));
+                          // Refresh the revision list to show updated published status
+                          fetch('/api/applications/' + applicationId + '/revisions', {
+                            headers: window.__AUTH_HEADERS__ || {}
+                          })
+                          .then(res => res.json())
+                          .then(listData => {
+                            $revisions = listData.revisions || [];
+                          });
                           alert('Version published successfully!');
                         })
                         .catch(err => alert('Failed to publish'));
@@ -307,8 +357,8 @@ export const revisionList = {
                 type: "button_input",
                 style: { flex: "1" },
                 input: {
-                  text: { type: "string", value: "Restore" },
-                  variant: { type: "string", value: "secondary" },
+                  label: { type: "string", value: "Restore" },
+                  type: { type: "string", value: "secondary" },
                   size: { type: "string", value: "small" }
                 },
                 event: {

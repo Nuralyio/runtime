@@ -320,6 +320,21 @@ export default [
                 type: "componentIdArray",
                 value: ["function_micro_app_block"]
               }
+            },
+            {
+              label: {
+                type: "text",
+                value: "Versions",
+              },
+              icon :{
+                type:"string",
+                value:"history"
+              },
+              key : "revisions",
+              childrends: {
+                type: "componentIdArray",
+                value: ["revision_panel_component"]
+              }
             }
           ]
       }
@@ -458,5 +473,16 @@ export default [
     ...StudioForm,
     ...StudioModal,
     ...studioValidationRulesBlock,
-    ...studioBorderManagerBlock
+    ...studioBorderManagerBlock,
+    // Revision Panel - uses Lit component
+    {
+      uuid: "revision_panel_component",
+      name: "Revision Panel",
+      application_id: "1",
+      type: "revision_panel",
+      style: {
+        width: "100%",
+        height: "100%",
+      },
+    },
 ];

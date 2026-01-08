@@ -49,6 +49,21 @@ export default {
             type: "componentIdArray",
             value: ["function_micro_app_block"]
           }
+        },
+        {
+          label: {
+            type: "text",
+            value: "Versions"
+          },
+          icon: {
+            type: "string",
+            value: "history"
+          },
+          key: "revisions",
+          childrends: {
+            type: "componentIdArray",
+            value: ["revision_history_container"]
+          }
         }
       ]
     }
