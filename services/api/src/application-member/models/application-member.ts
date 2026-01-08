@@ -1,11 +1,17 @@
 import { ApplicationRole } from '../../application-role/models/application-role';
 
+export interface MemberUserInfo {
+  name: string;
+  email: string;
+}
+
 export class ApplicationMember {
   id?: number;
   userId: string;
   applicationId: string;
   roleId: number;
   role?: ApplicationRole;
+  user?: MemberUserInfo;
   createdAt?: Date;
   updatedAt?: Date;
 
@@ -13,12 +19,14 @@ export class ApplicationMember {
     userId: string,
     applicationId: string,
     roleId: number,
-    role?: ApplicationRole
+    role?: ApplicationRole,
+    user?: MemberUserInfo
   ) {
     this.userId = userId;
     this.applicationId = applicationId;
     this.roleId = roleId;
     this.role = role;
+    this.user = user;
   }
 
   /**

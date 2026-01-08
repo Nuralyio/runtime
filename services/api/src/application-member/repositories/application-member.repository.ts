@@ -1,6 +1,6 @@
 import { singleton } from 'tsyringe';
 import prisma from '../../../prisma/prisma';
-import { ApplicationMember } from '../models/application-member';
+import { ApplicationMember, MemberUserInfo } from '../models/application-member';
 import { ApplicationRole } from '../../application-role/models/application-role';
 import { IApplicationMemberRepository } from '../interfaces/application-member.interface';
 
@@ -22,17 +22,39 @@ export class ApplicationMemberRepository implements IApplicationMemberRepository
     return role;
   }
 
-  private mapToModel(data: any): ApplicationMember {
+  private mapToModel(data: any, userInfo?: MemberUserInfo): ApplicationMember {
     const member = new ApplicationMember(
       data.userId,
       data.applicationId,
       data.roleId,
-      data.role ? this.mapRoleToModel(data.role) : undefined
+      data.role ? this.mapRoleToModel(data.role) : undefined,
+      userInfo
     );
     member.id = data.id;
     member.createdAt = data.createdAt;
     member.updatedAt = data.updatedAt;
     return member;
+  }
+
+  private async fetchUserInfoByKeycloakIds(keycloakIds: string[]): Promise<Map<string, MemberUserInfo>> {
+    const users = await prisma.user.findMany({
+      where: {
+        keycloakId: { in: keycloakIds }
+      },
+      select: {
+        keycloakId: true,
+        name: true,
+        email: true
+      }
+    });
+
+    const userMap = new Map<string, MemberUserInfo>();
+    for (const user of users) {
+      if (user.keycloakId) {
+        userMap.set(user.keycloakId, { name: user.name, email: user.email });
+      }
+    }
+    return userMap;
   }
 
   async findById(id: number): Promise<ApplicationMember | null> {
@@ -59,7 +81,12 @@ export class ApplicationMemberRepository implements IApplicationMemberRepository
       include: { role: true },
       orderBy: { createdAt: 'asc' },
     });
-    return data.map(d => this.mapToModel(d));
+
+    // Fetch user info for all members
+    const userIds = data.map(d => d.userId);
+    const userInfoMap = await this.fetchUserInfoByKeycloakIds(userIds);
+
+    return data.map(d => this.mapToModel(d, userInfoMap.get(d.userId)));
   }
 
   async findApplicationsForUser(userId: string): Promise<string[]> {

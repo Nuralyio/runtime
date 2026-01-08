@@ -12,6 +12,10 @@ interface MemberResponse {
   id: number;
   userId: string;
   applicationId: string;
+  user?: {
+    name: string;
+    email: string;
+  };
   role: {
     id: number;
     name: string;
@@ -30,6 +34,7 @@ function toResponse(member: ApplicationMember): MemberResponse {
     id: member.id!,
     userId: member.userId,
     applicationId: member.applicationId,
+    user: member.user,
     role: {
       id: member.role?.id!,
       name: member.role?.name || '',
@@ -85,6 +90,25 @@ export class ApplicationMemberController extends Controller {
 
     const members = await this.memberService.getApplicationMembers(applicationId);
     return members.map(toResponse);
+  }
+
+  /**
+   * Get the current user's membership for this application.
+   * This endpoint allows any authenticated user to check their own membership.
+   * No special permissions required - users can always check their own role.
+   */
+  @Get('me')
+  public async getMyMembership(
+    @Request() request: NRequest,
+    @Path() applicationId: string
+  ): Promise<MemberResponse> {
+    const member = await this.memberService.getMember(request.user.uuid, applicationId);
+    if (!member) {
+      this.setStatus(404);
+      throw new Error('You are not a member of this application');
+    }
+
+    return toResponse(member);
   }
 
   /**
