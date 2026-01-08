@@ -108,6 +108,13 @@ export class PageContent extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    // Check if we're in standalone view mode (not inside studio iframe)
+    // This sets isViewMode for access control checks
+    if ((window as any).__IS_VIEW_MODE__) {
+      this.isViewMode = true;
+      this.mode = ViewMode.Preview;
+    }
+
     // Subscribe to application pages with debounced refresh
     const pagesSubscription = $applicationPages($currentApplication.get()?.uuid).subscribe(() => {
       this.refreshComponent();
@@ -116,6 +123,9 @@ export class PageContent extends LitElement {
 
     // Set up event listeners with proper cleanup tracking
     const editModeHandler = () => {
+      // Skip mode changes if in view mode
+      if (this.isViewMode) return;
+
       if(!ExecuteInstance.Vars.currentEditingMode){
         ExecuteInstance.Vars.currentEditingMode = ViewMode.Edit;
         this.mode = ViewMode.Edit;

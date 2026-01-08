@@ -23,6 +23,7 @@ export const APIS_URL = {
 
   // Members
   getApplicationMembers: (appId: string) => `${API_BASE}/api/applications/${appId}/members`,
+  getMyMembership: (appId: string) => `${API_BASE}/api/applications/${appId}/members/me`,
   inviteMember: (appId: string) => `${API_BASE}/api/applications/${appId}/members`,
   updateMember: (appId: string, userId: string) => `${API_BASE}/api/applications/${appId}/members/${userId}`,
   removeMember: (appId: string, userId: string) => `${API_BASE}/api/applications/${appId}/members/${userId}`,
