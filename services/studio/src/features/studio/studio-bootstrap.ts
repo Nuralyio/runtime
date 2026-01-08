@@ -8,6 +8,8 @@ import { $currentApplication } from '../runtime/redux/store/apps';
 import { getAppMembersData } from '../runtime/redux/store/app-members';
 import { eventDispatcher } from '../runtime/utils/change-detection';
 import { registerStudioComponents } from './register-studio-components';
+import { presenceClient, PresenceIndicator } from '../runtime/presence';
+import { ComponentRegistry } from '../runtime/utils/component-registry';
 
 export function initializeStudio(): void {
   const isServer = typeof window === "undefined";
@@ -18,10 +20,20 @@ export function initializeStudio(): void {
     if (isStudioPath) {
       registerStudioComponents();
 
+      // Register presence indicator component
+      ComponentRegistry.register({
+        type: 'presence_indicator',
+        tagName: 'presence-indicator',
+        componentClass: PresenceIndicator,
+      });
+
       // Preload app members data for the current application (for roles dropdown, etc.)
       const currentApp = $currentApplication.get() as any;
       if (currentApp?.uuid) {
         getAppMembersData(currentApp.uuid);
+
+        // Initialize presence for collaborative editing
+        initializePresence(currentApp.uuid);
       }
 
       import("./studio-entrypoint").then(studioModule => {
@@ -30,6 +42,27 @@ export function initializeStudio(): void {
       });
     }
   }
+}
+
+/**
+ * Initialize presence tracking for the studio
+ */
+function initializePresence(applicationId: string): void {
+  // Connect to presence server
+  presenceClient.connect();
+
+  // Join the application room once connected
+  // The client handles reconnection and rejoin automatically
+  setTimeout(() => {
+    presenceClient.joinApplication(applicationId, {
+      pageName: 'Studio Editor',
+    });
+  }, 500);
+
+  // Clean up on page unload
+  window.addEventListener('beforeunload', () => {
+    presenceClient.disconnect();
+  });
 }
 
 // Auto-initialize when module is loaded on client-side
