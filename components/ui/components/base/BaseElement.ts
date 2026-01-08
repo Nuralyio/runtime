@@ -22,6 +22,7 @@ import type { ComponentElement } from "../../../../redux/store/component/compone
 import { ExecuteInstance } from "../../../../state/runtime-context";
 import { getInitPlatform } from "../../../../state/editor";
 import { setupHashScroll, scrollToTarget } from "./BaseElement/input-handler.helpers";
+import { getCurrentUser } from "../../../../handlers/runtime-api/user";
 
 /**
  * Core BaseElement without editor-specific functionality
@@ -285,10 +286,47 @@ export class BaseElementCore extends LitElement {
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * Whether component should be displayed based on display input
+   * Whether component should be displayed based on display input and access roles
    */
   protected get shouldDisplay(): boolean {
-    return this.resolvedInputs?.display !== false;
+    // Check display input first
+    if (this.resolvedInputs?.display === false) {
+      return false;
+    }
+
+    // Check access roles (skip in editor mode)
+    if (!this.isViewMode) {
+      return true; // Always show in editor mode
+    }
+
+    const accessRolesRaw = this.resolvedInputs?.access?.roles;
+    // Normalize to array - handle both string and array formats
+    const accessRoles = accessRolesRaw
+      ? (Array.isArray(accessRolesRaw) ? accessRolesRaw : [accessRolesRaw])
+      : null;
+
+    if (accessRoles && accessRoles.length > 0) {
+      const user = getCurrentUser();
+      // Get Keycloak global roles
+      const keycloakRoles = user?.roles || [];
+      // Get app-specific membership role (owner, admin, editor, viewer)
+      // This is set by the SSR layer when loading the app
+      const appRole = (user as any)?.appRole;
+
+      // Combine all roles for checking
+      const allUserRoles = [...keycloakRoles];
+      if (appRole) {
+        allUserRoles.push(appRole);
+      }
+
+      // Check if user has any of the allowed roles
+      const hasAccess = accessRoles.some((role: string) => allUserRoles.includes(role));
+      if (!hasAccess) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

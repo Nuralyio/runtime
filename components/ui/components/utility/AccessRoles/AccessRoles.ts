@@ -3,18 +3,14 @@ import { BaseElementBlock } from '../../base/BaseElement';
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { accessRolesStyles } from './AccessRoles.style';
-
-/**
- * ResourcePermission interface matching backend model
- */
-interface _ResourcePermission {
-  id?: number;
-  resource_id: string;
-  resource_type: 'page' | 'component' | 'application';
-  grantee_type: 'user' | 'role' | 'public' | 'anonymous';
-  grantee_id: string | null;
-  permission: 'read' | 'write' | 'delete' | 'share';
-}
+import {
+  getResourcePermissions,
+  refreshResourcePermissions,
+  getCachedPermissions,
+  $permissionsCache,
+  type ParsedPermissions
+} from '../../../../../redux/store/permissions';
+import { $currentApplication } from '../../../../../redux/store/apps';
 
 /**
  * ApplicationRole interface matching backend model
@@ -99,11 +95,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
   private initialized: boolean = false;
 
   @state()
-  private loadedPermissions: {
-    is_public: boolean;
-    is_anonymous: boolean;
-    role_permissions: any[];
-  } | null = null;
+  private loadedPermissions: ParsedPermissions | null = null;
 
   @state()
   private requiresAuthOnly: boolean = false;
@@ -111,28 +103,42 @@ export class AccessRolesDisplay extends BaseElementBlock {
   /** Track the last resource_id we loaded permissions for */
   private lastLoadedResourceId: string | null = null;
 
-  /** Track the last application_id we loaded requiresAuthOnly for */
-  private lastLoadedAppId: string | null = null;
+  /** Store subscription cleanup function */
+  private storeUnsubscribe: (() => void) | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     this.registerCallback('value', (val: any) => {
-      // Reload permissions if resource_id changed
-      if (val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
+      // Only reload permissions if resource_id changed AND we've already initialized
+      // (to avoid double-loading during mount)
+      if (this.initialized && val?.resource_id && val.resource_id !== this.lastLoadedResourceId) {
         this.lastLoadedResourceId = val.resource_id;
         this.loadPermissions();
       }
-      // Also reload if application_id is now available and we haven't loaded it yet
-      if (val?.application_id && val.application_id !== this.lastLoadedAppId) {
-        this.lastLoadedAppId = val.application_id;
-        this.loadAppSettings();
+    });
+
+    // Subscribe to permissions store changes for reactive updates
+    this.storeUnsubscribe = $permissionsCache.subscribe(() => {
+      const h = this.getValueInput();
+      const resourceId = h.resource_id;
+      const resourceType = h.resource_type || 'page';
+
+      if (resourceId && resourceType) {
+        const cached = getCachedPermissions(resourceType, resourceId);
+        if (cached && cached !== this.loadedPermissions) {
+          this.loadedPermissions = cached;
+        }
       }
     });
   }
 
   override disconnectedCallback(): void {
     this.unregisterCallback('value');
+    if (this.storeUnsubscribe) {
+      this.storeUnsubscribe();
+      this.storeUnsubscribe = null;
+    }
     super.disconnectedCallback();
   }
 
@@ -148,45 +154,21 @@ export class AccessRolesDisplay extends BaseElementBlock {
       this.lastLoadedResourceId = h.resource_id;
       void this.loadPermissions();
     }
-    if (h.application_id && h.application_id !== this.lastLoadedAppId) {
-      this.lastLoadedAppId = h.application_id;
-      void this.loadAppSettings();
-    }
+
+    // Load app settings from store (synchronous)
+    this.loadAppSettings();
 
     requestAnimationFrame(() => {
       this.initialized = true;
     });
   }
 
-  /** Load application's requiresAuthOnly setting */
-  private async loadAppSettings() {
-    const h = this.getValueInput();
-    let applicationId = h.application_id;
-
-    // If no application_id provided, try to get it from the URL
-    if (!applicationId) {
-      const urlMatch = window.location.pathname.match(/\/app\/(?:studio|preview)\/([^\/]+)/);
-      applicationId = urlMatch?.[1];
-    }
-
-    if (!applicationId) {
-      return;
-    }
-
-    try {
-      const appResponse = await fetch(`/api/applications/${applicationId}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-      });
-
-      if (appResponse.ok) {
-        const app = await appResponse.json();
-        this.requiresAuthOnly = app.requiresAuthOnly || false;
-        this.requestUpdate();
-      }
-    } catch (error) {
-      console.error('Failed to load app settings:', error);
+  /** Load application's requiresAuthOnly setting from store */
+  private loadAppSettings() {
+    // Use the centralized store instead of making API calls
+    const currentApp = $currentApplication.get() as any;
+    if (currentApp) {
+      this.requiresAuthOnly = currentApp.requiresAuthOnly || false;
     }
   }
 
@@ -197,39 +179,26 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
     if (!resourceId) return;
 
-    try {
-      // Load permissions
-      const response = await fetch(`/api/resources/${resourceType}/${resourceId}/permissions`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        const permissions = await response.json();
-
-        if (permissions && Array.isArray(permissions)) {
-          const is_public = permissions.some((p: any) => p.granteeType === 'public');
-          const is_anonymous = permissions.some((p: any) => p.granteeType === 'anonymous');
-          const role_permissions = permissions
-            .filter((p: any) => p.granteeType === 'role')
-            .map((p: any) => ({
-              role_name: p.granteeId,
-              permission: p.permission,
-              is_system: ['owner', 'admin', 'editor', 'viewer'].includes(p.granteeId)
-            }));
-
-          this.loadedPermissions = { is_public, is_anonymous, role_permissions };
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load permissions:', error);
+    // Use centralized store - handles caching and deduplication
+    const permissions = await getResourcePermissions(resourceType, resourceId);
+    if (permissions) {
+      this.loadedPermissions = permissions;
     }
   }
 
   /** Public method to refresh permissions - called after changes */
   public async refreshPermissions() {
-    await this.loadPermissions();
+    const h = this.getValueInput();
+    const resourceId = h.resource_id;
+    const resourceType = h.resource_type || 'page';
+
+    if (!resourceId) return;
+
+    // Force refresh from API and update cache
+    const permissions = await refreshResourcePermissions(resourceType, resourceId);
+    if (permissions) {
+      this.loadedPermissions = permissions;
+    }
   }
 
   private emitChange(action: string, data: any) {
@@ -241,8 +210,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
   }
 
   private async handleRequiresAuthOnlyToggle(checked: boolean) {
-    const h = this.getValueInput();
-    const applicationId = h.application_id;
+    const currentApp = $currentApplication.get() as any;
+    const applicationId = currentApp?.uuid;
 
     if (!applicationId) return;
 
@@ -256,6 +225,8 @@ export class AccessRolesDisplay extends BaseElementBlock {
 
       if (response.ok) {
         this.requiresAuthOnly = checked;
+        // Update the store with the new value
+        $currentApplication.set({ ...currentApp, requiresAuthOnly: checked });
       }
     } catch (error) {
       console.error('Failed to update requiresAuthOnly:', error);
@@ -299,7 +270,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
           })
         : await fetch(`${baseUrl}/make-anonymous`, { method: 'DELETE', credentials: 'include' });
 
-      if (response.ok) await this.loadPermissions();
+      if (response.ok) await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to toggle anonymous access:', error);
     }
@@ -324,7 +295,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName: role.name, permission: this.selectedPermission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to add role permission:', error);
     }
@@ -360,7 +331,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName, permission: this.selectedPermission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to add custom role permission:', error);
     }
@@ -393,7 +364,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         credentials: 'include',
         body: JSON.stringify({ roleName, permission })
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to update role permission:', error);
     }
@@ -413,7 +384,7 @@ export class AccessRolesDisplay extends BaseElementBlock {
         method: 'DELETE',
         credentials: 'include'
       });
-      await this.loadPermissions();
+      await this.refreshPermissions();
     } catch (error) {
       console.error('Failed to remove role permission:', error);
     }

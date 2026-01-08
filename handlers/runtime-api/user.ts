@@ -16,6 +16,8 @@ export interface CurrentUserInfo {
   last_name?: string;
   anonymous: boolean;
   roles: string[];
+  /** Application membership role (owner, admin, editor, viewer) - set by SSR */
+  appRole?: string;
 }
 
 /**
