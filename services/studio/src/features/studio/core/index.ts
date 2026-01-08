@@ -18,6 +18,7 @@ export { StudioCommonInputs } from "./inputs/index.ts";
 
 // Individual Input Blocks (default exports)
 export { default as studioDisplayBlock } from "./inputs/display.ts";
+export { default as studioAccessBlock } from "./inputs/access.ts";
 export { default as studioHelperTextBlock } from "./inputs/helper-text.ts";
 export { default as studioPlaceholderBlock } from "./inputs/placeholder.ts";
 export { default as studioIconPickerBlock } from "./inputs/icon.ts";

@@ -14,6 +14,7 @@
 import { StudioComponentIdInput } from "../core/inputs/id.ts";
 import { StudioComponentNameInput } from "../core/inputs/name.ts";
 import StudioDisplayBlock from "../core/inputs/display.ts";
+import StudioAccessBlock from "../core/inputs/access.ts";
 import { StudioComponentHashInput } from "../core/inputs/hash.ts";
 
 /**
@@ -24,6 +25,7 @@ export const COMMON_PROPERTIES_MAP: Record<string, any[]> = {
   component_value_text_block: StudioComponentNameInput,
   component_id_text_block: StudioComponentIdInput,
   display_block: StudioDisplayBlock,
+  access_block: StudioAccessBlock,
   component_hash_text_block: StudioComponentHashInput,
   component_refs_block: [],
 };

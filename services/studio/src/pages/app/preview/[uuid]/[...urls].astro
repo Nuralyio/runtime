@@ -6,7 +6,7 @@ import { $pages } from '../../../../features/runtime/redux/store/page'
 import { $components } from '../../../../features/runtime/redux/store/component/store';
 import { $applications } from '../../../../features/runtime/redux/store/apps';
 import { processHeaders } from '../../../../features/runtime/utils/api-calls-utils';
-import { fetchApplicationById, fetchApplicationPagesById, fetchApplicationComponentById } from '../../../../services';
+import { fetchApplicationById, fetchApplicationPagesById, fetchApplicationComponentById, fetchMyMembership } from '../../../../services';
 import { ApplicationNotFound } from '../../../../services/applications/exceptions/ApplicationNotFound';
 
 const { title, uuid, urls = "" } = Astro.params;
@@ -37,6 +37,18 @@ try {
   }
 } catch (error) {
   console.error('Error parsing X-USER header:', error);
+}
+
+// Fetch the current user's app membership role (if authenticated)
+if (currentUser && !currentUser.anonymous && uuid) {
+  try {
+    const membership = await fetchMyMembership(processedHeaders, uuid);
+    if (membership?.role) {
+      currentUser.appRole = membership.role;
+    }
+  } catch (error) {
+    console.error('Error fetching user membership:', error);
+  }
 }
 
 let pageData, componentData, applications, application;
