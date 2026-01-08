@@ -58,6 +58,7 @@ export const enum ComponentType {
   FunctionsPanel = "functions_panel",
   ShareModal = "share_modal",
   RevisionPanel = "revision_panel",
+  LanguageSwitcher = "language_switcher",
 }
 
 export interface DraggingComponentInfo {
@@ -79,6 +80,7 @@ export interface ComponentElement {
   style_handlers: { [key: string]: string };
   event?: { [key: string]: string };
   input?: { [key: string]: any };
+  inputHandlers?: { [key: string]: string };
   errors?: { [key: string]: string };
   children_ids?: string[];
   children?: ComponentElement[];
@@ -90,6 +92,31 @@ export interface ComponentElement {
     Vars: any;
     runtimeContext: any;
   }; // Micro-app isolated runtime context (set by MicroAppRuntimeContext)
+
+  /**
+   * Translations for input properties (i18n support)
+   *
+   * Structure:
+   * {
+   *   [propertyName]: {
+   *     [localeCode]: translatedValue
+   *   }
+   * }
+   *
+   * @example
+   * {
+   *   "value": { "fr": "Bonjour", "ar": "مرحبا" },
+   *   "placeholder": { "fr": "Entrez le texte...", "ar": "أدخل النص..." }
+   * }
+   *
+   * The default locale value comes from input[propertyName].value
+   * Other locale values come from translations[propertyName][locale]
+   */
+  translations?: {
+    [propertyName: string]: {
+      [locale: string]: any;
+    };
+  };
 }
 
 export default {};
