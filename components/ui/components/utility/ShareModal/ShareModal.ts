@@ -2,44 +2,21 @@ import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { shareModalStyles } from './ShareModal.style';
 import { getVarValue } from '../../../../../redux/store/context';
+import {
+  getAppMembersData,
+  updateCachedMembers,
+  updateCachedPendingInvites,
+  updateCachedRoles,
+  getCachedAppMembersData,
+  $appMembersCache,
+  type AppMember,
+  type AppRole,
+  type PendingInvite
+} from '../../../../../redux/store/app-members';
 
-// Types
-interface Role {
-  id: number;
-  name: string;
-  displayName: string;
-  description: string | null;
-  permissions: string[];
-  hierarchy: number;
-  isSystem: boolean;
-}
-
-interface Member {
-  id: number;
-  userId: string;
-  applicationId: string;
-  role: {
-    id: number;
-    name: string;
-    displayName: string;
-    hierarchy: number;
-  };
-  createdAt: string;
-}
-
-interface PendingInvite {
-  id: number;
-  email: string;
-  applicationId: string;
-  role: {
-    id: number;
-    name: string;
-    displayName: string;
-    hierarchy: number;
-  };
-  expiresAt: string;
-  createdAt: string;
-}
+// Type aliases for backwards compatibility
+type Role = AppRole;
+type Member = AppMember;
 
 /**
  * ShareModal Component
@@ -72,15 +49,41 @@ export class ShareModal extends LitElement {
   @state() private newRoleHierarchy = 50;
   @state() private newRolePermissions: string[] = [];
 
-  private hasLoaded = false;
+  private storeUnsubscribe: (() => void) | null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
-    // Load data when component is connected (modal is opened)
-    if (!this.hasLoaded) {
-      this.loadData();
-      this.hasLoaded = true;
+
+    // Subscribe to store changes
+    this.storeUnsubscribe = $appMembersCache.subscribe((cache) => {
+      const appId = this.getAppId();
+      if (appId && cache[appId]) {
+        const data = cache[appId];
+        this.members = data.members;
+        this.pendingInvites = data.pendingInvites;
+        this.roles = data.roles;
+        this.loading = data.loading;
+
+        // Set default role for invite if not set
+        if (!this.selectedRoleId && this.roles.length > 0) {
+          const defaultRole = this.roles.find(r => r.name !== 'owner');
+          if (defaultRole) {
+            this.selectedRoleId = defaultRole.id;
+          }
+        }
+      }
+    });
+
+    // Load data from store (will use cache if available)
+    this.loadData();
+  }
+
+  override disconnectedCallback(): void {
+    if (this.storeUnsubscribe) {
+      this.storeUnsubscribe();
+      this.storeUnsubscribe = null;
     }
+    super.disconnectedCallback();
   }
 
   private getAppId(): string | null {
@@ -90,38 +93,43 @@ export class ShareModal extends LitElement {
 
   private async loadData(): Promise<void> {
     const appId = this.getAppId();
-    if (!appId) {
-      return;
-    }
+    if (!appId) return;
 
-    this.loading = true;
-    try {
-      // Fetch members, pending invites, and roles in parallel
-      const [membersRes, pendingRes, rolesRes] = await Promise.all([
-        fetch(`/api/applications/${appId}/members`, { credentials: 'include' }),
-        fetch(`/api/applications/${appId}/pending-invites`, { credentials: 'include' }),
-        fetch(`/api/applications/${appId}/roles`, { credentials: 'include' }),
-      ]);
+    // Check cache first
+    const cached = getCachedAppMembersData(appId);
+    if (cached) {
+      this.members = cached.members;
+      this.pendingInvites = cached.pendingInvites;
+      this.roles = cached.roles;
+      this.loading = false;
 
-      if (membersRes.ok) {
-        this.members = await membersRes.json();
-      }
-      if (pendingRes.ok) {
-        this.pendingInvites = await pendingRes.json();
-      }
-      if (rolesRes.ok) {
-        this.roles = await rolesRes.json();
-        // Set default role for invite (first non-owner role)
+      // Set default role for invite
+      if (!this.selectedRoleId && this.roles.length > 0) {
         const defaultRole = this.roles.find(r => r.name !== 'owner');
-        if (defaultRole && !this.selectedRoleId) {
+        if (defaultRole) {
           this.selectedRoleId = defaultRole.id;
         }
       }
-    } catch (error) {
-      console.error('Failed to load share data:', error);
-    } finally {
-      this.loading = false;
+      return;
     }
+
+    // Fetch from API via store (handles deduplication)
+    this.loading = true;
+    const data = await getAppMembersData(appId);
+    if (data) {
+      this.members = data.members;
+      this.pendingInvites = data.pendingInvites;
+      this.roles = data.roles;
+
+      // Set default role for invite
+      if (!this.selectedRoleId && this.roles.length > 0) {
+        const defaultRole = this.roles.find(r => r.name !== 'owner');
+        if (defaultRole) {
+          this.selectedRoleId = defaultRole.id;
+        }
+      }
+    }
+    this.loading = false;
   }
 
   private resetForm(): void {
@@ -159,13 +167,17 @@ export class ShareModal extends LitElement {
           type: 'success',
           text: `Invite sent to ${this.inviteEmail}. They will be added when they sign up.`,
         };
-        this.pendingInvites = [...this.pendingInvites, result.invite];
+        const newPendingInvites = [...this.pendingInvites, result.invite];
+        this.pendingInvites = newPendingInvites;
+        updateCachedPendingInvites(appId, newPendingInvites);
       } else {
         this.inviteMessage = {
           type: 'success',
           text: `${this.inviteEmail} has been added to the application.`,
         };
-        this.members = [...this.members, result.member];
+        const newMembers = [...this.members, result.member];
+        this.members = newMembers;
+        updateCachedMembers(appId, newMembers);
       }
 
       this.inviteEmail = '';
@@ -197,9 +209,11 @@ export class ShareModal extends LitElement {
       }
 
       const updatedMember = await response.json();
-      this.members = this.members.map(m =>
+      const newMembers = this.members.map(m =>
         m.userId === userId ? updatedMember : m
       );
+      this.members = newMembers;
+      updateCachedMembers(appId, newMembers);
     } catch (error: any) {
       console.error('Failed to update member:', error);
       alert(error.message || 'Failed to update member role');
@@ -223,7 +237,9 @@ export class ShareModal extends LitElement {
         throw new Error(error.message || 'Failed to remove member');
       }
 
-      this.members = this.members.filter(m => m.userId !== userId);
+      const newMembers = this.members.filter(m => m.userId !== userId);
+      this.members = newMembers;
+      updateCachedMembers(appId, newMembers);
     } catch (error: any) {
       console.error('Failed to remove member:', error);
       alert(error.message || 'Failed to remove member');
@@ -244,7 +260,9 @@ export class ShareModal extends LitElement {
         throw new Error('Failed to cancel invite');
       }
 
-      this.pendingInvites = this.pendingInvites.filter(i => i.id !== inviteId);
+      const newPendingInvites = this.pendingInvites.filter(i => i.id !== inviteId);
+      this.pendingInvites = newPendingInvites;
+      updateCachedPendingInvites(appId, newPendingInvites);
     } catch (error) {
       console.error('Failed to cancel invite:', error);
     }
@@ -273,7 +291,9 @@ export class ShareModal extends LitElement {
       }
 
       const newRole = await response.json();
-      this.roles = [...this.roles, newRole];
+      const newRoles = [...this.roles, newRole];
+      this.roles = newRoles;
+      updateCachedRoles(appId, newRoles);
       this.showCreateRoleForm = false;
       this.newRoleName = '';
       this.newRoleDisplayName = '';
@@ -301,7 +321,9 @@ export class ShareModal extends LitElement {
         throw new Error(error.message || 'Failed to delete role');
       }
 
-      this.roles = this.roles.filter(r => r.id !== roleId);
+      const newRoles = this.roles.filter(r => r.id !== roleId);
+      this.roles = newRoles;
+      updateCachedRoles(appId, newRoles);
     } catch (error: any) {
       alert(error.message || 'Failed to delete role');
     }
@@ -365,14 +387,16 @@ export class ShareModal extends LitElement {
   private renderMemberItem(member: Member) {
     const isOwner = member.role.name === 'owner';
     const assignableRoles = this.roles.filter(r => r.name !== 'owner');
+    const displayName = member.user?.name || member.userId.slice(0, 8);
+    const displayEmail = member.user?.email || '';
 
     return html`
       <div class="member-item">
         <div class="member-info">
-          <div class="member-avatar">${this.getInitials(member.userId.slice(0, 8))}</div>
+          <div class="member-avatar">${this.getInitials(displayName)}</div>
           <div class="member-details">
-            <div class="member-name">${member.userId}</div>
-            <div class="member-email">Added ${new Date(member.createdAt).toLocaleDateString()}</div>
+            <div class="member-name">${displayName}</div>
+            <div class="member-email">${displayEmail || `Added ${new Date(member.createdAt).toLocaleDateString()}`}</div>
           </div>
         </div>
         <div class="member-actions">
