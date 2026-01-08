@@ -361,7 +361,17 @@ export default [{
   style: {
     width: "40vw",
   },
-  children_ids: ["share_button_top_bar", "platform_top_bar", "vdivider", "app_logout_top_bar"]
+  children_ids: ["presence_indicator_top_bar", "share_button_top_bar", "platform_top_bar", "vdivider", "app_logout_top_bar"]
+},
+{
+  uuid: "presence_indicator_top_bar",
+  name: "Presence Indicator",
+  application_id: "1",
+  type: "presence_indicator",
+  input: {},
+  style: {
+    "margin-right": "12px"
+  }
 },
 {
   uuid: "zoom_top_bar",
