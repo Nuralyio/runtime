@@ -25,6 +25,21 @@ interface ListRevisionsResponse {
   hasMore: boolean;
 }
 
+interface RecentChangesResponse {
+  componentVersions: ComponentVersionModel[];
+  pageVersions: PageVersionModel[];
+  appVersions: ApplicationVersionModel[];
+}
+
+interface PublishCurrentBody {
+  description?: string;
+}
+
+interface PublishCurrentResponse {
+  revision: ApplicationRevisionModel;
+  published: PublishedVersionModel;
+}
+
 @Route('/api/applications/{applicationUuid}/revisions')
 @Tags('Revisions')
 @injectable()
@@ -45,11 +60,11 @@ export class RevisionController extends Controller {
     @Path() applicationUuid: string,
     @Body() body: CreateRevisionBody
   ): Promise<ApplicationRevisionModel> {
-    // Check write permission
+    // Check write permission - allow anyone who can write pages to create revisions
     await this.authorizationService.requireAppPermission(
       request.user,
       applicationUuid,
-      'application:write'
+      'page:write'
     );
 
     return await this.revisionService.createRevision(
@@ -94,7 +109,114 @@ export class RevisionController extends Controller {
   }
 
   /**
+   * Get recent changes (component, page, and app versions) - NOT full snapshots
+   */
+  @Get('changes')
+  async getRecentChanges(
+    @Request() request: NRequest,
+    @Path() applicationUuid: string,
+    @Query() limit?: number
+  ): Promise<RecentChangesResponse> {
+    // Check read permission
+    const canRead = await this.authorizationService.canAccess(
+      request.user,
+      applicationUuid,
+      'application',
+      'application:read',
+      applicationUuid
+    );
+
+    if (!canRead) {
+      this.setStatus(403);
+      throw new Error('Access denied: missing read permission');
+    }
+
+    return await this.revisionService.getRecentChanges(
+      applicationUuid,
+      limit ?? 50
+    );
+  }
+
+  /**
+   * Get currently published revision info
+   * NOTE: This route MUST come before @Get('{revision}') to avoid "published" being parsed as a number
+   */
+  @Get('published')
+  async getPublishedRevision(
+    @Request() request: NRequest,
+    @Path() applicationUuid: string
+  ): Promise<PublishedVersionModel | null> {
+    // Check read permission
+    const canRead = await this.authorizationService.canAccess(
+      request.user,
+      applicationUuid,
+      'application',
+      'application:read',
+      applicationUuid
+    );
+
+    if (!canRead) {
+      this.setStatus(403);
+      throw new Error('Access denied: missing read permission');
+    }
+
+    return await this.revisionService.getPublishedVersion(applicationUuid);
+  }
+
+  /**
+   * Get the published snapshot (app, pages, components) for end-user view
+   * This is what /app/preview should use to render the published version
+   * NOTE: This route MUST come before @Get('{revision}') to avoid route conflicts
+   */
+  @Get('published/snapshot')
+  async getPublishedSnapshot(
+    @Request() request: NRequest,
+    @Path() applicationUuid: string
+  ): Promise<RevisionSnapshot | null> {
+    // Check read permission - allow anonymous if app is public
+    const canRead = await this.authorizationService.canAccess(
+      request.user,
+      applicationUuid,
+      'application',
+      'application:read',
+      applicationUuid
+    );
+
+    if (!canRead) {
+      this.setStatus(403);
+      throw new Error('Access denied: missing read permission');
+    }
+
+    return await this.revisionService.getPublishedSnapshot(applicationUuid);
+  }
+
+  /**
+   * One-click publish: Creates a new revision from current state and publishes it
+   * NOTE: This route MUST come before @Post('{revision}/publish') to avoid route conflicts
+   */
+  @Post('publish')
+  async publishCurrent(
+    @Request() request: NRequest,
+    @Path() applicationUuid: string,
+    @Body() body: PublishCurrentBody
+  ): Promise<PublishCurrentResponse> {
+    // Check write permission
+    await this.authorizationService.requireAppPermission(
+      request.user,
+      applicationUuid,
+      'application:write'
+    );
+
+    return await this.revisionService.publishCurrent(
+      applicationUuid,
+      request.user.uuid,
+      body.description
+    );
+  }
+
+  /**
    * Get a specific revision
+   * NOTE: This parameterized route must come AFTER specific routes like 'changes', 'published', etc.
    */
   @Get('{revision}')
   async getRevision(
@@ -143,31 +265,6 @@ export class RevisionController extends Controller {
     }
 
     return await this.revisionService.getRevisionSnapshot(applicationUuid, revision);
-  }
-
-  /**
-   * Get currently published revision
-   */
-  @Get('published')
-  async getPublishedRevision(
-    @Request() request: NRequest,
-    @Path() applicationUuid: string
-  ): Promise<PublishedVersionModel | null> {
-    // Check read permission
-    const canRead = await this.authorizationService.canAccess(
-      request.user,
-      applicationUuid,
-      'application',
-      'application:read',
-      applicationUuid
-    );
-
-    if (!canRead) {
-      this.setStatus(403);
-      throw new Error('Access denied: missing read permission');
-    }
-
-    return await this.revisionService.getPublishedVersion(applicationUuid);
   }
 
   /**

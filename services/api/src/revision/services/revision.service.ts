@@ -64,20 +64,32 @@ export class RevisionService {
     componentIds: string[],
     createdBy: string
   ): Promise<PageVersionModel> {
-    const nextVersion = await this.pageVersionRepo.findLatestVersion(pageId) + 1;
-    const version = new PageVersionModel(
-      pageId,
-      applicationId,
-      nextVersion,
-      name,
-      url,
-      description,
-      style,
-      needAuth,
-      componentIds,
-      createdBy
-    );
-    return await this.pageVersionRepo.create(version);
+    // Retry loop to handle race conditions
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const nextVersion = await this.pageVersionRepo.findLatestVersion(pageId) + 1;
+        const version = new PageVersionModel(
+          pageId,
+          applicationId,
+          nextVersion,
+          name,
+          url,
+          description,
+          style,
+          needAuth,
+          componentIds,
+          createdBy
+        );
+        return await this.pageVersionRepo.create(version);
+      } catch (error: any) {
+        // If unique constraint error, retry with a new version number
+        if (error.code === 'P2002' && attempt < 2) {
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw new Error('Failed to create page version after retries');
   }
 
   /**
@@ -89,15 +101,27 @@ export class RevisionService {
     componentData: any,
     createdBy: string
   ): Promise<ComponentVersionModel> {
-    const nextVersion = await this.componentVersionRepo.findLatestVersion(componentId) + 1;
-    const version = new ComponentVersionModel(
-      componentId,
-      applicationId,
-      nextVersion,
-      componentData,
-      createdBy
-    );
-    return await this.componentVersionRepo.create(version);
+    // Retry loop to handle race conditions
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const nextVersion = await this.componentVersionRepo.findLatestVersion(componentId) + 1;
+        const version = new ComponentVersionModel(
+          componentId,
+          applicationId,
+          nextVersion,
+          componentData,
+          createdBy
+        );
+        return await this.componentVersionRepo.create(version);
+      } catch (error: any) {
+        // If unique constraint error, retry with a new version number
+        if (error.code === 'P2002' && attempt < 2) {
+          continue;
+        }
+        throw error;
+      }
+    }
+    throw new Error('Failed to create component version after retries');
   }
 
   /**
@@ -262,6 +286,38 @@ export class RevisionService {
   }
 
   /**
+   * Get the published snapshot for an application
+   * Returns the full app/pages/components data from the published revision
+   */
+  async getPublishedSnapshot(applicationId: string): Promise<RevisionSnapshot | null> {
+    const published = await this.publishedVersionRepo.findByApplication(applicationId);
+    if (!published) {
+      return null;
+    }
+    return await this.getRevisionSnapshot(applicationId, published.revision);
+  }
+
+  /**
+   * One-click publish: Creates a new revision from current state and publishes it
+   */
+  async publishCurrent(
+    applicationId: string,
+    publishedBy: string,
+    description?: string
+  ): Promise<{ revision: ApplicationRevisionModel; published: PublishedVersionModel }> {
+    // 1. Create a new revision from current state
+    const revision = await this.createRevision(applicationId, publishedBy, {
+      description: description || 'Published version',
+      versionLabel: undefined
+    });
+
+    // 2. Publish this revision
+    const published = await this.publishRevision(applicationId, revision.revision, publishedBy);
+
+    return { revision, published };
+  }
+
+  /**
    * Restore application to a specific revision
    * This creates a new revision after restoring
    */
@@ -280,7 +336,7 @@ export class RevisionService {
       applicationId,
       snapshot.app.name,
       undefined, // keep user_id
-      snapshot.app.subdomain
+      snapshot.app.subdomain ?? undefined
     );
 
     // 3. Get current live pages and components to delete
@@ -360,5 +416,31 @@ export class RevisionService {
    */
   async getApplicationVersionHistory(applicationId: string): Promise<ApplicationVersionModel[]> {
     return await this.appVersionRepo.findAllByApplication(applicationId);
+  }
+
+  /**
+   * Get recent changes (all component and page versions) for an application
+   * Returns individual change records, NOT full snapshots
+   */
+  async getRecentChanges(
+    applicationId: string,
+    limit: number = 50
+  ): Promise<{
+    componentVersions: ComponentVersionModel[];
+    pageVersions: PageVersionModel[];
+    appVersions: ApplicationVersionModel[];
+  }> {
+    const [componentVersions, pageVersions, appVersions] = await Promise.all([
+      this.componentVersionRepo.findAllByApplication(applicationId),
+      this.pageVersionRepo.findAllByApplication(applicationId),
+      this.appVersionRepo.findAllByApplication(applicationId)
+    ]);
+
+    // Return limited results, sorted by creation time
+    return {
+      componentVersions: componentVersions.slice(0, limit),
+      pageVersions: pageVersions.slice(0, limit),
+      appVersions: appVersions.slice(0, limit)
+    };
   }
 }
