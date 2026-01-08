@@ -368,7 +368,7 @@ export class RevisionPanel extends LitElement {
           size="small"
           ?loading=${this.publishing}
           ?disabled=${this.publishing}
-          @click=${this.handlePublishNow}
+          @click=${() => this.handlePublishNow()}
           iconLeft="upload-cloud"
           block
         >
