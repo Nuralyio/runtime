@@ -10,6 +10,7 @@ import { eventDispatcher } from '../runtime/utils/change-detection';
 import { registerStudioComponents } from './register-studio-components';
 import { presenceClient, PresenceIndicator } from '../runtime/presence';
 import { ComponentRegistry } from '../runtime/utils/component-registry';
+import { initLocale } from '../runtime/state/locale.store';
 
 export function initializeStudio(): void {
   const isServer = typeof window === "undefined";
@@ -31,6 +32,11 @@ export function initializeStudio(): void {
       const currentApp = $currentApplication.get() as any;
       if (currentApp?.uuid) {
         getAppMembersData(currentApp.uuid);
+
+        // Initialize i18n if configured
+        if (currentApp.i18n) {
+          initLocale(currentApp.i18n);
+        }
 
         // Initialize presence for collaborative editing
         initializePresence(currentApp.uuid);
