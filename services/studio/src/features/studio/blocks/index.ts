@@ -12,6 +12,8 @@ export { default as studioPageDefaultCheckboxBlock } from "./page-blocks/studio-
 export { default as studioPageAccessControlBlock } from "./page-blocks/studio-page-access-control-block.ts";
 export { default as studioAppAccessControlBlock } from "./page-blocks/studio-app-access-control-block.ts";
 export { default as studioAppSettingsBlock } from "./page-blocks/studio-app-settings-block.ts";
+export { default as studioI18nSettingsBlock } from "./page-blocks/i18n-settings-block.ts";
+export { default as studioTranslationsPanelBlock } from "./page-blocks/translations-panel-block.ts";
 export { PageThemeStudio } from "./page-blocks/themes.ts";
 
 // Microapp Blocks
