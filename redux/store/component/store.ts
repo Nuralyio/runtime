@@ -304,3 +304,71 @@ export const $componentById = ($application_id: string, componentId: string) => 
   (components: ComponentElement[]) =>
     components.find(component => component.uuid === componentId) || null
 );
+
+/**
+ * Update component translations for a specific property
+ * @param componentUuid - The UUID of the component
+ * @param propertyName - The property name being translated
+ * @param translations - The translations object { locale: value }
+ */
+export const updateComponentTranslations = (
+  componentUuid: string,
+  propertyName: string,
+  translations: Record<string, string>
+) => {
+  const componentsStore = $components.get();
+
+  // Find the component in all applications
+  for (const appId of Object.keys(componentsStore)) {
+    const components = componentsStore[appId];
+    const componentIndex = components.findIndex(c => c.uuid === componentUuid);
+
+    if (componentIndex !== -1) {
+      const component = components[componentIndex];
+
+      // Create updated translations object
+      const updatedTranslations = {
+        ...component.translations,
+        [propertyName]: translations
+      };
+
+      // Remove property if translations are empty
+      if (Object.keys(translations).length === 0) {
+        delete updatedTranslations[propertyName];
+      }
+
+      // Update the component
+      const updatedComponent = {
+        ...component,
+        translations: Object.keys(updatedTranslations).length > 0 ? updatedTranslations : undefined
+      };
+
+      // Update the store
+      const updatedComponents = [...components];
+      updatedComponents[componentIndex] = updatedComponent;
+      $components.setKey(appId, updatedComponents);
+
+      // Emit event for change detection
+      eventDispatcher.emit('component:updated', {
+        componentId: componentUuid,
+        property: 'translations',
+        value: updatedTranslations
+      });
+
+      break;
+    }
+  }
+};
+
+/**
+ * Get selected components atom for use in Studio UI
+ */
+export const $selectedComponents = atom<ComponentElement[]>([]);
+
+/**
+ * Set the selected components
+ * @param components - Array of selected components
+ */
+export const setSelectedComponents = (components: ComponentElement[]) => {
+  $selectedComponents.set(components);
+};
