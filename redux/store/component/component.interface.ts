@@ -59,6 +59,7 @@ export const enum ComponentType {
   ShareModal = "share_modal",
   RevisionPanel = "revision_panel",
   LanguageSwitcher = "language_switcher",
+  TranslationsEditor = "translations_editor",
 }
 
 export interface DraggingComponentInfo {
