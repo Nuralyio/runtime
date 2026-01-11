@@ -34,6 +34,7 @@ model applications {
   default_page_uuid String?
   subdomain         String?  @unique // Unique subdomain for accessing the app (e.g., "myapp" for myapp.domain.com)
   requiresAuthOnly  Boolean  @default(false) @map("requires_auth_only") // When true, any authenticated user can access (no role/member check needed)
+  i18n              Json?    // Internationalization config: { defaultLocale, supportedLocales, fallbackLocale }
 }
 
 // ============================================
