@@ -1,6 +1,7 @@
 import { atom, deepMap, keepMount, onMount } from "nanostores";
 import { setVar } from "./context";
 import deepEqual from "fast-deep-equal";
+import { initLocale } from "../../state/locale.store";
 
 /**
  * Environment detection flag
@@ -152,9 +153,37 @@ keepMount($resizing);
  */
 onMount($applications, () => {
   if (isServer) return;
-  
+
   const currentApplication = $currentApplication.get();
   if (currentApplication) {
     setVar("global", "currentEditingApplication", currentApplication);
+
+    // Initialize locale stores with app's i18n config
+    if (currentApplication.i18n) {
+      console.log('[apps.ts onMount] Initializing locale stores with i18n:', currentApplication.i18n);
+      initLocale(currentApplication.i18n);
+    }
+  }
+});
+
+// Subscribe to currentApplication changes to sync global var and locale stores
+$currentApplication.subscribe((app) => {
+  if (isServer || !app) return;
+
+  // Update in context store (for GetVar)
+  setVar("global", "currentEditingApplication", app);
+
+  // Also update in VarsProxy (for $currentEditingApplication in handlers)
+  // Use dynamic import to avoid circular dependency
+  import("../../state/runtime-context").then(({ ExecuteInstance }) => {
+    if (ExecuteInstance?.VarsProxy) {
+      ExecuteInstance.VarsProxy.currentEditingApplication = app;
+    }
+  });
+
+  // Sync locale stores when current app changes
+  if (app.i18n) {
+    console.log('[apps.ts subscribe] Syncing locale stores with app i18n:', app.i18n);
+    initLocale(app.i18n);
   }
 });
