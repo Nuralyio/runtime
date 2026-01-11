@@ -65,7 +65,7 @@ export class InputGenerator {
       children_ids: [],
       style: {
         display: "block",
-        width: property.width || "180px"
+        width: property.width || "160px"
       },
       input: {
         value: {
@@ -101,7 +101,7 @@ export class InputGenerator {
       children_ids: [],
       style: {
         display: "block",
-        width: property.width || "180px",
+        width: property.width || "160px",
         "--nuraly-input-helper-text-font-size": "11px",
         "--nuraly-input-helper-text-color": "#8c8c8c"
       },
@@ -169,11 +169,11 @@ export class InputGenerator {
       children_ids: [],
       style: {
         display: "block",
-        width: property.width || "180px",
+        width: property.width || "160px",
         "--nuraly-input-helper-text-font-size": "11px",
         "--nuraly-input-helper-text-color": "#8c8c8c",
-        "--nuraly-datepicker-width": property.width || "180px",
-        "--nuraly-input-width": property.width || "180px"
+        "--nuraly-datepicker-width": property.width || "160px",
+        "--nuraly-input-width": property.width || "160px"
       },
       input: {
         value: {
@@ -253,7 +253,7 @@ export class InputGenerator {
       children_ids: [],
       style: {
         display: "block",
-        width: property.width || "180px",
+        width: property.width || "160px",
         size: "small",
         "--nuraly-input-helper-text-font-size": "11px",
         "--nuraly-input-helper-text-color": "#8c8c8c",

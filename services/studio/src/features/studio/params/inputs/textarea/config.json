@@ -34,7 +34,8 @@
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "label"
+        "handlerProperty": "label",
+        "translatable": true
       },
       {
         "name": "textarea_placeholder",
@@ -60,7 +61,8 @@
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "placeholder"
+        "handlerProperty": "placeholder",
+        "translatable": true
       },
       {
         "name": "textarea_helperText",

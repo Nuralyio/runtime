@@ -5,7 +5,7 @@
 export interface PropertyConfig {
   name: string;
   label: string;
-  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event' | 'icon' | 'date';
+  type: 'number' | 'select' | 'text' | 'color' | 'boolean' | 'radio' | 'event' | 'icon' | 'date' | 'textarea';
   default: any;
   unit?: string;
   min?: number;
@@ -32,6 +32,8 @@ export interface PropertyConfig {
   handlerProperty?: string;  // The property name in the handlers object
   handlerValueGetter?: string | { ref: string; params?: any[] };  // Code to get handler value
   handlerEventUpdate?: string | { ref: string; params?: any[] };  // Code to update handler
+  // i18n support
+  translatable?: boolean;  // Whether this property should have inline translations
 }
 
 export interface BlockConfig {

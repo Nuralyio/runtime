@@ -11,7 +11,7 @@ import { HandlerGenerator } from './handler-generator.ts';
 export class PropertyGenerator {
   static generateProperty(property: PropertyConfig): any[] {
     const components: any[] = [];
-    
+
     // Auto-generate UUIDs from property names
     const containerUuid = `${property.name}_container`;
     const labelUuid = `${property.name}_label`;
@@ -20,22 +20,36 @@ export class PropertyGenerator {
     const autoCheckboxUuid = `auto_${property.name}_checkbox`;
     const inputContainerUuid = `${property.name}_input_container`;
     const handlerWrapperUuid = `${property.name}_handler_wrapper`;
-    
+    const translationCollapseUuid = `${property.name}_translation_collapse`;
+    const translationToggleUuid = `${property.name}_translation_toggle`;
+    const propertyRowUuid = `${property.name}_property_row`;
+
     // Check if property supports handlers
     const hasHandlerSupport = property.hasHandler || property.type === 'number' || property.type === 'text' || property.type === 'radio';
-    
-    // Determine children_ids based on whether auto checkbox is needed and handler support
-    let containerChildrenIds = [labelUuid];
-    
+
+    // Check if property is translatable (text/textarea with translatable flag)
+    const isTranslatable = property.translatable && (property.type === 'text' || property.type === 'textarea');
+
+    // Determine row children_ids based on whether auto checkbox is needed and handler support
+    let rowChildrenIds = [labelUuid];
+
     if (hasHandlerSupport) {
       // If has handler support, use wrapper container
-      containerChildrenIds.push(handlerWrapperUuid);
+      rowChildrenIds.push(handlerWrapperUuid);
     } else if (property.autoCheckbox) {
-      containerChildrenIds.push(inputContainerUuid);
+      rowChildrenIds.push(inputContainerUuid);
     } else {
-      containerChildrenIds.push(inputUuid);
+      rowChildrenIds.push(inputUuid);
     }
-    
+
+    // For translatable: container has row + collapse; otherwise container is the row
+    let containerChildrenIds: string[];
+    if (isTranslatable) {
+      containerChildrenIds = [propertyRowUuid, translationCollapseUuid];
+    } else {
+      containerChildrenIds = rowChildrenIds;
+    }
+
     // Property container
     components.push({
       uuid: containerUuid,
@@ -45,13 +59,34 @@ export class PropertyGenerator {
       ...COMMON_ATTRIBUTES,
       style: {
         display: "flex",
-        "align-items": "center",
+        "flex-direction": isTranslatable ? "column" : "row",
+        "align-items": isTranslatable ? "stretch" : "center",
         "justify-content": "space-between",
         width: "319px",
-        "margin-bottom": "8px"
+        "margin-bottom": "8px",
+        gap: isTranslatable ? "4px" : "0px"
       },
       children_ids: containerChildrenIds
     });
+
+    // Property row (only for translatable - wraps label + handler wrapper in a row)
+    if (isTranslatable) {
+      components.push({
+        uuid: propertyRowUuid,
+        application_id: "1",
+        name: `${property.label} Row`,
+        type: "container",
+        ...COMMON_ATTRIBUTES,
+        style: {
+          display: "flex",
+          "flex-direction": "row",
+          "align-items": "center",
+          "justify-content": "space-between",
+          width: "280px"
+        },
+        children_ids: rowChildrenIds
+      });
+    }
     
     // Property label
     components.push({
@@ -85,8 +120,13 @@ export class PropertyGenerator {
     
     // Handler wrapper container (if property has handler support)
     if (hasHandlerSupport) {
-      const wrapperChildren = property.autoCheckbox ? [inputContainerUuid, handlerUuid] : [inputUuid, handlerUuid];
-      
+      let wrapperChildren = property.autoCheckbox ? [inputContainerUuid, handlerUuid] : [inputUuid, handlerUuid];
+
+      // Add translation toggle icon if translatable
+      if (isTranslatable) {
+        wrapperChildren.push(translationToggleUuid);
+      }
+
       components.push({
         uuid: handlerWrapperUuid,
         application_id: "1",
@@ -121,7 +161,91 @@ export class PropertyGenerator {
     if (property.hasHandler || property.type === 'number' || property.type === 'text' || property.type === 'radio') {
       components.push(HandlerGenerator.generatePropertyHandler(property, handlerUuid));
     }
-    
+
+    // Translation toggle button (if translatable and has handler support)
+    if (isTranslatable && hasHandlerSupport) {
+      const propName = property.inputProperty || property.name;
+      components.push({
+        uuid: translationToggleUuid,
+        application_id: "1",
+        name: `${property.label} Translation Toggle`,
+        type: "icon_button",
+        inputHandlers: {},
+        style: {
+          width: "18px",
+          height: "18px",
+          "min-width": "18px",
+          padding: "0"
+        },
+        style_handlers: {},
+        styleBreakPoints: {
+          mobile: {},
+          tablet: {},
+          laptop: {}
+        },
+        attributesHandlers: {},
+        errors: {},
+        children_ids: [],
+        input: {
+          icon: {
+            type: "string",
+            value: "globe"
+          },
+          size: {
+            type: "string",
+            value: "small"
+          },
+          color: {
+            type: "handler",
+            value: `return $i18n_${propName}_visible ? 'primary' : 'default';`
+          },
+          display: {
+            type: "handler",
+            value: `return $currentEditingApplication?.i18n?.enabled === true && $currentEditingApplication?.i18n?.supportedLocales?.length > 1;`
+          }
+        },
+        event: {
+          click: `$i18n_${propName}_visible = !$i18n_${propName}_visible;`
+        }
+      });
+    }
+
+    // Translation collapse component (if translatable)
+    if (isTranslatable) {
+      const propName = property.inputProperty || property.name;
+      components.push({
+        uuid: translationCollapseUuid,
+        application_id: "1",
+        name: `${property.label} Translation Collapse`,
+        type: "property_translation_collapse",
+        inputHandlers: {
+          display: `return $i18n_${propName}_visible === true;`
+        },
+        style: {
+          width: "100%",
+          "margin-top": "4px"
+        },
+        style_handlers: {},
+        styleBreakPoints: {
+          mobile: {},
+          tablet: {},
+          laptop: {}
+        },
+        attributesHandlers: {},
+        errors: {},
+        children_ids: [],
+        input: {
+          display: {
+            type: "handler",
+            value: `return $i18n_${propName}_visible === true;`
+          }
+        },
+        attributes: {
+          "property-name": propName
+        }
+      });
+    }
+
     return components;
   }
   

@@ -55,7 +55,7 @@ export default [
     input: {
       direction: { type: "string", value: "vertical" }
     },
-    children_ids: ["app_subdomain_block", "app_access_settings_block"]
+    children_ids: ["app_subdomain_block", "app_access_settings_block", "app_i18n_settings_block"]
   },
   // Subdomain input row
   {
