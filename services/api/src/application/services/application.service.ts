@@ -1,5 +1,5 @@
 import { delay, inject, singleton } from 'tsyringe';
-import { Application } from '../models/application';
+import { Application, AppI18nConfig } from '../models/application';
 import { ApplicationRepository } from '../repositories/application.repository';
 import { ApplicationMemberService } from '../../application-member/services/application-member.service';
 import { ResourcePermissionService } from '../../resource-permission/services/resource-permission.service';
@@ -49,7 +49,7 @@ export class ApplicationService {
     return await this.applicationRepository.findApplicationBySubdomain(subdomain);
   }
 
-  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string, requiresAuthOnly?: boolean, updatedBy?: string): Promise<Application> {
+  public async update(published?: boolean, uuid?: string, name?: string, user_id?: string, subdomain?: string, requiresAuthOnly?: boolean, i18n?: AppI18nConfig | null, updatedBy?: string): Promise<Application> {
     // Get current application to preserve unchanged fields
     const currentApp = await this.applicationRepository.findApplicationById(uuid!);
 
@@ -59,7 +59,8 @@ export class ApplicationService {
       uuid!,
       user_id ?? currentApp.user_id,
       subdomain !== undefined ? (subdomain === '' ? null : subdomain) : currentApp.subdomain,
-      requiresAuthOnly ?? currentApp.requiresAuthOnly
+      requiresAuthOnly ?? currentApp.requiresAuthOnly,
+      i18n !== undefined ? i18n : currentApp.i18n
     );
     const updated = await this.applicationRepository.update(uuid!, application);
 

@@ -1,6 +1,6 @@
 import { ApplicationService } from "../services/application.service";
 import { Body, Controller, Delete, Get, Path, Post, Put, Route, Tags, Request } from "tsoa";
-import { Application } from "../models/application";
+import { Application, AppI18nConfig } from "../models/application";
 import { injectable } from "tsyringe";
 import { AuthorizationService } from "../../auth/services/authorization.service";
 import { NRequest } from "../../shared/interfaces/NRequest.interface";
@@ -103,7 +103,7 @@ export class ApplicationController extends Controller {
   public async update(
     @Request() request: NRequest,
     @Path() uuid: string,
-    @Body() requestBody: { published?: boolean; name?: string; user_id?: string; subdomain?: string; requiresAuthOnly?: boolean }
+    @Body() requestBody: { published?: boolean; name?: string; user_id?: string; subdomain?: string; requiresAuthOnly?: boolean; i18n?: AppI18nConfig | null }
   ): Promise<Application> {
     // Check if user has write permission
     await this.authorizationService.requireAppPermission(
@@ -112,7 +112,7 @@ export class ApplicationController extends Controller {
       'application:write'
     );
 
-    const { published, name, user_id, subdomain, requiresAuthOnly } = requestBody;
+    const { published, name, user_id, subdomain, requiresAuthOnly, i18n } = requestBody;
 
     // Validate subdomain format if provided
     if (subdomain !== undefined && subdomain !== null) {
@@ -123,7 +123,7 @@ export class ApplicationController extends Controller {
       }
     }
 
-    return await this.applicationService.update(published, uuid, name, user_id, subdomain, requiresAuthOnly, request.user.uuid);
+    return await this.applicationService.update(published, uuid, name, user_id, subdomain, requiresAuthOnly, i18n, request.user.uuid);
   }
 
   @Delete("{uuid}")
