@@ -60,6 +60,7 @@ export const enum ComponentType {
   RevisionPanel = "revision_panel",
   LanguageSwitcher = "language_switcher",
   TranslationsEditor = "translations_editor",
+  PropertyTranslationCollapse = "property_translation_collapse",
 }
 
 export interface DraggingComponentInfo {

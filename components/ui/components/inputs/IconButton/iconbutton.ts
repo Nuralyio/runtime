@@ -17,11 +17,9 @@ export class IconButtonBlock extends BaseElementBlock {
   component: ComponentElement;
 
   handleClick = () => {
-    setTimeout(() => {
-      if (this.component?.event?.click) {
-        executeHandler(this.component, getNestedAttribute(this.component, `event.click`));
-      }
-    }, 0);
+    if (this.component?.event?.click) {
+      executeHandler(this.component, getNestedAttribute(this.component, `event.click`));
+    }
   };
 
   renderComponent() {
@@ -29,7 +27,7 @@ export class IconButtonBlock extends BaseElementBlock {
     const icon = this.resolvedInputs?.icon;
     const iconArray = icon ? [icon] : [];
     const type = this.resolvedInputs.value || buttonStyles?.type || 'default';
-    const size = buttonStyles?.size || 'medium';
+    const size = buttonStyles?.size || 'small';
 
     return html`
       <nr-button 
@@ -42,7 +40,7 @@ export class IconButtonBlock extends BaseElementBlock {
         .dashed=${this.resolvedInputs.dashed || false}
         .icon=${iconArray}
         .iconPosition=${this.resolvedInputs.iconPosition || 'left'}
-        @click=${this.handleClick}
+        @mousedown=${this.handleClick}
         style=${styleMap({ 
           ...this.getStyles(),
           width: buttonStyles?.width,

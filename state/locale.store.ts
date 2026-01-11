@@ -99,14 +99,23 @@ export const LOCALE_FLAGS: Record<string, string> = {
  * i18n configuration for an application
  */
 export interface AppI18nConfig {
-  /** Source/default language code (e.g., "en") */
+  /** Whether i18n is enabled for this application */
+  enabled: boolean;
+
+  /** Source/default language code for content authoring (e.g., "en") */
   defaultLocale: string;
+
+  /** Active language shown by default to users and in editor preview */
+  activeLocale?: string;
 
   /** All supported language codes (e.g., ["en", "fr", "ar"]) */
   supportedLocales: string[];
 
   /** Fallback locale when translation is missing (defaults to defaultLocale) */
   fallbackLocale?: string;
+
+  /** Auto-detect browser language if found in supportedLocales */
+  detectBrowserLanguage?: boolean;
 }
 
 /**
@@ -140,6 +149,11 @@ export const $locale = atom<string>(DEFAULT_LOCALE);
 export const $defaultLocale = atom<string>(DEFAULT_LOCALE);
 
 /**
+ * Active locale - the default viewing language for users and editor preview
+ */
+export const $activeLocale = atom<string>(DEFAULT_LOCALE);
+
+/**
  * List of supported locales for the current application
  */
 export const $supportedLocales = atom<string[]>([DEFAULT_LOCALE]);
@@ -150,14 +164,27 @@ export const $supportedLocales = atom<string[]>([DEFAULT_LOCALE]);
 export const $fallbackLocale = atom<string>(DEFAULT_LOCALE);
 
 /**
+ * Whether i18n is explicitly enabled in app config
+ */
+export const $i18nConfigEnabled = atom<boolean>(false);
+
+/**
+ * Whether to auto-detect browser language
+ */
+export const $detectBrowserLanguage = atom<boolean>(true);
+
+/**
  * Computed: Whether current locale uses RTL text direction
  */
 export const $isRTL = computed($locale, (locale) => RTL_LOCALES.includes(locale));
 
 /**
- * Computed: Whether i18n is enabled (more than 1 locale supported)
+ * Computed: Whether i18n is enabled (config enabled AND more than 1 locale)
  */
-export const $i18nEnabled = computed($supportedLocales, (locales) => locales.length > 1);
+export const $i18nEnabled = computed(
+  [$i18nConfigEnabled, $supportedLocales],
+  (enabled, locales) => enabled && locales.length > 1
+);
 
 /**
  * Computed: Other locales (excluding default)
@@ -189,32 +216,49 @@ export const $otherLocales = computed(
 export function initLocale(config?: AppI18nConfig): void {
   // No config - use defaults (single locale, no i18n)
   if (!config) {
+    $i18nConfigEnabled.set(false);
     $defaultLocale.set(DEFAULT_LOCALE);
+    $activeLocale.set(DEFAULT_LOCALE);
     $supportedLocales.set([DEFAULT_LOCALE]);
     $fallbackLocale.set(DEFAULT_LOCALE);
+    $detectBrowserLanguage.set(true);
     $locale.set(DEFAULT_LOCALE);
     return;
   }
 
+  // Set enabled state from config
+  $i18nConfigEnabled.set(config.enabled ?? false);
+
   // Validate config
   const defaultLoc = config.defaultLocale || DEFAULT_LOCALE;
+  const activeLoc = config.activeLocale || defaultLoc;
   const supported = config.supportedLocales?.length > 0
     ? config.supportedLocales
     : [defaultLoc];
   const fallback = config.fallbackLocale || defaultLoc;
+  const detectBrowser = config.detectBrowserLanguage ?? true;
 
   // Ensure default locale is in supported list
   if (!supported.includes(defaultLoc)) {
     supported.unshift(defaultLoc);
   }
 
+  // Ensure active locale is in supported list
+  const effectiveActiveLoc = supported.includes(activeLoc) ? activeLoc : defaultLoc;
+
+  // Check if active locale actually changed (before setting new value)
+  const previousActive = $activeLocale.get();
+  const activeChanged = previousActive !== effectiveActiveLoc;
+
   // Set store values
   $defaultLocale.set(defaultLoc);
+  $activeLocale.set(effectiveActiveLoc);
   $supportedLocales.set(supported);
   $fallbackLocale.set(fallback);
+  $detectBrowserLanguage.set(detectBrowser);
 
-  // Determine initial locale
-  let initialLocale = defaultLoc;
+  // Determine initial locale for runtime
+  let initialLocale = effectiveActiveLoc;
 
   // Check localStorage for user preference
   if (typeof localStorage !== 'undefined') {
@@ -224,8 +268,8 @@ export function initLocale(config?: AppI18nConfig): void {
     }
   }
 
-  // Check browser language if no stored preference
-  if (initialLocale === defaultLoc && typeof navigator !== 'undefined') {
+  // Check browser language if detectBrowserLanguage is enabled and no stored preference
+  if (detectBrowser && initialLocale === effectiveActiveLoc && typeof navigator !== 'undefined') {
     const browserLang = navigator.language?.split('-')[0];
     if (browserLang && supported.includes(browserLang)) {
       initialLocale = browserLang;
@@ -237,6 +281,18 @@ export function initLocale(config?: AppI18nConfig): void {
 
   // Update document attributes
   updateDocumentLocale(initialLocale);
+
+  // Update preview locale to match active locale when it changes (for Studio preview sync)
+  if (activeChanged) {
+    // Use dynamic import to avoid circular dependency
+    import('./runtime-context').then(({ ExecuteInstance }) => {
+      if (ExecuteInstance?.VarsProxy) {
+        ExecuteInstance.VarsProxy.previewLocale = effectiveActiveLoc;
+      }
+    }).catch(() => {
+      // Ignore if runtime-context is not available (e.g., during SSR)
+    });
+  }
 }
 
 /**
@@ -362,8 +418,11 @@ export default {
   // Stores
   $locale,
   $defaultLocale,
+  $activeLocale,
   $supportedLocales,
   $fallbackLocale,
+  $i18nConfigEnabled,
+  $detectBrowserLanguage,
   $isRTL,
   $i18nEnabled,
   $otherLocales,
