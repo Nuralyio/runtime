@@ -21,6 +21,11 @@ import "../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel"
 import "../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel";
 import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
 
+// i18n components
+import "./components/i18n/TranslationsInput";
+import "./components/i18n/TranslationsEditor";
+import "./components/i18n/PropertyTranslationCollapse";
+
 export function registerStudioComponents(): void {
   ComponentRegistry.register({ type: ComponentType.Event, tagName: "parameter-event-handler" });
   ComponentRegistry.register({ type: ComponentType.BorderRadius, tagName: "attribute-border-value" });
@@ -41,5 +46,17 @@ export function registerStudioComponents(): void {
     type: ComponentType.FunctionsPanel,
     tagName: "functions-panel",
     template: () => html`<functions-panel></functions-panel>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.TranslationsEditor,
+    tagName: "translations-editor",
+    template: () => html`<translations-editor></translations-editor>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.PropertyTranslationCollapse,
+    tagName: "property-translation-collapse",
+    template: (props) => html`<property-translation-collapse
+      .component=${props.component}
+    ></property-translation-collapse>`,
   });
 }

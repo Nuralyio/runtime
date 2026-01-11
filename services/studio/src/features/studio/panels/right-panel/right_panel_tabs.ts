@@ -224,7 +224,8 @@ export default [
                     const config = componentConfigs[selectedComponent?.type];
                     if(config) {
                         // Create new arrays instead of mutating originals
-                        parameters = [...(config.parameters || []), "access_control_panel_block"];
+                        // Include translations panel (visibility controlled by i18n config and component type)
+                        parameters = [...(config.parameters || []), "translations_panel_block", "access_control_panel_block"];
                         handlers = [...(config.handlers || [])];
                         themes = ["select_component_styles_state_container", ...(config.themes || [])];
                     }

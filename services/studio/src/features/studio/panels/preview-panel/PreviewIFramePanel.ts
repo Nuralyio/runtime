@@ -9,7 +9,7 @@ import Editor from '@nuraly/runtime/state/editor';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE';
   payload?: any;
 }
 
@@ -132,6 +132,7 @@ export class PreviewIFramePanel extends LitElement {
     this.setupPageChangeListener();
     this.setupPlatformListener();
     this.setupZoomListener();
+    this.setupLocaleListener();
   }
 
   private setupPlatformListener() {
@@ -145,6 +146,18 @@ export class PreviewIFramePanel extends LitElement {
       const zoom = ExecuteInstance.Vars.EditorZoom;
       if (zoom !== undefined) {
         this.zoomLevel = Number(zoom) || 100;
+      }
+    });
+  }
+
+  private setupLocaleListener() {
+    eventDispatcher.on('Vars:previewLocale', () => {
+      const locale = ExecuteInstance.Vars.previewLocale;
+      if (locale && this.iframeReady) {
+        this.sendMessageToIframe({
+          type: 'SET_LOCALE',
+          payload: locale
+        });
       }
     });
   }
@@ -276,6 +289,12 @@ export class PreviewIFramePanel extends LitElement {
     this.isLoading = false;
     const initialMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
     this.sendMessageToIframe({ type: 'SET_MODE', payload: initialMode });
+
+    // Send initial locale if set
+    const initialLocale = ExecuteInstance.Vars.previewLocale;
+    if (initialLocale) {
+      this.sendMessageToIframe({ type: 'SET_LOCALE', payload: initialLocale });
+    }
   }
 
   private handleComponentClicked(payload: { uuid?: string; rect?: DOMRect }) {
