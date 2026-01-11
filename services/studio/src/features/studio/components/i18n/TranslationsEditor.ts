@@ -16,43 +16,8 @@ import {
 } from '../../../runtime/state/locale.store';
 import { eventDispatcher } from '../../../runtime/utils/change-detection';
 import Editor from '../../../runtime/state/editor';
+import { getTranslatablePropertyInfo } from '../../utils/translatable-properties';
 import './TranslationsInput';
-
-/**
- * Map of component types to their translatable properties
- */
-const TRANSLATABLE_PROPERTIES: Record<string, string[]> = {
-  text_label: ['value'],
-  text_input: ['label', 'placeholder', 'helper'],
-  textarea: ['label', 'placeholder', 'helper'],
-  button_input: ['label'],
-  checkbox: ['label'],
-  select: ['label', 'placeholder', 'helper'],
-  date_picker: ['label', 'placeholder', 'helper'],
-  slider: ['label'],
-  badge: ['label'],
-  tag: ['label'],
-  card: ['title', 'subtitle'],
-  modal: ['title'],
-  menu: ['label'],
-  dropdown: ['label'],
-  link: ['label'],
-  file_upload: ['label', 'helper'],
-  rich_text: ['value'],
-  rich_text_editor: ['label', 'placeholder']
-};
-
-/**
- * Property display names
- */
-const PROPERTY_LABELS: Record<string, string> = {
-  value: 'Text Content',
-  label: 'Label',
-  placeholder: 'Placeholder',
-  helper: 'Helper Text',
-  title: 'Title',
-  subtitle: 'Subtitle'
-};
 
 /**
  * TranslationsEditor Component
@@ -224,8 +189,8 @@ export class TranslationsEditor extends LitElement {
       `;
     }
 
-    // Get translatable properties for this component type
-    const translatableProps = TRANSLATABLE_PROPERTIES[this.component.type] || [];
+    // Get translatable properties for this component type from config.json
+    const translatableProps = getTranslatablePropertyInfo(this.component.type);
 
     if (translatableProps.length === 0) {
       return html`
@@ -239,7 +204,7 @@ export class TranslationsEditor extends LitElement {
     // Render translation inputs for each property
     return html`
       <div class="translations-editor">
-        ${translatableProps.map(propName => this.renderPropertyTranslations(propName))}
+        ${translatableProps.map(prop => this.renderPropertyTranslations(prop.name, prop.label))}
       </div>
     `;
   }
@@ -247,16 +212,13 @@ export class TranslationsEditor extends LitElement {
   /**
    * Render translation inputs for a single property
    */
-  private renderPropertyTranslations(propertyName: string) {
+  private renderPropertyTranslations(propertyName: string, label: string) {
     // Get current value from component input
     const inputValue = this.component?.input?.[propertyName];
     const defaultValue = inputValue?.value || '';
 
     // Get current translations for this property
     const translations = this.component?.translations?.[propertyName] || {};
-
-    // Get display label
-    const label = PROPERTY_LABELS[propertyName] || propertyName;
 
     return html`
       <div class="property-section">

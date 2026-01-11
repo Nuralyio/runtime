@@ -5,29 +5,10 @@ import { COMMON_ATTRIBUTES } from "../../core/helpers/common_attributes.ts";
  *
  * UI component for managing component-level translations in the Studio editor.
  * Shows translation inputs for translatable properties of the selected component.
+ *
+ * Note: Translatable properties are now read dynamically from each component's
+ * config.json file (properties with `translatable: true`).
  */
-
-// Map of component types to their translatable properties
-const TRANSLATABLE_PROPERTIES: Record<string, string[]> = {
-  text_label: ['value'],
-  text_input: ['label', 'placeholder', 'helper'],
-  textarea: ['label', 'placeholder', 'helper'],
-  button_input: ['label'],
-  checkbox: ['label'],
-  select: ['label', 'placeholder', 'helper'],
-  date_picker: ['label', 'placeholder', 'helper'],
-  slider: ['label'],
-  badge: ['label'],
-  tag: ['label'],
-  card: ['title', 'subtitle'],
-  modal: ['title'],
-  menu: ['label'],
-  dropdown: ['label'],
-  link: ['label'],
-  file_upload: ['label', 'helper'],
-  rich_text: ['value'],
-  rich_text_editor: ['label', 'placeholder']
-};
 
 export default [
   // Translations Panel Container
@@ -65,35 +46,14 @@ export default [
         value: /* js */ `
           // Only show if i18n is enabled for the app
           const currentEditingApplication = GetVar("currentEditingApplication");
-          const i18nEnabled = currentEditingApplication?.i18n?.supportedLocales?.length > 1;
+          const i18nEnabled = currentEditingApplication?.i18n?.enabled === true &&
+                             currentEditingApplication?.i18n?.supportedLocales?.length > 1;
 
           // And a component is selected
           const selectedComponent = Utils.first($selectedComponents);
-          if (!i18nEnabled || !selectedComponent) return false;
 
-          // And the component has translatable properties
-          const translatableProps = {
-            text_label: ['value'],
-            text_input: ['label', 'placeholder', 'helper'],
-            textarea: ['label', 'placeholder', 'helper'],
-            button_input: ['label'],
-            checkbox: ['label'],
-            select: ['label', 'placeholder', 'helper'],
-            date_picker: ['label', 'placeholder', 'helper'],
-            slider: ['label'],
-            badge: ['label'],
-            tag: ['label'],
-            card: ['title', 'subtitle'],
-            modal: ['title'],
-            menu: ['label'],
-            dropdown: ['label'],
-            link: ['label'],
-            file_upload: ['label', 'helper'],
-            rich_text: ['value'],
-            rich_text_editor: ['label', 'placeholder']
-          };
-
-          return !!translatableProps[selectedComponent.type];
+          // TranslationsEditor component handles showing "no translatable properties" message
+          return i18nEnabled && !!selectedComponent;
         `
       }
     },
