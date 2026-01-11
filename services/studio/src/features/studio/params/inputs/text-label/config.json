@@ -17,7 +17,7 @@
         "label": "Text",
         "type": "text",
         "default": "Text label",
-        "width": "180px",
+        "width": "150px",
         "placeholder": "Enter text",
         "valueHandler": {
           "ref": "componentInput",
@@ -35,7 +35,8 @@
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "value"
+        "handlerProperty": "value",
+        "translatable": true
       },
       {
         "name": "size",

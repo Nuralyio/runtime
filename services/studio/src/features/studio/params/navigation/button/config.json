@@ -43,7 +43,8 @@
         },
         "hasHandler": true,
         "handlerType": "input",
-        "handlerProperty": "label"
+        "handlerProperty": "label",
+        "translatable": true
       },
       {
         "name": "button_type",
