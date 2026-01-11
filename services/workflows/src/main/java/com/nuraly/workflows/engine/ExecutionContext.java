@@ -1,0 +1,160 @@
+package com.nuraly.workflows.engine;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.entity.WorkflowExecutionEntity;
+import com.nuraly.workflows.entity.WorkflowNodeEntity;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@Getter
+@Setter
+public class ExecutionContext {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private WorkflowExecutionEntity execution;
+    private JsonNode input;
+    private ObjectNode variables;
+    private Map<UUID, JsonNode> nodeOutputs;
+    private WorkflowNodeEntity currentNode;
+    private boolean cancelled;
+    private boolean paused;
+
+    public ExecutionContext(WorkflowExecutionEntity execution) {
+        this.execution = execution;
+        this.nodeOutputs = new HashMap<>();
+        this.variables = objectMapper.createObjectNode();
+        this.cancelled = false;
+        this.paused = false;
+
+        // Initialize from execution
+        if (execution.inputData != null) {
+            try {
+                this.input = objectMapper.readTree(execution.inputData);
+            } catch (Exception e) {
+                this.input = objectMapper.createObjectNode();
+            }
+        } else {
+            this.input = objectMapper.createObjectNode();
+        }
+
+        if (execution.variables != null) {
+            try {
+                this.variables = (ObjectNode) objectMapper.readTree(execution.variables);
+            } catch (Exception e) {
+                this.variables = objectMapper.createObjectNode();
+            }
+        }
+    }
+
+    public void setVariable(String key, Object value) {
+        if (value instanceof JsonNode) {
+            variables.set(key, (JsonNode) value);
+        } else if (value instanceof String) {
+            variables.put(key, (String) value);
+        } else if (value instanceof Integer) {
+            variables.put(key, (Integer) value);
+        } else if (value instanceof Long) {
+            variables.put(key, (Long) value);
+        } else if (value instanceof Double) {
+            variables.put(key, (Double) value);
+        } else if (value instanceof Boolean) {
+            variables.put(key, (Boolean) value);
+        } else {
+            try {
+                variables.set(key, objectMapper.valueToTree(value));
+            } catch (Exception e) {
+                variables.put(key, String.valueOf(value));
+            }
+        }
+    }
+
+    public JsonNode getVariable(String key) {
+        return variables.get(key);
+    }
+
+    public String getVariableAsString(String key) {
+        JsonNode node = variables.get(key);
+        return node != null ? node.asText() : null;
+    }
+
+    public void setNodeOutput(UUID nodeId, JsonNode output) {
+        nodeOutputs.put(nodeId, output);
+    }
+
+    public JsonNode getNodeOutput(UUID nodeId) {
+        return nodeOutputs.get(nodeId);
+    }
+
+    public String getVariablesAsString() {
+        try {
+            return objectMapper.writeValueAsString(variables);
+        } catch (Exception e) {
+            return "{}";
+        }
+    }
+
+    public String resolveExpression(String expression) {
+        if (expression == null) {
+            return null;
+        }
+
+        String result = expression;
+
+        // Replace ${variables.xxx} with actual values
+        while (result.contains("${variables.")) {
+            int start = result.indexOf("${variables.");
+            int end = result.indexOf("}", start);
+            if (end == -1) break;
+
+            String fullMatch = result.substring(start, end + 1);
+            String varName = result.substring(start + 12, end);
+
+            JsonNode value = getVariable(varName);
+            String replacement = value != null ? value.asText() : "";
+
+            result = result.replace(fullMatch, replacement);
+        }
+
+        // Replace ${input.xxx} with actual values
+        while (result.contains("${input.")) {
+            int start = result.indexOf("${input.");
+            int end = result.indexOf("}", start);
+            if (end == -1) break;
+
+            String fullMatch = result.substring(start, end + 1);
+            String path = result.substring(start + 8, end);
+
+            JsonNode value = getJsonPath(input, path);
+            String replacement = value != null ? value.asText() : "";
+
+            result = result.replace(fullMatch, replacement);
+        }
+
+        return result;
+    }
+
+    private JsonNode getJsonPath(JsonNode root, String path) {
+        if (root == null || path == null) {
+            return null;
+        }
+
+        String[] parts = path.split("\\.");
+        JsonNode current = root;
+
+        for (String part : parts) {
+            if (current == null) {
+                return null;
+            }
+            current = current.get(part);
+        }
+
+        return current;
+    }
+}
