@@ -157,6 +157,13 @@ export class InputHandlerController implements ReactiveController, Disposable {
         this.processInputs();
       })
     );
+
+    // Preview locale change - reprocess inputs to apply translations for new locale
+    this.subscription.add(
+      eventDispatcher.on("Vars:previewLocale", () => {
+        this.processInputs();
+      })
+    );
   }
 
   /**

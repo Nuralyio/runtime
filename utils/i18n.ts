@@ -18,8 +18,9 @@
  * ```
  */
 
-import { $locale, $defaultLocale, $fallbackLocale } from '../state/locale.store';
+import { $locale, $defaultLocale, $fallbackLocale, $supportedLocales } from '../state/locale.store';
 import type { ComponentElement } from '../redux/store/component/component.interface';
+import { ExecuteInstance } from '../state/runtime-context';
 
 // ============================================================================
 // TYPES
@@ -77,9 +78,28 @@ export function resolveTranslation<T>(
     return original;
   }
 
-  const locale = currentLocale ?? $locale.get();
+  // Priority: explicit param > $previewLocale (studio) > $locale store
+  let previewLocale = ExecuteInstance?.Vars?.previewLocale;
   const defaultLoc = $defaultLocale.get();
   const fallbackLoc = $fallbackLocale.get();
+  const supportedLocales = $supportedLocales.get();
+
+  // Handle "auto" preview locale - detect browser language
+  if (previewLocale === 'auto') {
+    if (typeof navigator !== 'undefined') {
+      const browserLang = navigator.language?.split('-')[0];
+      if (browserLang && supportedLocales.includes(browserLang)) {
+        previewLocale = browserLang;
+      } else {
+        // Fall back to active locale or default
+        previewLocale = ExecuteInstance?.Vars?.activeLocale || defaultLoc;
+      }
+    } else {
+      previewLocale = defaultLoc;
+    }
+  }
+
+  const locale = currentLocale ?? previewLocale ?? $locale.get();
 
   // If current locale is the default, always return original value
   // (default locale uses the value from input, not translations)
