@@ -348,9 +348,9 @@ export const updateComponentTranslations = (
       updatedComponents[componentIndex] = updatedComponent;
       $components.setKey(appId, updatedComponents);
 
-      // Emit event for change detection
+      // Emit event for change detection (use 'uuid' for consistency with other event emitters)
       eventDispatcher.emit('component:updated', {
-        componentId: componentUuid,
+        uuid: componentUuid,
         property: 'translations',
         value: updatedTranslations
       });
