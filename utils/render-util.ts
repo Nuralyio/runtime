@@ -42,6 +42,7 @@ const gridRowTemplate = (props: any, isViewMode: boolean)  => html`<grid-row-blo
 const gridColTemplate = (props: any, isViewMode: boolean)  => html`<grid-col-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></grid-col-block>`;
 const formTemplate = (props: any, isViewMode: boolean)  => html`<form-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></form-block>`;
 const modalTemplate = (props: any, isViewMode: boolean)  => html`<modal-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></modal-block>`;
+const languageSwitcherTemplate = (props: any, isViewMode: boolean)  => html`<language-switcher-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></language-switcher-block>`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -130,6 +131,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return formTemplate(commonProps, isViewMode);
     case ComponentType.Modal:
       return modalTemplate(commonProps, isViewMode);
+    case ComponentType.LanguageSwitcher:
+      return languageSwitcherTemplate(commonProps, isViewMode);
     default:
       const registeredTemplate = ComponentRegistry.getTemplate(component?.type as string);
       if (registeredTemplate) {
