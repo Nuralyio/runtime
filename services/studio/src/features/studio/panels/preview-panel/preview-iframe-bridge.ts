@@ -10,7 +10,7 @@ import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE';
   payload?: any;
 }
 
@@ -81,6 +81,9 @@ function handleParentMessage(event: MessageEvent) {
     case 'SELECT_COMPONENT':
       handleSelectComponent(message.payload);
       break;
+    case 'SET_LOCALE':
+      handleSetLocale(message.payload);
+      break;
   }
 }
 
@@ -93,6 +96,14 @@ function handleSetMode(payload: string | undefined) {
 function handleSetPage(payload: string | undefined) {
   if (payload) {
     ExecuteInstance.VarsProxy.currentPage = payload;
+  }
+}
+
+function handleSetLocale(payload: string | undefined) {
+  if (payload) {
+    ExecuteInstance.VarsProxy.previewLocale = payload;
+    // Emit event to trigger component re-renders
+    eventDispatcher.emit('Vars:previewLocale', payload);
   }
 }
 

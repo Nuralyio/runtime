@@ -125,11 +125,10 @@ export default [
       "--nuraly-checkbox-size": "18px"
     },
     input: {
-      checked: {
+      value: {
         type: "handler",
         value: /* js */ `
-          const currentEditingApplication = GetVar("currentEditingApplication");
-          return currentEditingApplication?.i18n?.defaultLocale ? true : false;
+          return $currentEditingApplication?.i18n?.enabled === true;
         `
       },
       toggle: { type: "boolean", value: true }
@@ -138,23 +137,18 @@ export default [
       onChange: /* js */ `
         const currentEditingApplication = GetVar("currentEditingApplication");
         if (currentEditingApplication) {
-          if (EventData.checked) {
-            // Enable i18n with default config
-            UpdateApplication({
-              ...currentEditingApplication,
-              i18n: {
-                defaultLocale: 'en',
-                supportedLocales: ['en'],
-                fallbackLocale: 'en'
-              }
-            });
-          } else {
-            // Disable i18n
-            UpdateApplication({
-              ...currentEditingApplication,
-              i18n: undefined
-            });
-          }
+          const currentI18n = currentEditingApplication.i18n || {
+            defaultLocale: 'en',
+            supportedLocales: ['en'],
+            fallbackLocale: 'en'
+          };
+          UpdateApplication({
+            ...currentEditingApplication,
+            i18n: {
+              ...currentI18n,
+              enabled: EventData.checked === true
+            }
+          });
         }
       `
     }
@@ -180,12 +174,11 @@ export default [
       visible: {
         type: "handler",
         value: /* js */ `
-          const currentEditingApplication = GetVar("currentEditingApplication");
-          return currentEditingApplication?.i18n?.defaultLocale ? true : false;
+          return $currentEditingApplication?.i18n?.enabled === true;
         `
       }
     },
-    children_ids: ["app_i18n_default_locale_block", "app_i18n_supported_locales_block"]
+    children_ids: ["app_i18n_default_locale_block", "app_i18n_supported_locales_block", "app_i18n_active_locale_block"]
   },
   // Default Locale Selection
   {
@@ -234,8 +227,7 @@ export default [
       value: {
         type: "handler",
         value: /* js */ `
-          const currentEditingApplication = GetVar("currentEditingApplication");
-          return currentEditingApplication?.i18n?.defaultLocale || 'en';
+          return $currentEditingApplication?.i18n?.defaultLocale || 'en';
         `
       },
       options: {
@@ -260,11 +252,12 @@ export default [
       }
     },
     event: {
-      valueChange: /* js */ `
+      onChange: /* js */ `
         const currentEditingApplication = GetVar("currentEditingApplication");
-        if (currentEditingApplication?.i18n) {
+        if (currentEditingApplication) {
           const newLocale = EventData.value;
-          const currentLocales = currentEditingApplication.i18n.supportedLocales || [];
+          const currentI18n = currentEditingApplication.i18n || { defaultLocale: 'en', supportedLocales: ['en'], fallbackLocale: 'en' };
+          const currentLocales = currentI18n.supportedLocales || [];
 
           // Ensure default locale is in supported locales
           const supportedLocales = currentLocales.includes(newLocale)
@@ -274,7 +267,7 @@ export default [
           UpdateApplication({
             ...currentEditingApplication,
             i18n: {
-              ...currentEditingApplication.i18n,
+              ...currentI18n,
               defaultLocale: newLocale,
               supportedLocales: supportedLocales,
               fallbackLocale: newLocale
@@ -328,12 +321,11 @@ export default [
       size: "small"
     },
     input: {
-      multiple: { type: "boolean", value: true },
+      selectionMode: { type: "string", value: "multiple" },
       value: {
         type: "handler",
         value: /* js */ `
-          const currentEditingApplication = GetVar("currentEditingApplication");
-          return currentEditingApplication?.i18n?.supportedLocales || ['en'];
+          return $currentEditingApplication?.i18n?.supportedLocales || ['en'];
         `
       },
       options: {
@@ -358,11 +350,12 @@ export default [
       }
     },
     event: {
-      valueChange: /* js */ `
+      onChange: /* js */ `
         const currentEditingApplication = GetVar("currentEditingApplication");
-        if (currentEditingApplication?.i18n) {
+        if (currentEditingApplication) {
+          const currentI18n = currentEditingApplication.i18n || { defaultLocale: 'en', supportedLocales: ['en'], fallbackLocale: 'en' };
           const selectedLocales = Array.isArray(EventData.value) ? EventData.value : [EventData.value];
-          const defaultLocale = currentEditingApplication.i18n.defaultLocale || 'en';
+          const defaultLocale = currentI18n.defaultLocale || 'en';
 
           // Ensure default locale is always included
           const supportedLocales = selectedLocales.includes(defaultLocale)
@@ -372,8 +365,95 @@ export default [
           UpdateApplication({
             ...currentEditingApplication,
             i18n: {
-              ...currentEditingApplication.i18n,
+              ...currentI18n,
               supportedLocales: supportedLocales
+            }
+          });
+        }
+      `
+    }
+  },
+  // Active Locale Selection (runtime default)
+  {
+    uuid: "app_i18n_active_locale_block",
+    application_id: "1",
+    name: "app i18n active locale block",
+    type: "container",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      display: "flex",
+      "flex-direction": "column",
+      gap: "4px",
+      width: "100%"
+    },
+    children_ids: ["app_i18n_active_locale_label", "app_i18n_active_locale_select"]
+  },
+  {
+    uuid: "app_i18n_active_locale_label",
+    name: "app i18n active locale label",
+    type: "text_label",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    input: {
+      value: {
+        type: "string",
+        value: "Active Language (Runtime Default)"
+      }
+    },
+    style: {
+      "font-size": "11px",
+      "font-weight": "500",
+      color: "var(--nuraly-color-text-secondary)"
+    }
+  },
+  {
+    uuid: "app_i18n_active_locale_select",
+    name: "app i18n active locale select",
+    type: "select",
+    application_id: "1",
+    ...COMMON_ATTRIBUTES,
+    style: {
+      width: "100%",
+      size: "small"
+    },
+    input: {
+      value: {
+        type: "handler",
+        value: /* js */ `
+          const i18n = $currentEditingApplication?.i18n;
+          if (i18n?.detectBrowserLanguage === true) return 'auto';
+          return i18n?.activeLocale || i18n?.defaultLocale || 'en';
+        `
+      },
+      options: {
+        type: "handler",
+        value: /* js */ `
+          const supportedLocales = $currentEditingApplication?.i18n?.supportedLocales || ['en'];
+          const flags = { en: '🇺🇸', fr: '🇫🇷', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹', pt: '🇵🇹', ru: '🇷🇺', zh: '🇨🇳', ja: '🇯🇵', ko: '🇰🇷', ar: '🇸🇦', he: '🇮🇱', tr: '🇹🇷', nl: '🇳🇱', pl: '🇵🇱' };
+          const names = { en: 'English', fr: 'French', es: 'Spanish', de: 'German', it: 'Italian', pt: 'Portuguese', ru: 'Russian', zh: 'Chinese', ja: 'Japanese', ko: 'Korean', ar: 'Arabic', he: 'Hebrew', tr: 'Turkish', nl: 'Dutch', pl: 'Polish' };
+          const localeOptions = supportedLocales.map(locale => ({
+            label: (flags[locale] || '🌐') + ' ' + (names[locale] || locale.toUpperCase()),
+            value: locale
+          }));
+          return [
+            { label: '🌐 Auto-detect (Browser)', value: 'auto' },
+            ...localeOptions
+          ];
+        `
+      }
+    },
+    event: {
+      onChange: /* js */ `
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        if (currentEditingApplication) {
+          const currentI18n = currentEditingApplication.i18n || { defaultLocale: 'en', supportedLocales: ['en'], fallbackLocale: 'en' };
+          const isAuto = EventData.value === 'auto';
+          UpdateApplication({
+            ...currentEditingApplication,
+            i18n: {
+              ...currentI18n,
+              activeLocale: isAuto ? currentI18n.defaultLocale : EventData.value,
+              detectBrowserLanguage: isAuto
             }
           });
         }

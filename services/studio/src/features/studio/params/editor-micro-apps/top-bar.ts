@@ -442,7 +442,7 @@ export default [{
   style: {
     "margin-right": "14px",
   },
-  children_ids: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode"]
+  children_ids: ["app_insert_top_bar", "app_edit_top_bar", "app_application_top_bar", "vdivider", "prev_next_top_bar", "vdivider", "zoom_top_bar", "vdivider", "edit_mode", "preview_mode", "preview_locale_select"]
 },
 
 {
@@ -552,6 +552,68 @@ export default [{
             return iconName;
             `
     }
+  }
+},
+{
+  uuid: "preview_locale_select",
+  name: "preview_locale_select",
+  application_id: "1",
+  type: "select",
+  style: {
+    width: "110px",
+    size: "small",
+    "margin-left": "8px"
+  },
+  input: {
+    display: {
+      type: "handler",
+      value: /* js */`
+        return $currentEditingApplication?.i18n?.enabled === true && $currentEditingApplication?.i18n?.supportedLocales?.length > 1;
+      `
+    },
+    value: {
+      type: "handler",
+      value: /* js */`
+        if ($previewLocale === 'auto' || $currentEditingApplication?.i18n?.detectBrowserLanguage === true) return 'auto';
+        return $previewLocale || $currentEditingApplication?.i18n?.activeLocale || $currentEditingApplication?.i18n?.defaultLocale || 'en';
+      `
+    },
+    options: {
+      type: "handler",
+      value: /* js */`
+        const locales = $currentEditingApplication?.i18n?.supportedLocales || ['en'];
+        const flags = { en: '🇬🇧', fr: '🇫🇷', ar: '🇸🇦', es: '🇪🇸', de: '🇩🇪', zh: '🇨🇳', ja: '🇯🇵', ko: '🇰🇷', pt: '🇧🇷', it: '🇮🇹', ru: '🇷🇺', he: '🇮🇱', nl: '🇳🇱', pl: '🇵🇱', tr: '🇹🇷' };
+        const localeOptions = locales.map(locale => ({
+          label: (flags[locale] || '🌐') + ' ' + locale.toUpperCase(),
+          value: locale
+        }));
+        return [
+          { label: '🌐 Auto', value: 'auto' },
+          ...localeOptions
+        ];
+      `
+    },
+    size: {
+      type: "string",
+      value: "small"
+    }
+  },
+  event: {
+    onChange: /* js */`
+      $previewLocale = EventData.value;
+      // Sync detectBrowserLanguage setting when changing from top bar
+      const currentEditingApplication = GetVar("currentEditingApplication");
+      if (currentEditingApplication?.i18n) {
+        const isAuto = EventData.value === 'auto';
+        UpdateApplication({
+          ...currentEditingApplication,
+          i18n: {
+            ...currentEditingApplication.i18n,
+            detectBrowserLanguage: isAuto
+          }
+        });
+      }
+    `
   }
 },
 
@@ -891,7 +953,7 @@ export default [{
   style: {
     width: "100%"
   },
-  children_ids: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_settings_danger_section"]
+  children_ids: ["app_settings_name_section", "app_settings_description_section", "app_settings_subdomain_section", "app_settings_access_section", "app_i18n_settings_block", "app_settings_danger_section"]
 },
 {
   uuid: "app_settings_name_section",
