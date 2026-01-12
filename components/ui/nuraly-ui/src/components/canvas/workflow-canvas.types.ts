@@ -22,6 +22,7 @@ export enum WorkflowNodeType {
   NOTIFICATION = 'NOTIFICATION',
   DATABASE = 'DATABASE',
   VARIABLE = 'VARIABLE',
+  CHATBOT = 'CHATBOT',
 }
 
 /**
@@ -321,6 +322,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.NOTIFICATION]: '#84cc16',
   [WorkflowNodeType.DATABASE]: '#a855f7',
   [WorkflowNodeType.VARIABLE]: '#64748b',
+  [WorkflowNodeType.CHATBOT]: '#0ea5e9',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -353,6 +355,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.NOTIFICATION]: 'bell',
   [WorkflowNodeType.DATABASE]: 'database',
   [WorkflowNodeType.VARIABLE]: 'box',
+  [WorkflowNodeType.CHATBOT]: 'message-circle',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -579,6 +582,35 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
     },
   },
+  {
+    type: WorkflowNodeType.CHATBOT,
+    name: 'Chatbot Trigger',
+    description: 'Trigger workflow from chatbot interactions',
+    icon: NODE_ICONS[WorkflowNodeType.CHATBOT],
+    color: NODE_COLORS[WorkflowNodeType.CHATBOT],
+    category: 'trigger',
+    defaultConfig: {
+      triggerEvents: ['MESSAGE_SENT'],
+      chatbotSize: 'medium',
+      chatbotVariant: 'floating',
+      title: 'Chat Assistant',
+      subtitle: 'Ask me anything',
+      placeholder: 'Type a message...',
+      initialMessage: '',
+      enableTypingIndicator: true,
+      enableSuggestions: false,
+      suggestions: [],
+      loadingType: 'dots',
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'message', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'session', type: PortType.OUTPUT, label: 'Session Start' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   // Agent nodes
   {
     type: AgentNodeType.AGENT,
@@ -724,11 +756,19 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
  */
 export const NODE_CATEGORIES: NodeCategory[] = [
   {
+    id: 'trigger',
+    name: 'Triggers',
+    icon: 'zap',
+    nodeTypes: [
+      WorkflowNodeType.START,
+      WorkflowNodeType.CHATBOT,
+    ],
+  },
+  {
     id: 'control',
     name: 'Control Flow',
     icon: 'git-branch',
     nodeTypes: [
-      WorkflowNodeType.START,
       WorkflowNodeType.END,
       WorkflowNodeType.CONDITION,
       WorkflowNodeType.DELAY,

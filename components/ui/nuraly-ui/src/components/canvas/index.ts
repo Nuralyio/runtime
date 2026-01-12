@@ -8,3 +8,6 @@ export * from './workflow-canvas.component.js';
 
 // Data node components and types
 export * from './data-node/index.js';
+
+// Chatbot trigger components and types
+export * from './chatbot-trigger/index.js';
