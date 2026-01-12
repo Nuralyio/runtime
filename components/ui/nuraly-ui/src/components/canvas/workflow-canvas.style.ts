@@ -423,8 +423,8 @@ export const workflowCanvasStyles = css`
   /* Configuration panel */
   .config-panel {
     position: absolute;
-    width: 280px;
-    max-height: 400px;
+    width: 320px;
+    max-height: 500px;
     background: var(--nuraly-color-layer-01, rgba(0, 0, 0, 0.95));
     border: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
     border-radius: var(--nuraly-border-radius-medium, 8px);
@@ -518,6 +518,20 @@ export const workflowCanvasStyles = css`
   .config-section {
     padding-top: var(--nuraly-spacing-2, 8px);
     border-top: 1px solid var(--nuraly-color-border-subtle, #2a2a2a);
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-3, 12px);
+  }
+
+  .config-section:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .config-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-1, 4px);
   }
 
   .config-section-title {
@@ -527,7 +541,19 @@ export const workflowCanvasStyles = css`
     color: var(--nuraly-color-text-placeholder, #666);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: var(--nuraly-spacing-2, 8px);
+  }
+
+  .config-section-desc {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text-helper, #888);
+  }
+
+  .field-description {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text-helper, #888);
+    margin-top: var(--nuraly-spacing-1, 4px);
   }
 
   /* Empty state */
