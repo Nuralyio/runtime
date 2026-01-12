@@ -12,7 +12,11 @@ import {
   NODE_TEMPLATES,
   WorkflowNodeType,
   AgentNodeType,
+  DataOperation,
 } from '../workflow-canvas.types.js';
+
+// Import data node field components
+import '../data-node/data-node-fields.component.js';
 
 /**
  * Callbacks for config panel interactions
@@ -56,6 +60,196 @@ function renderCommonFields(
         placeholder="Description"
         @nr-input=${(e: CustomEvent) => callbacks.onUpdateDescription(e.detail.value)}
       ></nr-input>
+    </div>
+  `;
+}
+
+/**
+ * Check if a section should be shown based on operation
+ */
+function shouldShowSection(sectionId: string, operation: DataOperation | string): boolean {
+  const showWhenMap: Record<string, DataOperation[]> = {
+    filter: ['QUERY', 'UPDATE', 'DELETE'],
+    fields: ['INSERT', 'UPDATE'],
+    select: ['QUERY'],
+    sorting: ['QUERY'],
+    pagination: ['QUERY'],
+  };
+
+  if (!showWhenMap[sectionId]) return true;
+  return showWhenMap[sectionId].includes(operation as DataOperation);
+}
+
+/**
+ * Render Data Node specific configuration fields
+ */
+function renderDataNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  const operation = (config.operation as DataOperation) || 'QUERY';
+
+  // Mock data sources and fields for demo (in real app, these would come from a service)
+  const mockDataSources = [
+    { id: 'ds1', name: 'Production DB', type: 'postgresql' as const },
+    { id: 'ds2', name: 'Analytics DB', type: 'mysql' as const },
+    { id: 'ds3', name: 'User Store', type: 'mongodb' as const },
+  ];
+
+  const mockEntities = [
+    { id: 'users', name: 'users', type: 'table' as const },
+    { id: 'orders', name: 'orders', type: 'table' as const },
+    { id: 'products', name: 'products', type: 'table' as const },
+  ];
+
+  const mockFields = [
+    { id: 'id', name: 'id', type: 'number' as const },
+    { id: 'name', name: 'name', type: 'string' as const },
+    { id: 'email', name: 'email', type: 'string' as const },
+    { id: 'status', name: 'status', type: 'string' as const },
+    { id: 'created_at', name: 'created_at', type: 'datetime' as const },
+    { id: 'balance', name: 'balance', type: 'number' as const },
+  ];
+
+  return html`
+    <!-- Basic Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Operation</label>
+        <nr-operation-select
+          .value=${operation}
+          @value-change=${(e: CustomEvent) => onUpdate('operation', e.detail.value)}
+        ></nr-operation-select>
+      </div>
+
+      <div class="config-field">
+        <nr-datasource-select
+          label="Data Source"
+          .value=${config.dataSource || null}
+          .dataSources=${mockDataSources}
+          description="Database connection to use"
+          @value-change=${(e: CustomEvent) => onUpdate('dataSource', e.detail.value)}
+        ></nr-datasource-select>
+      </div>
+
+      <div class="config-field">
+        <nr-entity-select
+          label="Table / Collection"
+          .value=${config.entity || null}
+          .entities=${mockEntities}
+          description="Table or collection to query"
+          @value-change=${(e: CustomEvent) => onUpdate('entity', e.detail.value)}
+        ></nr-entity-select>
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    ${shouldShowSection('filter', operation) ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Filter</span>
+          <span class="config-section-desc">Define conditions to filter records</span>
+        </div>
+        <nr-filter-builder
+          .value=${config.filter || null}
+          .fields=${mockFields}
+          allowExpressions
+          description="Add conditions to filter records"
+          @value-change=${(e: CustomEvent) => onUpdate('filter', e.detail.value)}
+        ></nr-filter-builder>
+      </div>
+    ` : nothing}
+
+    <!-- Fields Section (for INSERT/UPDATE) -->
+    ${shouldShowSection('fields', operation) ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Fields</span>
+        </div>
+        <nr-field-mapper
+          label="Field Values"
+          .value=${config.fields || {}}
+          .fields=${mockFields}
+          allowExpressions
+          description="Map values to database fields"
+          @value-change=${(e: CustomEvent) => onUpdate('fields', e.detail.value)}
+        ></nr-field-mapper>
+      </div>
+    ` : nothing}
+
+    <!-- Select Fields Section (for QUERY) -->
+    ${shouldShowSection('select', operation) ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Select Fields</span>
+        </div>
+        <nr-field-multi-select
+          label="Fields to Return"
+          .value=${config.select || []}
+          .fields=${mockFields}
+          placeholder="All fields"
+          description="Leave empty to return all fields"
+          @value-change=${(e: CustomEvent) => onUpdate('select', e.detail.value)}
+        ></nr-field-multi-select>
+      </div>
+    ` : nothing}
+
+    <!-- Sorting Section (for QUERY) -->
+    ${shouldShowSection('sorting', operation) ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Sorting</span>
+        </div>
+        <nr-sort-builder
+          label="Order By"
+          .value=${config.orderBy || []}
+          .fields=${mockFields}
+          @value-change=${(e: CustomEvent) => onUpdate('orderBy', e.detail.value)}
+        ></nr-sort-builder>
+      </div>
+    ` : nothing}
+
+    <!-- Pagination Section (for QUERY) -->
+    ${shouldShowSection('pagination', operation) ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Pagination</span>
+        </div>
+        <div class="config-field">
+          <label>Limit</label>
+          <nr-input
+            type="number"
+            .value=${String(config.limit || '')}
+            placeholder="No limit"
+            @nr-input=${(e: CustomEvent) => onUpdate('limit', e.detail.value ? parseInt(e.detail.value) : null)}
+          ></nr-input>
+          <span class="field-description">Maximum records to return</span>
+        </div>
+        <div class="config-field">
+          <label>Offset</label>
+          <nr-input
+            type="number"
+            .value=${String(config.offset || '')}
+            placeholder="0"
+            @nr-input=${(e: CustomEvent) => onUpdate('offset', e.detail.value ? parseInt(e.detail.value) : null)}
+          ></nr-input>
+          <span class="field-description">Number of records to skip</span>
+        </div>
+      </div>
+    ` : nothing}
+
+    <!-- Output Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Output</span>
+      </div>
+      <nr-variable-name-input
+        label="Save Result To"
+        .value=${config.outputVariable || 'results'}
+        placeholder="results"
+        description="Variable name to store the result"
+        @value-change=${(e: CustomEvent) => onUpdate('outputVariable', e.detail.value)}
+      ></nr-variable-name-input>
     </div>
   `;
 }
@@ -352,6 +546,9 @@ function renderTypeFields(
           ></nr-input>
         </div>
       `;
+
+    case WorkflowNodeType.DATABASE:
+      return renderDataNodeFields(config, onUpdate);
 
     default:
       return nothing;

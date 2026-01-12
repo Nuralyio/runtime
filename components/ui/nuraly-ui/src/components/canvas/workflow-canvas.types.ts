@@ -94,6 +94,36 @@ export interface Position {
 }
 
 /**
+ * Data node operation types
+ */
+export type DataOperation = 'QUERY' | 'INSERT' | 'UPDATE' | 'DELETE';
+
+/**
+ * Filter condition for data queries
+ */
+export interface DataFilterCondition {
+  field: string;
+  op: string;
+  value?: unknown;
+}
+
+/**
+ * Filter group with AND/OR logic
+ */
+export interface DataFilterGroup {
+  and?: (DataFilterCondition | DataFilterGroup)[];
+  or?: (DataFilterCondition | DataFilterGroup)[];
+}
+
+/**
+ * Sort order for data queries
+ */
+export interface DataSortOrder {
+  field: string;
+  dir: 'ASC' | 'DESC';
+}
+
+/**
  * Node configuration - varies by node type
  */
 export interface NodeConfiguration {
@@ -136,6 +166,17 @@ export interface NodeConfiguration {
   // Tool node
   toolName?: string;
   toolConfig?: Record<string, unknown>;
+  // Database/Data node
+  operation?: DataOperation;
+  dataSource?: string | null;
+  entity?: string | null;
+  filter?: DataFilterGroup | null;
+  fields?: Record<string, string | number | boolean | null>;
+  select?: string[];
+  orderBy?: DataSortOrder[];
+  limit?: number | null;
+  offset?: number | null;
+  outputVariable?: string;
 }
 
 /**
@@ -500,15 +541,29 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
   },
   {
     type: WorkflowNodeType.DATABASE,
-    name: 'Database',
-    description: 'Execute a database operation',
+    name: 'Data',
+    description: 'Read and write data to databases',
     icon: NODE_ICONS[WorkflowNodeType.DATABASE],
-    color: NODE_COLORS[WorkflowNodeType.DATABASE],
+    color: '#6366F1',
     category: 'data',
-    defaultConfig: { operation: 'query', query: '' },
+    defaultConfig: {
+      operation: 'QUERY',
+      dataSource: null,
+      entity: null,
+      filter: null,
+      fields: {},
+      select: [],
+      orderBy: [],
+      limit: null,
+      offset: null,
+      outputVariable: 'results',
+    },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
-      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Output' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
     },
   },
   {
