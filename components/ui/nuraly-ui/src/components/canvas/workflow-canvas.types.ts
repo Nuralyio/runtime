@@ -178,6 +178,7 @@ export interface WorkflowEdge {
   priority?: number;
   animated?: boolean;
   selected?: boolean;
+  status?: ExecutionStatus;
 }
 
 /**

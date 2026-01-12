@@ -70,6 +70,7 @@ export const workflowCanvasStyles = css`
     height: 10000px;
     pointer-events: none;
     overflow: visible;
+    z-index: 1;
   }
 
   /* Edge styles */
@@ -131,6 +132,7 @@ export const workflowCanvasStyles = css`
   /* Nodes layer */
   .nodes-layer {
     position: relative;
+    z-index: 2;
   }
 
   /* Selection box */
@@ -613,6 +615,27 @@ export const workflowCanvasStyles = css`
     }
   }
 
+  .canvas-wrapper[data-theme="light"] .edge-path,
+  .canvas-wrapper[data-theme="carbon-light"] .edge-path,
+  .canvas-wrapper[data-theme="default-light"] .edge-path,
+  .canvas-wrapper[data-theme="default"] .edge-path {
+    stroke: var(--nuraly-color-border-strong, #8d8d8d);
+  }
+
+  .canvas-wrapper[data-theme="light"] .edge-path:hover,
+  .canvas-wrapper[data-theme="carbon-light"] .edge-path:hover,
+  .canvas-wrapper[data-theme="default-light"] .edge-path:hover,
+  .canvas-wrapper[data-theme="default"] .edge-path:hover {
+    stroke: var(--nuraly-color-border-interactive, #6f6f6f);
+  }
+
+  .canvas-wrapper[data-theme="light"] .edge-arrow,
+  .canvas-wrapper[data-theme="carbon-light"] .edge-arrow,
+  .canvas-wrapper[data-theme="default-light"] .edge-arrow,
+  .canvas-wrapper[data-theme="default"] .edge-arrow {
+    fill: var(--nuraly-color-border-strong, #8d8d8d);
+  }
+
   .canvas-wrapper[data-theme="light"] .canvas-toolbar,
   .canvas-wrapper[data-theme="light"] .zoom-controls,
   .canvas-wrapper[data-theme="light"] .node-palette,
@@ -627,7 +650,12 @@ export const workflowCanvasStyles = css`
   .canvas-wrapper[data-theme="default-light"] .zoom-controls,
   .canvas-wrapper[data-theme="default-light"] .node-palette,
   .canvas-wrapper[data-theme="default-light"] .context-menu,
-  .canvas-wrapper[data-theme="default-light"] .config-panel {
+  .canvas-wrapper[data-theme="default-light"] .config-panel,
+  .canvas-wrapper[data-theme="default"] .canvas-toolbar,
+  .canvas-wrapper[data-theme="default"] .zoom-controls,
+  .canvas-wrapper[data-theme="default"] .node-palette,
+  .canvas-wrapper[data-theme="default"] .context-menu,
+  .canvas-wrapper[data-theme="default"] .config-panel {
     background: var(--nuraly-color-layer-01, #ffffff);
     border-color: var(--nuraly-color-border-subtle, #e0e0e0);
   }
