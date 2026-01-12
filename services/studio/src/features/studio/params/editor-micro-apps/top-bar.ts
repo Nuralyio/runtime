@@ -14,7 +14,7 @@ export default [{
   style: {
     "border-bottom": "1px solid #d6d6d6",
   },
-  children_ids: ["info-top-bar", "settings-top-bar", "app_settings_modal", "share_application_modal"]
+  children_ids: ["info-top-bar", "settings-top-bar", "app_settings_modal", "share_application_modal", "kv_storage_modal"]
 },
 {
   uuid: "info-top-bar",
@@ -197,6 +197,9 @@ export default [{
     if(action === "open-modal"){
       // Open the application settings modal
       $applicationSettingsModalOpen = true
+    } else if(action === "open-kv-modal"){
+      // Open the KV Storage modal
+      $kvStorageModalOpen = true;
     } else if(action === "export"){
       // Export application functionality
       const currentEditingApplication = GetVar("currentEditingApplication");
@@ -1363,5 +1366,52 @@ export default [{
   name: "Share Modal Content",
   application_id: "1",
   type: "share_modal",
+  input: {}
+},
+{
+  uuid: "kv_storage_modal",
+  name: "KV Storage Modal",
+  application_id: "1",
+  type: "modal",
+  input: {
+    open: {
+      type: "handler",
+      value: /* js */`
+        $kvStorageModalOpen;
+      `
+    },
+    modalTitle: {
+      type: "string",
+      value: "KV Storage"
+    },
+    size: {
+      type: "string",
+      value: "large"
+    },
+    position: {
+      type: "string",
+      value: "center"
+    },
+    closable: {
+      type: "boolean",
+      value: true
+    },
+    showCloseButton: {
+      type: "boolean",
+      value: true
+    }
+  },
+  event: {
+    onModalClose: /* js */`
+      $kvStorageModalOpen = false;
+    `
+  },
+  children_ids: ["kv_storage_modal_content"]
+},
+{
+  uuid: "kv_storage_modal_content",
+  name: "KV Modal Content",
+  application_id: "1",
+  type: "kv_modal",
   input: {}
 }];

@@ -39,4 +39,18 @@ export const APIS_URL = {
   createRole: (appId: string) => `${API_BASE}/api/applications/${appId}/roles`,
   updateRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
   deleteRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
+
+  // KV Storage
+  getKvNamespaces: (appId: string) => `${API_BASE}/api/v1/kv/namespaces?applicationId=${appId}`,
+  createKvNamespace: () => `${API_BASE}/api/v1/kv/namespaces`,
+  getKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  updateKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  deleteKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  getKvEntries: (nsId: string) => `${API_BASE}/api/v1/kv/${nsId}/entries`,
+  getKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  setKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  deleteKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  rotateKvSecret: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rotate`,
+  getKvVersions: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/versions`,
+  rollbackKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rollback`,
 };
