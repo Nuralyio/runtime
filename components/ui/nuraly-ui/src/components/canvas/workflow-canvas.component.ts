@@ -6,6 +6,7 @@
 
 import { LitElement, html } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
+import { styleMap } from 'lit/directives/style-map.js';
 import {
   Workflow,
   WorkflowNode,
@@ -20,6 +21,7 @@ import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import './workflow-node.component.js';
 import '../icon/icon.component.js';
 import '../input/input.component.js';
+import '../chatbot/chatbot.component.js';
 
 // Controllers
 import {
@@ -109,6 +111,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private hoveredEdgeId: string | null = null;
+
+  @state()
+  private previewNodeId: string | null = null;
 
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
@@ -248,6 +253,44 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private handleNodePreview(e: CustomEvent) {
+    const { node } = e.detail;
+    // Toggle preview panel - close if same node, open if different
+    if (this.previewNodeId === node.id) {
+      this.previewNodeId = null;
+    } else {
+      this.previewNodeId = node.id;
+    }
+  }
+
+  private closePreviewPanel() {
+    this.previewNodeId = null;
+  }
+
+  /**
+   * Get the current preview node from workflow (live position)
+   */
+  private getPreviewNode(): WorkflowNode | null {
+    if (!this.previewNodeId) return null;
+    return this.workflow.nodes.find(n => n.id === this.previewNodeId) || null;
+  }
+
+  /**
+   * Calculate preview panel position to the LEFT of the preview node
+   */
+  private getPreviewPanelPosition(): { x: number; y: number } | null {
+    const previewNode = this.getPreviewNode();
+    if (!previewNode) return null;
+
+    const previewPanelWidth = 420;
+    const panelOffset = 20;
+
+    return {
+      x: (previewNode.position.x - previewPanelWidth - panelOffset) * this.viewport.zoom + this.viewport.panX,
+      y: previewNode.position.y * this.viewport.zoom + this.viewport.panY,
+    };
   }
 
   private handlePortMouseDown(e: CustomEvent) {
@@ -439,6 +482,50 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
+  private renderChatbotPreview() {
+    const previewNode = this.getPreviewNode();
+    const position = this.getPreviewPanelPosition();
+    if (!previewNode || !position) return html``;
+
+    const config = previewNode.configuration || {};
+    const rawSuggestions = (config.suggestions as Array<{id?: string; text?: string}>) || [];
+    const suggestions = rawSuggestions.map((s, i) => ({
+      id: s.id || String(i),
+      text: s.text || '',
+    }));
+
+    const panelStyle = {
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+    };
+
+    return html`
+      <div class="chatbot-preview-panel" style=${styleMap(panelStyle)} data-theme=${this.currentTheme}>
+        <div class="chatbot-preview-header">
+          <div class="chatbot-preview-title">
+            <nr-icon name="message-circle" size="small"></nr-icon>
+            <span>Chat Preview</span>
+          </div>
+          <button class="chatbot-preview-close" @click=${this.closePreviewPanel}>
+            <nr-icon name="x" size="small"></nr-icon>
+          </button>
+        </div>
+        <div class="chatbot-preview-content">
+          <nr-chatbot
+            size=${(config.chatbotSize as string) || 'medium'}
+            variant=${(config.chatbotVariant as string) || 'default'}
+            .suggestions=${suggestions}
+            placeholder=${(config.placeholder as string) || 'Type a message...'}
+            botName=${(config.title as string) || 'Chat Assistant'}
+            ?showHeader=${true}
+            ?showSuggestions=${config.enableSuggestions !== false}
+            loadingType=${(config.loadingType as string) || 'dots'}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+
   override render() {
     return html`
       <div
@@ -467,6 +554,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
                 .connectingPortId=${this.connectionState?.sourcePortId || null}
                 @node-mousedown=${this.handleNodeMouseDown}
                 @node-dblclick=${this.handleNodeDblClick}
+                @node-preview=${this.handleNodePreview}
                 @port-mousedown=${this.handlePortMouseDown}
                 @port-mouseup=${this.handlePortMouseUp}
               ></workflow-node>
@@ -478,6 +566,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}
+        ${this.renderChatbotPreview()}
         ${this.renderZoomControls()}
         ${this.renderContextMenu()}
       </div>

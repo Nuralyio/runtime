@@ -256,6 +256,8 @@ export const workflowCanvasStyles = css`
     border-radius: var(--nuraly-border-radius-medium, 8px);
     overflow: hidden;
     z-index: 90;
+    display: flex;
+    flex-direction: column;
   }
 
   .palette-header {
@@ -293,9 +295,10 @@ export const workflowCanvasStyles = css`
   }
 
   .palette-content {
+    flex: 1;
     overflow-y: auto;
-    max-height: calc(100% - 48px);
     overscroll-behavior: contain;
+    min-height: 0;
   }
 
   .palette-category {
@@ -802,6 +805,108 @@ export const workflowCanvasStyles = css`
   .canvas-wrapper[data-theme="carbon-dark"] .palette-item:hover,
   .canvas-wrapper[data-theme="default-dark"] .palette-item:hover {
     background: var(--nuraly-color-layer-hover-02, #4c4c4c);
+  }
+
+  /* ========================================
+   * CHATBOT PREVIEW PANEL
+   * ======================================== */
+
+  .chatbot-preview-panel {
+    position: absolute;
+    width: 420px;
+    height: 520px;
+    background: var(--nuraly-color-layer-01, rgba(0, 0, 0, 0.95));
+    border: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
+    border-radius: var(--nuraly-border-radius-medium, 8px);
+    overflow: hidden;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--nuraly-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.4));
+  }
+
+  .chatbot-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--nuraly-spacing-3, 12px);
+    border-bottom: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
+    background: var(--nuraly-color-layer-02, rgba(255, 255, 255, 0.03));
+  }
+
+  .chatbot-preview-title {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-sm, 13px);
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+  }
+
+  .chatbot-preview-title nr-icon {
+    color: var(--nuraly-color-interactive, #3b82f6);
+  }
+
+  .chatbot-preview-close {
+    background: none;
+    border: none;
+    color: var(--nuraly-color-text-secondary, #888);
+    cursor: pointer;
+    padding: var(--nuraly-spacing-1, 4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--nuraly-border-radius-small, 4px);
+    transition: all var(--nuraly-transition-fast, 0.15s) ease;
+  }
+
+  .chatbot-preview-close:hover {
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    background: var(--nuraly-color-layer-hover-01, rgba(255, 255, 255, 0.1));
+  }
+
+  .chatbot-preview-content {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .chatbot-preview-content nr-chatbot {
+    width: 100%;
+    height: 100%;
+    --chatbot-border-radius: 0;
+  }
+
+  /* Light theme for chatbot preview */
+  .canvas-wrapper[data-theme="light"] .chatbot-preview-panel,
+  .canvas-wrapper[data-theme="carbon-light"] .chatbot-preview-panel,
+  .canvas-wrapper[data-theme="default-light"] .chatbot-preview-panel,
+  .canvas-wrapper[data-theme="default"] .chatbot-preview-panel {
+    background: var(--nuraly-color-layer-01, #ffffff);
+    border-color: var(--nuraly-color-border-subtle, #e0e0e0);
+  }
+
+  .canvas-wrapper[data-theme="light"] .chatbot-preview-header,
+  .canvas-wrapper[data-theme="carbon-light"] .chatbot-preview-header,
+  .canvas-wrapper[data-theme="default-light"] .chatbot-preview-header,
+  .canvas-wrapper[data-theme="default"] .chatbot-preview-header {
+    background: var(--nuraly-color-layer-02, #f4f4f4);
+    border-color: var(--nuraly-color-border-subtle, #e0e0e0);
+  }
+
+  .canvas-wrapper[data-theme="light"] .chatbot-preview-title,
+  .canvas-wrapper[data-theme="carbon-light"] .chatbot-preview-title,
+  .canvas-wrapper[data-theme="default-light"] .chatbot-preview-title,
+  .canvas-wrapper[data-theme="default"] .chatbot-preview-title {
+    color: var(--nuraly-color-text-primary, #161616);
+  }
+
+  /* Dark theme for chatbot preview */
+  .canvas-wrapper[data-theme="dark"] .chatbot-preview-panel,
+  .canvas-wrapper[data-theme="carbon-dark"] .chatbot-preview-panel,
+  .canvas-wrapper[data-theme="default-dark"] .chatbot-preview-panel {
+    background: var(--nuraly-color-layer-01, #262626);
+    border-color: var(--nuraly-color-border-subtle, #393939);
   }
 `;
 

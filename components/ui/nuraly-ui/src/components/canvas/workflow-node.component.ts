@@ -16,6 +16,7 @@ import {
   NODE_COLORS,
   NODE_ICONS,
   isAgentNode,
+  WorkflowNodeType,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-node.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -29,6 +30,7 @@ import '../icon/icon.component.js';
  * @fires port-mousedown - When a port is clicked to start connection
  * @fires port-mouseup - When mouse is released on a port
  * @fires node-dblclick - When node is double-clicked for editing
+ * @fires node-preview - When preview button is clicked (for chatbot nodes)
  */
 @customElement('workflow-node')
 export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
@@ -74,6 +76,20 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  private handlePreviewClick(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent('node-preview', {
+      detail: { node: this.node },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private isChatbotNode(): boolean {
+    return this.node.type === WorkflowNodeType.CHATBOT;
   }
 
   private handlePortMouseDown(e: MouseEvent, port: NodePort, isInput: boolean) {
@@ -160,6 +176,7 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     const nodeColor = this.getNodeColor();
     const nodeIcon = this.getNodeIcon();
     const isAgent = isAgentNode(this.node.type);
+    const isChatbot = this.isChatbotNode();
     const status = this.node.status || ExecutionStatus.IDLE;
 
     const containerClasses = {
@@ -196,6 +213,17 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
         <div class="node-body">
           ${this.node.metadata?.description ? html`
             <div class="node-description">${this.node.metadata.description}</div>
+          ` : nothing}
+          ${isChatbot ? html`
+            <button
+              class="node-preview-btn"
+              @click=${this.handlePreviewClick}
+              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              title="Open chat preview"
+            >
+              <nr-icon name="eye" size="small"></nr-icon>
+              <span>Preview</span>
+            </button>
           ` : nothing}
         </div>
 

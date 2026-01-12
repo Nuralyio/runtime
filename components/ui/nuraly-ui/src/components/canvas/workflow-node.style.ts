@@ -170,6 +170,33 @@ export const workflowNodeStyles = css`
     line-height: 1.4;
   }
 
+  /* Preview button for chatbot nodes */
+  .node-preview-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-1, 4px);
+    margin-top: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-1-5, 6px) var(--nuraly-spacing-2, 8px);
+    background: var(--nuraly-color-layer-02, rgba(255, 255, 255, 0.08));
+    border: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
+    border-radius: var(--nuraly-border-radius-small, 4px);
+    color: var(--nuraly-color-text-secondary, #888);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    font-family: var(--nuraly-font-family);
+    cursor: pointer;
+    transition: all var(--nuraly-transition-fast, 0.15s) ease;
+  }
+
+  .node-preview-btn:hover {
+    background: var(--nuraly-color-interactive, #3b82f6);
+    border-color: var(--nuraly-color-interactive, #3b82f6);
+    color: var(--nuraly-color-text-on-color, white);
+  }
+
+  .node-preview-btn nr-icon {
+    --icon-size: 12px;
+  }
+
   /* Status indicator */
   .node-status {
     display: flex;

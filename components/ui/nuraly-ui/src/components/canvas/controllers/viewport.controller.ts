@@ -38,7 +38,6 @@ export class ViewportController extends BaseCanvasController {
    * Handle wheel events for pan and zoom
    */
   private handleWheel(e: WheelEvent): void {
-    const target = e.target as HTMLElement;
     const wrapper = this.canvasWrapper;
 
     if (!wrapper) return;
@@ -48,8 +47,20 @@ export class ViewportController extends BaseCanvasController {
     const isInCanvas = path.some(el => el === wrapper || el === this._host);
     if (!isInCanvas) return;
 
-    // Skip if inside scrollable panels
-    if (target.closest('.node-palette') || target.closest('.config-panel')) {
+    // Skip if inside scrollable panels - check composedPath for shadow DOM support
+    const isInScrollablePanel = path.some(el => {
+      if (el instanceof HTMLElement) {
+        return el.classList?.contains('node-palette') ||
+               el.classList?.contains('config-panel') ||
+               el.classList?.contains('chatbot-preview-panel') ||
+               el.classList?.contains('palette-content') ||
+               el.classList?.contains('config-panel-content') ||
+               el.classList?.contains('chatbot-preview-content');
+      }
+      return false;
+    });
+
+    if (isInScrollablePanel) {
       return;
     }
 

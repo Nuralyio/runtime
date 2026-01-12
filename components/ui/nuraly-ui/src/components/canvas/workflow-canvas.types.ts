@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
+// Import and re-export DataOperation from data-node
+import { DataOperation } from './data-node/data-node.types.js';
+export { DataOperation };
+
 /**
  * Node types for standard workflow nodes
  */
@@ -95,11 +99,6 @@ export interface Position {
 }
 
 /**
- * Data node operation types
- */
-export type DataOperation = 'QUERY' | 'INSERT' | 'UPDATE' | 'DELETE';
-
-/**
  * Filter condition for data queries
  */
 export interface DataFilterCondition {
@@ -178,6 +177,10 @@ export interface NodeConfiguration {
   limit?: number | null;
   offset?: number | null;
   outputVariable?: string;
+  // Variable node
+  variableOperation?: 'set' | 'get';
+  variableName?: string;
+  value?: unknown;
 }
 
 /**
@@ -550,7 +553,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: '#6366F1',
     category: 'data',
     defaultConfig: {
-      operation: 'QUERY',
+      operation: DataOperation.QUERY,
       dataSource: null,
       entity: null,
       filter: null,
@@ -576,7 +579,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     icon: NODE_ICONS[WorkflowNodeType.VARIABLE],
     color: NODE_COLORS[WorkflowNodeType.VARIABLE],
     category: 'data',
-    defaultConfig: { operation: 'set', variableName: '', value: '' },
+    defaultConfig: { variableOperation: 'set', variableName: '', value: '' },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],

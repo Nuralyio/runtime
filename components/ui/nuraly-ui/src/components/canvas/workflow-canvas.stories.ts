@@ -15,14 +15,28 @@ import {
 
 // Helper function to create sample workflows
 function createStandardWorkflow(): Workflow {
-  const startNode = createNodeFromTemplate(WorkflowNodeType.START, { x: 100, y: 200 }, 'start_1');
-  const functionNode = createNodeFromTemplate(WorkflowNodeType.FUNCTION, { x: 340, y: 200 }, 'function_1');
-  const conditionNode = createNodeFromTemplate(WorkflowNodeType.CONDITION, { x: 580, y: 200 }, 'condition_1');
-  const httpNode = createNodeFromTemplate(WorkflowNodeType.HTTP, { x: 820, y: 100 }, 'http_1');
-  const endNodeSuccess = createNodeFromTemplate(WorkflowNodeType.END, { x: 1060, y: 100 }, 'end_success');
-  const endNodeFailure = createNodeFromTemplate(WorkflowNodeType.END, { x: 820, y: 320 }, 'end_failure');
+  const chatbotNode = createNodeFromTemplate(WorkflowNodeType.CHATBOT, { x: 100, y: 200 }, 'chatbot_1');
+  const functionNode = createNodeFromTemplate(WorkflowNodeType.FUNCTION, { x: 400, y: 200 }, 'function_1');
+  const conditionNode = createNodeFromTemplate(WorkflowNodeType.CONDITION, { x: 640, y: 200 }, 'condition_1');
+  const httpNode = createNodeFromTemplate(WorkflowNodeType.HTTP, { x: 880, y: 100 }, 'http_1');
+  const endNodeSuccess = createNodeFromTemplate(WorkflowNodeType.END, { x: 1120, y: 100 }, 'end_success');
+  const endNodeFailure = createNodeFromTemplate(WorkflowNodeType.END, { x: 880, y: 320 }, 'end_failure');
 
-  if (startNode) startNode.name = 'Start Process';
+  if (chatbotNode) {
+    chatbotNode.name = 'Chatbot Trigger';
+    chatbotNode.configuration = {
+      triggerEvents: ['MESSAGE_SENT'],
+      title: 'Chat Assistant',
+      placeholder: 'Type a message...',
+      chatbotSize: 'medium',
+      chatbotVariant: 'default',
+      enableSuggestions: true,
+      suggestions: [
+        { id: '1', text: 'Help me get started' },
+        { id: '2', text: 'What can you do?' },
+      ],
+    };
+  }
   if (functionNode) {
     functionNode.name = 'Process Data';
     functionNode.configuration = { functionId: 'process-data-fn' };
@@ -38,7 +52,7 @@ function createStandardWorkflow(): Workflow {
   if (endNodeSuccess) endNodeSuccess.name = 'Success';
   if (endNodeFailure) endNodeFailure.name = 'Failure';
 
-  const nodes = [startNode, functionNode, conditionNode, httpNode, endNodeSuccess, endNodeFailure].filter(Boolean) as WorkflowNode[];
+  const nodes = [chatbotNode, functionNode, conditionNode, httpNode, endNodeSuccess, endNodeFailure].filter(Boolean) as WorkflowNode[];
 
   return {
     id: 'standard-workflow-1',
@@ -46,7 +60,7 @@ function createStandardWorkflow(): Workflow {
     description: 'Process data and send notifications based on results',
     nodes,
     edges: [
-      { id: 'edge_1', sourceNodeId: 'start_1', sourcePortId: 'out', targetNodeId: 'function_1', targetPortId: 'in' },
+      { id: 'edge_1', sourceNodeId: 'chatbot_1', sourcePortId: 'out', targetNodeId: 'function_1', targetPortId: 'in' },
       { id: 'edge_2', sourceNodeId: 'function_1', sourcePortId: 'out', targetNodeId: 'condition_1', targetPortId: 'in' },
       { id: 'edge_3', sourceNodeId: 'condition_1', sourcePortId: 'true', targetNodeId: 'http_1', targetPortId: 'in', label: 'Success' },
       { id: 'edge_4', sourceNodeId: 'condition_1', sourcePortId: 'false', targetNodeId: 'end_failure', targetPortId: 'in', label: 'Failed' },
@@ -278,7 +292,7 @@ export const Default: Story = {
     },
   },
   render: (args: any) => html`
-    <div style="width: 100%; height: 600px; background: #0f0f0f;">
+    <div style="width: 100%; height: 100vh; background: #0f0f0f;">
       <workflow-canvas
         .workflow=${createStandardWorkflow()}
         ?readonly=${args.readonly}
