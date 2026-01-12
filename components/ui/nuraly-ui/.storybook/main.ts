@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/web-components-vite';
+import { resolve } from 'path';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -23,6 +24,17 @@ const config: StorybookConfig = {
       define: {
         ...config.define,
         global: 'globalThis',
+      },
+      optimizeDeps: {
+        ...config.optimizeDeps,
+        include: [...(config.optimizeDeps?.include || []), 'entities'],
+      },
+      resolve: {
+        ...config.resolve,
+        alias: {
+          ...config.resolve?.alias,
+          entities: resolve(__dirname, '../node_modules/entities'),
+        },
       },
     };
   },

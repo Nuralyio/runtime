@@ -5,7 +5,7 @@
  */
 
 import { LitElement, html, nothing, TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { dataNodeFieldStyles } from './data-node-fields.style.js';
@@ -103,7 +103,7 @@ export class VariableNameInputComponent extends NuralyUIBaseMixin(LitElement) {
   placeholder = 'variableName';
 
   @property({ type: String })
-  prefix = '';
+  override prefix = '';
 
   @property({ type: Boolean })
   disabled = false;
@@ -878,17 +878,3 @@ export class SortBuilderComponent extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 }
-
-// Export all components
-export {
-  ExpressionInputComponent,
-  VariableNameInputComponent,
-  OperationSelectComponent,
-  DataSourceSelectComponent,
-  EntitySelectComponent,
-  FieldSelectComponent,
-  FieldMultiSelectComponent,
-  FilterBuilderComponent,
-  FieldMapperComponent,
-  SortBuilderComponent,
-};

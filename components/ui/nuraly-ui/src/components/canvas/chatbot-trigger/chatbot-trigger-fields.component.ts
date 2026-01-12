@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing, TemplateResult } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -14,7 +14,6 @@ import {
   ChatbotTriggerEvent,
   CHATBOT_TRIGGER_EVENTS,
   SuggestionConfig,
-  ModuleConfig,
   ChatbotTriggerSize,
   ChatbotTriggerVariant,
   ChatbotTriggerLoadingType,
@@ -437,14 +436,3 @@ export class LoadingTypeSelectComponent extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 }
-
-// Export all components
-export {
-  TriggerEventSelectComponent,
-  ChatbotSizeSelectComponent,
-  ChatbotVariantSelectComponent,
-  FeatureToggleComponent,
-  SuggestionListComponent,
-  ChatbotPreviewComponent,
-  LoadingTypeSelectComponent,
-};

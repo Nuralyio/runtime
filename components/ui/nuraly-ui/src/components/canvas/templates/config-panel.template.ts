@@ -72,11 +72,11 @@ function renderCommonFields(
  */
 function shouldShowSection(sectionId: string, operation: DataOperation | string): boolean {
   const showWhenMap: Record<string, DataOperation[]> = {
-    filter: ['QUERY', 'UPDATE', 'DELETE'],
-    fields: ['INSERT', 'UPDATE'],
-    select: ['QUERY'],
-    sorting: ['QUERY'],
-    pagination: ['QUERY'],
+    filter: [DataOperation.QUERY, DataOperation.UPDATE, DataOperation.DELETE],
+    fields: [DataOperation.INSERT, DataOperation.UPDATE],
+    select: [DataOperation.QUERY],
+    sorting: [DataOperation.QUERY],
+    pagination: [DataOperation.QUERY],
   };
 
   if (!showWhenMap[sectionId]) return true;
