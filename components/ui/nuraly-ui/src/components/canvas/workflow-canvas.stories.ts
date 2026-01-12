@@ -710,3 +710,500 @@ export const ThemeVariations: Story = {
     </div>
   `,
 };
+
+/**
+ * ## Realtime Execution Simulation
+ *
+ * Demonstrates realtime workflow execution with nodes updating their status
+ * as the workflow progresses. Click "Run Workflow" to start the simulation.
+ */
+export const RealtimeExecution: Story = {
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story: 'Simulates realtime workflow execution with status updates progressing through nodes.',
+      },
+    },
+  },
+  render: () => {
+    // Create a complex workflow with parallel branches and AI nodes
+    const createExecutionWorkflow = (): Workflow => {
+      // Row 1: Start and initial processing
+      const startNode = createNodeFromTemplate(WorkflowNodeType.START, { x: 80, y: 300 }, 'start_1');
+
+      // Row 2: Parallel branch - split into two paths
+      const functionNode = createNodeFromTemplate(WorkflowNodeType.FUNCTION, { x: 320, y: 300 }, 'function_1');
+
+      // Upper branch: AI processing path
+      const llmNode = createNodeFromTemplate(AgentNodeType.LLM, { x: 580, y: 120 }, 'llm_1');
+      const agentNode = createNodeFromTemplate(AgentNodeType.AGENT, { x: 840, y: 120 }, 'agent_1');
+      const toolNode = createNodeFromTemplate(AgentNodeType.TOOL, { x: 1100, y: 50 }, 'tool_1');
+
+      // Lower branch: Data processing path
+      const httpNode = createNodeFromTemplate(WorkflowNodeType.HTTP, { x: 580, y: 480 }, 'http_1');
+      const transformNode = createNodeFromTemplate(WorkflowNodeType.TRANSFORM, { x: 840, y: 480 }, 'transform_1');
+
+      // Merge point: Condition to check both paths
+      const conditionNode = createNodeFromTemplate(WorkflowNodeType.CONDITION, { x: 1100, y: 300 }, 'condition_1');
+
+      // Final processing
+      const memoryNode = createNodeFromTemplate(AgentNodeType.MEMORY, { x: 1360, y: 200 }, 'memory_1');
+      const notifyNode = createNodeFromTemplate(WorkflowNodeType.EMAIL, { x: 1360, y: 400 }, 'notify_1');
+
+      // End nodes
+      const endNodeSuccess = createNodeFromTemplate(WorkflowNodeType.END, { x: 1620, y: 300 }, 'end_success');
+      const endNodeFailure = createNodeFromTemplate(WorkflowNodeType.END, { x: 1100, y: 550 }, 'end_failure');
+
+      // Configure nodes
+      if (startNode) {
+        startNode.name = 'Trigger';
+        startNode.metadata = { ...startNode.metadata, description: 'Webhook received' };
+      }
+      if (functionNode) {
+        functionNode.name = 'Load Context';
+        functionNode.metadata = { ...functionNode.metadata, description: 'Nuraly function' };
+        functionNode.configuration = { functionId: 'load-user-context' };
+      }
+      if (llmNode) {
+        llmNode.name = 'Claude 3.5';
+        llmNode.metadata = { ...llmNode.metadata, description: 'Analyze request' };
+        llmNode.configuration = { provider: 'anthropic', model: 'claude-3.5-sonnet' };
+      }
+      if (agentNode) {
+        agentNode.name = 'Research Agent';
+        agentNode.metadata = { ...agentNode.metadata, description: 'Multi-step reasoning' };
+        agentNode.configuration = { systemPrompt: 'Research and analyze data' };
+      }
+      if (toolNode) {
+        toolNode.name = 'Web Search';
+        toolNode.metadata = { ...toolNode.metadata, description: 'Tavily API' };
+        toolNode.configuration = { toolName: 'tavily_search' };
+      }
+      if (httpNode) {
+        httpNode.name = 'Fetch External';
+        httpNode.metadata = { ...httpNode.metadata, description: 'GET /api/data' };
+        httpNode.configuration = { method: 'GET', url: 'https://api.example.com/data' };
+      }
+      if (transformNode) {
+        transformNode.name = 'Merge Data';
+        transformNode.metadata = { ...transformNode.metadata, description: 'Combine results' };
+      }
+      if (conditionNode) {
+        conditionNode.name = 'Validate';
+        conditionNode.metadata = { ...conditionNode.metadata, description: 'Check quality' };
+        conditionNode.configuration = { expression: 'score > 0.8' };
+      }
+      if (memoryNode) {
+        memoryNode.name = 'Save Context';
+        memoryNode.metadata = { ...memoryNode.metadata, description: 'Store in memory' };
+      }
+      if (notifyNode) {
+        notifyNode.name = 'Send Alert';
+        notifyNode.metadata = { ...notifyNode.metadata, description: 'Email notification' };
+        notifyNode.configuration = { to: 'team@example.com' };
+      }
+      if (endNodeSuccess) {
+        endNodeSuccess.name = 'Complete';
+        endNodeSuccess.metadata = { ...endNodeSuccess.metadata, description: 'Success' };
+      }
+      if (endNodeFailure) {
+        endNodeFailure.name = 'Failed';
+        endNodeFailure.metadata = { ...endNodeFailure.metadata, description: 'Error exit' };
+      }
+
+      const nodes = [
+        startNode, functionNode,
+        llmNode, agentNode, toolNode,
+        httpNode, transformNode,
+        conditionNode,
+        memoryNode, notifyNode,
+        endNodeSuccess, endNodeFailure
+      ].filter(Boolean) as WorkflowNode[];
+
+      return {
+        id: 'realtime-execution-workflow',
+        name: 'AI-Powered Data Pipeline',
+        description: 'Complex workflow with parallel AI and data processing branches',
+        nodes,
+        edges: [
+          // Start to function
+          { id: 'edge_1', sourceNodeId: 'start_1', sourcePortId: 'out', targetNodeId: 'function_1', targetPortId: 'in' },
+
+          // Split into two parallel branches
+          { id: 'edge_2', sourceNodeId: 'function_1', sourcePortId: 'out', targetNodeId: 'llm_1', targetPortId: 'in', label: 'AI Path' },
+          { id: 'edge_3', sourceNodeId: 'function_1', sourcePortId: 'out', targetNodeId: 'http_1', targetPortId: 'in', label: 'Data Path' },
+
+          // Upper branch: AI processing
+          { id: 'edge_4', sourceNodeId: 'llm_1', sourcePortId: 'out', targetNodeId: 'agent_1', targetPortId: 'in' },
+          { id: 'edge_5', sourceNodeId: 'agent_1', sourcePortId: 'out', targetNodeId: 'tool_1', targetPortId: 'in', label: 'Search' },
+          { id: 'edge_6', sourceNodeId: 'tool_1', sourcePortId: 'out', targetNodeId: 'condition_1', targetPortId: 'in' },
+          { id: 'edge_7', sourceNodeId: 'agent_1', sourcePortId: 'out', targetNodeId: 'condition_1', targetPortId: 'in', label: 'Direct' },
+
+          // Lower branch: Data processing
+          { id: 'edge_8', sourceNodeId: 'http_1', sourcePortId: 'out', targetNodeId: 'transform_1', targetPortId: 'in' },
+          { id: 'edge_9', sourceNodeId: 'transform_1', sourcePortId: 'out', targetNodeId: 'condition_1', targetPortId: 'in' },
+
+          // Condition branches
+          { id: 'edge_10', sourceNodeId: 'condition_1', sourcePortId: 'true', targetNodeId: 'memory_1', targetPortId: 'in', label: 'Pass' },
+          { id: 'edge_11', sourceNodeId: 'condition_1', sourcePortId: 'true', targetNodeId: 'notify_1', targetPortId: 'in', label: 'Alert' },
+          { id: 'edge_12', sourceNodeId: 'condition_1', sourcePortId: 'false', targetNodeId: 'end_failure', targetPortId: 'in', label: 'Reject' },
+
+          // Final convergence
+          { id: 'edge_13', sourceNodeId: 'memory_1', sourcePortId: 'out', targetNodeId: 'end_success', targetPortId: 'in' },
+          { id: 'edge_14', sourceNodeId: 'notify_1', sourcePortId: 'out', targetNodeId: 'end_success', targetPortId: 'in' },
+        ],
+      };
+    };
+
+    // Execution state
+    interface ExecutionState {
+      workflow: Workflow;
+      isRunning: boolean;
+      executionId: string | null;
+      logs: Array<{ timestamp: Date; nodeId: string; nodeName: string; status: string; message: string }>;
+      currentNodeIndex: number;
+    }
+
+    const state: ExecutionState = {
+      workflow: createExecutionWorkflow(),
+      isRunning: false,
+      executionId: null,
+      logs: [],
+      currentNodeIndex: -1,
+    };
+
+    // Define execution steps with node and the edges that lead TO that node
+    interface ExecutionStep {
+      nodeId: string;
+      incomingEdgeIds: string[]; // Edge IDs that lead to this node in this execution
+    }
+
+    // Execution path for success scenario (AI branch with tool usage)
+    const successSteps: ExecutionStep[] = [
+      { nodeId: 'start_1', incomingEdgeIds: [] },
+      { nodeId: 'function_1', incomingEdgeIds: ['edge_1'] },
+      { nodeId: 'llm_1', incomingEdgeIds: ['edge_2'] },        // AI branch
+      { nodeId: 'http_1', incomingEdgeIds: ['edge_3'] },       // Data branch (parallel)
+      { nodeId: 'agent_1', incomingEdgeIds: ['edge_4'] },
+      { nodeId: 'transform_1', incomingEdgeIds: ['edge_8'] },  // Data branch continues
+      { nodeId: 'tool_1', incomingEdgeIds: ['edge_5'] },       // Agent uses tool
+      { nodeId: 'condition_1', incomingEdgeIds: ['edge_6', 'edge_9'] },  // Merge from tool and transform
+      { nodeId: 'memory_1', incomingEdgeIds: ['edge_10'] },    // Save result
+      { nodeId: 'notify_1', incomingEdgeIds: ['edge_11'] },    // Send notification (parallel)
+      { nodeId: 'end_success', incomingEdgeIds: ['edge_13', 'edge_14'] }
+    ];
+
+    // Execution path for failure scenario
+    const failureSteps: ExecutionStep[] = [
+      { nodeId: 'start_1', incomingEdgeIds: [] },
+      { nodeId: 'function_1', incomingEdgeIds: ['edge_1'] },
+      { nodeId: 'llm_1', incomingEdgeIds: ['edge_2'] },
+      { nodeId: 'http_1', incomingEdgeIds: ['edge_3'] },
+      { nodeId: 'agent_1', incomingEdgeIds: ['edge_4'] },
+      { nodeId: 'transform_1', incomingEdgeIds: ['edge_8'] },
+      { nodeId: 'condition_1', incomingEdgeIds: ['edge_7', 'edge_9'] },  // Direct from agent + transform
+      { nodeId: 'end_failure', incomingEdgeIds: ['edge_12'] }
+    ];
+
+    let timeoutIds: number[] = [];
+
+    const updateCanvas = () => {
+      const canvas = document.querySelector('workflow-canvas') as any;
+      if (canvas) {
+        canvas.workflow = { ...state.workflow };
+      }
+    };
+
+    const updateLogs = () => {
+      const logsEl = document.getElementById('execution-logs');
+      if (logsEl) {
+        logsEl.innerHTML = state.logs.map(log => `
+          <div style="display: flex; gap: 8px; padding: 6px 8px; background: ${
+            log.status === 'COMPLETED' ? 'rgba(34, 197, 94, 0.1)' :
+            log.status === 'RUNNING' ? 'rgba(59, 130, 246, 0.1)' :
+            log.status === 'FAILED' ? 'rgba(239, 68, 68, 0.1)' :
+            'rgba(255, 255, 255, 0.05)'
+          }; border-radius: 4px; margin-bottom: 4px;">
+            <span style="color: #666; font-size: 10px; min-width: 60px;">${log.timestamp.toLocaleTimeString()}</span>
+            <span style="color: ${
+              log.status === 'COMPLETED' ? '#22c55e' :
+              log.status === 'RUNNING' ? '#3b82f6' :
+              log.status === 'FAILED' ? '#ef4444' :
+              '#f59e0b'
+            }; font-size: 10px; min-width: 70px;">[${log.status}]</span>
+            <span style="color: #e5e5e5; font-size: 11px;">${log.nodeName}</span>
+            <span style="color: #888; font-size: 10px; margin-left: auto;">${log.message}</span>
+          </div>
+        `).join('');
+        logsEl.scrollTop = logsEl.scrollHeight;
+      }
+    };
+
+    const updateStatus = (text: string, color: string = '#888') => {
+      const statusEl = document.getElementById('execution-status');
+      if (statusEl) {
+        statusEl.innerHTML = `<span style="color: ${color};">${text}</span>`;
+      }
+    };
+
+    const updateNodeStatus = (nodeId: string, status: NodeExecutionStatus, error?: string) => {
+      state.workflow = {
+        ...state.workflow,
+        nodes: state.workflow.nodes.map(node =>
+          node.id === nodeId
+            ? { ...node, status, error }
+            : node
+        ),
+      };
+      updateCanvas();
+    };
+
+    const updateEdgeStatusById = (edgeId: string, status: NodeExecutionStatus) => {
+      state.workflow = {
+        ...state.workflow,
+        edges: state.workflow.edges.map(edge =>
+          edge.id === edgeId
+            ? { ...edge, status }
+            : edge
+        ),
+      };
+      updateCanvas();
+    };
+
+    const updateEdgesStatus = (edgeIds: string[], status: NodeExecutionStatus) => {
+      state.workflow = {
+        ...state.workflow,
+        edges: state.workflow.edges.map(edge =>
+          edgeIds.includes(edge.id)
+            ? { ...edge, status }
+            : edge
+        ),
+      };
+      updateCanvas();
+    };
+
+    const addLog = (nodeId: string, nodeName: string, status: string, message: string) => {
+      state.logs.push({
+        timestamp: new Date(),
+        nodeId,
+        nodeName,
+        status,
+        message,
+      });
+      updateLogs();
+    };
+
+    const resetWorkflow = () => {
+      // Clear all timeouts
+      timeoutIds.forEach(id => clearTimeout(id));
+      timeoutIds = [];
+
+      state.workflow = createExecutionWorkflow();
+      state.isRunning = false;
+      state.executionId = null;
+      state.logs = [];
+      state.currentNodeIndex = -1;
+      updateCanvas();
+      updateLogs();
+      updateStatus('Ready to execute');
+
+      const runBtn = document.getElementById('run-btn') as HTMLButtonElement;
+      if (runBtn) {
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run Workflow';
+      }
+    };
+
+    const runExecution = (simulateFailure: boolean = false) => {
+      if (state.isRunning) return;
+
+      resetWorkflow();
+      state.isRunning = true;
+      state.executionId = `exec_${Date.now()}`;
+      state.logs = [];
+
+      const runBtn = document.getElementById('run-btn') as HTMLButtonElement;
+      if (runBtn) {
+        runBtn.disabled = true;
+        runBtn.textContent = 'Running...';
+      }
+
+      updateStatus('Execution started...', '#3b82f6');
+      addLog('system', 'System', 'INFO', `Execution ${state.executionId} started`);
+
+      const executionSteps = simulateFailure ? failureSteps : successSteps;
+      let delay = 500;
+
+      // Set all nodes in path to PENDING first
+      executionSteps.forEach(step => {
+        const node = state.workflow.nodes.find(n => n.id === step.nodeId);
+        if (node) {
+          updateNodeStatus(step.nodeId, NodeExecutionStatus.PENDING);
+        }
+      });
+
+      // Execute each step with delays
+      executionSteps.forEach((step, index) => {
+        const node = state.workflow.nodes.find(n => n.id === step.nodeId);
+        if (!node) return;
+
+        // Start running
+        const runTimeout = setTimeout(() => {
+          updateNodeStatus(step.nodeId, NodeExecutionStatus.RUNNING);
+          addLog(step.nodeId, node.name, 'RUNNING', 'Node execution started');
+          updateStatus(`Executing: ${node.name}`, '#3b82f6');
+
+          // Mark incoming edges as RUNNING (data flowing in)
+          if (step.incomingEdgeIds.length > 0) {
+            updateEdgesStatus(step.incomingEdgeIds, NodeExecutionStatus.RUNNING);
+          }
+        }, delay);
+        timeoutIds.push(runTimeout);
+
+        delay += 800 + Math.random() * 400; // Random execution time
+
+        // Complete or fail
+        const completeTimeout = setTimeout(() => {
+          const isLastNode = index === executionSteps.length - 1;
+          const isFailed = simulateFailure && step.nodeId === 'condition_1';
+
+          if (isFailed) {
+            // Simulate condition evaluating to false
+            updateNodeStatus(step.nodeId, NodeExecutionStatus.COMPLETED);
+            addLog(step.nodeId, node.name, 'COMPLETED', 'Condition evaluated to FALSE');
+            // Mark incoming edges as COMPLETED
+            if (step.incomingEdgeIds.length > 0) {
+              updateEdgesStatus(step.incomingEdgeIds, NodeExecutionStatus.COMPLETED);
+            }
+          } else if (simulateFailure && step.nodeId === 'end_failure') {
+            updateNodeStatus(step.nodeId, NodeExecutionStatus.FAILED);
+            addLog(step.nodeId, node.name, 'FAILED', 'Workflow ended with failure path');
+            // Mark incoming edges as FAILED
+            if (step.incomingEdgeIds.length > 0) {
+              updateEdgesStatus(step.incomingEdgeIds, NodeExecutionStatus.FAILED);
+            }
+          } else {
+            updateNodeStatus(step.nodeId, NodeExecutionStatus.COMPLETED);
+            addLog(step.nodeId, node.name, 'COMPLETED', `Execution completed in ${Math.floor(Math.random() * 500 + 100)}ms`);
+            // Mark incoming edges as COMPLETED
+            if (step.incomingEdgeIds.length > 0) {
+              updateEdgesStatus(step.incomingEdgeIds, NodeExecutionStatus.COMPLETED);
+            }
+          }
+
+          if (isLastNode) {
+            state.isRunning = false;
+            const finalStatus = simulateFailure ? 'FAILED' : 'COMPLETED';
+            updateStatus(`Execution ${finalStatus}`, simulateFailure ? '#ef4444' : '#22c55e');
+            addLog('system', 'System', finalStatus, `Workflow execution ${finalStatus.toLowerCase()}`);
+
+            const runBtn = document.getElementById('run-btn') as HTMLButtonElement;
+            if (runBtn) {
+              runBtn.disabled = false;
+              runBtn.textContent = 'Run Again';
+            }
+          }
+        }, delay);
+        timeoutIds.push(completeTimeout);
+
+        delay += 300;
+      });
+    };
+
+    // Cleanup on unmount
+    const cleanup = () => {
+      timeoutIds.forEach(id => clearTimeout(id));
+    };
+
+    return html`
+      <div style="display: flex; width: 100%; height: 100vh;" @disconnected=${cleanup}>
+        <div style="flex: 1; height: 100%;">
+          <workflow-canvas
+            .workflow=${state.workflow}
+            ?readonly=${true}
+            showToolbar
+            showMinimap
+          ></workflow-canvas>
+        </div>
+        <div style="width: 320px; height: 100%; background: #1a1a1a; border-left: 1px solid #333; display: flex; flex-direction: column;">
+          <!-- Header -->
+          <div style="padding: 16px; border-bottom: 1px solid #333;">
+            <h3 style="color: #e5e5e5; margin: 0 0 12px 0; font-size: 14px;">Execution Simulator</h3>
+            <div style="display: flex; gap: 8px;">
+              <button
+                id="run-btn"
+                @click=${() => runExecution(false)}
+                style="flex: 1; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;"
+              >
+                Run Workflow
+              </button>
+              <button
+                @click=${() => runExecution(true)}
+                style="padding: 8px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;"
+                title="Simulate failure path"
+              >
+                Fail
+              </button>
+              <button
+                @click=${resetWorkflow}
+                style="padding: 8px 12px; background: #333; color: #888; border: none; border-radius: 6px; cursor: pointer; font-size: 12px;"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div style="padding: 12px 16px; background: #252525; border-bottom: 1px solid #333;">
+            <div style="color: #666; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;">Status</div>
+            <div id="execution-status" style="color: #888; font-size: 12px;">Ready to execute</div>
+          </div>
+
+          <!-- Logs -->
+          <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="padding: 12px 16px 8px; color: #666; font-size: 10px; text-transform: uppercase;">
+              Execution Logs
+            </div>
+            <div id="execution-logs" style="flex: 1; overflow-y: auto; padding: 0 16px 16px; font-family: monospace;">
+              <div style="color: #666; font-size: 11px; font-style: italic;">Click "Run Workflow" to start...</div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div style="padding: 16px; border-top: 1px solid #333; background: #252525;">
+            <div style="color: #666; font-size: 10px; text-transform: uppercase; margin-bottom: 8px;">Status Legend</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; background: #6b7280; border-radius: 50%;"></span>
+                <span style="color: #888;">Idle</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;"></span>
+                <span style="color: #888;">Pending</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; animation: pulse 1s infinite;"></span>
+                <span style="color: #888;">Running</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></span>
+                <span style="color: #888;">Completed</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></span>
+                <span style="color: #888;">Failed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+      </style>
+    `;
+  },
+};

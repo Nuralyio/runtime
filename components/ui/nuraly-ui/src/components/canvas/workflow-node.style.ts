@@ -57,21 +57,47 @@ export const workflowNodeStyles = css`
   }
 
   /* Status indicators */
+  /* Pending status - uncomment to show orange border for pending nodes
+  .node-container.status-pending {
+    border-color: var(--nuraly-color-support-warning, #f59e0b) !important;
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+  */
+
   .node-container.status-running {
-    border-color: var(--nuraly-color-interactive, #3b82f6);
-    animation: pulse 1.5s infinite;
+    border-color: var(--nuraly-color-interactive, #3b82f6) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
+    animation: pulse-running 1.5s infinite;
   }
 
   .node-container.status-completed {
-    border-color: var(--nuraly-color-support-success, #22c55e);
+    border-color: var(--nuraly-color-support-success, #22c55e) !important;
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
   }
 
   .node-container.status-failed {
-    border-color: var(--nuraly-color-support-error, #ef4444);
+    border-color: var(--nuraly-color-support-error, #ef4444) !important;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
   }
 
   .node-container.status-waiting {
-    border-color: var(--nuraly-color-support-warning, #f59e0b);
+    border-color: var(--nuraly-color-support-warning, #f59e0b) !important;
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  .node-container.status-paused {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  .node-container.status-cancelled {
+    border-color: #6b7280 !important;
+    box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.3), var(--nuraly-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+
+  @keyframes pulse-running {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3); }
   }
 
   @keyframes pulse {
@@ -194,8 +220,8 @@ export const workflowNodeStyles = css`
 
   .port {
     position: absolute;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     background: var(--nuraly-color-border-strong, #4a4a4a);
     border: 2px solid var(--nuraly-color-border-interactive, #666);
@@ -229,14 +255,14 @@ export const workflowNodeStyles = css`
 
   /* Input ports - left side */
   .port.input {
-    left: -7px;
-    background: var(--nuraly-color-support-success, #22c55e);
-    border-color: var(--nuraly-color-support-success-emphasis, #16a34a);
+    left: -5px;
+    background: var(--nuraly-color-border-strong, #6b7280);
+    border-color: var(--nuraly-color-border-interactive, #525252);
   }
 
   /* Output ports - right side */
   .port.output {
-    right: -7px;
+    right: -5px;
     background: var(--nuraly-color-interactive, #3b82f6);
     border-color: var(--nuraly-color-interactive-emphasis, #2563eb);
   }

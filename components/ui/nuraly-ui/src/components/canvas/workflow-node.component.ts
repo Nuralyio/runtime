@@ -122,10 +122,16 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private renderPort(port: NodePort, isInput: boolean, index: number, total: number) {
-    const headerHeight = 40;
-    const bodyHeight = 40;
-    const portSpacing = (bodyHeight) / (total + 1);
-    const topOffset = headerHeight + portSpacing * (index + 1);
+    // Position ports vertically centered in the node
+    // Node height is approximately 80px (header 40px + body ~40px)
+    const nodeHeight = 80;
+    const portSize = 10;
+    const portSpacing = 20; // Space between multiple ports
+
+    // Calculate vertical center position
+    const totalPortsHeight = (total - 1) * portSpacing;
+    const startY = (nodeHeight - totalPortsHeight) / 2;
+    const topOffset = startY + (index * portSpacing) - (portSize / 2);
 
     const style = {
       top: `${topOffset}px`,

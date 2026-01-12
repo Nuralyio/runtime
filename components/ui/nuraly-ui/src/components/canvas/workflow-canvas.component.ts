@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, html, svg, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -22,6 +22,7 @@ import {
   WorkflowNodeType,
   AgentNodeType,
   NodeConfiguration,
+  ExecutionStatus,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-canvas.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -109,6 +110,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private configuredNode: WorkflowNode | null = null;
+
+  @state()
+  private hoveredEdgeId: string | null = null;
 
   @query('.canvas-wrapper')
   private canvasWrapper!: HTMLElement;
@@ -749,17 +753,51 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
     const totalPorts = isInput ? node.ports.inputs.length : node.ports.outputs.length;
 
-    const headerHeight = 40;
-    const bodyHeight = 40;
-    const portSpacing = bodyHeight / (totalPorts + 1);
-    const topOffset = headerHeight + portSpacing * (portIndex + 1);
+    // Match the port positioning from workflow-node.component.ts
+    const nodeHeight = 80;
+    const portSize = 10;
+    const portSpacing = 20;
+
+    // Calculate vertical center position (same as in workflow-node.component.ts)
+    const totalPortsHeight = (totalPorts - 1) * portSpacing;
+    const startY = (nodeHeight - totalPortsHeight) / 2;
+    const topOffset = startY + (portIndex * portSpacing);
 
     const nodeWidth = 180;
 
     return {
-      x: node.position.x + (isInput ? 0 : nodeWidth),
-      y: node.position.y + topOffset,
+      // Connect to visual center of the port circle
+      // Port is 10px with 2px border, positioned with left:-5px (input) or right:-5px (output)
+      x: node.position.x + (isInput ? 2 : nodeWidth - 2),
+      y: node.position.y + topOffset + 3,
     };
+  }
+
+  private getEdgeColor(isSelected: boolean, isHovered: boolean = false, status?: ExecutionStatus): string {
+    const theme = this.currentTheme;
+    const isLight = theme?.includes('light') || theme === 'default';
+
+    // Execution status colors take priority
+    if (status === ExecutionStatus.COMPLETED) {
+      return '#22c55e'; // Green for completed
+    }
+    if (status === ExecutionStatus.RUNNING) {
+      return '#3b82f6'; // Blue for running
+    }
+    if (status === ExecutionStatus.FAILED) {
+      return '#ef4444'; // Red for failed
+    }
+    if (status === ExecutionStatus.PENDING) {
+      return '#f59e0b'; // Orange for pending
+    }
+
+    if (isSelected) {
+      return '#3b82f6'; // Blue for selected
+    }
+    if (isHovered) {
+      return '#60a5fa'; // Light blue for hover
+    }
+    return isLight ? '#9ca3af' : '#6b7280';
   }
 
   private renderEdge(edge: WorkflowEdge) {
@@ -778,38 +816,61 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     const path = `M ${start.x} ${start.y} C ${start.x + controlOffset} ${start.y}, ${end.x - controlOffset} ${end.y}, ${end.x} ${end.y}`;
 
     const isSelected = this.selectedEdgeIds.has(edge.id);
+    const isHovered = this.hoveredEdgeId === edge.id;
+    const strokeColor = this.getEdgeColor(isSelected, isHovered, edge.status);
+    const strokeWidth = isSelected || isHovered || edge.status ? 3 : 2;
 
-    // Calculate arrow position and rotation
-    const arrowSize = 8;
-    const t = 0.95;
-    const arrowX = Math.pow(1-t, 3) * start.x + 3 * Math.pow(1-t, 2) * t * (start.x + controlOffset) + 3 * (1-t) * Math.pow(t, 2) * (end.x - controlOffset) + Math.pow(t, 3) * end.x;
-    const arrowY = Math.pow(1-t, 3) * start.y + 3 * Math.pow(1-t, 2) * t * start.y + 3 * (1-t) * Math.pow(t, 2) * end.y + Math.pow(t, 3) * end.y;
+    // Calculate arrow position at middle of the curve
+    const arrowLength = 12;
+    const arrowWidth = 8;
 
-    // Calculate tangent at t for arrow rotation
-    const dt = 0.01;
-    const t2 = t + dt;
-    const nextX = Math.pow(1-t2, 3) * start.x + 3 * Math.pow(1-t2, 2) * t2 * (start.x + controlOffset) + 3 * (1-t2) * Math.pow(t2, 2) * (end.x - controlOffset) + Math.pow(t2, 3) * end.x;
-    const nextY = Math.pow(1-t2, 3) * start.y + 3 * Math.pow(1-t2, 2) * t2 * start.y + 3 * (1-t2) * Math.pow(t2, 2) * end.y + Math.pow(t2, 3) * end.y;
-    const angle = Math.atan2(nextY - arrowY, nextX - arrowX) * 180 / Math.PI;
+    // Position arrow at t=0.5 (middle of curve)
+    const tArrow = 0.5;
+    const arrowX = Math.pow(1-tArrow, 3) * start.x + 3 * Math.pow(1-tArrow, 2) * tArrow * (start.x + controlOffset) + 3 * (1-tArrow) * Math.pow(tArrow, 2) * (end.x - controlOffset) + Math.pow(tArrow, 3) * end.x;
+    const arrowY = Math.pow(1-tArrow, 3) * start.y + 3 * Math.pow(1-tArrow, 2) * tArrow * start.y + 3 * (1-tArrow) * Math.pow(tArrow, 2) * end.y + Math.pow(tArrow, 3) * end.y;
 
-    return html`
-      <g>
+    // Calculate tangent direction at arrow position for proper rotation
+    const tTangent = tArrow + 0.05;
+    const tangentX = Math.pow(1-tTangent, 3) * start.x + 3 * Math.pow(1-tTangent, 2) * tTangent * (start.x + controlOffset) + 3 * (1-tTangent) * Math.pow(tTangent, 2) * (end.x - controlOffset) + Math.pow(tTangent, 3) * end.x;
+    const tangentY = Math.pow(1-tTangent, 3) * start.y + 3 * Math.pow(1-tTangent, 2) * tTangent * start.y + 3 * (1-tTangent) * Math.pow(tTangent, 2) * end.y + Math.pow(tTangent, 3) * end.y;
+
+    // Calculate angle from current position toward next point on curve
+    const angle = Math.atan2(tangentY - arrowY, tangentX - arrowX) * 180 / Math.PI;
+
+    // Use svg`` template tag for SVG child elements
+    return svg`
+      <g class="edge-group" data-edge-id=${edge.id}>
+        <!-- Invisible wider path for easier clicking -->
         <path
-          class="edge-path ${classMap({ selected: isSelected, animated: edge.animated || false })}"
           d=${path}
+          stroke="transparent"
+          stroke-width="14"
+          fill="none"
+          style="cursor: pointer; pointer-events: stroke;"
           @click=${(e: MouseEvent) => this.handleEdgeClick(e, edge)}
+          @mouseenter=${() => this.hoveredEdgeId = edge.id}
+          @mouseleave=${() => this.hoveredEdgeId = null}
+        />
+        <!-- Visible edge path -->
+        <path
+          class="edge-path"
+          d=${path}
+          fill="none"
+          style="pointer-events: none; stroke: ${strokeColor}; stroke-width: ${strokeWidth}px; transition: stroke 0.15s ease, stroke-width 0.15s ease;"
         />
         <polygon
           class="edge-arrow"
-          points="${arrowX},${arrowY} ${arrowX - arrowSize},${arrowY - arrowSize/2} ${arrowX - arrowSize},${arrowY + arrowSize/2}"
+          points="${arrowX + arrowLength/2},${arrowY} ${arrowX - arrowLength/2},${arrowY - arrowWidth/2} ${arrowX - arrowLength/2},${arrowY + arrowWidth/2}"
           transform="rotate(${angle}, ${arrowX}, ${arrowY})"
+          style="pointer-events: none; fill: ${strokeColor}; transition: fill 0.15s ease;"
         />
-        ${edge.label ? html`
+        ${edge.label ? svg`
           <text
             class="edge-label"
             x=${(start.x + end.x) / 2}
             y=${(start.y + end.y) / 2 - 8}
             text-anchor="middle"
+            fill="#666"
           >${edge.label}</text>
         ` : nothing}
       </g>
@@ -837,7 +898,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       ? `M ${end.x} ${end.y} C ${end.x + controlOffset} ${end.y}, ${start.x - controlOffset} ${start.y}, ${start.x} ${start.y}`
       : `M ${start.x} ${start.y} C ${start.x + controlOffset} ${start.y}, ${end.x - controlOffset} ${end.y}, ${end.x} ${end.y}`;
 
-    return html`<path class="connection-line" d=${path} />`;
+    return svg`<path class="connection-line" d=${path} stroke="#3b82f6" stroke-width="2" stroke-dasharray="5" fill="none" />`;
   }
 
   private renderToolbar() {
