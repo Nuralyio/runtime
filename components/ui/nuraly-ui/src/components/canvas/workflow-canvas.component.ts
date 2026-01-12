@@ -116,6 +116,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @query('.canvas-viewport')
   private canvasViewport!: HTMLElement;
 
+  @query('.config-panel')
+  private configPanel!: HTMLElement;
+
   override async connectedCallback() {
     super.connectedCallback();
     window.addEventListener('keydown', this.handleKeyDown);
@@ -365,6 +368,19 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       this.canvasViewport.style.transform =
         `translate(${this.viewport.panX}px, ${this.viewport.panY}px) scale(${this.viewport.zoom})`;
     }
+    // Update config panel position to follow the node
+    this.updateConfigPanelPosition();
+  }
+
+  private updateConfigPanelPosition() {
+    if (this.configPanel && this.configuredNode) {
+      const nodeWidth = 180;
+      const panelOffset = 20;
+      const panelX = (this.configuredNode.position.x + nodeWidth + panelOffset) * this.viewport.zoom + this.viewport.panX;
+      const panelY = this.configuredNode.position.y * this.viewport.zoom + this.viewport.panY;
+      this.configPanel.style.left = `${panelX}px`;
+      this.configPanel.style.top = `${panelY}px`;
+    }
   }
 
   private handlePan(e: MouseEvent) {
@@ -438,6 +454,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     };
 
     this.dragState = { ...this.dragState, startX: snappedX, startY: snappedY };
+
+    // Update config panel position if the configured node is being dragged
+    if (this.configuredNode && this.selectedNodeIds.has(this.configuredNode.id)) {
+      const updatedNode = this.workflow.nodes.find(n => n.id === this.configuredNode!.id);
+      if (updatedNode) {
+        this.configuredNode = updatedNode;
+        this.updateConfigPanelPosition();
+      }
+    }
   }
 
   private handleNodeDblClick(e: CustomEvent) {

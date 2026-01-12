@@ -41,13 +41,13 @@ export const workflowNodeStyles = css`
   }
 
   .node-container:hover {
+    border-color: var(--nuraly-color-border-interactive, #525252);
     box-shadow: var(--nuraly-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.4));
   }
 
   .node-container.selected {
     border-color: var(--nuraly-color-interactive, #3b82f6);
-    box-shadow: 0 0 0 2px var(--nuraly-color-interactive, #3b82f6),
-                var(--nuraly-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.4));
+    box-shadow: var(--nuraly-shadow-md, 0 4px 16px rgba(0, 0, 0, 0.4));
   }
 
   .node-container.dragging {
@@ -322,7 +322,8 @@ export const workflowNodeStyles = css`
   /* Light Theme - target node-container with data-theme */
   .node-container[data-theme="light"],
   .node-container[data-theme="carbon-light"],
-  .node-container[data-theme="default-light"] {
+  .node-container[data-theme="default-light"],
+  .node-container[data-theme="default"] {
     background: var(--nuraly-color-layer-01, #ffffff);
     border-color: var(--nuraly-color-border-subtle, #e0e0e0);
     box-shadow: var(--nuraly-shadow-sm, 0 1px 4px rgba(0, 0, 0, 0.1));
@@ -330,9 +331,20 @@ export const workflowNodeStyles = css`
 
   .node-container[data-theme="light"]:hover,
   .node-container[data-theme="carbon-light"]:hover,
-  .node-container[data-theme="default-light"]:hover {
+  .node-container[data-theme="default-light"]:hover,
+  .node-container[data-theme="default"]:hover {
+    border-color: var(--nuraly-color-border-interactive, #a8a8a8);
     box-shadow: var(--nuraly-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.15));
   }
+
+  .node-container[data-theme="light"].selected,
+  .node-container[data-theme="carbon-light"].selected,
+  .node-container[data-theme="default-light"].selected,
+  .node-container[data-theme="default"].selected {
+    border-color: var(--nuraly-color-interactive, #3b82f6);
+    box-shadow: var(--nuraly-shadow-md, 0 2px 8px rgba(0, 0, 0, 0.15));
+  }
+
 
   .node-container[data-theme="light"] .node-header,
   .node-container[data-theme="carbon-light"] .node-header,
