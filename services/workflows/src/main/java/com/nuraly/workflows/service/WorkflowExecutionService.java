@@ -15,6 +15,8 @@ import com.nuraly.workflows.entity.enums.WorkflowStatus;
 import com.nuraly.workflows.exception.ExecutionNotFoundException;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
+import com.nuraly.workflows.messaging.WorkflowExecutionMessage;
+import com.nuraly.workflows.messaging.WorkflowExecutionProducer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -39,6 +41,9 @@ public class WorkflowExecutionService {
     @Inject
     WorkflowEventService eventService;
 
+    @Inject
+    WorkflowExecutionProducer executionProducer;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public WorkflowExecutionDTO executeWorkflow(UUID workflowId, ExecuteWorkflowRequest request, String userUuid)
@@ -61,29 +66,48 @@ public class WorkflowExecutionService {
         execution.triggerType = "manual";
         execution.startedAt = Instant.now();
 
+        String inputData = "{}";
+        String variables = null;
+
         if (request != null && request.getInput() != null) {
             try {
-                execution.inputData = objectMapper.writeValueAsString(request.getInput());
+                inputData = objectMapper.writeValueAsString(request.getInput());
             } catch (Exception e) {
-                execution.inputData = "{}";
+                inputData = "{}";
             }
         }
+        execution.inputData = inputData;
 
         if (request != null && request.getVariables() != null) {
-            execution.variables = request.getVariables();
+            variables = request.getVariables();
+            execution.variables = variables;
         }
 
         execution.persist();
 
-        // Log event
-        eventService.logExecutionStarted(execution);
+        // Log event - execution created
+        eventService.logExecutionQueued(execution);
 
-        // Execute asynchronously (in real implementation, this would be async)
+        // Queue execution for async processing via RabbitMQ
         try {
-            workflowEngine.execute(execution);
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    workflow.id,
+                    execution.triggeredBy,
+                    execution.triggerType,
+                    inputData,
+                    variables
+            );
+            executionProducer.publishExecution(message);
+
+            // Update status to QUEUED
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
         } catch (Exception e) {
+            // If queueing fails, mark as failed
             execution.status = ExecutionStatus.FAILED;
-            execution.errorMessage = e.getMessage();
+            execution.errorMessage = "Failed to queue execution: " + e.getMessage();
             execution.completedAt = Instant.now();
             execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
             execution.persist();
@@ -153,12 +177,27 @@ public class WorkflowExecutionService {
         newExecution.startedAt = Instant.now();
         newExecution.persist();
 
-        // Execute
+        // Log event
+        eventService.logExecutionQueued(newExecution);
+
+        // Queue for async execution
         try {
-            workflowEngine.execute(newExecution);
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    newExecution.id,
+                    newExecution.workflow.id,
+                    newExecution.triggeredBy,
+                    newExecution.triggerType,
+                    newExecution.inputData,
+                    newExecution.variables
+            );
+            executionProducer.publishExecution(message);
+
+            newExecution.status = ExecutionStatus.QUEUED;
+            newExecution.persist();
+
         } catch (Exception e) {
             newExecution.status = ExecutionStatus.FAILED;
-            newExecution.errorMessage = e.getMessage();
+            newExecution.errorMessage = "Failed to queue retry execution: " + e.getMessage();
             newExecution.completedAt = Instant.now();
             newExecution.durationMs = newExecution.completedAt.toEpochMilli() - newExecution.startedAt.toEpochMilli();
             newExecution.persist();
@@ -179,14 +218,27 @@ public class WorkflowExecutionService {
             throw new InvalidWorkflowException("Can only resume paused or waiting executions. Current status: " + execution.status);
         }
 
-        execution.status = ExecutionStatus.RUNNING;
-        execution.persist();
+        // Log event
+        eventService.logExecutionResumed(execution);
 
+        // Queue for async execution
         try {
-            workflowEngine.resume(execution);
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    execution.workflow.id,
+                    execution.triggeredBy,
+                    "resume",
+                    execution.inputData,
+                    execution.variables
+            );
+            executionProducer.publishExecution(message);
+
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
-            execution.errorMessage = e.getMessage();
+            execution.errorMessage = "Failed to queue resume execution: " + e.getMessage();
             execution.completedAt = Instant.now();
             execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
             execution.persist();
