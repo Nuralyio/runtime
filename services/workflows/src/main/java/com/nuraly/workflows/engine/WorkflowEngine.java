@@ -100,6 +100,9 @@ public class WorkflowEngine {
 
         nodeExecution.persist();
 
+        // Emit node started event for real-time tracking
+        eventService.logNodeStarted(nodeExecution);
+
         // Execute node with retry logic
         NodeExecutionResult result = executeNodeWithRetry(context, node, nodeExecution);
 

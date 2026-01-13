@@ -6,24 +6,28 @@ import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.entity.NodeExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowEntity;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
+import com.nuraly.workflows.messaging.RabbitMQConnectionManager;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 @ApplicationScoped
 public class WorkflowEventService {
 
+    private static final Logger LOG = Logger.getLogger(WorkflowEventService.class);
+
     @Inject
     Configuration configuration;
+
+    @Inject
+    RabbitMQConnectionManager connectionManager;
 
     private final ObjectMapper objectMapper;
 
@@ -70,13 +74,38 @@ public class WorkflowEventService {
         ));
     }
 
+    public void logExecutionQueued(WorkflowExecutionEntity execution) {
+        sendEvent("EXECUTION_QUEUED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "workflowName", execution.workflow.name,
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
+                "triggerType", execution.triggerType != null ? execution.triggerType : "",
+                "status", "QUEUED"
+        ));
+    }
+
     public void logExecutionStarted(WorkflowExecutionEntity execution) {
         sendEvent("EXECUTION_STARTED", Map.of(
                 "executionId", String.valueOf(execution.id),
                 "workflowId", String.valueOf(execution.workflow.id),
                 "workflowName", execution.workflow.name,
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
                 "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
-                "triggerType", execution.triggerType != null ? execution.triggerType : ""
+                "triggerType", execution.triggerType != null ? execution.triggerType : "",
+                "status", "RUNNING"
+        ));
+    }
+
+    public void logExecutionResumed(WorkflowExecutionEntity execution) {
+        sendEvent("EXECUTION_RESUMED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "workflowName", execution.workflow.name,
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
+                "status", "QUEUED"
         ));
     }
 
@@ -85,7 +114,11 @@ public class WorkflowEventService {
                 "executionId", String.valueOf(execution.id),
                 "workflowId", String.valueOf(execution.workflow.id),
                 "workflowName", execution.workflow.name,
-                "durationMs", execution.durationMs != null ? execution.durationMs : 0
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
+                "status", "COMPLETED",
+                "durationMs", execution.durationMs != null ? execution.durationMs : 0,
+                "outputData", execution.outputData != null ? execution.outputData : "{}"
         ));
     }
 
@@ -94,7 +127,11 @@ public class WorkflowEventService {
                 "executionId", String.valueOf(execution.id),
                 "workflowId", String.valueOf(execution.workflow.id),
                 "workflowName", execution.workflow.name,
-                "errorMessage", errorMessage != null ? errorMessage : ""
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
+                "status", "FAILED",
+                "errorMessage", errorMessage != null ? errorMessage : "",
+                "durationMs", execution.durationMs != null ? execution.durationMs : 0
         ));
     }
 
@@ -102,19 +139,46 @@ public class WorkflowEventService {
         sendEvent("EXECUTION_CANCELLED", Map.of(
                 "executionId", String.valueOf(execution.id),
                 "workflowId", String.valueOf(execution.workflow.id),
-                "workflowName", execution.workflow.name
+                "workflowName", execution.workflow.name,
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "triggeredBy", execution.triggeredBy != null ? execution.triggeredBy : "",
+                "status", "CANCELLED",
+                "durationMs", execution.durationMs != null ? execution.durationMs : 0
         ));
     }
 
     public void logNodeExecuted(NodeExecutionEntity nodeExecution) {
-        sendEvent("NODE_EXECUTED", Map.of(
+        Map<String, Object> data = new HashMap<>();
+        data.put("nodeExecutionId", String.valueOf(nodeExecution.id));
+        data.put("executionId", String.valueOf(nodeExecution.execution.id));
+        data.put("workflowId", String.valueOf(nodeExecution.execution.workflow.id));
+        data.put("applicationId", nodeExecution.execution.workflow.applicationId != null ?
+                nodeExecution.execution.workflow.applicationId : "");
+        data.put("nodeId", String.valueOf(nodeExecution.node.id));
+        data.put("nodeName", nodeExecution.node.name);
+        data.put("nodeType", nodeExecution.node.type.name());
+        data.put("status", nodeExecution.status.name());
+        data.put("attemptNumber", nodeExecution.attemptNumber != null ? nodeExecution.attemptNumber : 1);
+        data.put("durationMs", nodeExecution.durationMs != null ? nodeExecution.durationMs : 0);
+
+        if (nodeExecution.errorMessage != null) {
+            data.put("errorMessage", nodeExecution.errorMessage);
+        }
+
+        sendEvent("NODE_EXECUTED", data);
+    }
+
+    public void logNodeStarted(NodeExecutionEntity nodeExecution) {
+        sendEvent("NODE_STARTED", Map.of(
                 "nodeExecutionId", String.valueOf(nodeExecution.id),
                 "executionId", String.valueOf(nodeExecution.execution.id),
+                "workflowId", String.valueOf(nodeExecution.execution.workflow.id),
+                "applicationId", nodeExecution.execution.workflow.applicationId != null ?
+                        nodeExecution.execution.workflow.applicationId : "",
                 "nodeId", String.valueOf(nodeExecution.node.id),
                 "nodeName", nodeExecution.node.name,
                 "nodeType", nodeExecution.node.type.name(),
-                "status", nodeExecution.status.name(),
-                "durationMs", nodeExecution.durationMs != null ? nodeExecution.durationMs : 0
+                "status", "RUNNING"
         ));
     }
 
@@ -126,25 +190,30 @@ public class WorkflowEventService {
             event.put("data", data);
 
             String eventJson = objectMapper.writeValueAsString(event);
-            sendToRabbitMQ(eventJson);
+            sendToRabbitMQ(eventJson, eventType);
         } catch (Exception e) {
-            System.err.println("Failed to send event: " + e.getMessage());
+            LOG.errorf(e, "Failed to send event: %s", eventType);
         }
     }
 
-    private void sendToRabbitMQ(String message) {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(configuration.rabbitmqHost);
-        factory.setPort(configuration.rabbitmqPort);
-        configuration.rabbitmqUsername.ifPresent(factory::setUsername);
-        configuration.rabbitmqPassword.ifPresent(factory::setPassword);
+    private void sendToRabbitMQ(String message, String eventType) {
+        try (Channel channel = connectionManager.createChannel()) {
+            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
+                    .contentType("application/json")
+                    .deliveryMode(2) // Persistent
+                    .type(eventType)
+                    .build();
 
-        try (Connection connection = factory.newConnection();
-             Channel channel = connection.createChannel()) {
-            channel.queueDeclare(configuration.rabbitmqEventsQueue, true, false, false, null);
-            channel.basicPublish("", configuration.rabbitmqEventsQueue, null, message.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException | TimeoutException e) {
-            System.err.println("Failed to send message to RabbitMQ: " + e.getMessage());
+            channel.basicPublish(
+                    configuration.rabbitmqExchange,
+                    "workflow.event",
+                    properties,
+                    message.getBytes(StandardCharsets.UTF_8)
+            );
+
+            LOG.debugf("Published event: %s", eventType);
+        } catch (Exception e) {
+            LOG.errorf(e, "Failed to send message to RabbitMQ: %s", eventType);
         }
     }
 }

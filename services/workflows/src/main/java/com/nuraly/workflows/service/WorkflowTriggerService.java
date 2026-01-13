@@ -11,9 +11,10 @@ import com.nuraly.workflows.entity.WorkflowTriggerEntity;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
 import com.nuraly.workflows.entity.enums.TriggerType;
 import com.nuraly.workflows.entity.enums.WorkflowStatus;
-import com.nuraly.workflows.engine.WorkflowEngine;
 import com.nuraly.workflows.exception.TriggerNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
+import com.nuraly.workflows.messaging.WorkflowExecutionMessage;
+import com.nuraly.workflows.messaging.WorkflowExecutionProducer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -30,7 +31,7 @@ public class WorkflowTriggerService {
     WorkflowTriggerDTOMapper triggerDTOMapper;
 
     @Inject
-    WorkflowEngine workflowEngine;
+    WorkflowExecutionProducer executionProducer;
 
     @Inject
     WorkflowEventService eventService;
@@ -170,19 +171,35 @@ public class WorkflowTriggerService {
         execution.triggerType = triggerType;
         execution.startedAt = Instant.now();
 
+        String inputData = "{}";
         if (payload != null) {
-            execution.inputData = objectMapper.writeValueAsString(payload);
+            inputData = objectMapper.writeValueAsString(payload);
         }
+        execution.inputData = inputData;
 
         execution.persist();
 
-        eventService.logExecutionStarted(execution);
+        // Log event - execution queued
+        eventService.logExecutionQueued(execution);
 
+        // Queue execution for async processing via RabbitMQ
         try {
-            workflowEngine.execute(execution);
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    trigger.workflow.id,
+                    execution.triggeredBy,
+                    triggerType,
+                    inputData,
+                    null
+            );
+            executionProducer.publishExecution(message);
+
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
-            execution.errorMessage = e.getMessage();
+            execution.errorMessage = "Failed to queue execution: " + e.getMessage();
             execution.completedAt = Instant.now();
             execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
             execution.persist();

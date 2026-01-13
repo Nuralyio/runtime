@@ -28,6 +28,15 @@ public class Configuration {
     @ConfigProperty(name = "rabbitmq.queue.events", defaultValue = "workflow-events")
     public String rabbitmqEventsQueue;
 
+    @ConfigProperty(name = "rabbitmq.queue.executions", defaultValue = "workflow-executions")
+    public String rabbitmqExecutionsQueue;
+
+    @ConfigProperty(name = "rabbitmq.exchange.workflows", defaultValue = "workflows-exchange")
+    public String rabbitmqExchange;
+
+    @ConfigProperty(name = "rabbitmq.routing-key.executions", defaultValue = "workflow.execute")
+    public String rabbitmqExecutionsRoutingKey;
+
     // Execution Settings
     @ConfigProperty(name = "workflows.execution.timeout.default", defaultValue = "300000")
     public long executionTimeoutDefault;
