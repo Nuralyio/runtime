@@ -31,6 +31,12 @@ public class WorkflowEdgeEntity extends PanacheEntityBase {
     @JoinColumn(name = "target_node_id", nullable = false)
     public WorkflowNodeEntity targetNode;
 
+    @Column(name = "source_port_id")
+    public String sourcePortId;
+
+    @Column(name = "target_port_id")
+    public String targetPortId;
+
     // For conditional edges
     @Lob
     @Column(columnDefinition = "TEXT", name = "condition_expression")
