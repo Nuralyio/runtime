@@ -1,7 +1,8 @@
 package com.nuraly.workflows.entity.enums;
 
 public enum ExecutionStatus {
-    PENDING,    // Queued for execution
+    PENDING,    // Created but not yet queued
+    QUEUED,     // Queued in RabbitMQ for execution
     RUNNING,    // Currently executing
     COMPLETED,  // Successfully completed
     FAILED,     // Failed with error
