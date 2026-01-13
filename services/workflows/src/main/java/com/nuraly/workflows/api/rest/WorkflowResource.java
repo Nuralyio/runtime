@@ -5,7 +5,7 @@ import com.nuraly.workflows.dto.*;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowService;
-import com.nuralyio.shared.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -250,6 +250,45 @@ public class WorkflowResource {
         }
     }
 
+    @PUT
+    @Path("/{id}/nodes/{nodeId}")
+    @RequiresPermission(
+            permissionType = "workflow:write",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Update a node in the workflow")
+    public RestResponse<WorkflowNodeDTO> updateNode(
+            @PathParam("id") UUID id,
+            @PathParam("nodeId") UUID nodeId,
+            @Valid WorkflowNodeDTO nodeDTO) {
+        try {
+            WorkflowNodeDTO updated = workflowService.updateNode(nodeId, nodeDTO);
+            return RestResponse.ok(updated);
+        } catch (Exception e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @DELETE
+    @Path("/{id}/nodes/{nodeId}")
+    @RequiresPermission(
+            permissionType = "workflow:write",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Delete a node from the workflow")
+    public RestResponse<Void> deleteNode(
+            @PathParam("id") UUID id,
+            @PathParam("nodeId") UUID nodeId) {
+        try {
+            workflowService.deleteNode(nodeId);
+            return RestResponse.noContent();
+        } catch (Exception e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
     // Edge endpoints
     @GET
     @Path("/{id}/edges")
@@ -283,6 +322,25 @@ public class WorkflowResource {
             WorkflowEdgeDTO created = workflowService.addEdge(id, edgeDTO);
             return RestResponse.status(RestResponse.Status.CREATED, created);
         } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @DELETE
+    @Path("/{id}/edges/{edgeId}")
+    @RequiresPermission(
+            permissionType = "workflow:write",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Delete an edge from the workflow")
+    public RestResponse<Void> deleteEdge(
+            @PathParam("id") UUID id,
+            @PathParam("edgeId") UUID edgeId) {
+        try {
+            workflowService.deleteEdge(edgeId);
+            return RestResponse.noContent();
+        } catch (Exception e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }

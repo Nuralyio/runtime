@@ -5,7 +5,7 @@ import com.nuraly.workflows.dto.WorkflowTriggerDTO;
 import com.nuraly.workflows.exception.TriggerNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowTriggerService;
-import com.nuralyio.shared.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;

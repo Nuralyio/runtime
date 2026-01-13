@@ -8,7 +8,7 @@ import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowExecutionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nuralyio.shared.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;

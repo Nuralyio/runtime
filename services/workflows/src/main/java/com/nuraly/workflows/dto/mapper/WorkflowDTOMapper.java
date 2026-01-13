@@ -25,6 +25,7 @@ public interface WorkflowDTOMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "nodes", ignore = true)
     @Mapping(target = "edges", ignore = true)
     @Mapping(target = "triggers", ignore = true)

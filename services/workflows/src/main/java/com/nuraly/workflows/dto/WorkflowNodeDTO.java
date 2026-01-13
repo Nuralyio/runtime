@@ -17,6 +17,7 @@ public class WorkflowNodeDTO {
     private String name;
     private NodeType type;
     private String configuration;
+    private String ports;
     private Integer positionX;
     private Integer positionY;
     private Integer maxRetries;
