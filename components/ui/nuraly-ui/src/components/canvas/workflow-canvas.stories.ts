@@ -1790,27 +1790,6 @@ export const DbTableNodeShowcase: Story = {
     },
   },
   render: () => {
-    // Employee table
-    const employeeTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
-    if (employeeTable) {
-      employeeTable.name = 'Employee';
-      employeeTable.configuration = {
-        tableName: 'Employee',
-        primaryKey: 'employee_id',
-        columns: [
-          { name: 'employee_id', type: 'SERIAL', nullable: false },
-          { name: 'last_name', type: 'VARCHAR(50)', nullable: false },
-          { name: 'first_name', type: 'VARCHAR(50)', nullable: false },
-          { name: 'birth_date', type: 'DATE', nullable: true },
-          { name: 'address', type: 'TEXT', nullable: true },
-          { name: 'city', type: 'VARCHAR(100)', nullable: true },
-          { name: 'country', type: 'VARCHAR(100)', nullable: true },
-          { name: 'phone', type: 'VARCHAR(20)', nullable: true },
-          { name: 'email', type: 'VARCHAR(255)', nullable: false },
-        ],
-      };
-    }
-
     // Users table
     const usersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
     if (usersTable) {
@@ -1819,48 +1798,48 @@ export const DbTableNodeShowcase: Story = {
         tableName: 'users',
         primaryKey: 'id',
         columns: [
-          { name: 'id', type: 'SERIAL', nullable: false },
-          { name: 'username', type: 'VARCHAR(50)', nullable: false },
-          { name: 'email', type: 'VARCHAR(255)', nullable: false },
-          { name: 'is_active', type: 'BOOLEAN', nullable: false },
-          { name: 'created_at', type: 'TIMESTAMP', nullable: false },
+          { name: 'id', type: 'INTEGER', nullable: false },
+          { name: 'name', type: 'VARCHAR', nullable: false },
+          { name: 'email', type: 'VARCHAR', nullable: false },
+          { name: 'created_at', type: 'TIMESTAMP', nullable: true },
         ],
       };
     }
 
-    // Orders table
-    const ordersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
-    if (ordersTable) {
-      ordersTable.name = 'orders';
-      ordersTable.configuration = {
-        tableName: 'orders',
+    // Posts table
+    const postsTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
+    if (postsTable) {
+      postsTable.name = 'posts';
+      postsTable.configuration = {
+        tableName: 'posts',
         primaryKey: 'id',
         columns: [
-          { name: 'id', type: 'SERIAL', nullable: false },
+          { name: 'id', type: 'INTEGER', nullable: false },
           { name: 'user_id', type: 'INTEGER', nullable: false },
-          { name: 'total', type: 'DECIMAL(10,2)', nullable: false },
-          { name: 'status', type: 'VARCHAR(20)', nullable: false },
-          { name: 'metadata', type: 'JSON', nullable: true },
-          { name: 'order_date', type: 'TIMESTAMP', nullable: false },
+          { name: 'title', type: 'VARCHAR', nullable: false },
+          { name: 'content', type: 'TEXT', nullable: true },
         ],
       };
+    }
+
+    // Empty table
+    const emptyTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
+    if (emptyTable) {
+      emptyTable.name = 'new_table';
     }
 
     return html`
       <div style="display: flex; flex-direction: column; gap: 24px; padding: 24px; background: #1a1a1a; border-radius: 12px;">
         <h3 style="color: #e5e5e5; margin: 0;">DB Table Nodes (ERD Style)</h3>
-        <p style="color: #888; margin: 0; font-size: 12px;">
-          Tables display columns with type icons: key for primary key, hash for numbers, type for text, calendar for dates, etc.
-        </p>
         <div style="display: flex; gap: 32px; flex-wrap: wrap;">
-          <div style="position: relative;">
-            <workflow-node .node=${employeeTable}></workflow-node>
-          </div>
           <div style="position: relative;">
             <workflow-node .node=${usersTable}></workflow-node>
           </div>
           <div style="position: relative;">
-            <workflow-node .node=${ordersTable}></workflow-node>
+            <workflow-node .node=${postsTable}></workflow-node>
+          </div>
+          <div style="position: relative;">
+            <workflow-node .node=${emptyTable}></workflow-node>
           </div>
         </div>
       </div>

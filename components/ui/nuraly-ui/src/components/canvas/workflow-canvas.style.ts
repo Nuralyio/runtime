@@ -559,6 +559,51 @@ export const workflowCanvasStyles = css`
     margin-top: var(--nuraly-spacing-1, 4px);
   }
 
+  /* Debug node styles */
+  .debug-placeholder {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-3, 12px);
+    background: var(--nuraly-color-layer-02, #f4f4f4);
+    border: 1px solid var(--nuraly-color-border-subtle, #e0e0e0);
+    border-radius: var(--nuraly-radius-md, 6px);
+    color: var(--nuraly-color-text-secondary, #525252);
+    font-size: var(--nuraly-font-size-sm, 12px);
+  }
+
+  .debug-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-2, 8px);
+  }
+
+  .debug-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    color: var(--nuraly-color-text-secondary, #525252);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .debug-output {
+    margin: 0;
+    padding: var(--nuraly-spacing-2, 8px);
+    background: var(--nuraly-color-layer-01, #f4f4f4);
+    border: 1px solid var(--nuraly-color-border-subtle, #e0e0e0);
+    border-radius: var(--nuraly-radius-sm, 4px);
+    font-family: var(--nuraly-font-family-mono, monospace);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text, #161616);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
   /* Empty state */
   .empty-state {
     position: absolute;

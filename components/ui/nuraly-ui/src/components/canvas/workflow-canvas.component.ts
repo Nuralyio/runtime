@@ -15,6 +15,7 @@ import {
   Position,
   CanvasMode,
   CanvasType,
+  ExecutionStatus,
   createNodeFromTemplate,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-canvas.style.js';
@@ -60,13 +61,32 @@ import type { ConnectionState, DragState, CanvasHost, CanvasViewport } from './i
 export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
-  @property({ type: Object })
-  workflow: Workflow = {
+  private _workflow: Workflow = {
     id: '',
     name: 'New Workflow',
     nodes: [],
     edges: [],
   };
+
+  @property({ type: Object })
+  get workflow(): Workflow {
+    return this._workflow;
+  }
+
+  set workflow(value: Workflow) {
+    const oldValue = this._workflow;
+    // Normalize node status values to uppercase
+    this._workflow = {
+      ...value,
+      nodes: value.nodes.map(node => ({
+        ...node,
+        status: node.status
+          ? (node.status.toUpperCase() as ExecutionStatus)
+          : undefined,
+      })),
+    };
+    this.requestUpdate('workflow', oldValue);
+  }
 
   @property({ type: Boolean })
   readonly = false;
@@ -82,6 +102,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @property({ type: String })
   canvasType: CanvasType = CanvasType.WORKFLOW;
+
+  /**
+   * Map of node IDs to their current execution status
+   * Used to show real-time execution progress on nodes
+   */
+  @property({ type: Object })
+  nodeStatuses: Record<string, 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'> = {};
 
   @state()
   private viewport: CanvasViewport = { zoom: 1, panX: 0, panY: 0 };
@@ -108,7 +135,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private isPanning = false;
 
   @state()
-  private expandedCategories: Set<string> = new Set(['control', 'action', 'agent']);
+  private expandedCategories: Set<string> = new Set([
+    'trigger', 'control', 'action', 'data', 'agent',
+    'db-tables-views', 'db-relations-constraints', 'db-indexes-queries'
+  ]);
 
   @state()
   private configuredNode: WorkflowNode | null = null;
@@ -269,6 +299,17 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
+  private handleNodeTrigger(e: CustomEvent) {
+    const { node } = e.detail;
+    console.log('[Canvas] Node trigger clicked:', node.name, node.type);
+    // Bubble up the trigger event for workflow execution
+    this.dispatchEvent(new CustomEvent('workflow-trigger', {
+      detail: { node },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private closePreviewPanel() {
     this.previewNodeId = null;
   }
@@ -400,11 +441,23 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     return this.connectionController.getPortPosition(node, portId, isInput);
   }
 
+  /**
+   * Get nodes with execution statuses applied from nodeStatuses map
+   * This ensures edges can derive their status from connected nodes
+   */
+  private getNodesWithStatuses(): WorkflowNode[] {
+    return this.workflow.nodes.map(node =>
+      this.nodeStatuses[node.id]
+        ? { ...node, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus }
+        : node
+    );
+  }
+
   // Note: Edge rendering is now in edges.template.ts
   private renderEdges() {
     return renderEdgesTemplate({
       edges: this.workflow.edges,
-      nodes: this.workflow.nodes,
+      nodes: this.getNodesWithStatuses(),
       selectedEdgeIds: this.selectedEdgeIds,
       hoveredEdgeId: this.hoveredEdgeId,
       connectionState: this.connectionState,
@@ -551,7 +604,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
           <!-- Nodes layer -->
           <div class="nodes-layer">
-            ${this.workflow.nodes.map(node => html`
+            ${this.getNodesWithStatuses().map(node => html`
               <workflow-node
                 .node=${node}
                 ?selected=${this.selectedNodeIds.has(node.id)}
@@ -560,6 +613,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
                 @node-mousedown=${this.handleNodeMouseDown}
                 @node-dblclick=${this.handleNodeDblClick}
                 @node-preview=${this.handleNodePreview}
+                @node-trigger=${this.handleNodeTrigger}
                 @port-mousedown=${this.handlePortMouseDown}
                 @port-mouseup=${this.handlePortMouseUp}
               ></workflow-node>

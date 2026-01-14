@@ -27,6 +27,7 @@ export enum WorkflowNodeType {
   DATABASE = 'DATABASE',
   VARIABLE = 'VARIABLE',
   CHATBOT = 'CHATBOT',
+  DEBUG = 'DEBUG',
 }
 
 /**
@@ -384,6 +385,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DATABASE]: '#a855f7',
   [WorkflowNodeType.VARIABLE]: '#64748b',
   [WorkflowNodeType.CHATBOT]: '#0ea5e9',
+  [WorkflowNodeType.DEBUG]: '#f97316',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -424,6 +426,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DATABASE]: 'database',
   [WorkflowNodeType.VARIABLE]: 'box',
   [WorkflowNodeType.CHATBOT]: 'message-circle',
+  [WorkflowNodeType.DEBUG]: 'bug',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -684,6 +687,19 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
         { id: 'session', type: PortType.OUTPUT, label: 'Session Start' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
+    },
+  },
+  {
+    type: WorkflowNodeType.DEBUG,
+    name: 'Debug',
+    description: 'Display input, output, and variables for debugging',
+    icon: NODE_ICONS[WorkflowNodeType.DEBUG],
+    color: NODE_COLORS[WorkflowNodeType.DEBUG],
+    category: 'data',
+    defaultConfig: {},
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
     },
   },
   // Agent nodes
@@ -989,6 +1005,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.TRANSFORM,
       WorkflowNodeType.DATABASE,
       WorkflowNodeType.VARIABLE,
+      WorkflowNodeType.DEBUG,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
