@@ -12,6 +12,10 @@ public class Configuration {
     @ConfigProperty(name = "nuraly.functions.service.url", defaultValue = "http://functions:7001")
     public String functionsServiceUrl;
 
+    // KV Service
+    @ConfigProperty(name = "nuraly.kv.service.url", defaultValue = "http://kv:7003")
+    public String kvServiceUrl;
+
     // RabbitMQ
     @ConfigProperty(name = "rabbitmq.host", defaultValue = "rabbitmq")
     public String rabbitmqHost;
