@@ -476,6 +476,134 @@ export const workflowNodeStyles = css`
   .node-container[data-theme="default-dark"] .status-text {
     color: var(--nuraly-color-text-secondary, #c6c6c6);
   }
+
+  /* ========================================
+   * DB TABLE NODE STYLES (ERD-style)
+   * ======================================== */
+
+  .node-container.db-table-node {
+    min-width: 160px;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .db-table-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
+    border-radius: var(--nuraly-border-radius-medium, 8px) var(--nuraly-border-radius-medium, 8px) 0 0;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .db-table-name {
+    font-size: var(--nuraly-font-size-sm, 13px);
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    color: white;
+    text-transform: capitalize;
+  }
+
+  .db-table-columns {
+    padding: var(--nuraly-spacing-1, 4px) 0;
+    background: var(--nuraly-color-layer-01, #1e1e1e);
+  }
+
+  .db-table-column {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-1-5, 6px) var(--nuraly-spacing-3, 12px);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    border-bottom: 1px solid var(--nuraly-color-border-subtle, rgba(255, 255, 255, 0.06));
+    transition: background var(--nuraly-transition-fast, 0.15s) ease;
+  }
+
+  .db-table-column:last-child {
+    border-bottom: none;
+  }
+
+  .db-table-column:hover {
+    background: var(--nuraly-color-layer-02, rgba(255, 255, 255, 0.05));
+  }
+
+  .db-table-column.primary-key {
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  .db-table-column.primary-key:hover {
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  .column-type-icon {
+    color: var(--nuraly-color-text-secondary, #888);
+    --icon-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .column-key-icon {
+    color: #f59e0b;
+    --icon-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .column-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .column-required {
+    color: var(--nuraly-color-support-error, #ef4444);
+    font-weight: var(--nuraly-font-weight-bold, 700);
+    font-size: var(--nuraly-font-size-xs, 10px);
+  }
+
+  .db-table-empty {
+    padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text-disabled, #666);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* DB Table node - Light theme */
+  .node-container.db-table-node[data-theme="light"] .db-table-columns,
+  .node-container.db-table-node[data-theme="carbon-light"] .db-table-columns,
+  .node-container.db-table-node[data-theme="default-light"] .db-table-columns,
+  .node-container.db-table-node[data-theme="default"] .db-table-columns {
+    background: var(--nuraly-color-layer-01, #ffffff);
+  }
+
+  .node-container.db-table-node[data-theme="light"] .db-table-column,
+  .node-container.db-table-node[data-theme="carbon-light"] .db-table-column,
+  .node-container.db-table-node[data-theme="default-light"] .db-table-column,
+  .node-container.db-table-node[data-theme="default"] .db-table-column {
+    color: var(--nuraly-color-text-primary, #161616);
+    border-bottom-color: var(--nuraly-color-border-subtle, rgba(0, 0, 0, 0.1));
+  }
+
+  .node-container.db-table-node[data-theme="light"] .db-table-column:hover,
+  .node-container.db-table-node[data-theme="carbon-light"] .db-table-column:hover,
+  .node-container.db-table-node[data-theme="default-light"] .db-table-column:hover,
+  .node-container.db-table-node[data-theme="default"] .db-table-column:hover {
+    background: var(--nuraly-color-layer-02, #f4f4f4);
+  }
+
+  .node-container.db-table-node[data-theme="light"] .column-type-icon,
+  .node-container.db-table-node[data-theme="carbon-light"] .column-type-icon,
+  .node-container.db-table-node[data-theme="default-light"] .column-type-icon,
+  .node-container.db-table-node[data-theme="default"] .column-type-icon {
+    color: var(--nuraly-color-text-secondary, #525252);
+  }
+
+  /* DB Table node - Carbon theme (sharp corners) */
+  .node-container.db-table-node[data-theme="carbon-light"] .db-table-header,
+  .node-container.db-table-node[data-theme="carbon-dark"] .db-table-header,
+  .node-container.db-table-node[data-theme="carbon"] .db-table-header {
+    border-radius: 0;
+  }
 `;
 
 export const styles = workflowNodeStyles;
