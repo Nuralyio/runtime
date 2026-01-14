@@ -5,7 +5,12 @@
  */
 
 import { html, nothing, TemplateResult } from 'lit';
-import { NODE_CATEGORIES, NODE_TEMPLATES, NodeType } from '../workflow-canvas.types.js';
+import {
+  NODE_TEMPLATES,
+  NodeType,
+  CanvasType,
+  getCategoriesForCanvasType,
+} from '../workflow-canvas.types.js';
 
 /**
  * Data required for rendering the node palette
@@ -13,6 +18,7 @@ import { NODE_CATEGORIES, NODE_TEMPLATES, NodeType } from '../workflow-canvas.ty
 export interface PaletteTemplateData {
   showPalette: boolean;
   expandedCategories: Set<string>;
+  canvasType: CanvasType;
   onClose: () => void;
   onToggleCategory: (categoryId: string) => void;
   onNodeDragStart: (e: DragEvent, type: NodeType) => void;
@@ -25,16 +31,19 @@ export interface PaletteTemplateData {
 export function renderPaletteTemplate(data: PaletteTemplateData): TemplateResult | typeof nothing {
   if (!data.showPalette) return nothing;
 
+  const categories = getCategoriesForCanvasType(data.canvasType);
+  const paletteTitle = data.canvasType === CanvasType.DATABASE ? 'Add DB Element' : 'Add Node';
+
   return html`
     <div class="node-palette">
       <div class="palette-header">
-        <span class="palette-title">Add Node</span>
+        <span class="palette-title">${paletteTitle}</span>
         <button class="palette-close" @click=${data.onClose}>
           <nr-icon name="x" size="small"></nr-icon>
         </button>
       </div>
       <div class="palette-content">
-        ${NODE_CATEGORIES.map(category => html`
+        ${categories.map(category => html`
           <div class="palette-category">
             <div
               class="category-header"

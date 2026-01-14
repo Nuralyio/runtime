@@ -12,6 +12,7 @@ import {
   NODE_TEMPLATES,
   WorkflowNodeType,
   AgentNodeType,
+  DbDesignerNodeType,
   DataOperation,
 } from '../workflow-canvas.types.js';
 
@@ -393,6 +394,516 @@ function renderChatbotTriggerFields(
 }
 
 /**
+ * Render Table node specific configuration fields
+ */
+function renderTableNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  const columns = (config.columns as Array<{name: string; type: string; nullable?: boolean; defaultValue?: unknown}>) || [];
+
+  return html`
+    <!-- Table Name Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Table Name</label>
+        <nr-input
+          .value=${(config.tableName as string) || ''}
+          placeholder="e.g., users, orders"
+          @nr-input=${(e: CustomEvent) => onUpdate('tableName', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Name of the database table</span>
+      </div>
+    </div>
+
+    <!-- Primary Key Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Primary Key</span>
+      </div>
+      <div class="config-field">
+        <label>Primary Key Column</label>
+        <nr-input
+          .value=${(config.primaryKey as string) || ''}
+          placeholder="e.g., id"
+          @nr-input=${(e: CustomEvent) => onUpdate('primaryKey', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Column that uniquely identifies each row</span>
+      </div>
+    </div>
+
+    <!-- Columns Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Columns</span>
+        <span class="config-section-desc">Define table columns</span>
+      </div>
+      <div class="config-columns-list">
+        ${columns.map((col, index) => html`
+          <div class="config-column-item">
+            <div class="config-field">
+              <label>Column ${index + 1}</label>
+              <div class="column-inputs">
+                <nr-input
+                  .value=${col.name || ''}
+                  placeholder="Column name"
+                  @nr-input=${(e: CustomEvent) => {
+                    const newColumns = [...columns];
+                    newColumns[index] = { ...newColumns[index], name: e.detail.value };
+                    onUpdate('columns', newColumns);
+                  }}
+                ></nr-input>
+                <nr-input
+                  .value=${col.type || ''}
+                  placeholder="Type (VARCHAR, INT, etc.)"
+                  @nr-input=${(e: CustomEvent) => {
+                    const newColumns = [...columns];
+                    newColumns[index] = { ...newColumns[index], type: e.detail.value };
+                    onUpdate('columns', newColumns);
+                  }}
+                ></nr-input>
+              </div>
+            </div>
+            <button
+              class="remove-column-btn"
+              @click=${() => {
+                const newColumns = columns.filter((_, i) => i !== index);
+                onUpdate('columns', newColumns);
+              }}
+            >
+              <nr-icon name="trash-2" size="small"></nr-icon>
+            </button>
+          </div>
+        `)}
+        <button
+          class="add-column-btn"
+          @click=${() => {
+            const newColumns = [...columns, { name: '', type: 'VARCHAR(255)', nullable: true }];
+            onUpdate('columns', newColumns);
+          }}
+        >
+          <nr-icon name="plus" size="small"></nr-icon>
+          Add Column
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render View node specific configuration fields
+ */
+function renderViewNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  return html`
+    <!-- View Name Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>View Name</label>
+        <nr-input
+          .value=${(config.viewName as string) || ''}
+          placeholder="e.g., active_users_view"
+          @nr-input=${(e: CustomEvent) => onUpdate('viewName', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Name of the database view</span>
+      </div>
+    </div>
+
+    <!-- Query Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Query Definition</span>
+      </div>
+      <div class="config-field">
+        <label>SQL Query</label>
+        <nr-input
+          .value=${(config.query as string) || ''}
+          placeholder="SELECT * FROM users WHERE status = 'active'"
+          @nr-input=${(e: CustomEvent) => onUpdate('query', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">The SELECT statement that defines this view</span>
+      </div>
+    </div>
+
+    <!-- Options Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Options</span>
+      </div>
+      <nr-feature-toggle
+        label="Materialized View"
+        description="Store the view results physically for faster queries"
+        .checked=${config.materialized === true}
+        @toggle-change=${(e: CustomEvent) => onUpdate('materialized', e.detail.checked)}
+      ></nr-feature-toggle>
+    </div>
+  `;
+}
+
+/**
+ * Render Index node specific configuration fields
+ */
+function renderIndexNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  const indexColumns = (config.indexColumns as string[]) || [];
+
+  return html`
+    <!-- Index Name Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Index Name</label>
+        <nr-input
+          .value=${(config.indexName as string) || ''}
+          placeholder="e.g., idx_users_email"
+          @nr-input=${(e: CustomEvent) => onUpdate('indexName', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Name of the index</span>
+      </div>
+    </div>
+
+    <!-- Index Columns Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Indexed Columns</span>
+        <span class="config-section-desc">Columns included in this index</span>
+      </div>
+      <div class="config-columns-list">
+        ${indexColumns.map((col, index) => html`
+          <div class="config-column-item">
+            <nr-input
+              .value=${col}
+              placeholder="Column name"
+              @nr-input=${(e: CustomEvent) => {
+                const newColumns = [...indexColumns];
+                newColumns[index] = e.detail.value;
+                onUpdate('indexColumns', newColumns);
+              }}
+            ></nr-input>
+            <button
+              class="remove-column-btn"
+              @click=${() => {
+                const newColumns = indexColumns.filter((_, i) => i !== index);
+                onUpdate('indexColumns', newColumns);
+              }}
+            >
+              <nr-icon name="trash-2" size="small"></nr-icon>
+            </button>
+          </div>
+        `)}
+        <button
+          class="add-column-btn"
+          @click=${() => {
+            onUpdate('indexColumns', [...indexColumns, '']);
+          }}
+        >
+          <nr-icon name="plus" size="small"></nr-icon>
+          Add Column
+        </button>
+      </div>
+    </div>
+
+    <!-- Index Options Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Index Options</span>
+      </div>
+      <nr-feature-toggle
+        label="Unique Index"
+        description="Enforce uniqueness on indexed columns"
+        .checked=${config.unique === true}
+        @toggle-change=${(e: CustomEvent) => onUpdate('unique', e.detail.checked)}
+      ></nr-feature-toggle>
+
+      <div class="config-field">
+        <label>Index Type</label>
+        <nr-input
+          .value=${(config.indexType as string) || 'BTREE'}
+          placeholder="BTREE, HASH, GIN, GIST"
+          @nr-input=${(e: CustomEvent) => onUpdate('indexType', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Type of index algorithm</span>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render Relationship node specific configuration fields
+ */
+function renderRelationshipNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  return html`
+    <!-- Relationship Type Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Relationship Type</label>
+        <nr-input
+          .value=${(config.relationshipType as string) || 'ONE_TO_MANY'}
+          placeholder="ONE_TO_ONE, ONE_TO_MANY, MANY_TO_MANY"
+          @nr-input=${(e: CustomEvent) => onUpdate('relationshipType', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Type of relationship between tables</span>
+      </div>
+    </div>
+
+    <!-- Column Mapping Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Column Mapping</span>
+      </div>
+      <div class="config-field">
+        <label>Source Column</label>
+        <nr-input
+          .value=${(config.sourceColumn as string) || ''}
+          placeholder="e.g., id"
+          @nr-input=${(e: CustomEvent) => onUpdate('sourceColumn', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Column in the source table</span>
+      </div>
+      <div class="config-field">
+        <label>Target Column</label>
+        <nr-input
+          .value=${(config.targetColumn as string) || ''}
+          placeholder="e.g., user_id"
+          @nr-input=${(e: CustomEvent) => onUpdate('targetColumn', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Column in the target table (foreign key)</span>
+      </div>
+    </div>
+
+    <!-- Referential Actions Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Referential Actions</span>
+      </div>
+      <div class="config-field">
+        <label>On Delete</label>
+        <nr-input
+          .value=${(config.onDelete as string) || 'CASCADE'}
+          placeholder="CASCADE, SET_NULL, RESTRICT, NO_ACTION"
+          @nr-input=${(e: CustomEvent) => onUpdate('onDelete', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Action when parent record is deleted</span>
+      </div>
+      <div class="config-field">
+        <label>On Update</label>
+        <nr-input
+          .value=${(config.onUpdate as string) || 'CASCADE'}
+          placeholder="CASCADE, SET_NULL, RESTRICT, NO_ACTION"
+          @nr-input=${(e: CustomEvent) => onUpdate('onUpdate', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Action when parent record is updated</span>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Render Constraint node specific configuration fields
+ */
+function renderConstraintNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  const constraintColumns = (config.constraintColumns as string[]) || [];
+  const constraintType = (config.constraintType as string) || 'UNIQUE';
+
+  return html`
+    <!-- Constraint Name Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Constraint Name</label>
+        <nr-input
+          .value=${(config.constraintName as string) || ''}
+          placeholder="e.g., uq_users_email"
+          @nr-input=${(e: CustomEvent) => onUpdate('constraintName', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Name of the constraint</span>
+      </div>
+    </div>
+
+    <!-- Constraint Type Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Constraint Type</span>
+      </div>
+      <div class="config-field">
+        <label>Type</label>
+        <nr-input
+          .value=${constraintType}
+          placeholder="UNIQUE, CHECK, FOREIGN_KEY"
+          @nr-input=${(e: CustomEvent) => onUpdate('constraintType', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Type of constraint to apply</span>
+      </div>
+    </div>
+
+    <!-- Columns Section (for UNIQUE and FOREIGN_KEY) -->
+    ${constraintType !== 'CHECK' ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Constraint Columns</span>
+        </div>
+        <div class="config-columns-list">
+          ${constraintColumns.map((col, index) => html`
+            <div class="config-column-item">
+              <nr-input
+                .value=${col}
+                placeholder="Column name"
+                @nr-input=${(e: CustomEvent) => {
+                  const newColumns = [...constraintColumns];
+                  newColumns[index] = e.detail.value;
+                  onUpdate('constraintColumns', newColumns);
+                }}
+              ></nr-input>
+              <button
+                class="remove-column-btn"
+                @click=${() => {
+                  const newColumns = constraintColumns.filter((_, i) => i !== index);
+                  onUpdate('constraintColumns', newColumns);
+                }}
+              >
+                <nr-icon name="trash-2" size="small"></nr-icon>
+              </button>
+            </div>
+          `)}
+          <button
+            class="add-column-btn"
+            @click=${() => {
+              onUpdate('constraintColumns', [...constraintColumns, '']);
+            }}
+          >
+            <nr-icon name="plus" size="small"></nr-icon>
+            Add Column
+          </button>
+        </div>
+      </div>
+    ` : nothing}
+
+    <!-- Check Expression Section (for CHECK constraint) -->
+    ${constraintType === 'CHECK' ? html`
+      <div class="config-section">
+        <div class="config-section-header">
+          <span class="config-section-title">Check Expression</span>
+        </div>
+        <div class="config-field">
+          <label>Expression</label>
+          <nr-input
+            .value=${(config.checkExpression as string) || ''}
+            placeholder="e.g., age >= 18"
+            @nr-input=${(e: CustomEvent) => onUpdate('checkExpression', e.detail.value)}
+          ></nr-input>
+          <span class="field-description">SQL expression that must evaluate to true</span>
+        </div>
+      </div>
+    ` : nothing}
+  `;
+}
+
+/**
+ * Render Query node specific configuration fields
+ */
+function renderQueryNodeFields(
+  config: NodeConfiguration,
+  onUpdate: (key: string, value: unknown) => void
+): TemplateResult {
+  const parameters = (config.parameters as Array<{name: string; type: string; defaultValue?: unknown}>) || [];
+
+  return html`
+    <!-- Query Name Section -->
+    <div class="config-section">
+      <div class="config-field">
+        <label>Query Name</label>
+        <nr-input
+          .value=${(config.queryName as string) || ''}
+          placeholder="e.g., get_active_users"
+          @nr-input=${(e: CustomEvent) => onUpdate('queryName', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">Name of the saved query or stored procedure</span>
+      </div>
+    </div>
+
+    <!-- Query Text Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Query Definition</span>
+      </div>
+      <div class="config-field">
+        <label>SQL Query</label>
+        <nr-input
+          .value=${(config.queryText as string) || ''}
+          placeholder="SELECT * FROM users WHERE status = :status"
+          @nr-input=${(e: CustomEvent) => onUpdate('queryText', e.detail.value)}
+        ></nr-input>
+        <span class="field-description">SQL query with optional parameter placeholders (:param)</span>
+      </div>
+    </div>
+
+    <!-- Parameters Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Parameters</span>
+        <span class="config-section-desc">Define query parameters</span>
+      </div>
+      <div class="config-columns-list">
+        ${parameters.map((param, index) => html`
+          <div class="config-column-item">
+            <div class="config-field">
+              <label>Parameter ${index + 1}</label>
+              <div class="column-inputs">
+                <nr-input
+                  .value=${param.name || ''}
+                  placeholder="Parameter name"
+                  @nr-input=${(e: CustomEvent) => {
+                    const newParams = [...parameters];
+                    newParams[index] = { ...newParams[index], name: e.detail.value };
+                    onUpdate('parameters', newParams);
+                  }}
+                ></nr-input>
+                <nr-input
+                  .value=${param.type || ''}
+                  placeholder="Type (VARCHAR, INT, etc.)"
+                  @nr-input=${(e: CustomEvent) => {
+                    const newParams = [...parameters];
+                    newParams[index] = { ...newParams[index], type: e.detail.value };
+                    onUpdate('parameters', newParams);
+                  }}
+                ></nr-input>
+              </div>
+            </div>
+            <button
+              class="remove-column-btn"
+              @click=${() => {
+                const newParams = parameters.filter((_, i) => i !== index);
+                onUpdate('parameters', newParams);
+              }}
+            >
+              <nr-icon name="trash-2" size="small"></nr-icon>
+            </button>
+          </div>
+        `)}
+        <button
+          class="add-column-btn"
+          @click=${() => {
+            const newParams = [...parameters, { name: '', type: 'VARCHAR' }];
+            onUpdate('parameters', newParams);
+          }}
+        >
+          <nr-icon name="plus" size="small"></nr-icon>
+          Add Parameter
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * Render type-specific config fields
  */
 function renderTypeFields(
@@ -690,6 +1201,25 @@ function renderTypeFields(
 
     case WorkflowNodeType.CHATBOT:
       return renderChatbotTriggerFields(config, onUpdate);
+
+    // DB Designer nodes
+    case DbDesignerNodeType.TABLE:
+      return renderTableNodeFields(config, onUpdate);
+
+    case DbDesignerNodeType.VIEW:
+      return renderViewNodeFields(config, onUpdate);
+
+    case DbDesignerNodeType.INDEX:
+      return renderIndexNodeFields(config, onUpdate);
+
+    case DbDesignerNodeType.RELATIONSHIP:
+      return renderRelationshipNodeFields(config, onUpdate);
+
+    case DbDesignerNodeType.CONSTRAINT:
+      return renderConstraintNodeFields(config, onUpdate);
+
+    case DbDesignerNodeType.QUERY:
+      return renderQueryNodeFields(config, onUpdate);
 
     default:
       return nothing;

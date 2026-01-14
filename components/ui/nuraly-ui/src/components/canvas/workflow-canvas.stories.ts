@@ -7,10 +7,13 @@ import {
   WorkflowNode,
   WorkflowNodeType,
   AgentNodeType,
+  DbDesignerNodeType,
+  CanvasType,
   ExecutionStatus as NodeExecutionStatus,
   createNodeFromTemplate,
   NODE_TEMPLATES,
   NODE_CATEGORIES,
+  getCategoriesForCanvasType,
 } from './workflow-canvas.types.js';
 
 // Helper function to create sample workflows
@@ -235,6 +238,16 @@ const meta: Meta = {
         type: { summary: 'Workflow' },
       },
     },
+    canvasType: {
+      control: { type: 'select' },
+      options: ['WORKFLOW', 'DATABASE'],
+      description: 'Canvas mode - WORKFLOW for automation or DATABASE for schema design',
+      table: {
+        category: 'Mode',
+        defaultValue: { summary: 'WORKFLOW' },
+        type: { summary: 'CanvasType' },
+      },
+    },
     readonly: {
       control: { type: 'boolean' },
       description: 'Whether the canvas is in read-only mode',
@@ -269,6 +282,7 @@ const meta: Meta = {
     },
   },
   args: {
+    canvasType: 'WORKFLOW',
     readonly: false,
     showToolbar: true,
     showMinimap: true,
@@ -1218,6 +1232,739 @@ export const RealtimeExecution: Story = {
           50% { opacity: 0.4; }
         }
       </style>
+    `;
+  },
+};
+
+// ============================================================================
+// DB DESIGNER STORIES
+// ============================================================================
+
+/**
+ * Helper function to create a sample database schema
+ */
+function createDatabaseSchema(): Workflow {
+  // Tables
+  const usersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 100, y: 100 }, 'table_users');
+  const ordersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 500, y: 100 }, 'table_orders');
+  const productsTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 500, y: 400 }, 'table_products');
+  const orderItemsTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 900, y: 250 }, 'table_order_items');
+
+  // Views
+  const activeUsersView = createNodeFromTemplate(DbDesignerNodeType.VIEW, { x: 100, y: 400 }, 'view_active_users');
+
+  // Indexes
+  const emailIndex = createNodeFromTemplate(DbDesignerNodeType.INDEX, { x: 100, y: 600 }, 'idx_users_email');
+  const orderDateIndex = createNodeFromTemplate(DbDesignerNodeType.INDEX, { x: 500, y: 600 }, 'idx_orders_date');
+
+  // Relationships
+  const userOrderRelation = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 300, y: 200 }, 'rel_user_orders');
+  const orderItemsRelation = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 700, y: 180 }, 'rel_order_items');
+  const productItemsRelation = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 700, y: 380 }, 'rel_product_items');
+
+  // Constraints
+  const uniqueEmailConstraint = createNodeFromTemplate(DbDesignerNodeType.CONSTRAINT, { x: 100, y: 250 }, 'const_unique_email');
+
+  // Query
+  const salesReportQuery = createNodeFromTemplate(DbDesignerNodeType.QUERY, { x: 900, y: 500 }, 'query_sales_report');
+
+  // Configure nodes
+  if (usersTable) {
+    usersTable.name = 'users';
+    usersTable.configuration = {
+      tableName: 'users',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'email', type: 'VARCHAR(255)', nullable: false },
+        { name: 'name', type: 'VARCHAR(100)', nullable: true },
+        { name: 'status', type: 'VARCHAR(20)', nullable: false, defaultValue: 'active' },
+        { name: 'created_at', type: 'TIMESTAMP', nullable: false },
+      ],
+    };
+  }
+
+  if (ordersTable) {
+    ordersTable.name = 'orders';
+    ordersTable.configuration = {
+      tableName: 'orders',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'user_id', type: 'INTEGER', nullable: false },
+        { name: 'total', type: 'DECIMAL(10,2)', nullable: false },
+        { name: 'status', type: 'VARCHAR(20)', nullable: false },
+        { name: 'order_date', type: 'TIMESTAMP', nullable: false },
+      ],
+    };
+  }
+
+  if (productsTable) {
+    productsTable.name = 'products';
+    productsTable.configuration = {
+      tableName: 'products',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'name', type: 'VARCHAR(255)', nullable: false },
+        { name: 'price', type: 'DECIMAL(10,2)', nullable: false },
+        { name: 'stock', type: 'INTEGER', nullable: false, defaultValue: 0 },
+      ],
+    };
+  }
+
+  if (orderItemsTable) {
+    orderItemsTable.name = 'order_items';
+    orderItemsTable.configuration = {
+      tableName: 'order_items',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'order_id', type: 'INTEGER', nullable: false },
+        { name: 'product_id', type: 'INTEGER', nullable: false },
+        { name: 'quantity', type: 'INTEGER', nullable: false },
+        { name: 'unit_price', type: 'DECIMAL(10,2)', nullable: false },
+      ],
+    };
+  }
+
+  if (activeUsersView) {
+    activeUsersView.name = 'active_users_view';
+    activeUsersView.configuration = {
+      viewName: 'active_users_view',
+      query: "SELECT * FROM users WHERE status = 'active'",
+      materialized: false,
+    };
+  }
+
+  if (emailIndex) {
+    emailIndex.name = 'idx_users_email';
+    emailIndex.configuration = {
+      indexName: 'idx_users_email',
+      indexColumns: ['email'],
+      unique: true,
+      indexType: 'BTREE',
+    };
+  }
+
+  if (orderDateIndex) {
+    orderDateIndex.name = 'idx_orders_date';
+    orderDateIndex.configuration = {
+      indexName: 'idx_orders_date',
+      indexColumns: ['order_date'],
+      unique: false,
+      indexType: 'BTREE',
+    };
+  }
+
+  if (userOrderRelation) {
+    userOrderRelation.name = 'users → orders';
+    userOrderRelation.configuration = {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: 'id',
+      targetColumn: 'user_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    };
+  }
+
+  if (orderItemsRelation) {
+    orderItemsRelation.name = 'orders → items';
+    orderItemsRelation.configuration = {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: 'id',
+      targetColumn: 'order_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    };
+  }
+
+  if (productItemsRelation) {
+    productItemsRelation.name = 'products → items';
+    productItemsRelation.configuration = {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: 'id',
+      targetColumn: 'product_id',
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
+    };
+  }
+
+  if (uniqueEmailConstraint) {
+    uniqueEmailConstraint.name = 'uq_users_email';
+    uniqueEmailConstraint.configuration = {
+      constraintName: 'uq_users_email',
+      constraintType: 'UNIQUE',
+      constraintColumns: ['email'],
+    };
+  }
+
+  if (salesReportQuery) {
+    salesReportQuery.name = 'sales_report';
+    salesReportQuery.configuration = {
+      queryName: 'get_sales_report',
+      queryText: `SELECT
+  p.name AS product_name,
+  SUM(oi.quantity) AS total_sold,
+  SUM(oi.quantity * oi.unit_price) AS total_revenue
+FROM order_items oi
+JOIN products p ON p.id = oi.product_id
+WHERE oi.created_at >= :start_date
+GROUP BY p.id, p.name
+ORDER BY total_revenue DESC`,
+      parameters: [
+        { name: 'start_date', type: 'TIMESTAMP' },
+      ],
+    };
+  }
+
+  const nodes = [
+    usersTable,
+    ordersTable,
+    productsTable,
+    orderItemsTable,
+    activeUsersView,
+    emailIndex,
+    orderDateIndex,
+    userOrderRelation,
+    orderItemsRelation,
+    productItemsRelation,
+    uniqueEmailConstraint,
+    salesReportQuery,
+  ].filter(Boolean) as WorkflowNode[];
+
+  return {
+    id: 'db-schema-1',
+    name: 'E-Commerce Database Schema',
+    description: 'Database schema for an e-commerce application',
+    nodes,
+    edges: [
+      // Relationships connect tables
+      { id: 'edge_1', sourceNodeId: 'table_users', sourcePortId: 'ref', targetNodeId: 'rel_user_orders', targetPortId: 'source' },
+      { id: 'edge_2', sourceNodeId: 'rel_user_orders', sourcePortId: 'source', targetNodeId: 'table_orders', targetPortId: 'ref' },
+      { id: 'edge_3', sourceNodeId: 'table_orders', sourcePortId: 'ref', targetNodeId: 'rel_order_items', targetPortId: 'source' },
+      { id: 'edge_4', sourceNodeId: 'rel_order_items', sourcePortId: 'source', targetNodeId: 'table_order_items', targetPortId: 'ref' },
+      { id: 'edge_5', sourceNodeId: 'table_products', sourcePortId: 'ref', targetNodeId: 'rel_product_items', targetPortId: 'source' },
+      { id: 'edge_6', sourceNodeId: 'rel_product_items', sourcePortId: 'source', targetNodeId: 'table_order_items', targetPortId: 'ref' },
+      // View references table
+      { id: 'edge_7', sourceNodeId: 'table_users', sourcePortId: 'ref', targetNodeId: 'view_active_users', targetPortId: 'source' },
+      // Indexes reference tables
+      { id: 'edge_8', sourceNodeId: 'table_users', sourcePortId: 'ref', targetNodeId: 'idx_users_email', targetPortId: 'table' },
+      { id: 'edge_9', sourceNodeId: 'table_orders', sourcePortId: 'ref', targetNodeId: 'idx_orders_date', targetPortId: 'table' },
+      // Constraint references table
+      { id: 'edge_10', sourceNodeId: 'table_users', sourcePortId: 'ref', targetNodeId: 'const_unique_email', targetPortId: 'table' },
+      // Query references tables
+      { id: 'edge_11', sourceNodeId: 'table_order_items', sourcePortId: 'ref', targetNodeId: 'query_sales_report', targetPortId: 'tables' },
+      { id: 'edge_12', sourceNodeId: 'table_products', sourcePortId: 'ref', targetNodeId: 'query_sales_report', targetPortId: 'tables' },
+    ],
+  };
+}
+
+/**
+ * Helper function to create a simple database schema for demo
+ */
+function createSimpleDatabaseSchema(): Workflow {
+  const usersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 150, y: 200 }, 'table_users');
+  const postsTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 550, y: 200 }, 'table_posts');
+  const commentsTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 950, y: 200 }, 'table_comments');
+
+  const userPostRelation = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 350, y: 300 }, 'rel_user_posts');
+  const postCommentRelation = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 750, y: 300 }, 'rel_post_comments');
+
+  if (usersTable) {
+    usersTable.name = 'users';
+    usersTable.configuration = {
+      tableName: 'users',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'username', type: 'VARCHAR(50)', nullable: false },
+        { name: 'email', type: 'VARCHAR(255)', nullable: false },
+      ],
+    };
+  }
+
+  if (postsTable) {
+    postsTable.name = 'posts';
+    postsTable.configuration = {
+      tableName: 'posts',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'user_id', type: 'INTEGER', nullable: false },
+        { name: 'title', type: 'VARCHAR(255)', nullable: false },
+        { name: 'content', type: 'TEXT', nullable: true },
+      ],
+    };
+  }
+
+  if (commentsTable) {
+    commentsTable.name = 'comments';
+    commentsTable.configuration = {
+      tableName: 'comments',
+      primaryKey: 'id',
+      columns: [
+        { name: 'id', type: 'SERIAL', nullable: false },
+        { name: 'post_id', type: 'INTEGER', nullable: false },
+        { name: 'user_id', type: 'INTEGER', nullable: false },
+        { name: 'content', type: 'TEXT', nullable: false },
+      ],
+    };
+  }
+
+  if (userPostRelation) {
+    userPostRelation.name = 'users → posts';
+    userPostRelation.configuration = {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: 'id',
+      targetColumn: 'user_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    };
+  }
+
+  if (postCommentRelation) {
+    postCommentRelation.name = 'posts → comments';
+    postCommentRelation.configuration = {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: 'id',
+      targetColumn: 'post_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    };
+  }
+
+  const nodes = [
+    usersTable,
+    postsTable,
+    commentsTable,
+    userPostRelation,
+    postCommentRelation,
+  ].filter(Boolean) as WorkflowNode[];
+
+  return {
+    id: 'db-schema-simple',
+    name: 'Blog Database Schema',
+    description: 'Simple blog database with users, posts, and comments',
+    nodes,
+    edges: [
+      { id: 'edge_1', sourceNodeId: 'table_users', sourcePortId: 'ref', targetNodeId: 'rel_user_posts', targetPortId: 'source' },
+      { id: 'edge_2', sourceNodeId: 'rel_user_posts', sourcePortId: 'source', targetNodeId: 'table_posts', targetPortId: 'ref' },
+      { id: 'edge_3', sourceNodeId: 'table_posts', sourcePortId: 'ref', targetNodeId: 'rel_post_comments', targetPortId: 'source' },
+      { id: 'edge_4', sourceNodeId: 'rel_post_comments', sourcePortId: 'source', targetNodeId: 'table_comments', targetPortId: 'ref' },
+    ],
+  };
+}
+
+/**
+ * ## Database Designer Canvas
+ *
+ * The workflow canvas in DATABASE mode for designing database schemas.
+ * Shows DB designer nodes like Tables, Views, Indexes, Relationships, Constraints, and Queries.
+ */
+export const DatabaseDesigner: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'A database schema designer showing tables, relationships, and other database elements for an e-commerce application.',
+      },
+    },
+  },
+  render: (args: any) => html`
+    <div style="width: 100%; height: 100vh; background: #0f0f0f;">
+      <workflow-canvas
+        .workflow=${createDatabaseSchema()}
+        canvasType="DATABASE"
+        ?readonly=${args.readonly}
+        ?showToolbar=${args.showToolbar}
+        ?showMinimap=${args.showMinimap}
+        ?showPalette=${args.showPalette}
+        @workflow-changed=${(e: CustomEvent) => console.log('Schema changed:', e.detail)}
+        @node-selected=${(e: CustomEvent) => console.log('Element selected:', e.detail)}
+        @node-configured=${(e: CustomEvent) => console.log('Configure element:', e.detail)}
+      ></workflow-canvas>
+    </div>
+  `,
+};
+
+/**
+ * ## Simple Database Schema
+ *
+ * A simpler database schema demonstrating basic table relationships.
+ */
+export const SimpleDatabaseSchema: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'A simple blog database schema with users, posts, and comments tables.',
+      },
+    },
+  },
+  render: (args: any) => html`
+    <div style="width: 100%; height: 600px; background: #0f0f0f;">
+      <workflow-canvas
+        .workflow=${createSimpleDatabaseSchema()}
+        canvasType="DATABASE"
+        ?readonly=${args.readonly}
+        ?showToolbar=${args.showToolbar}
+        ?showMinimap=${args.showMinimap}
+        ?showPalette=${args.showPalette}
+      ></workflow-canvas>
+    </div>
+  `,
+};
+
+/**
+ * ## Empty Database Canvas
+ *
+ * An empty canvas in DATABASE mode ready for designing a new schema.
+ * Shows the DB designer palette with Tables, Views, Indexes, etc.
+ */
+export const EmptyDatabaseCanvas: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'An empty database designer canvas for creating new database schemas from scratch.',
+      },
+    },
+  },
+  args: {
+    showPalette: true,
+  },
+  render: (args: any) => html`
+    <div style="width: 100%; height: 600px; background: #0f0f0f;">
+      <workflow-canvas
+        .workflow=${{ id: 'new-schema', name: 'New Database Schema', nodes: [], edges: [] }}
+        canvasType="DATABASE"
+        ?readonly=${args.readonly}
+        ?showToolbar=${args.showToolbar}
+        ?showMinimap=${args.showMinimap}
+        ?showPalette=${args.showPalette}
+      ></workflow-canvas>
+    </div>
+  `,
+};
+
+/**
+ * ## All DB Designer Node Types
+ *
+ * Demonstrates all available DB designer node types organized by category.
+ */
+export const AllDbDesignerNodeTypes: Story = {
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        story: 'Reference of all available DB designer node types grouped by category.',
+      },
+    },
+  },
+  render: () => {
+    const dbCategories = getCategoriesForCanvasType(CanvasType.DATABASE);
+
+    return html`
+      <div style="padding: 24px; background: #1a1a1a; border-radius: 12px; max-width: 700px;">
+        <h2 style="color: #e5e5e5; margin: 0 0 8px 0; font-size: 20px;">DB Designer Node Types</h2>
+        <p style="color: #888; margin: 0 0 24px 0; font-size: 13px;">
+          Available node types when canvas is in DATABASE mode
+        </p>
+
+        ${dbCategories.map(category => html`
+          <div style="margin-bottom: 32px;">
+            <h3 style="color: #888; font-size: 14px; text-transform: uppercase; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+              <nr-icon name=${category.icon || 'folder'} size="small"></nr-icon>
+              ${category.name}
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+              ${category.nodeTypes.map(nodeType => {
+                const template = NODE_TEMPLATES.find(t => t.type === nodeType);
+                if (!template) return '';
+                return html`
+                  <div style="
+                    background: #252525;
+                    border-radius: 8px;
+                    padding: 16px;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                  ">
+                    <div style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 8px;
+                      background: ${template.color};
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    ">
+                      <nr-icon name=${template.icon} size="small" style="color: white;"></nr-icon>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="color: #e5e5e5; font-size: 14px; font-weight: 500;">${template.name}</div>
+                      <div style="color: #666; font-size: 11px; margin-top: 2px;">${template.type}</div>
+                      <div style="color: #888; font-size: 11px; margin-top: 6px; line-height: 1.4;">${template.description}</div>
+                    </div>
+                  </div>
+                `;
+              })}
+            </div>
+          </div>
+        `)}
+      </div>
+    `;
+  },
+};
+
+/**
+ * ## DB Designer Node Showcase
+ *
+ * Individual DB designer node components showing different types.
+ */
+export const DbDesignerNodeShowcase: Story = {
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        story: 'Individual DB designer node components showing all node types.',
+      },
+    },
+  },
+  render: () => {
+    const viewNode = createNodeFromTemplate(DbDesignerNodeType.VIEW, { x: 0, y: 0 });
+    const indexNode = createNodeFromTemplate(DbDesignerNodeType.INDEX, { x: 0, y: 0 });
+    const relationshipNode = createNodeFromTemplate(DbDesignerNodeType.RELATIONSHIP, { x: 0, y: 0 });
+    const constraintNode = createNodeFromTemplate(DbDesignerNodeType.CONSTRAINT, { x: 0, y: 0 });
+    const queryNode = createNodeFromTemplate(DbDesignerNodeType.QUERY, { x: 0, y: 0 });
+
+    if (viewNode) {
+      viewNode.name = 'active_users';
+      viewNode.configuration = { viewName: 'active_users', materialized: false };
+    }
+    if (indexNode) {
+      indexNode.name = 'idx_email';
+      indexNode.configuration = { indexName: 'idx_email', unique: true };
+    }
+    if (relationshipNode) {
+      relationshipNode.name = 'users → orders';
+      relationshipNode.configuration = { relationshipType: 'ONE_TO_MANY' };
+    }
+    if (constraintNode) {
+      constraintNode.name = 'uq_email';
+      constraintNode.configuration = { constraintType: 'UNIQUE' };
+    }
+    if (queryNode) {
+      queryNode.name = 'get_users';
+      queryNode.configuration = { queryName: 'get_users' };
+    }
+
+    const nodes = [viewNode, indexNode, relationshipNode, constraintNode, queryNode].filter(Boolean) as WorkflowNode[];
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; padding: 24px; background: #1a1a1a; border-radius: 12px;">
+        <h3 style="color: #e5e5e5; margin: 0;">DB Designer Node Types (Non-Table)</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+          ${nodes.map(node => html`
+            <div style="position: relative; width: 200px; height: 120px;">
+              <workflow-node .node=${node}></workflow-node>
+            </div>
+          `)}
+        </div>
+      </div>
+    `;
+  },
+};
+
+/**
+ * ## DB Table Node Showcase
+ *
+ * Shows the ERD-style table nodes with columns displayed.
+ */
+export const DbTableNodeShowcase: Story = {
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        story: 'DB Table nodes displayed in ERD-style showing table name and columns with type icons.',
+      },
+    },
+  },
+  render: () => {
+    // Employee table
+    const employeeTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
+    if (employeeTable) {
+      employeeTable.name = 'Employee';
+      employeeTable.configuration = {
+        tableName: 'Employee',
+        primaryKey: 'employee_id',
+        columns: [
+          { name: 'employee_id', type: 'SERIAL', nullable: false },
+          { name: 'last_name', type: 'VARCHAR(50)', nullable: false },
+          { name: 'first_name', type: 'VARCHAR(50)', nullable: false },
+          { name: 'birth_date', type: 'DATE', nullable: true },
+          { name: 'address', type: 'TEXT', nullable: true },
+          { name: 'city', type: 'VARCHAR(100)', nullable: true },
+          { name: 'country', type: 'VARCHAR(100)', nullable: true },
+          { name: 'phone', type: 'VARCHAR(20)', nullable: true },
+          { name: 'email', type: 'VARCHAR(255)', nullable: false },
+        ],
+      };
+    }
+
+    // Users table
+    const usersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
+    if (usersTable) {
+      usersTable.name = 'users';
+      usersTable.configuration = {
+        tableName: 'users',
+        primaryKey: 'id',
+        columns: [
+          { name: 'id', type: 'SERIAL', nullable: false },
+          { name: 'username', type: 'VARCHAR(50)', nullable: false },
+          { name: 'email', type: 'VARCHAR(255)', nullable: false },
+          { name: 'is_active', type: 'BOOLEAN', nullable: false },
+          { name: 'created_at', type: 'TIMESTAMP', nullable: false },
+        ],
+      };
+    }
+
+    // Orders table
+    const ordersTable = createNodeFromTemplate(DbDesignerNodeType.TABLE, { x: 0, y: 0 });
+    if (ordersTable) {
+      ordersTable.name = 'orders';
+      ordersTable.configuration = {
+        tableName: 'orders',
+        primaryKey: 'id',
+        columns: [
+          { name: 'id', type: 'SERIAL', nullable: false },
+          { name: 'user_id', type: 'INTEGER', nullable: false },
+          { name: 'total', type: 'DECIMAL(10,2)', nullable: false },
+          { name: 'status', type: 'VARCHAR(20)', nullable: false },
+          { name: 'metadata', type: 'JSON', nullable: true },
+          { name: 'order_date', type: 'TIMESTAMP', nullable: false },
+        ],
+      };
+    }
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; padding: 24px; background: #1a1a1a; border-radius: 12px;">
+        <h3 style="color: #e5e5e5; margin: 0;">DB Table Nodes (ERD Style)</h3>
+        <p style="color: #888; margin: 0; font-size: 12px;">
+          Tables display columns with type icons: key for primary key, hash for numbers, type for text, calendar for dates, etc.
+        </p>
+        <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+          <div style="position: relative;">
+            <workflow-node .node=${employeeTable}></workflow-node>
+          </div>
+          <div style="position: relative;">
+            <workflow-node .node=${usersTable}></workflow-node>
+          </div>
+          <div style="position: relative;">
+            <workflow-node .node=${ordersTable}></workflow-node>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+};
+
+/**
+ * ## Database Designer Interactive Demo
+ *
+ * An interactive database designer demo with schema JSON and selected element details.
+ */
+export const DatabaseDesignerDemo: Story = {
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story: 'Interactive database designer demo with schema JSON view and element details sidebar.',
+      },
+    },
+  },
+  render: () => {
+    let workflow = createDatabaseSchema();
+    let selectedNode: WorkflowNode | null = null;
+
+    const handleWorkflowChanged = (e: CustomEvent) => {
+      workflow = e.detail.workflow;
+      updateUI();
+    };
+
+    const handleNodeSelected = (e: CustomEvent) => {
+      selectedNode = e.detail.node;
+      updateUI();
+    };
+
+    const updateUI = () => {
+      const jsonEl = document.getElementById('schema-json');
+      const nodeEl = document.getElementById('selected-element');
+      if (jsonEl) jsonEl.textContent = JSON.stringify(workflow, null, 2);
+      if (nodeEl) {
+        if (selectedNode) {
+          const template = NODE_TEMPLATES.find(t => t.type === selectedNode!.type);
+          nodeEl.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                background: ${template?.color || '#3b82f6'};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <nr-icon name="${template?.icon || 'box'}" size="small" style="color: white;"></nr-icon>
+              </div>
+              <div>
+                <div style="color: #e5e5e5; font-size: 14px; font-weight: 500;">${selectedNode.name}</div>
+                <div style="color: #888; font-size: 11px;">${selectedNode.type}</div>
+              </div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div style="color: #888; font-size: 10px; text-transform: uppercase;">ID</div>
+              <div style="color: #e5e5e5; font-size: 11px; font-family: monospace;">${selectedNode.id}</div>
+            </div>
+            <div>
+              <div style="color: #888; font-size: 10px; text-transform: uppercase;">Configuration</div>
+              <pre style="color: #aaa; font-size: 10px; margin: 8px 0 0 0; background: #1a1a1a; padding: 8px; border-radius: 4px; overflow: auto; max-height: 200px;">${JSON.stringify(selectedNode.configuration, null, 2)}</pre>
+            </div>
+          `;
+        } else {
+          nodeEl.innerHTML = '<div style="color: #666; font-style: italic;">Click an element to see details</div>';
+        }
+      }
+    };
+
+    return html`
+      <div style="display: flex; width: 100%; height: 100vh;">
+        <div style="flex: 1; height: 100%;">
+          <workflow-canvas
+            .workflow=${workflow}
+            canvasType="DATABASE"
+            showToolbar
+            showMinimap
+            @workflow-changed=${handleWorkflowChanged}
+            @node-selected=${handleNodeSelected}
+          ></workflow-canvas>
+        </div>
+        <div style="width: 360px; height: 100%; background: #1a1a1a; border-left: 1px solid #333; overflow-y: auto; padding: 16px;">
+          <div style="color: #3b82f6; font-size: 11px; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">
+            Database Designer
+          </div>
+          <div style="color: #888; font-size: 11px; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;">
+            Selected Element
+          </div>
+          <div id="selected-element" style="background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 24px;">
+            <div style="color: #666; font-style: italic;">Click an element to see details</div>
+          </div>
+
+          <div style="color: #888; font-size: 11px; text-transform: uppercase; font-weight: 600; margin-bottom: 12px;">
+            Schema JSON
+          </div>
+          <pre id="schema-json" style="background: #0f0f0f; padding: 12px; border-radius: 8px; color: #aaa; font-size: 10px; overflow: auto; max-height: 400px; white-space: pre-wrap;">${JSON.stringify(workflow, null, 2)}</pre>
+        </div>
+      </div>
     `;
   },
 };

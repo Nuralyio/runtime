@@ -46,9 +46,29 @@ export enum AgentNodeType {
 }
 
 /**
+ * Node types for database designer mode
+ */
+export enum DbDesignerNodeType {
+  TABLE = 'DB_TABLE',
+  VIEW = 'DB_VIEW',
+  INDEX = 'DB_INDEX',
+  RELATIONSHIP = 'DB_RELATIONSHIP',
+  CONSTRAINT = 'DB_CONSTRAINT',
+  QUERY = 'DB_QUERY',
+}
+
+/**
+ * Canvas type to differentiate between canvas modes
+ */
+export enum CanvasType {
+  WORKFLOW = 'WORKFLOW',
+  DATABASE = 'DATABASE',
+}
+
+/**
  * Combined node type union
  */
-export type NodeType = WorkflowNodeType | AgentNodeType;
+export type NodeType = WorkflowNodeType | AgentNodeType | DbDesignerNodeType;
 
 /**
  * Execution status for nodes and workflows
@@ -181,6 +201,43 @@ export interface NodeConfiguration {
   variableOperation?: 'set' | 'get';
   variableName?: string;
   value?: unknown;
+  // DB Designer - Table node
+  tableName?: string;
+  columns?: Array<{
+    name: string;
+    type: string;
+    nullable?: boolean;
+    defaultValue?: unknown;
+  }>;
+  primaryKey?: string;
+  // DB Designer - View node
+  viewName?: string;
+  query?: string;
+  materialized?: boolean;
+  // DB Designer - Index node
+  indexName?: string;
+  indexColumns?: string[];
+  unique?: boolean;
+  indexType?: 'BTREE' | 'HASH' | 'GIN' | 'GIST';
+  // DB Designer - Relationship node
+  relationshipType?: 'ONE_TO_ONE' | 'ONE_TO_MANY' | 'MANY_TO_MANY';
+  sourceColumn?: string;
+  targetColumn?: string;
+  onDelete?: 'CASCADE' | 'SET_NULL' | 'RESTRICT' | 'NO_ACTION';
+  onUpdate?: 'CASCADE' | 'SET_NULL' | 'RESTRICT' | 'NO_ACTION';
+  // DB Designer - Constraint node
+  constraintName?: string;
+  constraintType?: 'UNIQUE' | 'CHECK' | 'FOREIGN_KEY';
+  constraintColumns?: string[];
+  checkExpression?: string;
+  // DB Designer - Query node
+  queryName?: string;
+  queryText?: string;
+  parameters?: Array<{
+    name: string;
+    type: string;
+    defaultValue?: unknown;
+  }>;
 }
 
 /**
@@ -268,6 +325,7 @@ export interface NodeCategory {
   name: string;
   icon?: string;
   nodeTypes: NodeType[];
+  canvasType?: CanvasType;
 }
 
 /**
@@ -337,6 +395,13 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [AgentNodeType.ROUTER]: '#fb923c',
   [AgentNodeType.HUMAN_INPUT]: '#4ade80',
   [AgentNodeType.OUTPUT_PARSER]: '#2dd4bf',
+  // DB Designer nodes
+  [DbDesignerNodeType.TABLE]: '#3b82f6', // Blue for tables
+  [DbDesignerNodeType.VIEW]: '#a855f7', // Purple for views
+  [DbDesignerNodeType.INDEX]: '#f59e0b', // Amber for indexes
+  [DbDesignerNodeType.RELATIONSHIP]: '#ec4899', // Pink for relationships
+  [DbDesignerNodeType.CONSTRAINT]: '#ef4444', // Red for constraints
+  [DbDesignerNodeType.QUERY]: '#06b6d4', // Cyan for queries
 };
 
 /**
@@ -370,6 +435,13 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [AgentNodeType.ROUTER]: 'git-pull-request',
   [AgentNodeType.HUMAN_INPUT]: 'user',
   [AgentNodeType.OUTPUT_PARSER]: 'file-text',
+  // DB Designer nodes
+  [DbDesignerNodeType.TABLE]: 'table',
+  [DbDesignerNodeType.VIEW]: 'eye',
+  [DbDesignerNodeType.INDEX]: 'list',
+  [DbDesignerNodeType.RELATIONSHIP]: 'git-merge',
+  [DbDesignerNodeType.CONSTRAINT]: 'shield',
+  [DbDesignerNodeType.QUERY]: 'terminal',
 };
 
 /**
@@ -752,12 +824,127 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Parsed Data' }],
     },
   },
+  // DB Designer nodes
+  {
+    type: DbDesignerNodeType.TABLE,
+    name: 'Table',
+    description: 'Define a database table with columns',
+    icon: NODE_ICONS[DbDesignerNodeType.TABLE],
+    color: NODE_COLORS[DbDesignerNodeType.TABLE],
+    category: 'db-tables-views',
+    defaultConfig: {
+      tableName: '',
+      columns: [],
+      primaryKey: '',
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'ref', type: PortType.OUTPUT, label: 'Reference' },
+      ],
+    },
+  },
+  {
+    type: DbDesignerNodeType.VIEW,
+    name: 'View',
+    description: 'Create a database view based on queries',
+    icon: NODE_ICONS[DbDesignerNodeType.VIEW],
+    color: NODE_COLORS[DbDesignerNodeType.VIEW],
+    category: 'db-tables-views',
+    defaultConfig: {
+      viewName: '',
+      query: '',
+      materialized: false,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'source', type: PortType.INPUT, label: 'Source Tables' }],
+      outputs: [
+        { id: 'ref', type: PortType.OUTPUT, label: 'Reference' },
+      ],
+    },
+  },
+  {
+    type: DbDesignerNodeType.INDEX,
+    name: 'Index',
+    description: 'Create an index on table columns',
+    icon: NODE_ICONS[DbDesignerNodeType.INDEX],
+    color: NODE_COLORS[DbDesignerNodeType.INDEX],
+    category: 'db-indexes-queries',
+    defaultConfig: {
+      indexName: '',
+      indexColumns: [],
+      unique: false,
+      indexType: 'BTREE',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'table', type: PortType.INPUT, label: 'Table' }],
+      outputs: [],
+    },
+  },
+  {
+    type: DbDesignerNodeType.RELATIONSHIP,
+    name: 'Relationship',
+    description: 'Define foreign key relationships between tables',
+    icon: NODE_ICONS[DbDesignerNodeType.RELATIONSHIP],
+    color: NODE_COLORS[DbDesignerNodeType.RELATIONSHIP],
+    category: 'db-relations-constraints',
+    defaultConfig: {
+      relationshipType: 'ONE_TO_MANY',
+      sourceColumn: '',
+      targetColumn: '',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    defaultPorts: {
+      inputs: [
+        { id: 'source', type: PortType.INPUT, label: 'Source Table' },
+        { id: 'target', type: PortType.INPUT, label: 'Target Table' },
+      ],
+      outputs: [],
+    },
+  },
+  {
+    type: DbDesignerNodeType.CONSTRAINT,
+    name: 'Constraint',
+    description: 'Add constraints (unique, check, foreign_key)',
+    icon: NODE_ICONS[DbDesignerNodeType.CONSTRAINT],
+    color: NODE_COLORS[DbDesignerNodeType.CONSTRAINT],
+    category: 'db-relations-constraints',
+    defaultConfig: {
+      constraintName: '',
+      constraintType: 'UNIQUE',
+      constraintColumns: [],
+      checkExpression: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'table', type: PortType.INPUT, label: 'Table' }],
+      outputs: [],
+    },
+  },
+  {
+    type: DbDesignerNodeType.QUERY,
+    name: 'Query',
+    description: 'Define saved queries or stored procedures',
+    icon: NODE_ICONS[DbDesignerNodeType.QUERY],
+    color: NODE_COLORS[DbDesignerNodeType.QUERY],
+    category: 'db-indexes-queries',
+    defaultConfig: {
+      queryName: '',
+      queryText: '',
+      parameters: [],
+    },
+    defaultPorts: {
+      inputs: [{ id: 'tables', type: PortType.INPUT, label: 'Tables' }],
+      outputs: [{ id: 'result', type: PortType.OUTPUT, label: 'Result Schema' }],
+    },
+  },
 ];
 
 /**
  * Node categories for palette organization
  */
 export const NODE_CATEGORIES: NodeCategory[] = [
+  // Workflow mode categories
   {
     id: 'trigger',
     name: 'Triggers',
@@ -766,6 +953,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.START,
       WorkflowNodeType.CHATBOT,
     ],
+    canvasType: CanvasType.WORKFLOW,
   },
   {
     id: 'control',
@@ -778,6 +966,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.PARALLEL,
       WorkflowNodeType.LOOP,
     ],
+    canvasType: CanvasType.WORKFLOW,
   },
   {
     id: 'action',
@@ -790,6 +979,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.EMAIL,
       WorkflowNodeType.NOTIFICATION,
     ],
+    canvasType: CanvasType.WORKFLOW,
   },
   {
     id: 'data',
@@ -800,6 +990,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.DATABASE,
       WorkflowNodeType.VARIABLE,
     ],
+    canvasType: CanvasType.WORKFLOW,
   },
   {
     id: 'agent',
@@ -817,6 +1008,38 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       AgentNodeType.HUMAN_INPUT,
       AgentNodeType.OUTPUT_PARSER,
     ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  // Database designer mode categories
+  {
+    id: 'db-tables-views',
+    name: 'Tables & Views',
+    icon: 'table',
+    nodeTypes: [
+      DbDesignerNodeType.TABLE,
+      DbDesignerNodeType.VIEW,
+    ],
+    canvasType: CanvasType.DATABASE,
+  },
+  {
+    id: 'db-relations-constraints',
+    name: 'Relations & Constraints',
+    icon: 'git-merge',
+    nodeTypes: [
+      DbDesignerNodeType.RELATIONSHIP,
+      DbDesignerNodeType.CONSTRAINT,
+    ],
+    canvasType: CanvasType.DATABASE,
+  },
+  {
+    id: 'db-indexes-queries',
+    name: 'Indexes & Queries',
+    icon: 'list',
+    nodeTypes: [
+      DbDesignerNodeType.INDEX,
+      DbDesignerNodeType.QUERY,
+    ],
+    canvasType: CanvasType.DATABASE,
   },
 ];
 
@@ -839,6 +1062,22 @@ export function isAgentNode(type: NodeType): boolean {
  */
 export function isWorkflowNode(type: NodeType): boolean {
   return Object.values(WorkflowNodeType).includes(type as WorkflowNodeType);
+}
+
+/**
+ * Helper to check if node type is a DB designer node
+ */
+export function isDbDesignerNode(type: NodeType): boolean {
+  return Object.values(DbDesignerNodeType).includes(type as DbDesignerNodeType);
+}
+
+/**
+ * Get filtered categories for the current canvas type
+ */
+export function getCategoriesForCanvasType(canvasType: CanvasType): NodeCategory[] {
+  return NODE_CATEGORIES.filter(
+    category => category.canvasType === canvasType
+  );
 }
 
 /**
