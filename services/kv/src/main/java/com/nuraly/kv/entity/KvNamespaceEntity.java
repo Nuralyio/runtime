@@ -36,6 +36,22 @@ public class KvNamespaceEntity extends PanacheEntityBase {
     @Column(name = "application_id")
     public String applicationId;
 
+    /**
+     * Generic scope identifier (e.g., "application", "workflow", "function", "component", "user").
+     * Allows filtering namespaces by their intended usage context.
+     * If null, defaults to "application" scope.
+     */
+    @Column(name = "scope", length = 64)
+    public String scope;
+
+    /**
+     * The ID of the scoped resource (e.g., workflow ID, function ID).
+     * Used in conjunction with scope to filter namespaces for specific resources.
+     * For "application" scope, this can be null (uses applicationId).
+     */
+    @Column(name = "scoped_resource_id")
+    public String scopedResourceId;
+
     @Column(name = "is_secret_namespace")
     public Boolean isSecretNamespace = false;
 

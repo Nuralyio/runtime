@@ -14,6 +14,11 @@ public class CreateKvNamespaceRequest {
 
     private String applicationId;
 
+    @Size(max = 64, message = "Scope must be at most 64 characters")
+    private String scope;
+
+    private String scopedResourceId;
+
     private Boolean isSecretNamespace = false;
 
     private Long defaultTtlSeconds;
