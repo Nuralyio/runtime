@@ -1,4 +1,4 @@
-import { LitElement, html, PropertyValues } from 'lit';
+import { LitElement, html, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { UploadFile } from './types.js';
 import { styles } from './styles.js';

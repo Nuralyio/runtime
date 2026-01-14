@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing, PropertyValues, TemplateResult } from 'lit';
+import { LitElement, html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
