@@ -13,6 +13,8 @@ export interface KvNamespace {
   name: string;
   description?: string;
   applicationId: string;
+  scope?: string;
+  scopedResourceId?: string;
   isSecretNamespace: boolean;
   defaultTtlSeconds?: number;
   createdAt: string;
@@ -81,11 +83,26 @@ const pendingNamespaceRequests = new Map<string, Promise<KvNamespace[] | null>>(
 const pendingEntryRequests = new Map<string, Promise<KvEntry[] | null>>();
 
 /**
+ * Options for fetching KV namespaces
+ */
+export interface FetchNamespacesOptions {
+  scope?: string;
+  scopedResourceId?: string;
+}
+
+/**
  * Fetch namespaces from API
  */
-async function fetchNamespacesFromAPI(appId: string): Promise<KvNamespace[] | null> {
+async function fetchNamespacesFromAPI(appId: string, options?: FetchNamespacesOptions): Promise<KvNamespace[] | null> {
   try {
-    const response = await fetch(`/api/v1/kv/namespaces?applicationId=${appId}`, {
+    const params = new URLSearchParams({ applicationId: appId });
+    if (options?.scope) {
+      params.append('scope', options.scope);
+    }
+    if (options?.scopedResourceId) {
+      params.append('scopedResourceId', options.scopedResourceId);
+    }
+    const response = await fetch(`/api/v1/kv/namespaces?${params.toString()}`, {
       credentials: 'include'
     });
     if (!response.ok) {
@@ -266,6 +283,19 @@ export function invalidateEntriesCache(appId: string, namespaceId: string): void
  */
 export async function refreshKvNamespaces(appId: string): Promise<KvNamespace[] | null> {
   return getKvNamespaces(appId, true);
+}
+
+/**
+ * Get KV namespaces filtered by scope
+ * This bypasses the cache and always fetches fresh data
+ */
+export async function getKvNamespacesByScope(
+  appId: string,
+  scope: string,
+  scopedResourceId?: string
+): Promise<KvNamespace[] | null> {
+  if (!appId || !scope) return null;
+  return fetchNamespacesFromAPI(appId, { scope, scopedResourceId });
 }
 
 /**
