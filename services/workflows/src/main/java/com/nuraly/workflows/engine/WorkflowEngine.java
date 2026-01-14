@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -133,10 +134,15 @@ public class WorkflowEngine {
             return;
         }
 
-        // Find next node(s)
-        WorkflowNodeEntity nextNode = findNextNode(context, node, result.getNextEdgeLabel());
+        // Find next node(s) - may be multiple for parallel execution
+        List<WorkflowNodeEntity> nextNodes = findNextNodes(context, node, result.getNextEdgeLabel());
 
-        if (nextNode != null) {
+        if (nextNodes.isEmpty()) {
+            return;
+        }
+
+        // Execute all next nodes (sequentially for transaction safety)
+        for (WorkflowNodeEntity nextNode : nextNodes) {
             executeFromNode(context, nextNode);
         }
     }
@@ -190,43 +196,51 @@ public class WorkflowEngine {
                 .orElse(null);
     }
 
-    private WorkflowNodeEntity findNextNode(ExecutionContext context, WorkflowNodeEntity currentNode,
-                                            String preferredLabel) {
+    /**
+     * Find next nodes to execute.
+     * - For CONDITION nodes: returns ALL nodes connected to the matching path (true or false)
+     * - For other nodes: returns ALL connected nodes for execution
+     */
+    private List<WorkflowNodeEntity> findNextNodes(ExecutionContext context, WorkflowNodeEntity currentNode,
+                                                    String preferredLabel) {
         List<WorkflowEdgeEntity> outgoingEdges = currentNode.workflow.edges.stream()
                 .filter(e -> e.sourceNode.id.equals(currentNode.id))
                 .sorted(Comparator.comparingInt(e -> e.priority != null ? e.priority : 0))
                 .toList();
 
         if (outgoingEdges.isEmpty()) {
-            return null;
+            return List.of();
         }
 
-        // If there's a preferred label (from condition nodes), find that edge
-        if (preferredLabel != null) {
-            Optional<WorkflowEdgeEntity> matchingEdge = outgoingEdges.stream()
-                    .filter(e -> preferredLabel.equals(e.label))
-                    .findFirst();
+        // For CONDITION nodes, return ALL nodes connected to the matching path
+        if (currentNode.type == NodeType.CONDITION && preferredLabel != null) {
+            List<WorkflowNodeEntity> matchingNodes = outgoingEdges.stream()
+                    .filter(e -> preferredLabel.equals(e.label) || preferredLabel.equals(e.sourcePortId))
+                    .map(e -> e.targetNode)
+                    .toList();
 
-            if (matchingEdge.isPresent()) {
-                return matchingEdge.get().targetNode;
+            if (!matchingNodes.isEmpty()) {
+                return matchingNodes;
             }
+            // Fallback to first edge if no match
+            return List.of(outgoingEdges.get(0).targetNode);
         }
 
-        // Otherwise, find first edge with matching condition or default
+        // For all other nodes, return ALL connected nodes for execution
+        List<WorkflowNodeEntity> nextNodes = new ArrayList<>();
         for (WorkflowEdgeEntity edge : outgoingEdges) {
-            if (edge.condition == null || edge.condition.isEmpty()) {
-                // Default edge (no condition)
-                return edge.targetNode;
-            }
-
-            // Evaluate condition
-            if (evaluateEdgeCondition(context, edge.condition)) {
-                return edge.targetNode;
+            // If edge has a condition, only include if condition matches
+            if (edge.condition != null && !edge.condition.isEmpty()) {
+                if (evaluateEdgeCondition(context, edge.condition)) {
+                    nextNodes.add(edge.targetNode);
+                }
+            } else {
+                // No condition - always include
+                nextNodes.add(edge.targetNode);
             }
         }
 
-        // Return first edge if no condition matched
-        return outgoingEdges.get(0).targetNode;
+        return nextNodes;
     }
 
     private boolean evaluateEdgeCondition(ExecutionContext context, String condition) {

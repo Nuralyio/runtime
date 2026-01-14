@@ -6,6 +6,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -25,7 +26,7 @@ public class RabbitMQConnectionManager {
     private Connection connection;
     private final Object connectionLock = new Object();
 
-    void onStart(@Observes StartupEvent ev) {
+    void onStart(@Observes @Priority(1) StartupEvent ev) {
         try {
             initializeConnection();
             declareExchangeAndQueues();
@@ -51,7 +52,7 @@ public class RabbitMQConnectionManager {
         this.connection = factory.newConnection();
     }
 
-    private void declareExchangeAndQueues() throws IOException {
+    private void declareExchangeAndQueues() throws IOException, TimeoutException {
         try (Channel channel = connection.createChannel()) {
             // Declare direct exchange
             channel.exchangeDeclare(configuration.rabbitmqExchange, "direct", true);

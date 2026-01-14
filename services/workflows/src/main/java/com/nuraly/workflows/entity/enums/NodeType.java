@@ -14,5 +14,6 @@ public enum NodeType {
     EMAIL,          // Send email
     NOTIFICATION,   // Send notification
     DATABASE,       // Database operation
-    VARIABLE        // Set/get variable
+    VARIABLE,       // Set/get variable
+    DEBUG           // Debug node - displays input, output, variables
 }
