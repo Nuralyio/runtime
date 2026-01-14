@@ -55,17 +55,34 @@ export const APIS_URL = {
   addWorkflowEdge: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges`,
   deleteWorkflowEdge: (workflowId: string, edgeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges/${edgeId}`,
 
-  // KV Storage
-  getKvNamespaces: (appId: string) => `${API_BASE}/api/v1/kv/namespaces?applicationId=${appId}`,
-  createKvNamespace: () => `${API_BASE}/api/v1/kv/namespaces`,
-  getKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
-  updateKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
-  deleteKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
-  getKvEntries: (nsId: string) => `${API_BASE}/api/v1/kv/${nsId}/entries`,
-  getKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
-  setKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
-  deleteKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
-  rotateKvSecret: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rotate`,
-  getKvVersions: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/versions`,
-  rollbackKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rollback`,
+  // KV Storage (flat entry model)
+  getKvEntries: (appId: string, scope?: string, scopedResourceId?: string, prefix?: string) => {
+    const params = new URLSearchParams({ applicationId: appId });
+    if (scope) params.append('scope', scope);
+    if (scopedResourceId) params.append('scopedResourceId', scopedResourceId);
+    if (prefix) params.append('prefix', prefix);
+    return `${API_BASE}/api/v1/kv/entries?${params.toString()}`;
+  },
+  getKvEntry: (appId: string, keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}?applicationId=${appId}`,
+  setKvEntry: (keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}`,
+  deleteKvEntry: (appId: string, keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}?applicationId=${appId}`,
+  rotateKvSecret: (appId: string, keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}/rotate?applicationId=${appId}`,
+  getKvVersions: (appId: string, keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}/versions?applicationId=${appId}`,
+  rollbackKvEntry: (appId: string, keyPath: string) =>
+    `${API_BASE}/api/v1/kv/entries/${encodeURIComponent(keyPath)}/rollback?applicationId=${appId}`,
+  bulkGetKvEntries: (appId: string) =>
+    `${API_BASE}/api/v1/kv/bulk/get?applicationId=${appId}`,
+  bulkSetKvEntries: (appId: string, scope?: string, scopedResourceId?: string) => {
+    const params = new URLSearchParams({ applicationId: appId });
+    if (scope) params.append('scope', scope);
+    if (scopedResourceId) params.append('scopedResourceId', scopedResourceId);
+    return `${API_BASE}/api/v1/kv/bulk/set?${params.toString()}`;
+  },
+  bulkDeleteKvEntries: (appId: string) =>
+    `${API_BASE}/api/v1/kv/bulk/delete?applicationId=${appId}`,
 };
