@@ -18,6 +18,7 @@ import com.nuraly.library.permission.PermissionDeniedException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +39,9 @@ public class WorkflowService {
     @Inject
     PermissionClient permissionClient;
 
+    @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
+    boolean permissionsEnabled;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<WorkflowDTO> getWorkflows(String applicationId, String userHeader) {
@@ -46,6 +50,11 @@ public class WorkflowService {
             entities = WorkflowEntity.list("applicationId", applicationId);
         } else {
             entities = WorkflowEntity.listAll();
+        }
+
+        // Skip permission filtering if disabled
+        if (!permissionsEnabled) {
+            return workflowDTOMapper.toDTOList(entities);
         }
 
         // Filter by permission
@@ -66,9 +75,9 @@ public class WorkflowService {
     }
 
     public WorkflowDTO createWorkflow(WorkflowDTO workflowDTO, String userUuid) {
-        // Check application permission if applicationId is provided
+        // Check application permission if applicationId is provided (skip if permissions disabled)
         String applicationId = workflowDTO.getApplicationId();
-        if (applicationId != null && !applicationId.isEmpty() && userUuid != null) {
+        if (permissionsEnabled && applicationId != null && !applicationId.isEmpty() && userUuid != null) {
             PermissionCheckRequest checkRequest = PermissionCheckRequest.builder()
                     .userId(userUuid)
                     .permissionType("application:write")
@@ -86,8 +95,8 @@ public class WorkflowService {
         entity.status = WorkflowStatus.DRAFT;
         entity.persist();
 
-        // Initialize owner permissions
-        if (userUuid != null) {
+        // Initialize owner permissions (skip if permissions disabled)
+        if (permissionsEnabled && userUuid != null) {
             permissionClient.initOwnerPermissions("workflow", String.valueOf(entity.id), userUuid);
         }
 
@@ -189,8 +198,8 @@ public class WorkflowService {
             cloneEdge.persist();
         }
 
-        // Initialize owner permissions for clone
-        if (userUuid != null) {
+        // Initialize owner permissions for clone (skip if permissions disabled)
+        if (permissionsEnabled && userUuid != null) {
             permissionClient.initOwnerPermissions("workflow", String.valueOf(clone.id), userUuid);
         }
 
