@@ -86,6 +86,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       })),
     };
     this.requestUpdate('workflow', oldValue);
+
+    // Restore viewport from workflow if available and this is a new workflow
+    if (value.viewport && (!oldValue || oldValue.id !== value.id)) {
+      this.viewport = value.viewport;
+      // Update the CSS transform after the component renders
+      this.updateComplete.then(() => {
+        this.viewportController?.updateTransform();
+      });
+    }
   }
 
   @property({ type: Boolean })

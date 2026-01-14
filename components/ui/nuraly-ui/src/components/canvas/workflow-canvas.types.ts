@@ -291,9 +291,11 @@ export interface Workflow {
   id: string;
   name: string;
   description?: string;
+  applicationId?: string;
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
   variables?: Record<string, unknown>;
+  viewport?: CanvasViewport;
   version?: string;
   createdAt?: string;
   updatedAt?: string;
