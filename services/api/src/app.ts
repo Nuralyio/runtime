@@ -9,6 +9,7 @@ import authMiddleware from './middlewares/user.middleware';
 import { schema } from '../prisma/prisma';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { PresenceGateway } from './presence';
+import { WorkflowGateway } from './workflow';
 var { ruruHTML } = require("ruru/server")
 
 dotenv.config();
@@ -18,6 +19,12 @@ const httpServer = createServer(app);
 
 // Initialize presence gateway (Socket.IO)
 const presenceGateway = new PresenceGateway(httpServer);
+
+// Initialize workflow gateway (Socket.IO + RabbitMQ)
+const workflowGateway = new WorkflowGateway(httpServer);
+workflowGateway.start().catch(err => {
+  console.error('Failed to start workflow gateway:', err);
+});
 
 app.use(express.json());
 
@@ -39,4 +46,5 @@ app.use(errorHandler);
 httpServer.listen(process.env.BACKEND_PORT, () => {
   console.log(`Server is running at http://localhost:${process.env.BACKEND_PORT}`);
   console.log(`Presence WebSocket available at /socket.io/presence`);
+  console.log(`Workflow WebSocket available at /socket.io/workflow`);
 });
