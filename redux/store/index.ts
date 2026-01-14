@@ -98,6 +98,25 @@ export {
 } from './app-members';
 export type { AppMember, AppRole, PendingInvite, AppMembersData } from './app-members';
 
+// KV Store
+export {
+  $kvCache,
+  $showKvModal,
+  getKvNamespaces,
+  getKvEntries,
+  refreshKvNamespaces,
+  refreshKvEntries,
+  invalidateKvCache,
+  invalidateEntriesCache,
+  getCachedKvNamespaces,
+  getCachedKvEntries,
+  updateCachedNamespaces,
+  updateCachedEntries,
+  showKvModal,
+  closeKvModal
+} from './kv';
+export type { KvNamespace, KvEntry, KvEntryVersion, KvData, KvValueType } from './kv';
+
 // Type Definitions
 export type { ComponentElement } from './component/component.interface';
 export type { PageElement } from '../handlers/pages/page.interface';
