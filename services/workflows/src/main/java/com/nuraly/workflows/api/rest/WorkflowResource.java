@@ -15,6 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestResponse;
+import io.smallrye.common.annotation.Blocking;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Workflow", description = "Operations related to workflows")
+@Blocking // Required because PermissionClient uses blocking HttpURLConnection
 public class WorkflowResource {
 
     @Inject
