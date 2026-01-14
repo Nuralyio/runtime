@@ -10,6 +10,15 @@ export const Application = /* js */`
       icon: "settings",
     },
     {
+      id: "workflows",
+      label: "Workflows",
+      value: {
+        value: "workflows",
+        action: "open-workflows"
+      },
+      icon: "git-branch",
+    },
+    {
       id: "kv-storage",
       label: "KV Storage",
       value: {
