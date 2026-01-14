@@ -57,4 +57,11 @@ public class Configuration {
     // Webhook Base URL
     @ConfigProperty(name = "workflows.webhook.base-url", defaultValue = "http://localhost:7002")
     public String webhookBaseUrl;
+
+    // Synchronous HTTP Workflow Settings
+    @ConfigProperty(name = "workflows.http.sync.enabled", defaultValue = "true")
+    public boolean httpSyncEnabled;
+
+    @ConfigProperty(name = "workflows.http.sync.timeout", defaultValue = "30000")
+    public long httpSyncTimeout;
 }

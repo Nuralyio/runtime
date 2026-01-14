@@ -14,6 +14,11 @@ public class WorkflowExecutionMessage implements Serializable {
     private String variables;
     private Instant queuedAt;
 
+    // Fields for synchronous HTTP workflow execution
+    private String replyTo;        // Reply queue name
+    private String correlationId;  // Correlation ID for matching request/response
+    private boolean syncExecution; // Whether this is a synchronous execution
+
     public WorkflowExecutionMessage() {
     }
 
@@ -26,6 +31,19 @@ public class WorkflowExecutionMessage implements Serializable {
         this.inputData = inputData;
         this.variables = variables;
         this.queuedAt = Instant.now();
+        this.syncExecution = false;
+    }
+
+    /**
+     * Constructor for synchronous execution with reply queue
+     */
+    public WorkflowExecutionMessage(UUID executionId, UUID workflowId, String triggeredBy,
+                                     String triggerType, String inputData, String variables,
+                                     String replyTo, String correlationId) {
+        this(executionId, workflowId, triggeredBy, triggerType, inputData, variables);
+        this.replyTo = replyTo;
+        this.correlationId = correlationId;
+        this.syncExecution = replyTo != null && !replyTo.isEmpty();
     }
 
     public UUID getExecutionId() {
@@ -84,6 +102,31 @@ public class WorkflowExecutionMessage implements Serializable {
         this.queuedAt = queuedAt;
     }
 
+    public String getReplyTo() {
+        return replyTo;
+    }
+
+    public void setReplyTo(String replyTo) {
+        this.replyTo = replyTo;
+        this.syncExecution = replyTo != null && !replyTo.isEmpty();
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    public boolean isSyncExecution() {
+        return syncExecution;
+    }
+
+    public void setSyncExecution(boolean syncExecution) {
+        this.syncExecution = syncExecution;
+    }
+
     @Override
     public String toString() {
         return "WorkflowExecutionMessage{" +
@@ -92,6 +135,9 @@ public class WorkflowExecutionMessage implements Serializable {
                 ", triggeredBy='" + triggeredBy + '\'' +
                 ", triggerType='" + triggerType + '\'' +
                 ", queuedAt=" + queuedAt +
+                ", syncExecution=" + syncExecution +
+                ", replyTo='" + replyTo + '\'' +
+                ", correlationId='" + correlationId + '\'' +
                 '}';
     }
 }
