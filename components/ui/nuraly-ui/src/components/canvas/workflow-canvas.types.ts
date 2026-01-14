@@ -14,6 +14,8 @@ export { DataOperation };
 export enum WorkflowNodeType {
   START = 'START',
   END = 'END',
+  HTTP_START = 'HTTP_START',
+  HTTP_END = 'HTTP_END',
   FUNCTION = 'FUNCTION',
   HTTP = 'HTTP',
   CONDITION = 'CONDITION',
@@ -159,6 +161,18 @@ export interface NodeConfiguration {
   headers?: Record<string, string>;
   body?: unknown;
   timeout?: number;
+  // HTTP Start node (HTTP trigger)
+  httpPath?: string;
+  httpMethods?: Array<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+  httpAuth?: 'none' | 'api_key' | 'bearer' | 'basic';
+  httpCors?: boolean;
+  httpRateLimit?: number;
+  httpRequestSchema?: Record<string, unknown>;
+  // HTTP End node (HTTP response)
+  httpStatusCode?: number;
+  httpResponseHeaders?: Record<string, string>;
+  httpResponseBody?: string;
+  httpContentType?: string;
   // Condition node
   expression?: string;
   language?: 'javascript' | 'jsonata';
@@ -374,6 +388,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   // Workflow nodes
   [WorkflowNodeType.START]: '#22c55e',
   [WorkflowNodeType.END]: '#ef4444',
+  [WorkflowNodeType.HTTP_START]: '#059669',
+  [WorkflowNodeType.HTTP_END]: '#dc2626',
   [WorkflowNodeType.FUNCTION]: '#3b82f6',
   [WorkflowNodeType.HTTP]: '#8b5cf6',
   [WorkflowNodeType.CONDITION]: '#f59e0b',
@@ -415,6 +431,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   // Workflow nodes
   [WorkflowNodeType.START]: 'play',
   [WorkflowNodeType.END]: 'stop',
+  [WorkflowNodeType.HTTP_START]: 'download',
+  [WorkflowNodeType.HTTP_END]: 'upload',
   [WorkflowNodeType.FUNCTION]: 'code',
   [WorkflowNodeType.HTTP]: 'globe',
   [WorkflowNodeType.CONDITION]: 'git-branch',
@@ -475,6 +493,47 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: NODE_COLORS[WorkflowNodeType.END],
     category: 'control',
     defaultConfig: {},
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [],
+    },
+  },
+  {
+    type: WorkflowNodeType.HTTP_START,
+    name: 'HTTP Trigger',
+    description: 'Start workflow from HTTP request',
+    icon: NODE_ICONS[WorkflowNodeType.HTTP_START],
+    color: NODE_COLORS[WorkflowNodeType.HTTP_START],
+    category: 'trigger',
+    defaultConfig: {
+      httpPath: '/webhook',
+      httpMethods: ['POST'],
+      httpAuth: 'none',
+      httpCors: true,
+      httpRateLimit: 100,
+      httpRequestSchema: {},
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Request' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.HTTP_END,
+    name: 'HTTP Response',
+    description: 'Return HTTP response to caller',
+    icon: NODE_ICONS[WorkflowNodeType.HTTP_END],
+    color: NODE_COLORS[WorkflowNodeType.HTTP_END],
+    category: 'control',
+    defaultConfig: {
+      httpStatusCode: 200,
+      httpResponseHeaders: { 'Content-Type': 'application/json' },
+      httpResponseBody: '{{data}}',
+      httpContentType: 'application/json',
+    },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [],
@@ -969,6 +1028,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'zap',
     nodeTypes: [
       WorkflowNodeType.START,
+      WorkflowNodeType.HTTP_START,
       WorkflowNodeType.CHATBOT,
     ],
     canvasType: CanvasType.WORKFLOW,
@@ -979,6 +1039,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'git-branch',
     nodeTypes: [
       WorkflowNodeType.END,
+      WorkflowNodeType.HTTP_END,
       WorkflowNodeType.CONDITION,
       WorkflowNodeType.DELAY,
       WorkflowNodeType.PARALLEL,
