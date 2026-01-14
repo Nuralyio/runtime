@@ -317,6 +317,8 @@ export const HANDLER_PARAMETERS = [
   "setCurrentWorkflow",
   // Shared listener registry for reactivity
   "listeners",
+  // Socket API for real-time features
+  "$socket",
 ] as const;
 
 /**
@@ -473,7 +475,8 @@ export function compileHandlerFunction(code: string): Function {
             ClosePopconfirm, CloseAllPopconfirms,
             OpenModal, CloseModal, ToggleModal, ShowShareModal, CloseShareModal, ShowKvModal, CloseKvModal,
             Nav, UI, Component, Data, Page, App, Var,
-            GetCurrentUser, IsAuthenticated, HasRole, HasAnyRole, HasAllRoles, CurrentUser
+            GetCurrentUser, IsAuthenticated, HasRole, HasAnyRole, HasAllRoles, CurrentUser,
+            $socket
           }
         });
         with (__scope__) {
