@@ -132,6 +132,7 @@ import { createToastFunctions } from './toast';
 import { createModalFunctions } from './modal';
 import { createPopconfirmFunctions } from './popconfirm';
 import { createUserFunctions } from './user';
+import { createWorkflowFunctions } from './workflow';
 
 /**
  * Creates all global functions available to handler code.
@@ -228,6 +229,7 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
     ...createModalFunctions(),
     ...createPopconfirmFunctions(),
     ...createUserFunctions(),
+    ...createWorkflowFunctions(),
   };
 }
 
