@@ -132,10 +132,13 @@ export async function handleEdgeRemoved(edgeId: string): Promise<boolean> {
 }
 
 /**
- * Execute the current workflow
+ * Execute a workflow
+ * @param input - Optional input data for the workflow
+ * @param workflowId - Optional workflow ID (uses $currentWorkflow if not provided)
+ * @returns The execution result with id for real-time tracking, or null if failed
  */
-export async function handleExecuteWorkflow(input?: Record<string, unknown>): Promise<void> {
-  const result = await storeExecuteWorkflow(input);
+export async function handleExecuteWorkflow(input?: Record<string, unknown>, workflowId?: string): Promise<{ id: string; status: string } | null> {
+  const result = await storeExecuteWorkflow(input, workflowId);
 
   if (result) {
     if (result.status === 'COMPLETED') {
@@ -146,8 +149,10 @@ export async function handleExecuteWorkflow(input?: Record<string, unknown>): Pr
       showToast({ message: `Workflow status: ${result.status}`, type: 'info' });
     }
     eventDispatcher.emit('workflow:executed', { result });
+    return { id: result.id, status: result.status };
   } else {
     showToast({ message: 'Failed to execute workflow', type: 'error' });
+    return null;
   }
 }
 
