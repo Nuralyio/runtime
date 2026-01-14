@@ -10,7 +10,7 @@ MINIKUBE_K8S_VERSION ?= stable
 KNATIVE_VERSION ?= 1.12.0
 
 .PHONY: help init init-dev dev prod stop clean logs shell test build deploy update status
-.PHONY: redeploy-studio redeploy-api redeploy-functions redeploy-gateway
+.PHONY: redeploy-studio redeploy-api redeploy-functions redeploy-gateway redeploy-workflows redeploy-kv
 .PHONY: minikube-start minikube-stop minikube-delete minikube-status minikube-dashboard
 .PHONY: knative-install knative-install-serving knative-install-eventing knative-status knative-uninstall
 .PHONY: knative-configure-domain knative-expose-kourier
@@ -39,6 +39,8 @@ help:
 	@echo "  make redeploy-api       - Pull, rebuild and restart api"
 	@echo "  make redeploy-functions - Pull, rebuild and restart functions"
 	@echo "  make redeploy-gateway   - Pull, rebuild and restart gateway"
+	@echo "  make redeploy-workflows - Pull, rebuild and restart workflows"
+	@echo "  make redeploy-kv        - Pull, rebuild and restart kv service"
 	@echo ""
 	@echo "Kubernetes (Minikube):"
 	@echo "  make minikube-start     - Start minikube cluster"
@@ -75,6 +77,8 @@ init:
 		git submodule add https://github.com/Nuralyio/api.git services/api || true; \
 		git submodule add https://github.com/Nuralyio/functions.git services/functions || true; \
 		git submodule add https://github.com/Nuralyio/gateway.git services/gateway || true; \
+		git submodule add https://github.com/Nuralyio/workflow.git services/workflows || true; \
+		git submodule add https://github.com/Nuralyio/-kv.git services/kv || true; \
 		git submodule add https://github.com/Nuralyio/docs.git services/docs || true; \
 	fi
 	git submodule update --init --recursive
@@ -92,11 +96,11 @@ init-dev:
 # Development environment
 dev:
 	@echo "Starting development environment..."
-	docker compose -f docker-compose.dev.yml up --build
+	docker compose -f docker-compose.dev.yml up 
 
 dev-detached:
 	@echo "Starting development environment in detached mode..."
-	docker compose -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.dev.yml up -d
 
 # Production environment
 prod:
@@ -128,7 +132,7 @@ logs-prod:
 shell:
 	@if [ -z "$(SERVICE)" ]; then \
 		echo "Usage: make shell SERVICE=<service-name>"; \
-		echo "Available services: studio, api, functions, gateway, docs"; \
+		echo "Available services: studio, api, functions, gateway, workflows, docs"; \
 	else \
 		docker compose -f docker-compose.dev.yml exec $(SERVICE) /bin/sh; \
 	fi
@@ -188,13 +192,23 @@ redeploy-gateway:
 	docker compose -f docker-compose.dev.yml build --no-cache gateway && \
 	docker compose -f docker-compose.dev.yml up -d --no-deps gateway
 
+redeploy-workflows:
+	@cd services/workflows && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache workflows && \
+	docker compose -f docker-compose.dev.yml up -d --no-deps workflows
+
+redeploy-kv:
+	@cd services/kv && git pull --rebase && cd ../.. && \
+	docker compose -f docker-compose.dev.yml build --no-cache kv && \
+	docker compose -f docker-compose.dev.yml up -d --no-deps kv
+
 # Check submodule status
 status:
 	@echo "Checking submodule status..."
 	@git submodule status
 	@echo ""
-	@echo "Submodule directories:"
-	@for dir in services/studio services/api services/functions services/gateway services/docs; do \
+	@echo "Service directories:"
+	@for dir in services/studio services/api services/functions services/gateway services/workflows services/docs; do \
 		if [ -d "$$dir" ]; then \
 			echo "✅ $$dir: exists"; \
 		else \

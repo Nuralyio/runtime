@@ -74,6 +74,68 @@ services:
       - minikube
     restart: unless-stopped
 
+  # Workflow Engine
+  workflows:
+    build:
+      context: ./services/workflows
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7002:7002"
+    volumes:
+      - ./services/workflows:/app
+      - workflows_maven_cache:/root/.m2
+    environment:
+      - NODE_ENV=development
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/workflows_dev
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=password
+      - NURALY_FUNCTIONS_SERVICE_URL=http://functions:9000
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+      - WORKFLOWS_WEBHOOK_BASE_URL=http://localhost:7002
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - api
+      - functions
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # KV Storage Service
+  kv:
+    build:
+      context: ./services/kv
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7003:7003"
+    volumes:
+      - ./services/kv:/app
+      - kv_maven_cache:/root/.m2
+    environment:
+      - NODE_ENV=development
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/kv_dev
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=password
+      - KV_MASTER_KEY=${KV_MASTER_KEY:-dev-master-key-32-bytes-long!!}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # API Gateway
   gateway:
     build:
@@ -88,6 +150,8 @@ services:
       - PORT=4000
       - API_URL=http://api:8000
       - FUNCTIONS_URL=http://functions:9000
+      - WORKFLOWS_URL=http://workflows:7002
+      - KV_URL=http://kv:7003
       - REDIS_URL=redis://redis:6379
       - KC_HOSTNAME=localhost
       - KEYCLOAK_REALM=nuraly
@@ -100,6 +164,7 @@ services:
     depends_on:
       - api
       - functions
+      - workflows
       - keycloak
       - redis
     networks:
@@ -241,6 +306,8 @@ volumes:
   redis_dev_data:
   pgadmin_dev_data:
   rabbitmq_dev_data:
+  workflows_maven_cache:
+  kv_maven_cache:
 
 networks:
   nuraly-network:
