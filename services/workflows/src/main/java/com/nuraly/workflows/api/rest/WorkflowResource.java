@@ -5,6 +5,7 @@ import com.nuraly.workflows.dto.*;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowService;
+import com.nuraly.workflows.service.WorkflowExecutionService;
 import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -30,6 +31,9 @@ public class WorkflowResource {
 
     @Inject
     WorkflowService workflowService;
+
+    @Inject
+    WorkflowExecutionService executionService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -344,6 +348,34 @@ public class WorkflowResource {
             return RestResponse.noContent();
         } catch (Exception e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @POST
+    @Path("/{id}/execute")
+    @RequiresPermission(
+            permissionType = "workflow:execute",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Execute a workflow")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Workflow execution started"),
+            @APIResponse(responseCode = "400", description = "Workflow is not active"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<WorkflowExecutionDTO> executeWorkflow(
+            @PathParam("id") UUID id,
+            @HeaderParam("X-USER") String userHeader,
+            @Valid ExecuteWorkflowRequest request) {
+        try {
+            String userUuid = extractUserUuid(userHeader);
+            WorkflowExecutionDTO execution = executionService.executeWorkflow(id, request, userUuid);
+            return RestResponse.ok(execution);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (InvalidWorkflowException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
         }
     }
 

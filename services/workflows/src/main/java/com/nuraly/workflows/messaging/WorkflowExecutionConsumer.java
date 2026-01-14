@@ -11,6 +11,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -47,7 +48,7 @@ public class WorkflowExecutionConsumer {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
-    void onStart(@Observes StartupEvent ev) {
+    void onStart(@Observes @Priority(10) StartupEvent ev) {
         startConsuming();
     }
 
@@ -96,10 +97,27 @@ public class WorkflowExecutionConsumer {
 
     @Transactional
     void processExecution(WorkflowExecutionMessage message) {
-        WorkflowExecutionEntity execution = WorkflowExecutionEntity.findById(message.getExecutionId());
+        // Retry logic to handle race condition where execution might not be committed yet
+        WorkflowExecutionEntity execution = null;
+        int maxRetries = 5;
+        int retryDelayMs = 100;
+
+        for (int i = 0; i < maxRetries; i++) {
+            execution = WorkflowExecutionEntity.findById(message.getExecutionId());
+            if (execution != null) {
+                break;
+            }
+            LOG.debugf("Execution not found, retry %d/%d: %s", i + 1, maxRetries, message.getExecutionId());
+            try {
+                Thread.sleep(retryDelayMs);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
 
         if (execution == null) {
-            LOG.errorf("Execution not found: %s", message.getExecutionId());
+            LOG.errorf("Execution not found after %d retries: %s", maxRetries, message.getExecutionId());
             return;
         }
 
