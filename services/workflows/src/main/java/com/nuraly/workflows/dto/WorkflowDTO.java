@@ -21,6 +21,7 @@ public class WorkflowDTO {
     private WorkflowStatus status;
     private String version;
     private String variables;
+    private String viewport; // JSON string: {"zoom": 1, "panX": 0, "panY": 0}
     private List<WorkflowNodeDTO> nodes;
     private List<WorkflowEdgeDTO> edges;
     private List<WorkflowTriggerDTO> triggers;

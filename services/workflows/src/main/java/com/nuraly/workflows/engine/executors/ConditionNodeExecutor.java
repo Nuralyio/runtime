@@ -33,17 +33,32 @@ public class ConditionNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("expression is required in configuration");
         }
 
-        boolean result = evaluateCondition(context, expression);
+        boolean result;
+        String errorMessage = null;
+
+        try {
+            result = evaluateCondition(context, expression);
+        } catch (Exception e) {
+            // If expression evaluation fails, treat as false and continue to false path
+            result = false;
+            errorMessage = "Expression evaluation failed: " + e.getMessage();
+            System.out.println("[ConditionNode] " + errorMessage + " - continuing to 'false' path");
+        }
 
         // Return with the appropriate edge label
         String nextLabel = result ? "true" : "false";
-        return NodeExecutionResult.success(
-                objectMapper.createObjectNode().put("result", result),
-                nextLabel
-        );
+        var outputNode = objectMapper.createObjectNode()
+                .put("result", result)
+                .put("path", nextLabel);
+
+        if (errorMessage != null) {
+            outputNode.put("error", errorMessage);
+        }
+
+        return NodeExecutionResult.success(outputNode, nextLabel);
     }
 
-    private boolean evaluateCondition(ExecutionContext context, String expression) {
+    private boolean evaluateCondition(ExecutionContext context, String expression) throws Exception {
         try (Context jsContext = Context.newBuilder("js")
                 .option("engine.WarnInterpreterOnly", "false")
                 .build()) {
@@ -63,9 +78,6 @@ public class ConditionNodeExecutor implements NodeExecutor {
             Value result = jsContext.eval("js", expression);
 
             return result.asBoolean();
-        } catch (Exception e) {
-            System.err.println("Failed to evaluate condition: " + e.getMessage());
-            return false;
         }
     }
 }
