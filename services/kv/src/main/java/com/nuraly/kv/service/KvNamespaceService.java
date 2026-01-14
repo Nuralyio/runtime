@@ -28,10 +28,32 @@ public class KvNamespaceService {
     @Inject
     KvEventService eventService;
 
-    public List<KvNamespaceDTO> listNamespaces(String applicationId, String userHeader) {
+    public List<KvNamespaceDTO> listNamespaces(String applicationId, String scope, String scopedResourceId, String userHeader) {
         List<KvNamespaceEntity> entities;
+
+        // Build dynamic query based on provided filters
+        StringBuilder query = new StringBuilder();
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+
         if (applicationId != null && !applicationId.isEmpty()) {
-            entities = KvNamespaceEntity.list("applicationId", applicationId);
+            query.append("applicationId = :applicationId");
+            params.put("applicationId", applicationId);
+        }
+
+        if (scope != null && !scope.isEmpty()) {
+            if (query.length() > 0) query.append(" AND ");
+            query.append("scope = :scope");
+            params.put("scope", scope);
+        }
+
+        if (scopedResourceId != null && !scopedResourceId.isEmpty()) {
+            if (query.length() > 0) query.append(" AND ");
+            query.append("scopedResourceId = :scopedResourceId");
+            params.put("scopedResourceId", scopedResourceId);
+        }
+
+        if (query.length() > 0) {
+            entities = KvNamespaceEntity.list(query.toString(), params);
         } else {
             entities = KvNamespaceEntity.listAll();
         }

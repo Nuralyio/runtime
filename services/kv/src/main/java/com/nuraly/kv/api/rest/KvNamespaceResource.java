@@ -39,8 +39,10 @@ public class KvNamespaceResource {
     })
     public RestResponse<List<KvNamespaceDTO>> listNamespaces(
             @HeaderParam("X-USER") String userHeader,
-            @QueryParam("applicationId") String applicationId) {
-        List<KvNamespaceDTO> namespaces = namespaceService.listNamespaces(applicationId, userHeader);
+            @QueryParam("applicationId") String applicationId,
+            @QueryParam("scope") String scope,
+            @QueryParam("scopedResourceId") String scopedResourceId) {
+        List<KvNamespaceDTO> namespaces = namespaceService.listNamespaces(applicationId, scope, scopedResourceId, userHeader);
         return RestResponse.ok(namespaces);
     }
 

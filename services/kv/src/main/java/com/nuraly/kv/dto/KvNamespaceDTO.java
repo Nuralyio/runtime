@@ -11,6 +11,8 @@ public class KvNamespaceDTO {
     private String name;
     private String description;
     private String applicationId;
+    private String scope;
+    private String scopedResourceId;
     private Boolean isSecretNamespace;
     private Long defaultTtlSeconds;
     private String createdBy;
