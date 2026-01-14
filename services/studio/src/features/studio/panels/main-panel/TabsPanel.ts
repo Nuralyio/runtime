@@ -101,10 +101,7 @@ export class TabsPanel extends LitElement {
               this.editableTabs.push({
                 id: tab.id,
                 label: tab.label,
-                content: html`
-                                  <editor-interactive-panel>
-                                    <flow-page .detail=${tab.detail}></flow-page>
-                                </editor-interactive-panel>`
+                content: html`<div style="width: 100%; height: calc(100vh - 130px);"><flow-page .detail=${tab.detail}></flow-page></div>`
               });
               break;
                    case "database":

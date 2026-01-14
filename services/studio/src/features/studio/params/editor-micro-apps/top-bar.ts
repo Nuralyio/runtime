@@ -200,6 +200,11 @@ export default [{
     } else if(action === "open-kv-modal"){
       // Open the KV Storage modal
       $kvStorageModalOpen = true;
+    } else if(action === "open-workflows"){
+      // Open the Workflows tab
+      const flowTab = { id: 'flow', label: 'Workflows', type: 'flow' };
+      openEditorTab(flowTab);
+      setCurrentEditorTab(flowTab);
     } else if(action === "export"){
       // Export application functionality
       const currentEditingApplication = GetVar("currentEditingApplication");
