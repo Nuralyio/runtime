@@ -39,4 +39,33 @@ export const APIS_URL = {
   createRole: (appId: string) => `${API_BASE}/api/applications/${appId}/roles`,
   updateRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
   deleteRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
+
+  // Workflows
+  getWorkflows: (appId: string) => `${API_BASE}/api/v1/workflows?applicationId=${appId}`,
+  getWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}`,
+  createWorkflow: () => `${API_BASE}/api/v1/workflows`,
+  updateWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}`,
+  deleteWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}`,
+  executeWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}/execute`,
+  getWorkflowExecutions: (id: string) => `${API_BASE}/api/v1/workflows/${id}/executions`,
+  getWorkflowExecution: (execId: string) => `${API_BASE}/api/v1/executions/${execId}`,
+  addWorkflowNode: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes`,
+  updateWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
+  deleteWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
+  addWorkflowEdge: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges`,
+  deleteWorkflowEdge: (workflowId: string, edgeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges/${edgeId}`,
+
+  // KV Storage
+  getKvNamespaces: (appId: string) => `${API_BASE}/api/v1/kv/namespaces?applicationId=${appId}`,
+  createKvNamespace: () => `${API_BASE}/api/v1/kv/namespaces`,
+  getKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  updateKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  deleteKvNamespace: (nsId: string) => `${API_BASE}/api/v1/kv/namespaces/${nsId}`,
+  getKvEntries: (nsId: string) => `${API_BASE}/api/v1/kv/${nsId}/entries`,
+  getKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  setKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  deleteKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}`,
+  rotateKvSecret: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rotate`,
+  getKvVersions: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/versions`,
+  rollbackKvEntry: (nsId: string, key: string) => `${API_BASE}/api/v1/kv/${nsId}/entries/${encodeURIComponent(key)}/rollback`,
 };

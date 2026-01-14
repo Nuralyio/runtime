@@ -290,55 +290,26 @@ export default [
       },
       tabs: {
         type: "json",
-        value:
-          [
-            {
-              label: {
-                type: "text",
-                value: "Pages",
-              },
-              icon :{
-                type:"string",
-                value:"panel-top"
-              },
-              key : "pages",
-              childrends: {
-                type: "componentIdArray",
-                value: ["pages_panel"]
-
-              }
-            },
-            {
-              label: {
-                type: "text",
-                value: "Functions",
-              },
-              icon :{
-                type:"string",
-                value:"parentheses"
-              },
-              key : "functions",
-              childrends: {
-                type: "componentIdArray",
-                value: ["function_micro_app_block"]
-              }
-            },
-            {
-              label: {
-                type: "text",
-                value: "Versions",
-              },
-              icon :{
-                type:"string",
-                value:"history"
-              },
-              key : "revisions",
-              childrends: {
-                type: "componentIdArray",
-                value: ["revision_panel_component"]
-              }
-            }
-          ]
+        value: [
+          {
+            label: { type: "text", value: "Pages" },
+            icon: { type: "string", value: "panel-top" },
+            key: "pages",
+            childrends: { type: "componentIdArray", value: ["pages_panel"] }
+          },
+          {
+            label: { type: "text", value: "Functions" },
+            icon: { type: "string", value: "parentheses" },
+            key: "functions",
+            childrends: { type: "componentIdArray", value: ["function_micro_app_block"] }
+          },
+          {
+            label: { type: "text", value: "Versions" },
+            icon: { type: "string", value: "history" },
+            key: "revisions",
+            childrends: { type: "componentIdArray", value: ["revision_panel_component"] }
+          }
+        ]
       }
     },
    

@@ -4,6 +4,7 @@ import "../../../runtime/utils/register-components";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { $environment, type Environment, ViewMode } from '../../../runtime/redux/store/environment.ts';
+import { $editorState } from '../../../runtime/redux/store/apps.ts';
 
 import "../control-panel/ControlPanelTabs.ts";
 
@@ -24,6 +25,10 @@ export class RightPanel extends LitElement {
 
   @state()
   mode: ViewMode = ViewMode.Edit;
+
+  @state()
+  currentTabType: string = "page";
+
   showSecondsRow: boolean;
 
   constructor() {
@@ -31,17 +36,20 @@ export class RightPanel extends LitElement {
     $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
     });
-    // $context.listen(() => {
-    //   this.showSecondsRow = getVar("global", "showSecondsRow").value as boolean;
-    // });
+    $editorState.subscribe((editorState) => {
+      this.currentTabType = editorState.currentTab?.type || "page";
+    });
   }
 
 
   render() {
+    // Hide right panel for flow tabs
+    const shouldShow = this.mode === ViewMode.Edit && this.currentTabType !== "flow";
+
     return html`
 
       <aside
-        class=" sidebar  flex flex-col ${this.mode === ViewMode.Edit ? "visible" : ""}"
+        class=" sidebar  flex flex-col ${shouldShow ? "visible" : ""}"
         style="height: 100%; width: 350px; min-width: 350px; max-width: 350px; flex: 0 0 450px;">
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>

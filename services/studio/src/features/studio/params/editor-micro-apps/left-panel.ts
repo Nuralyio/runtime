@@ -3,6 +3,7 @@ import { leftPanelContainer } from "./left-panel/container";
 import { componentPanelComponents } from "./left-panel/component-panel";
 import { filesMicroApp, filesAppUUID, filesPageUUID } from "./left-panel/files/micro-app";
 import { pagesPanelComponents } from "./left-panel/pages";
+import { workflowPanelComponents } from "./left-panel/workflow";
 
 export { filesAppUUID, filesPageUUID };
 
@@ -11,5 +12,6 @@ export default [
   leftPanelTabs,
   ...componentPanelComponents,
   filesMicroApp,
-  ...pagesPanelComponents
+  ...pagesPanelComponents,
+  ...workflowPanelComponents
 ];
