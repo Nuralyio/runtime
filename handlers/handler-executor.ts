@@ -392,6 +392,7 @@ export function executeHandler(
     globalFunctions.getWorkflows,
     globalFunctions.getCurrentWorkflow,
     globalFunctions.setCurrentWorkflow,
-    context.listeners || {} // Shared listener registry for reactivity
+    context.listeners || {}, // Shared listener registry for reactivity
+    globalFunctions.$socket // Socket API for real-time features
   );
 }

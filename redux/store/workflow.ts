@@ -159,8 +159,18 @@ export async function getOrCreateWorkflow(appId: string): Promise<Workflow | nul
     // Update workflows list
     $workflows.set(workflows);
 
+    // Prefer workflows with nodes, otherwise use the first one
+    // This handles the case where empty workflows were created before proper ones
+    let selectedWorkflow = workflows[0];
+    for (const wf of workflows) {
+      if (wf.nodes && wf.nodes.length > 0) {
+        selectedWorkflow = wf;
+        break;
+      }
+    }
+
     // Fetch the full workflow with nodes (list endpoint may not include nodes)
-    const fullWorkflow = await workflowService.getWorkflow(workflows[0].id);
+    const fullWorkflow = await workflowService.getWorkflow(selectedWorkflow.id);
     $currentWorkflow.set(fullWorkflow);
     $currentWorkflowId.set(fullWorkflow.id);
     // Track loaded state for diffing on save
@@ -491,11 +501,14 @@ export async function deleteEdge(edgeId: string): Promise<boolean> {
 }
 
 /**
- * Execute the current workflow
+ * Execute a workflow
+ * @param input - Optional input data for the workflow
+ * @param workflowId - Optional workflow ID (uses $currentWorkflow if not provided)
  */
-export async function executeWorkflow(input?: Record<string, unknown>): Promise<ExecutionResult | null> {
+export async function executeWorkflow(input?: Record<string, unknown>, workflowId?: string): Promise<ExecutionResult | null> {
   const workflow = $currentWorkflow.get();
-  if (!workflow) return null;
+  const targetWorkflowId = workflowId || workflow?.id;
+  if (!targetWorkflowId) return null;
 
   const currentState = $workflowExecution.get();
   $workflowExecution.set({
@@ -505,7 +518,7 @@ export async function executeWorkflow(input?: Record<string, unknown>): Promise<
   });
 
   try {
-    const result = await workflowService.executeWorkflow(workflow.id, input);
+    const result = await workflowService.executeWorkflow(targetWorkflowId, input);
 
     $workflowExecution.set({
       ...currentState,
