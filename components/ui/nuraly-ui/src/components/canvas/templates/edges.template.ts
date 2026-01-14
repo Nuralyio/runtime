@@ -36,6 +36,58 @@ export interface EdgesTemplateData {
 }
 
 /**
+ * Derive edge execution status from connected nodes
+ * Edge is colored only if data actually flowed through it (both source completed AND target was executed)
+ */
+function deriveEdgeStatus(
+  edge: WorkflowEdge,
+  sourceNode: WorkflowNode | undefined,
+  targetNode: WorkflowNode | undefined
+): ExecutionStatus | undefined {
+  // If edge has explicit status, use it
+  if (edge.status) {
+    return edge.status;
+  }
+
+  const sourceStatus = sourceNode?.status;
+  const targetStatus = targetNode?.status;
+
+  // No status if source hasn't started
+  if (!sourceStatus || sourceStatus === ExecutionStatus.IDLE) {
+    return undefined;
+  }
+
+  // For completed/failed source, only color edge if target was actually executed
+  // This ensures only the taken path is colored (important for condition branches)
+  if (sourceStatus === ExecutionStatus.COMPLETED || sourceStatus === ExecutionStatus.FAILED) {
+    // Target must have been executed (not IDLE or PENDING) for the edge to be colored
+    if (!targetStatus || targetStatus === ExecutionStatus.IDLE || targetStatus === ExecutionStatus.PENDING) {
+      return undefined;
+    }
+    // If source failed, the entire path after it is the failure path (red)
+    if (sourceStatus === ExecutionStatus.FAILED) {
+      return ExecutionStatus.FAILED;
+    }
+    // If target failed, show failure
+    if (targetStatus === ExecutionStatus.FAILED) {
+      return ExecutionStatus.FAILED;
+    }
+    return ExecutionStatus.COMPLETED;
+  }
+
+  // If source is running, edge shows data is about to flow (only if target is pending/running)
+  if (sourceStatus === ExecutionStatus.RUNNING) {
+    if (targetStatus === ExecutionStatus.PENDING || targetStatus === ExecutionStatus.RUNNING) {
+      return ExecutionStatus.RUNNING;
+    }
+    return undefined;
+  }
+
+  // If source is pending/waiting, don't color edges yet
+  return undefined;
+}
+
+/**
  * Get edge color based on selection, hover, and execution status
  */
 function getEdgeColor(
@@ -96,8 +148,10 @@ export function renderEdgeTemplate(
 
   const isSelected = selectedEdgeIds.has(edge.id);
   const isHovered = hoveredEdgeId === edge.id;
-  const strokeColor = getEdgeColor(isSelected, isHovered, edge.status, currentTheme);
-  const strokeWidth = isSelected || isHovered || edge.status ? 3 : 2;
+  // Derive edge status from connected nodes if not explicitly set
+  const edgeStatus = deriveEdgeStatus(edge, sourceNode, targetNode);
+  const strokeColor = getEdgeColor(isSelected, isHovered, edgeStatus, currentTheme);
+  const strokeWidth = isSelected || isHovered || edgeStatus ? 3 : 2;
 
   // Calculate arrow position at middle of the curve
   const arrowLength = 12;

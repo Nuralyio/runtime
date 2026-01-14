@@ -22,6 +22,7 @@ import {
 import { styles } from './workflow-node.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import '../icon/icon.component.js';
+import '../button/button.component.js';
 
 /**
  * Workflow node component for displaying individual nodes in the canvas
@@ -32,6 +33,7 @@ import '../icon/icon.component.js';
  * @fires port-mouseup - When mouse is released on a port
  * @fires node-dblclick - When node is double-clicked for editing
  * @fires node-preview - When preview button is clicked (for chatbot nodes)
+ * @fires node-trigger - When trigger button is clicked (for start nodes)
  */
 @customElement('workflow-node')
 export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
@@ -93,8 +95,22 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     return this.node.type === WorkflowNodeType.CHATBOT;
   }
 
+  private isStartNode(): boolean {
+    return this.node.type === WorkflowNodeType.START;
+  }
+
   private isDbTableNode(): boolean {
     return this.node.type === DbDesignerNodeType.TABLE;
+  }
+
+  private handleTriggerClick(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent('node-trigger', {
+      detail: { node: this.node },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
@@ -286,6 +302,7 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     const nodeIcon = this.getNodeIcon();
     const isAgent = isAgentNode(this.node.type);
     const isChatbot = this.isChatbotNode();
+    const isStart = this.isStartNode();
     const status = this.node.status || ExecutionStatus.IDLE;
 
     const containerClasses = {
@@ -323,16 +340,29 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
           ${this.node.metadata?.description ? html`
             <div class="node-description">${this.node.metadata.description}</div>
           ` : nothing}
+          ${isStart ? html`
+            <nr-button
+              size="small"
+              variant="ghost"
+              @click=${this.handleTriggerClick}
+              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              title="Trigger workflow"
+            >
+              <nr-icon slot="prefix" name="play" size="small"></nr-icon>
+              Trigger
+            </nr-button>
+          ` : nothing}
           ${isChatbot ? html`
-            <button
-              class="node-preview-btn"
+            <nr-button
+              size="small"
+              variant="ghost"
               @click=${this.handlePreviewClick}
               @mousedown=${(e: MouseEvent) => e.stopPropagation()}
               title="Open chat preview"
             >
-              <nr-icon name="eye" size="small"></nr-icon>
-              <span>Preview</span>
-            </button>
+              <nr-icon slot="prefix" name="eye" size="small"></nr-icon>
+              Preview
+            </nr-button>
           ` : nothing}
         </div>
 
