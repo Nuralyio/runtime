@@ -114,6 +114,15 @@ export class WorkflowGateway {
     socket.join(roomName);
     socket.data.subscribedExecutions.add(executionId);
     logger.info(`User ${socket.data.userId} subscribed to execution ${executionId}`);
+
+    // Send acknowledgment that subscription is active
+    socket.emit('execution:started', {
+      type: 'EXECUTION_QUEUED',
+      executionId,
+      workflowId: '',
+      timestamp: new Date().toISOString(),
+      data: { status: 'SUBSCRIBED', message: 'Waiting for execution events...' }
+    });
   }
 
   private handleUnsubscribe(socket: WorkflowSocket, executionId: string): void {
@@ -124,12 +133,20 @@ export class WorkflowGateway {
   }
 
   private handleWorkflowEvent(event: WorkflowEvent): void {
+    logger.info(`Handling workflow event: ${event.type} for execution ${event.executionId}`);
+
     const roomName = `execution:${event.executionId}`;
     const eventName = this.getSocketEventName(event.type);
 
     if (eventName) {
+      // Check how many sockets are in the room
+      const room = this.io.sockets.adapter.rooms.get(roomName);
+      const roomSize = room ? room.size : 0;
+      logger.info(`Broadcasting ${eventName} to room ${roomName} (${roomSize} clients)`);
+
       this.io.to(roomName).emit(eventName, event);
-      logger.debug(`Broadcasted ${eventName} to room ${roomName}`);
+    } else {
+      logger.warn(`No socket event mapping for ${event.type}`);
     }
   }
 
@@ -137,6 +154,7 @@ export class WorkflowGateway {
     eventType: string
   ): keyof ServerToClientEvents | null {
     const eventMap: Record<string, keyof ServerToClientEvents> = {
+      EXECUTION_QUEUED: 'execution:started',  // Map queued to started for UI
       EXECUTION_STARTED: 'execution:started',
       EXECUTION_COMPLETED: 'execution:completed',
       EXECUTION_FAILED: 'execution:failed',
@@ -146,7 +164,11 @@ export class WorkflowGateway {
       NODE_FAILED: 'execution:node-failed',
     };
 
-    return eventMap[eventType] || null;
+    const result = eventMap[eventType] || null;
+    if (!result) {
+      logger.warn(`Unknown event type: ${eventType}`);
+    }
+    return result;
   }
 
   getIO(): Server {

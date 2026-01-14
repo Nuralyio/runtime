@@ -77,7 +77,20 @@ export class WorkflowConsumer {
   private handleMessage(msg: ConsumeMessage): void {
     try {
       const content = msg.content.toString();
-      const event: WorkflowEvent = JSON.parse(content);
+      const rawEvent = JSON.parse(content);
+
+      // Transform from workflow service format to our expected format
+      // Workflow service sends: { type, timestamp, data: { executionId, workflowId, ... } }
+      // We expect: { type, executionId, workflowId, timestamp, data, ... }
+      const event: WorkflowEvent = {
+        type: rawEvent.type,
+        executionId: rawEvent.data?.executionId || rawEvent.executionId,
+        workflowId: rawEvent.data?.workflowId || rawEvent.workflowId,
+        nodeId: rawEvent.data?.nodeId || rawEvent.nodeId,
+        nodeName: rawEvent.data?.nodeName || rawEvent.nodeName,
+        timestamp: rawEvent.timestamp,
+        data: rawEvent.data,
+      };
 
       logger.debug(`Received workflow event: ${event.type} for execution ${event.executionId}`);
 
