@@ -320,10 +320,31 @@ public class WorkflowService {
             throw new IllegalArgumentException("Source or target node not found");
         }
 
+        // Check for existing edge to prevent duplicates
+        String sourcePortId = edgeDTO.getSourcePortId();
+        WorkflowEdgeEntity existingEdge;
+        if (sourcePortId != null && !sourcePortId.isEmpty()) {
+            existingEdge = WorkflowEdgeEntity.find(
+                "sourceNode.id = ?1 and targetNode.id = ?2 and sourcePortId = ?3",
+                edgeDTO.getSourceNodeId(), edgeDTO.getTargetNodeId(), sourcePortId
+            ).firstResult();
+        } else {
+            existingEdge = WorkflowEdgeEntity.find(
+                "sourceNode.id = ?1 and targetNode.id = ?2 and (sourcePortId is null or sourcePortId = '')",
+                edgeDTO.getSourceNodeId(), edgeDTO.getTargetNodeId()
+            ).firstResult();
+        }
+
+        if (existingEdge != null) {
+            // Return existing edge instead of creating duplicate
+            return workflowEdgeDTOMapper.toDTO(existingEdge);
+        }
+
         WorkflowEdgeEntity edge = new WorkflowEdgeEntity();
         edge.workflow = workflow;
         edge.sourceNode = sourceNode;
         edge.targetNode = targetNode;
+        edge.sourcePortId = sourcePortId;
         edge.condition = edgeDTO.getCondition();
         edge.label = edgeDTO.getLabel();
         edge.priority = edgeDTO.getPriority() != null ? edgeDTO.getPriority() : 0;
