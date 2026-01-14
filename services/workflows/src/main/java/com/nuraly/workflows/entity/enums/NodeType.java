@@ -18,5 +18,6 @@ public enum NodeType {
     DATABASE,       // Database operation
     VARIABLE,       // Set/get variable
     DEBUG,          // Debug node - displays input, output, variables
-    OCR             // OCR - extract text from images/documents using PaddleOCR
+    OCR,            // OCR - extract text from images/documents using PaddleOCR
+    LLM             // LLM node - call AI providers (OpenAI, Anthropic, Gemini) with tool calling
 }

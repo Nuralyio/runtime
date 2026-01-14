@@ -1,0 +1,484 @@
+package com.nuraly.workflows.engine.executors;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.configuration.Configuration;
+import com.nuraly.workflows.engine.ExecutionContext;
+import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.engine.NodeExecutorFactory;
+import com.nuraly.workflows.entity.WorkflowEdgeEntity;
+import com.nuraly.workflows.entity.WorkflowNodeEntity;
+import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.llm.LlmProvider;
+import com.nuraly.workflows.llm.LlmProviderFactory;
+import com.nuraly.workflows.llm.dto.*;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+
+import java.util.*;
+
+/**
+ * LLM Node Executor - Executes LLM calls with tool/function calling support.
+ *
+ * Tool calling works by:
+ * 1. Building tool definitions from connected workflow nodes (nodes connected via "tool_*" ports)
+ * 2. Calling the LLM with the prompt and available tools
+ * 3. If the LLM requests tool calls, executing the corresponding workflow nodes
+ * 4. Returning tool results to the LLM and continuing until the LLM provides a final response
+ *
+ * Node Configuration:
+ * {
+ *   "provider": "openai" | "anthropic" | "gemini",
+ *   "model": "gpt-4o",
+ *   "apiKeyPath": "openai/my-key", // KV store path for API key
+ *   "systemPrompt": "You are a helpful assistant...",
+ *   "temperature": 0.7,
+ *   "maxTokens": 4096,
+ *   "maxToolIterations": 10,
+ *   "tools": [
+ *     {
+ *       "name": "get_weather",
+ *       "description": "Get weather for a location",
+ *       "parameters": { "type": "object", "properties": { "location": { "type": "string" } } },
+ *       "portId": "tool_weather" // Maps to edge sourcePortId
+ *     }
+ *   ]
+ * }
+ */
+@ApplicationScoped
+public class LlmNodeExecutor implements NodeExecutor {
+
+    private static final int DEFAULT_MAX_TOOL_ITERATIONS = 10;
+
+    @Inject
+    LlmProviderFactory providerFactory;
+
+    @Inject
+    NodeExecutorFactory nodeExecutorFactory;
+
+    @Inject
+    Configuration configuration;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public NodeType getType() {
+        return NodeType.LLM;
+    }
+
+    @Override
+    public NodeExecutionResult execute(ExecutionContext context, WorkflowNodeEntity node) throws Exception {
+        if (node.configuration == null) {
+            return NodeExecutionResult.failure("LLM node configuration is missing");
+        }
+
+        JsonNode config = objectMapper.readTree(node.configuration);
+
+        // Get provider
+        String providerName = config.has("provider") ? config.get("provider").asText() : "openai";
+        LlmProvider provider = providerFactory.getProvider(providerName);
+        if (provider == null) {
+            return NodeExecutionResult.failure("Unknown LLM provider: " + providerName);
+        }
+
+        // Get API key from KV store
+        String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
+        if (apiKeyPath == null || apiKeyPath.isEmpty()) {
+            return NodeExecutionResult.failure("API key path is required");
+        }
+
+        String apiKey = fetchApiKey(apiKeyPath, context);
+        if (apiKey == null || apiKey.isEmpty()) {
+            return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
+        }
+
+        // Build tool definitions from config and connected nodes
+        List<ToolDefinition> tools = buildToolDefinitions(config, node);
+        Map<String, ToolContext> toolContextMap = buildToolContextMap(tools, node);
+
+        // Get model and other settings
+        String model = config.has("model") ? config.get("model").asText() : provider.getDefaultModel();
+        String systemPrompt = config.has("systemPrompt") ?
+                context.resolveExpression(config.get("systemPrompt").asText()) : null;
+        Double temperature = config.has("temperature") ? config.get("temperature").asDouble() : null;
+        Integer maxTokens = config.has("maxTokens") ? config.get("maxTokens").asInt() : null;
+        int maxIterations = config.has("maxToolIterations") ?
+                config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
+
+        // Build initial messages
+        List<LlmMessage> messages = new ArrayList<>();
+
+        if (systemPrompt != null && !systemPrompt.isEmpty()) {
+            messages.add(LlmMessage.system(systemPrompt));
+        }
+
+        // Get user prompt from input
+        String userPrompt = extractUserPrompt(context, config);
+        if (userPrompt == null || userPrompt.isEmpty()) {
+            return NodeExecutionResult.failure("User prompt is required (from input.prompt or input.message)");
+        }
+        messages.add(LlmMessage.user(userPrompt));
+
+        // Tool execution loop
+        int iterations = 0;
+        LlmResponse lastResponse = null;
+
+        while (iterations < maxIterations) {
+            iterations++;
+
+            // Build request
+            LlmRequest request = LlmRequest.builder()
+                    .model(model)
+                    .messages(messages)
+                    .tools(tools.isEmpty() ? null : tools)
+                    .temperature(temperature)
+                    .maxTokens(maxTokens)
+                    .build();
+
+            // Call LLM
+            LlmResponse response = provider.chat(request, apiKey);
+
+            if (!response.isSuccess()) {
+                return NodeExecutionResult.failure("LLM error: " + response.getError(), true);
+            }
+
+            lastResponse = response;
+
+            // If no tool calls, we're done
+            if (!response.hasToolCalls()) {
+                break;
+            }
+
+            // Add assistant message with tool calls to history
+            messages.add(LlmMessage.assistantWithTools(response.getToolCalls()));
+
+            // Execute each tool call
+            for (ToolCall toolCall : response.getToolCalls()) {
+                String toolResult = executeToolCall(toolCall, toolContextMap, context);
+
+                // Add tool result to messages
+                messages.add(LlmMessage.toolResult(
+                        toolCall.getId(),
+                        toolCall.getName(),
+                        toolResult
+                ));
+            }
+        }
+
+        // Build output
+        ObjectNode output = objectMapper.createObjectNode();
+
+        if (lastResponse != null) {
+            if (lastResponse.getContent() != null) {
+                output.put("content", lastResponse.getContent());
+                output.put("response", lastResponse.getContent());
+            }
+
+            output.put("model", lastResponse.getModel() != null ? lastResponse.getModel() : model);
+            output.put("finishReason", lastResponse.getFinishReason().toString());
+            output.put("iterations", iterations);
+
+            if (lastResponse.getUsage() != null) {
+                ObjectNode usage = objectMapper.createObjectNode();
+                usage.put("promptTokens", lastResponse.getUsage().getPromptTokens());
+                usage.put("completionTokens", lastResponse.getUsage().getCompletionTokens());
+                usage.put("totalTokens", lastResponse.getUsage().getTotalTokens());
+                output.set("usage", usage);
+            }
+        }
+
+        // Store response in variables if configured
+        if (config.has("outputVariable")) {
+            String varName = config.get("outputVariable").asText();
+            context.setVariable(varName, output);
+        }
+
+        return NodeExecutionResult.success(output);
+    }
+
+    private String extractUserPrompt(ExecutionContext context, JsonNode config) {
+        JsonNode input = context.getInput();
+
+        // Check config for prompt field name
+        String promptField = config.has("promptField") ? config.get("promptField").asText() : null;
+        if (promptField != null && input.has(promptField)) {
+            return input.get(promptField).asText();
+        }
+
+        // Try common field names
+        if (input.has("prompt")) {
+            return input.get("prompt").asText();
+        }
+        if (input.has("message")) {
+            return input.get("message").asText();
+        }
+        if (input.has("query")) {
+            return input.get("query").asText();
+        }
+        if (input.has("text")) {
+            return input.get("text").asText();
+        }
+        if (input.has("input")) {
+            return input.get("input").asText();
+        }
+
+        // Check for body.prompt (from HTTP requests)
+        if (input.has("body")) {
+            JsonNode body = input.get("body");
+            if (body.has("prompt")) {
+                return body.get("prompt").asText();
+            }
+            if (body.has("message")) {
+                return body.get("message").asText();
+            }
+        }
+
+        return null;
+    }
+
+    private String fetchApiKey(String keyPath, ExecutionContext context) {
+        try {
+            String appId = null;
+            // Try to get app ID from context
+            JsonNode input = context.getInput();
+            if (input.has("applicationId")) {
+                appId = input.get("applicationId").asText();
+            } else if (context.getExecution() != null && context.getExecution().workflow != null) {
+                appId = context.getExecution().workflow.applicationId != null ?
+                        context.getExecution().workflow.applicationId.toString() : null;
+            }
+
+            if (appId == null) {
+                return null;
+            }
+
+            // Call KV service to get the secret
+            String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
+                    java.net.URLEncoder.encode(keyPath, "UTF-8") +
+                    "?applicationId=" + appId;
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                HttpGet request = new HttpGet(kvServiceUrl);
+                request.addHeader("Content-Type", "application/json");
+
+                var response = httpClient.execute(request);
+                int statusCode = response.getCode();
+
+                if (statusCode >= 200 && statusCode < 300) {
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    JsonNode kvEntry = objectMapper.readTree(responseBody);
+                    if (kvEntry.has("value")) {
+                        return kvEntry.get("value").asText();
+                    }
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            System.err.println("Failed to fetch API key: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private List<ToolDefinition> buildToolDefinitions(JsonNode config, WorkflowNodeEntity node) {
+        List<ToolDefinition> tools = new ArrayList<>();
+
+        // Tools defined in config
+        if (config.has("tools") && config.get("tools").isArray()) {
+            for (JsonNode toolConfig : config.get("tools")) {
+                ToolDefinition tool = ToolDefinition.builder()
+                        .name(toolConfig.get("name").asText())
+                        .description(toolConfig.has("description") ? toolConfig.get("description").asText() : "")
+                        .parameters(toolConfig.has("parameters") ? toolConfig.get("parameters") : null)
+                        .sourcePortId(toolConfig.has("portId") ? toolConfig.get("portId").asText() : null)
+                        .build();
+                tools.add(tool);
+            }
+        }
+
+        // Auto-discover tools from connected nodes
+        // Tools are connected via edges with sourcePortId starting with "tool_"
+        if (node.workflow != null && node.workflow.edges != null) {
+            for (WorkflowEdgeEntity edge : node.workflow.edges) {
+                if (edge.sourceNode != null && edge.sourceNode.id.equals(node.id)) {
+                    String portId = edge.sourcePortId;
+                    if (portId != null && portId.startsWith("tool_")) {
+                        WorkflowNodeEntity targetNode = edge.targetNode;
+                        if (targetNode != null) {
+                            // Check if we already have this tool defined
+                            String toolName = portId.substring(5); // Remove "tool_" prefix
+                            boolean exists = tools.stream().anyMatch(t -> t.getName().equals(toolName));
+
+                            if (!exists) {
+                                // Auto-create tool definition from connected node
+                                ToolDefinition tool = ToolDefinition.builder()
+                                        .name(toolName)
+                                        .description(getNodeDescription(targetNode))
+                                        .parameters(getNodeInputSchema(targetNode))
+                                        .nodeId(targetNode.id)
+                                        .sourcePortId(portId)
+                                        .build();
+                                tools.add(tool);
+                            } else {
+                                // Update existing tool with node ID
+                                tools.stream()
+                                        .filter(t -> t.getName().equals(toolName))
+                                        .findFirst()
+                                        .ifPresent(t -> t.setNodeId(targetNode.id));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return tools;
+    }
+
+    private String getNodeDescription(WorkflowNodeEntity node) {
+        if (node.configuration != null) {
+            try {
+                JsonNode config = objectMapper.readTree(node.configuration);
+                if (config.has("description")) {
+                    return config.get("description").asText();
+                }
+            } catch (Exception ignored) {}
+        }
+        return "Execute " + node.name + " (" + node.type + " node)";
+    }
+
+    private JsonNode getNodeInputSchema(WorkflowNodeEntity node) {
+        if (node.configuration != null) {
+            try {
+                JsonNode config = objectMapper.readTree(node.configuration);
+                if (config.has("inputSchema")) {
+                    return config.get("inputSchema");
+                }
+            } catch (Exception ignored) {}
+        }
+
+        // Default schema
+        ObjectNode schema = objectMapper.createObjectNode();
+        schema.put("type", "object");
+        schema.set("properties", objectMapper.createObjectNode());
+        return schema;
+    }
+
+    private Map<String, ToolContext> buildToolContextMap(List<ToolDefinition> tools, WorkflowNodeEntity node) {
+        Map<String, ToolContext> map = new HashMap<>();
+
+        for (ToolDefinition tool : tools) {
+            ToolContext ctx = new ToolContext();
+            ctx.definition = tool;
+
+            // Find the connected node for this tool
+            if (tool.getNodeId() != null) {
+                ctx.targetNode = findNodeById(node.workflow.nodes, tool.getNodeId());
+            } else if (tool.getSourcePortId() != null && node.workflow != null) {
+                // Find node connected via this port
+                for (WorkflowEdgeEntity edge : node.workflow.edges) {
+                    if (edge.sourceNode.id.equals(node.id) &&
+                            tool.getSourcePortId().equals(edge.sourcePortId)) {
+                        ctx.targetNode = edge.targetNode;
+                        tool.setNodeId(edge.targetNode.id);
+                        break;
+                    }
+                }
+            }
+
+            map.put(tool.getName(), ctx);
+        }
+
+        return map;
+    }
+
+    private WorkflowNodeEntity findNodeById(List<WorkflowNodeEntity> nodes, UUID nodeId) {
+        for (WorkflowNodeEntity n : nodes) {
+            if (n.id.equals(nodeId)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    private String executeToolCall(ToolCall toolCall, Map<String, ToolContext> toolContextMap,
+                                   ExecutionContext context) {
+        try {
+            ToolContext toolCtx = toolContextMap.get(toolCall.getName());
+            if (toolCtx == null || toolCtx.targetNode == null) {
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "Tool not found: " + toolCall.getName())
+                );
+            }
+
+            WorkflowNodeEntity targetNode = toolCtx.targetNode;
+
+            // Get executor for the target node type
+            if (!nodeExecutorFactory.hasExecutor(targetNode.type)) {
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "No executor for node type: " + targetNode.type)
+                );
+            }
+
+            NodeExecutor executor = nodeExecutorFactory.getExecutor(targetNode.type);
+
+            // Create a sub-context with tool arguments as input
+            ExecutionContext subContext = createSubContext(context, toolCall.getArguments());
+
+            // Execute the tool node
+            NodeExecutionResult result = executor.execute(subContext, targetNode);
+
+            if (result.isSuccess()) {
+                if (result.getOutput() != null) {
+                    return objectMapper.writeValueAsString(result.getOutput());
+                }
+                return "{\"success\": true}";
+            } else {
+                return objectMapper.writeValueAsString(
+                        Map.of("error", result.getErrorMessage())
+                );
+            }
+        } catch (Exception e) {
+            try {
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "Tool execution failed: " + e.getMessage())
+                );
+            } catch (Exception ex) {
+                return "{\"error\": \"Tool execution failed\"}";
+            }
+        }
+    }
+
+    private ExecutionContext createSubContext(ExecutionContext parentContext, JsonNode toolArguments) {
+        // Create a new context with tool arguments merged into input
+        ExecutionContext subContext = new ExecutionContext(parentContext.getExecution());
+
+        // Copy variables
+        subContext.setVariables(parentContext.getVariables().deepCopy());
+
+        // Set tool arguments as input
+        ObjectNode input = objectMapper.createObjectNode();
+        if (toolArguments != null && toolArguments.isObject()) {
+            toolArguments.fields().forEachRemaining(entry -> {
+                input.set(entry.getKey(), entry.getValue());
+            });
+        }
+        subContext.setInput(input);
+
+        return subContext;
+    }
+
+    /**
+     * Helper class to track tool context
+     */
+    private static class ToolContext {
+        ToolDefinition definition;
+        WorkflowNodeEntity targetNode;
+    }
+}
