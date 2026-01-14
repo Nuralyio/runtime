@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, PropertyValues, html } from 'lit';
+import { LitElement, html, type PropertyValues } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { styles } from './textarea.style.js';
 import {
