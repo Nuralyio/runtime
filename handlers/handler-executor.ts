@@ -367,6 +367,8 @@ export function executeHandler(
     globalFunctions.ToggleModal,
     globalFunctions.ShowShareModal,
     globalFunctions.CloseShareModal,
+    globalFunctions.ShowKvModal,
+    globalFunctions.CloseKvModal,
     createHandlerScope,
     // Namespaced APIs (new clean API)
     handlerAPI.Nav,
@@ -383,6 +385,13 @@ export function executeHandler(
     globalFunctions.HasAnyRole,
     globalFunctions.HasAllRoles,
     globalFunctions.GetCurrentUser(), // CurrentUser - direct access to user object
+    // Workflow functions
+    globalFunctions.createWorkflow,
+    globalFunctions.refreshWorkflows,
+    globalFunctions.loadWorkflowById,
+    globalFunctions.getWorkflows,
+    globalFunctions.getCurrentWorkflow,
+    globalFunctions.setCurrentWorkflow,
     context.listeners || {} // Shared listener registry for reactivity
   );
 }

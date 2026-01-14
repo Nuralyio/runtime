@@ -290,6 +290,8 @@ export const HANDLER_PARAMETERS = [
   "ToggleModal",
   "ShowShareModal",
   "CloseShareModal",
+  "ShowKvModal",
+  "CloseKvModal",
   "__createScope__", // For transparent variable access
   // Namespaced API object (new clean API)
   "Nav",
@@ -306,6 +308,13 @@ export const HANDLER_PARAMETERS = [
   "HasAnyRole",
   "HasAllRoles",
   "CurrentUser",
+  // Workflow functions
+  "createWorkflow",
+  "refreshWorkflows",
+  "loadWorkflowById",
+  "getWorkflows",
+  "getCurrentWorkflow",
+  "setCurrentWorkflow",
   // Shared listener registry for reactivity
   "listeners",
 ] as const;
@@ -462,7 +471,7 @@ export function compileHandlerFunction(code: string): Function {
             HideToast, ClearAllToasts,
             ShowPopconfirm, Confirm, ShowDeleteConfirm, ShowWarningConfirm,
             ClosePopconfirm, CloseAllPopconfirms,
-            OpenModal, CloseModal, ToggleModal, ShowShareModal, CloseShareModal,
+            OpenModal, CloseModal, ToggleModal, ShowShareModal, CloseShareModal, ShowKvModal, CloseKvModal,
             Nav, UI, Component, Data, Page, App, Var,
             GetCurrentUser, IsAuthenticated, HasRole, HasAnyRole, HasAllRoles, CurrentUser
           }

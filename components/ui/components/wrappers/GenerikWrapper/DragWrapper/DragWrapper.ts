@@ -229,3 +229,8 @@ export class DragWrapper extends LitElement {
        `;
   }
 }
+
+// Safe registration - only register if not already defined
+if (!customElements.get('drag-wrapper')) {
+  customElements.define('drag-wrapper', DragWrapper);
+}

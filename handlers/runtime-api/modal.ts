@@ -7,6 +7,7 @@
 import { updateComponentAttributes } from '../../redux/actions/component';
 import type { ComponentElement } from '../../redux/store/component';
 import { $showShareApplicationModal } from '../../redux/store/apps';
+import { $showKvModal } from '../../redux/store/kv';
 
 export function createModalFunctions() {
   return {
@@ -92,6 +93,26 @@ export function createModalFunctions() {
      */
     CloseShareModal: () => {
       $showShareApplicationModal.set(false);
+    },
+
+    /**
+     * Opens the KV Storage modal
+     * @example
+     * // In event handler:
+     * ShowKvModal();
+     */
+    ShowKvModal: () => {
+      $showKvModal.set(true);
+    },
+
+    /**
+     * Closes the KV Storage modal
+     * @example
+     * // In event handler:
+     * CloseKvModal();
+     */
+    CloseKvModal: () => {
+      $showKvModal.set(false);
     },
   };
 }
