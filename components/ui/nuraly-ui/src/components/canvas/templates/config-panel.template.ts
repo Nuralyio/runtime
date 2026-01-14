@@ -22,6 +22,9 @@ import '../data-node/data-node-fields.component.js';
 // Import chatbot trigger field components
 import '../chatbot-trigger/chatbot-trigger-fields.component.js';
 
+// Import KV secret select component
+import '../../kv-secret-select/kv-secret-select.component.js';
+
 /**
  * Callbacks for config panel interactions
  */
@@ -1177,11 +1180,25 @@ function renderTypeFields(
       return html`
         <div class="config-field">
           <label>Provider</label>
-          <nr-input
-            value=${config.provider || 'openai'}
-            placeholder="openai, anthropic, local"
-            @nr-input=${(e: CustomEvent) => onUpdate('provider', e.detail.value)}
-          ></nr-input>
+          <nr-select
+            .value=${config.provider || 'openai'}
+            .options=${[
+              { label: 'OpenAI', value: 'openai' },
+              { label: 'Anthropic', value: 'anthropic' },
+              { label: 'Google (Gemini)', value: 'gemini' },
+              { label: 'Local', value: 'local' }
+            ]}
+            @nr-change=${(e: CustomEvent) => onUpdate('provider', e.detail.value)}
+          ></nr-select>
+        </div>
+        <div class="config-field">
+          <label>API Key</label>
+          <nr-kv-secret-select
+            .provider=${config.provider || 'openai'}
+            .value=${config.apiKeyPath || ''}
+            @value-change=${(e: CustomEvent) => onUpdate('apiKeyPath', e.detail.value)}
+          ></nr-kv-secret-select>
+          <span class="field-description">Select or create an API key from KV store</span>
         </div>
         <div class="config-field">
           <label>Model Name</label>

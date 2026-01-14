@@ -79,6 +79,8 @@ import { SelectHost } from './interfaces/index.js';
  * @slot helper-text - Helper text below select
  * @slot trigger - Custom trigger content (slot type only)
  * @slot selected-display - Custom display for selected values (multi-select only, when use-custom-selected-display is true)
+ * @slot before-options - Content rendered before the options list (e.g., search, filters)
+ * @slot after-options - Content rendered after the options list (e.g., create button, form)
  * 
  * @cssproperty --select-border-color - Border color
  * @cssproperty --select-background - Background color
@@ -570,14 +572,16 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
             ></nr-icon>
           </div>
           
-          <div 
+          <div
             class="options"
             role="listbox"
             aria-multiselectable="${this.multiple}"
             style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
           >
             ${this.searchable ? this.renderSearchInput() : nothing}
+            <slot name="before-options"></slot>
             ${this.renderSelectOptions()}
+            <slot name="after-options"></slot>
           </div>
         </div>
       </div>
@@ -614,13 +618,15 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
         <nr-icon name="chevron-down" class="arrow-icon"></nr-icon>
       </button>
       
-      <div 
-        class="options" 
+      <div
+        class="options"
         role="listbox"
         style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
       >
         ${this.searchable ? this.renderSearchInput() : nothing}
+        <slot name="before-options"></slot>
         ${this.renderSelectOptions()}
+        <slot name="after-options"></slot>
       </div>
     `;
   }
@@ -631,13 +637,15 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   private renderSlot() {
     return html`
       <slot name="trigger" @click=${this.handleTriggerClick}></slot>
-      <div 
-        class="options" 
+      <div
+        class="options"
         role="listbox"
         style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
       >
         ${this.searchable ? this.renderSearchInput() : nothing}
+        <slot name="before-options"></slot>
         ${this.renderSelectOptions()}
+        <slot name="after-options"></slot>
       </div>
     `;
   }
