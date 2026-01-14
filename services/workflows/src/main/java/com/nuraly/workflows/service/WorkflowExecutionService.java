@@ -54,8 +54,10 @@ public class WorkflowExecutionService {
             throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
         }
 
-        if (workflow.status != WorkflowStatus.ACTIVE) {
-            throw new InvalidWorkflowException("Workflow is not active. Current status: " + workflow.status);
+        // Allow execution for ACTIVE and DRAFT (testing) workflows
+        // Only block ARCHIVED or PAUSED workflows
+        if (workflow.status == WorkflowStatus.ARCHIVED || workflow.status == WorkflowStatus.PAUSED) {
+            throw new InvalidWorkflowException("Workflow cannot be executed. Current status: " + workflow.status);
         }
 
         // Create execution record

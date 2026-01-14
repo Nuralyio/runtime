@@ -165,6 +165,10 @@ public class WorkflowEventService {
             data.put("errorMessage", nodeExecution.errorMessage);
         }
 
+        if (nodeExecution.outputData != null) {
+            data.put("outputData", nodeExecution.outputData);
+        }
+
         sendEvent("NODE_EXECUTED", data);
     }
 
