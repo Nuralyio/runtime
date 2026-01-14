@@ -11,10 +11,13 @@ import java.util.UUID;
 @ToString(exclude = {"value"})
 public class KvEntryDTO {
     private UUID id;
-    private UUID namespaceId;
+    private String applicationId;
+    private String scope;
+    private String scopedResourceId;
     private String keyPath;
     private Object value;
     private KvValueType valueType;
+    private Boolean isSecret;
     private Boolean isEncrypted;
     private Long version;
     private Instant expiresAt;
