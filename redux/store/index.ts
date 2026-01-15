@@ -102,20 +102,20 @@ export type { AppMember, AppRole, PendingInvite, AppMembersData } from './app-me
 export {
   $kvCache,
   $showKvModal,
-  getKvNamespaces,
+  getKvEntry,
   getKvEntries,
-  refreshKvNamespaces,
+  setKvEntry,
+  deleteKvEntry,
+  rotateKvSecret,
+  getKvVersionHistory,
   refreshKvEntries,
   invalidateKvCache,
-  invalidateEntriesCache,
-  getCachedKvNamespaces,
   getCachedKvEntries,
-  updateCachedNamespaces,
   updateCachedEntries,
   showKvModal,
   closeKvModal
 } from './kv';
-export type { KvNamespace, KvEntry, KvEntryVersion, KvData, KvValueType } from './kv';
+export type { KvEntry, KvEntryVersion, KvData, KvValueType, FetchEntriesOptions, SetEntryRequest } from './kv';
 
 // Type Definitions
 export type { ComponentElement } from './component/component.interface';
