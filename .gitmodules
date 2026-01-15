@@ -20,3 +20,11 @@
 [submodule "services/docs"]
 	path = services/docs
 	url = git@github.com:Nuralyio/docs.git
+[submodule "services/kv"]
+	path = services/kv
+	url = git@github.com:Nuralyio/-kv.git
+	branch = main
+[submodule "services/workflows"]
+	path = services/workflows
+	url = git@github.com:Nuralyio/workflow.git
+	branch = main
