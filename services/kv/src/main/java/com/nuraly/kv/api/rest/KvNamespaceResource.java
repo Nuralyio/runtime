@@ -6,7 +6,7 @@ import com.nuraly.kv.dto.KvNamespaceDTO;
 import com.nuraly.kv.dto.UpdateKvNamespaceRequest;
 import com.nuraly.kv.exception.KvNamespaceNotFoundException;
 import com.nuraly.kv.service.KvNamespaceService;
-import com.nuralyio.shared.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
