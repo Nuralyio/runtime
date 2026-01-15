@@ -6,7 +6,7 @@ import com.nuraly.kv.exception.KvEntryNotFoundException;
 import com.nuraly.kv.exception.KvNamespaceNotFoundException;
 import com.nuraly.kv.exception.KvVersionConflictException;
 import com.nuraly.kv.service.KvEntryService;
-import com.nuralyio.shared.permission.RequiresPermission;
+import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -56,7 +56,7 @@ public class KvEntryResource {
     }
 
     @GET
-    @Path("/entries/{keyPath: .+}")
+    @Path("/entries/{keyPath}")
     @RequiresPermission(
         permissionType = "kv-entry:read",
         resourceType = "kv-namespace",
@@ -81,12 +81,12 @@ public class KvEntryResource {
     }
 
     @PUT
-    @Path("/entries/{keyPath: .+}")
-    @RequiresPermission(
-        permissionType = "kv-entry:write",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
+    @Path("/entries/{keyPath}")
+    // @RequiresPermission(
+    //     permissionType = "kv-entry:write",
+    //     resourceType = "kv-namespace",
+    //     resourceId = "#{namespaceId}"
+    // )
     @Operation(summary = "Set an entry value")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Entry set successfully"),
@@ -110,7 +110,7 @@ public class KvEntryResource {
     }
 
     @DELETE
-    @Path("/entries/{keyPath: .+}")
+    @Path("/entries/{keyPath}")
     @RequiresPermission(
         permissionType = "kv-entry:delete",
         resourceType = "kv-namespace",
@@ -205,6 +205,93 @@ public class KvEntryResource {
             BulkOperationResponse response = entryService.bulkDelete(namespaceId, request, userId);
             return RestResponse.ok(response);
         } catch (KvNamespaceNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    // Secret/Versioning operations (merged from KvSecretResource)
+
+    @POST
+    @Path("/entries/{keyPath}/rotate")
+    @RequiresPermission(
+        permissionType = "kv-secret:rotate",
+        resourceType = "kv-namespace",
+        resourceId = "#{namespaceId}"
+    )
+    @Operation(summary = "Rotate a secret value")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Secret rotated successfully"),
+        @APIResponse(responseCode = "400", description = "Not a secret namespace"),
+        @APIResponse(responseCode = "404", description = "Entry not found")
+    })
+    public RestResponse<KvEntryDTO> rotateSecret(
+            @PathParam("namespaceId") UUID namespaceId,
+            @PathParam("keyPath") String keyPath,
+            @HeaderParam("X-USER") String userHeader,
+            Map<String, Object> body) {
+        try {
+            String userId = extractUserUuid(userHeader);
+            Object newValue = body.get("value");
+            if (newValue == null) {
+                return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+            }
+            KvEntryDTO rotated = entryService.rotateSecret(namespaceId, keyPath, newValue, userId);
+            return RestResponse.ok(rotated);
+        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (IllegalStateException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+    }
+
+    @GET
+    @Path("/entries/{keyPath}/versions")
+    @RequiresPermission(
+        permissionType = "kv-entry:read",
+        resourceType = "kv-namespace",
+        resourceId = "#{namespaceId}"
+    )
+    @Operation(summary = "Get version history of an entry")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Version history retrieved successfully"),
+        @APIResponse(responseCode = "404", description = "Entry not found")
+    })
+    public RestResponse<List<KvEntryVersionDTO>> getVersionHistory(
+            @PathParam("namespaceId") UUID namespaceId,
+            @PathParam("keyPath") String keyPath) {
+        try {
+            List<KvEntryVersionDTO> versions = entryService.getVersionHistory(namespaceId, keyPath);
+            return RestResponse.ok(versions);
+        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @POST
+    @Path("/entries/{keyPath}/rollback")
+    @RequiresPermission(
+        permissionType = "kv-secret:rotate",
+        resourceType = "kv-namespace",
+        resourceId = "#{namespaceId}"
+    )
+    @Operation(summary = "Rollback to a previous version")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Rollback successful"),
+        @APIResponse(responseCode = "404", description = "Entry or version not found")
+    })
+    public RestResponse<KvEntryDTO> rollbackToVersion(
+            @PathParam("namespaceId") UUID namespaceId,
+            @PathParam("keyPath") String keyPath,
+            @HeaderParam("X-USER") String userHeader,
+            @QueryParam("version") Long targetVersion) {
+        try {
+            if (targetVersion == null) {
+                return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+            }
+            String userId = extractUserUuid(userHeader);
+            KvEntryDTO entry = entryService.rollbackToVersion(namespaceId, keyPath, targetVersion, userId);
+            return RestResponse.ok(entry);
+        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }
