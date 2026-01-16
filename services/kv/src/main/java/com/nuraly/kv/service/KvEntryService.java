@@ -10,7 +10,6 @@ import com.nuraly.kv.entity.KvEntryVersionEntity;
 import com.nuraly.kv.entity.enums.KvValueType;
 import com.nuraly.kv.exception.KvEntryNotFoundException;
 import com.nuraly.kv.exception.KvVersionConflictException;
-import com.nuralyio.shared.permission.PermissionClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,9 +35,6 @@ public class KvEntryService {
 
     @Inject
     KvEntryVersionDTOMapper versionMapper;
-
-    @Inject
-    PermissionClient permissionClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -135,10 +131,6 @@ public class KvEntryService {
         }
 
         entry.persist();
-
-        if (isNew && userId != null) {
-            permissionClient.initOwnerPermissions("kv-entry", String.valueOf(entry.id), userId);
-        }
 
         auditService.logWrite(null, entry.id, keyPath, userId, true);
 
