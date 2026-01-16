@@ -75,10 +75,12 @@
     "@lit-labs/virtualizer": "^2.0.9",
     "@lit/localize": "^0.12.2",
     "@lit/reactive-element": "^2.1.1",
+    "@nanostores/persistent": "^1.2.0",
     "@types/react": "^18.0.28",
     "dayjs": "^2.0.0-alpha.4",
     "lit": "^3.0.0",
     "lucide": "^0.552.0",
+    "nanostores": "^0.11.4",
     "react": "^18.2.0",
     "vanilla-colorful": "^0.7.2"
   },

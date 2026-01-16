@@ -92,7 +92,7 @@ export class SelectEventController extends BaseSelectController implements Event
     const path = event.composedPath();
     // Check if click is inside the host element using composed path
     // This works correctly with shadow DOM and slotted content
-    if (!path.includes(this.host)) {
+    if (!path.includes(this.host as unknown as EventTarget)) {
       this.host.closeDropdown();
     }
   };

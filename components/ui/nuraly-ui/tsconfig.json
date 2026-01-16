@@ -32,13 +32,13 @@
       "@nuralyui/common/constants": ["packages/common/src/constants"],
       "@nuralyui/common": ["packages/common/src/index"]
     },
-    "plugins": [
+        "plugins": [
       {
         "name": "ts-lit-plugin",
         "strict": true
       }
     ]
   },
-  "include": ["src/**/*.ts","src/**/*.json", "packages/**/*.ts"],
-  "exclude": ["src/**/*.stories.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.json", "packages/**/*.ts"],
+  "exclude": ["src/**/*.stories.ts", "../../../redux/**/*"]
 }
