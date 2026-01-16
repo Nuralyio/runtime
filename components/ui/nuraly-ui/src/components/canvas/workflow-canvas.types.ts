@@ -16,6 +16,8 @@ export enum WorkflowNodeType {
   END = 'END',
   HTTP_START = 'HTTP_START',
   HTTP_END = 'HTTP_END',
+  CHAT_START = 'CHAT_START',
+  CHAT_OUTPUT = 'CHAT_OUTPUT',
   FUNCTION = 'FUNCTION',
   HTTP = 'HTTP',
   CONDITION = 'CONDITION',
@@ -30,6 +32,7 @@ export enum WorkflowNodeType {
   VARIABLE = 'VARIABLE',
   CHATBOT = 'CHATBOT',
   DEBUG = 'DEBUG',
+  LLM = 'LLM',
 }
 
 /**
@@ -390,6 +393,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.END]: '#ef4444',
   [WorkflowNodeType.HTTP_START]: '#059669',
   [WorkflowNodeType.HTTP_END]: '#dc2626',
+  [WorkflowNodeType.CHAT_START]: '#0ea5e9',
+  [WorkflowNodeType.CHAT_OUTPUT]: '#06b6d4',
   [WorkflowNodeType.FUNCTION]: '#3b82f6',
   [WorkflowNodeType.HTTP]: '#8b5cf6',
   [WorkflowNodeType.CONDITION]: '#f59e0b',
@@ -404,6 +409,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.VARIABLE]: '#64748b',
   [WorkflowNodeType.CHATBOT]: '#0ea5e9',
   [WorkflowNodeType.DEBUG]: '#f97316',
+  [WorkflowNodeType.LLM]: '#22d3ee',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -433,6 +439,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.END]: 'stop',
   [WorkflowNodeType.HTTP_START]: 'download',
   [WorkflowNodeType.HTTP_END]: 'upload',
+  [WorkflowNodeType.CHAT_START]: 'message-circle',
+  [WorkflowNodeType.CHAT_OUTPUT]: 'message-square',
   [WorkflowNodeType.FUNCTION]: 'code',
   [WorkflowNodeType.HTTP]: 'globe',
   [WorkflowNodeType.CONDITION]: 'git-branch',
@@ -447,6 +455,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.VARIABLE]: 'box',
   [WorkflowNodeType.CHATBOT]: 'message-circle',
   [WorkflowNodeType.DEBUG]: 'bug',
+  [WorkflowNodeType.LLM]: 'brain',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -537,6 +546,64 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [],
+    },
+  },
+  {
+    type: WorkflowNodeType.CHAT_START,
+    name: 'Chat Trigger',
+    description: 'Start workflow from chatbot message',
+    icon: NODE_ICONS[WorkflowNodeType.CHAT_START],
+    color: NODE_COLORS[WorkflowNodeType.CHAT_START],
+    category: 'trigger',
+    defaultConfig: {
+      outputVariable: 'chatInput',
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.CHAT_OUTPUT,
+    name: 'Chat Output',
+    description: 'Send message to chatbot during execution',
+    icon: NODE_ICONS[WorkflowNodeType.CHAT_OUTPUT],
+    color: NODE_COLORS[WorkflowNodeType.CHAT_OUTPUT],
+    category: 'action',
+    defaultConfig: {
+      message: '${variables.response}',
+      messageType: 'text',
+      typing: false,
+      typingDelay: 1000,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
+    },
+  },
+  {
+    type: WorkflowNodeType.LLM,
+    name: 'LLM',
+    description: 'Call AI language model (OpenAI, Anthropic, etc.)',
+    icon: NODE_ICONS[WorkflowNodeType.LLM],
+    color: NODE_COLORS[WorkflowNodeType.LLM],
+    category: 'action',
+    defaultConfig: {
+      provider: 'openai',
+      model: 'gpt-4',
+      temperature: 0.7,
+      maxTokens: 2048,
+      systemPrompt: '',
+      userPrompt: '${variables.message}',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
     },
   },
   {
@@ -771,12 +838,17 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     icon: NODE_ICONS[AgentNodeType.AGENT],
     color: NODE_COLORS[AgentNodeType.AGENT],
     category: 'agent',
-    defaultConfig: { agentId: '', systemPrompt: '', model: 'gpt-4', tools: [] },
+    defaultConfig: { agentId: '', maxIterations: 10 },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      inputs: [
+        { id: 'in', type: PortType.INPUT, label: 'Input' },
+        { id: 'llm', type: PortType.INPUT, label: 'LLM' },
+        { id: 'prompt', type: PortType.INPUT, label: 'Prompt' },
+        { id: 'memory', type: PortType.INPUT, label: 'Memory' },
+        { id: 'tools', type: PortType.INPUT, label: 'Tools', multiple: true },
+      ],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Output' },
-        { id: 'tool', type: PortType.OUTPUT, label: 'Tool Call' },
       ],
     },
   },
@@ -787,10 +859,12 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     icon: NODE_ICONS[AgentNodeType.TOOL],
     color: NODE_COLORS[AgentNodeType.TOOL],
     category: 'agent',
-    defaultConfig: { toolName: '', toolConfig: {} },
+    defaultConfig: { toolName: '', description: '', parameters: [] },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
-      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Result' }],
+      inputs: [
+        { id: 'function', type: PortType.INPUT, label: 'Function' },
+      ],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Tool' }],
     },
   },
   {
@@ -1029,7 +1103,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     nodeTypes: [
       WorkflowNodeType.START,
       WorkflowNodeType.HTTP_START,
-      WorkflowNodeType.CHATBOT,
+      WorkflowNodeType.CHAT_START,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
@@ -1054,6 +1128,8 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     nodeTypes: [
       WorkflowNodeType.FUNCTION,
       WorkflowNodeType.HTTP,
+      WorkflowNodeType.LLM,
+      WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
       WorkflowNodeType.NOTIFICATION,

@@ -300,14 +300,16 @@ export const workflowNodeStyles = css`
     color: var(--nuraly-color-text-secondary, #888);
     white-space: nowrap;
     pointer-events: none;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .port-label.input {
-    left: calc(12px + 4px);
+    right: calc(100% + 8px);
   }
 
   .port-label.output {
-    right: calc(12px + 4px);
+    left: calc(100% + 8px);
   }
 
   /* Error display */

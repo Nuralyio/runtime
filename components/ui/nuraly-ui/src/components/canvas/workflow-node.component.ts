@@ -92,7 +92,13 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private isChatbotNode(): boolean {
-    return this.node.type === WorkflowNodeType.CHATBOT;
+    return this.node.type === WorkflowNodeType.CHATBOT ||
+           this.node.type === WorkflowNodeType.CHAT_START;
+  }
+
+  private hasPreviewPanel(): boolean {
+    return this.isChatbotNode() ||
+           this.node.type === WorkflowNodeType.HTTP_START;
   }
 
   private isStartNode(): boolean {
@@ -301,7 +307,7 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     const nodeColor = this.getNodeColor();
     const nodeIcon = this.getNodeIcon();
     const isAgent = isAgentNode(this.node.type);
-    const isChatbot = this.isChatbotNode();
+    const hasPreview = this.hasPreviewPanel();
     const isStart = this.isStartNode();
     const status = this.node.status || ExecutionStatus.IDLE;
 
@@ -352,16 +358,16 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
               Trigger
             </nr-button>
           ` : nothing}
-          ${isChatbot ? html`
+          ${hasPreview ? html`
             <nr-button
               size="small"
               variant="ghost"
               @click=${this.handlePreviewClick}
               @mousedown=${(e: MouseEvent) => e.stopPropagation()}
-              title="Open chat preview"
+              title="Test workflow"
             >
               <nr-icon slot="prefix" name="eye" size="small"></nr-icon>
-              Preview
+              Test
             </nr-button>
           ` : nothing}
         </div>

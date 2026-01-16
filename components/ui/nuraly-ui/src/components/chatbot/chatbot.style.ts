@@ -31,7 +31,7 @@ export default css`
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    min-width: 450px;
+    min-width: var(--nuraly-size-chatbot-container-min-width, 300px);
   }
 
   .chatbot-container--with-sidebar {
