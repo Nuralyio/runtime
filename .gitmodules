@@ -28,3 +28,6 @@
 	path = services/workflows
 	url = git@github.com:Nuralyio/workflow.git
 	branch = main
+[submodule "services/conduit"]
+	path = services/conduit
+	url = https://github.com/Nuralyio/conduit.git

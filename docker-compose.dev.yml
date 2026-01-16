@@ -136,6 +136,30 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # Conduit - Database Connection & Query Service
+  conduit:
+    build:
+      context: ./services/conduit
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7004:7004"
+    volumes:
+      - ./services/conduit:/app
+      - conduit_maven_cache:/root/.m2
+    environment:
+      - NODE_ENV=development
+      - KV_SERVICE_URL=http://kv:7003
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/dev.env
+    depends_on:
+      - kv
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # API Gateway
   gateway:
     build:
@@ -152,6 +176,7 @@ services:
       - FUNCTIONS_URL=http://functions:9000
       - WORKFLOWS_URL=http://workflows:7002
       - KV_URL=http://kv:7003
+      - CONDUIT_URL=http://conduit:7004
       - REDIS_URL=redis://redis:6379
       - KC_HOSTNAME=localhost
       - KEYCLOAK_REALM=nuraly
@@ -308,6 +333,7 @@ volumes:
   rabbitmq_dev_data:
   workflows_maven_cache:
   kv_maven_cache:
+  conduit_maven_cache:
 
 networks:
   nuraly-network:
