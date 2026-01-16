@@ -15,5 +15,6 @@ public enum NodeType {
     NOTIFICATION,   // Send notification
     DATABASE,       // Database operation
     VARIABLE,       // Set/get variable
-    DEBUG           // Debug node - displays input, output, variables
+    DEBUG,          // Debug node - displays input, output, variables
+    OCR             // OCR - extract text from images/documents using PaddleOCR
 }
