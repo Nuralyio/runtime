@@ -6,7 +6,8 @@ export type WorkflowEventType =
   | 'EXECUTION_STARTED'
   | 'EXECUTION_COMPLETED'
   | 'EXECUTION_FAILED'
-  | 'EXECUTION_CANCELLED';
+  | 'EXECUTION_CANCELLED'
+  | 'CHAT_MESSAGE';
 
 export interface WorkflowEvent {
   type: WorkflowEventType;
@@ -21,6 +22,8 @@ export interface WorkflowEvent {
 export interface ClientToServerEvents {
   'subscribe:execution': (data: { executionId: string }) => void;
   'unsubscribe:execution': (data: { executionId: string }) => void;
+  'subscribe:workflow': (data: { workflowId: string }) => void;
+  'unsubscribe:workflow': (data: { workflowId: string }) => void;
 }
 
 export interface ServerToClientEvents {
@@ -31,6 +34,7 @@ export interface ServerToClientEvents {
   'execution:node-started': (event: WorkflowEvent) => void;
   'execution:node-completed': (event: WorkflowEvent) => void;
   'execution:node-failed': (event: WorkflowEvent) => void;
+  'chat:message': (event: WorkflowEvent) => void;
 }
 
 export interface SocketData {
@@ -40,4 +44,5 @@ export interface SocketData {
   anonymous: boolean;
   roles: string[];
   subscribedExecutions: Set<string>;
+  subscribedWorkflows: Set<string>;
 }

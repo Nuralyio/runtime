@@ -64,6 +64,7 @@ export class WorkflowGateway {
             anonymous: true,
             roles: [],
             subscribedExecutions: new Set(),
+            subscribedWorkflows: new Set(),
           };
           return next();
         }
@@ -81,6 +82,7 @@ export class WorkflowGateway {
           anonymous: user.anonymous,
           roles: user.roles || [],
           subscribedExecutions: new Set(),
+          subscribedWorkflows: new Set(),
         };
 
         next();
@@ -96,11 +98,19 @@ export class WorkflowGateway {
       logger.info(`Workflow socket connected: ${socket.id} (user: ${socket.data.userId})`);
 
       socket.on('subscribe:execution', (data: { executionId: string }) => {
-        this.handleSubscribe(socket, data.executionId);
+        this.handleSubscribeExecution(socket, data.executionId);
       });
 
       socket.on('unsubscribe:execution', (data: { executionId: string }) => {
-        this.handleUnsubscribe(socket, data.executionId);
+        this.handleUnsubscribeExecution(socket, data.executionId);
+      });
+
+      socket.on('subscribe:workflow', (data: { workflowId: string }) => {
+        this.handleSubscribeWorkflow(socket, data.workflowId);
+      });
+
+      socket.on('unsubscribe:workflow', (data: { workflowId: string }) => {
+        this.handleUnsubscribeWorkflow(socket, data.workflowId);
       });
 
       socket.on('disconnect', (reason: string) => {
@@ -109,7 +119,7 @@ export class WorkflowGateway {
     });
   }
 
-  private handleSubscribe(socket: WorkflowSocket, executionId: string): void {
+  private handleSubscribeExecution(socket: WorkflowSocket, executionId: string): void {
     const roomName = `execution:${executionId}`;
     socket.join(roomName);
     socket.data.subscribedExecutions.add(executionId);
@@ -125,26 +135,44 @@ export class WorkflowGateway {
     });
   }
 
-  private handleUnsubscribe(socket: WorkflowSocket, executionId: string): void {
+  private handleUnsubscribeExecution(socket: WorkflowSocket, executionId: string): void {
     const roomName = `execution:${executionId}`;
     socket.leave(roomName);
     socket.data.subscribedExecutions.delete(executionId);
     logger.info(`User ${socket.data.userId} unsubscribed from execution ${executionId}`);
   }
 
+  private handleSubscribeWorkflow(socket: WorkflowSocket, workflowId: string): void {
+    const roomName = `workflow:${workflowId}`;
+    socket.join(roomName);
+    socket.data.subscribedWorkflows.add(workflowId);
+    logger.info(`User ${socket.data.userId} subscribed to workflow ${workflowId}`);
+  }
+
+  private handleUnsubscribeWorkflow(socket: WorkflowSocket, workflowId: string): void {
+    const roomName = `workflow:${workflowId}`;
+    socket.leave(roomName);
+    socket.data.subscribedWorkflows.delete(workflowId);
+    logger.info(`User ${socket.data.userId} unsubscribed from workflow ${workflowId}`);
+  }
+
   private handleWorkflowEvent(event: WorkflowEvent): void {
     logger.info(`Handling workflow event: ${event.type} for execution ${event.executionId}`);
 
-    const roomName = `execution:${event.executionId}`;
+    const executionRoomName = `execution:${event.executionId}`;
+    const workflowRoomName = `workflow:${event.workflowId}`;
     const eventName = this.getSocketEventName(event.type);
 
     if (eventName) {
-      // Check how many sockets are in the room
-      const room = this.io.sockets.adapter.rooms.get(roomName);
-      const roomSize = room ? room.size : 0;
-      logger.info(`Broadcasting ${eventName} to room ${roomName} (${roomSize} clients)`);
+      // Check how many sockets are in each room
+      const execRoom = this.io.sockets.adapter.rooms.get(executionRoomName);
+      const wfRoom = this.io.sockets.adapter.rooms.get(workflowRoomName);
+      const execRoomSize = execRoom ? execRoom.size : 0;
+      const wfRoomSize = wfRoom ? wfRoom.size : 0;
+      logger.info(`Broadcasting ${eventName} to execution room (${execRoomSize} clients) and workflow room (${wfRoomSize} clients)`);
 
-      this.io.to(roomName).emit(eventName, event);
+      // Broadcast to both execution-specific and workflow-level subscribers
+      this.io.to(executionRoomName).to(workflowRoomName).emit(eventName, event);
     } else {
       logger.warn(`No socket event mapping for ${event.type}`);
     }
@@ -162,6 +190,7 @@ export class WorkflowGateway {
       NODE_STARTED: 'execution:node-started',
       NODE_EXECUTED: 'execution:node-completed',
       NODE_FAILED: 'execution:node-failed',
+      CHAT_MESSAGE: 'chat:message',
     };
 
     const result = eventMap[eventType] || null;
