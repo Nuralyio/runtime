@@ -96,7 +96,25 @@ export interface FieldMapping {
 }
 
 /**
- * Data source definition
+ * Supported database types
+ */
+export type DatabaseType = 'postgresql' | 'mysql' | 'mongodb' | 'sqlite' | 'mssql' | 'oracle';
+
+/**
+ * Database type options with metadata
+ */
+export const DATABASE_TYPES: { value: DatabaseType; label: string; icon: string; defaultPort: number }[] = [
+  { value: 'postgresql', label: 'PostgreSQL', icon: 'database', defaultPort: 5432 },
+  { value: 'mysql', label: 'MySQL', icon: 'database', defaultPort: 3306 },
+  { value: 'mongodb', label: 'MongoDB', icon: 'database', defaultPort: 27017 },
+  { value: 'sqlite', label: 'SQLite', icon: 'database', defaultPort: 0 },
+  { value: 'mssql', label: 'SQL Server', icon: 'database', defaultPort: 1433 },
+  { value: 'oracle', label: 'Oracle', icon: 'database', defaultPort: 1521 },
+];
+
+/**
+ * Data source definition (legacy, use connectionPath instead)
+ * @deprecated Use connectionPath and dbType instead
  */
 export interface DataSource {
   id: string;
@@ -134,7 +152,15 @@ export interface DataField {
  */
 export interface DataNodeConfiguration {
   operation: DataOperation;
+  /** KV path for database credentials (e.g., "postgresql/prod-db") */
+  connectionPath: string | null;
+  /** Database type (postgresql, mysql, etc.) */
+  dbType: DatabaseType | null;
+  /** Schema name (for databases that support schemas) */
+  schema: string | null;
+  /** @deprecated Use connectionPath instead */
   dataSource: string | null;
+  /** Table/collection name */
   entity: string | null;
   filter: FilterGroup | null;
   fields: FieldMapping;
@@ -150,6 +176,9 @@ export interface DataNodeConfiguration {
  */
 export const DEFAULT_DATA_NODE_CONFIG: DataNodeConfiguration = {
   operation: DataOperation.QUERY,
+  connectionPath: null,
+  dbType: null,
+  schema: null,
   dataSource: null,
   entity: null,
   filter: null,
@@ -228,8 +257,9 @@ export function validateDataNodeConfig(config: DataNodeConfiguration): Validatio
     errors.push({ field: 'operation', message: 'Operation is required' });
   }
 
-  if (!config.dataSource) {
-    errors.push({ field: 'dataSource', message: 'Data source is required' });
+  // Check for new connectionPath or legacy dataSource
+  if (!config.connectionPath && !config.dataSource) {
+    errors.push({ field: 'connectionPath', message: 'Database connection is required' });
   }
 
   if (!config.entity) {
