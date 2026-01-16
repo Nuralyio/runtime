@@ -386,6 +386,10 @@ export class FlowPage extends LitElement {
 
     // Subscribe to workflow store
     this.unsubscribeWorkflow = $currentWorkflow.subscribe((workflow) => {
+      // If workflow changed, subscribe to the new one for external HTTP triggers
+      if (workflow && workflow.id !== this.workflow?.id) {
+        this.subscribeToWorkflow(workflow.id);
+      }
       this.workflow = workflow;
     });
 
@@ -406,6 +410,8 @@ export class FlowPage extends LitElement {
           $currentWorkflow.set(wf);
           // Track loaded state for diffing on save
           setLastSavedWorkflow(wf);
+          // Subscribe to new workflow events (for external HTTP triggers)
+          this.subscribeToWorkflow(wf.id);
         }
       }
     });
@@ -531,6 +537,18 @@ export class FlowPage extends LitElement {
   }
 
   /**
+   * Subscribe to workflow for real-time updates (including external HTTP triggers)
+   */
+  private subscribeToWorkflow(workflowId: string): void {
+    if (this.flowSocket) {
+      console.log('[Flow] Subscribing to workflow:', workflowId);
+      this.flowSocket.subscribeWorkflow(workflowId);
+    } else {
+      console.warn('[Flow] Cannot subscribe to workflow - socket not initialized');
+    }
+  }
+
+  /**
    * Update status of a specific node (called from handlers)
    */
   public updateNodeStatus(nodeId: string, status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'): void {
@@ -606,6 +624,8 @@ export class FlowPage extends LitElement {
       const workflow = await getOrCreateWorkflow(appId);
       if (workflow) {
         this.workflow = workflow;
+        // Subscribe to workflow events (for external HTTP triggers)
+        this.subscribeToWorkflow(workflow.id);
       }
     }
 
