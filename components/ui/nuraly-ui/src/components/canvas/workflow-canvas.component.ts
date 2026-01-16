@@ -381,7 +381,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           }
         });
 
-        socket.on('execution:started', (event: any) => {
+        socket.on('execution:started', (_event: any) => {
           // Reset all node statuses when a new execution starts
           this.nodeStatuses = {};
         });
@@ -427,9 +427,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private async sendHttpPreviewRequest(): Promise<void> {
     const previewNode = this.getPreviewNode();
     if (!previewNode || !this.workflow?.id) return;
-
-    const config = previewNode.configuration || {};
-    const httpPath = (config.httpPath as string) || '/webhook';
 
     this.httpPreviewLoading = true;
     this.httpPreviewError = '';
