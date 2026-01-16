@@ -17,6 +17,7 @@ import com.nuraly.workflows.llm.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.jboss.logging.Logger;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -54,6 +55,7 @@ import java.util.*;
 @ApplicationScoped
 public class LlmNodeExecutor implements NodeExecutor {
 
+    private static final Logger LOG = Logger.getLogger(LlmNodeExecutor.class);
     private static final int DEFAULT_MAX_TOOL_ITERATIONS = 10;
 
     @Inject
@@ -90,11 +92,13 @@ public class LlmNodeExecutor implements NodeExecutor {
         // Get API key from KV store
         String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
         if (apiKeyPath == null || apiKeyPath.isEmpty()) {
+            LOG.error("LLM node error: API key path is required");
             return NodeExecutionResult.failure("API key path is required");
         }
 
         String apiKey = fetchApiKey(apiKeyPath, context);
         if (apiKey == null || apiKey.isEmpty()) {
+            LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
             return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
         }
 
@@ -142,9 +146,11 @@ public class LlmNodeExecutor implements NodeExecutor {
                     .build();
 
             // Call LLM
+            LOG.debugf("Calling LLM provider: %s, model: %s", providerName, model);
             LlmResponse response = provider.chat(request, apiKey);
 
             if (!response.isSuccess()) {
+                LOG.errorf("LLM API error (provider=%s, model=%s): %s", providerName, model, response.getError());
                 return NodeExecutionResult.failure("LLM error: " + response.getError(), true);
             }
 
@@ -289,16 +295,37 @@ public class LlmNodeExecutor implements NodeExecutor {
     private List<ToolDefinition> buildToolDefinitions(JsonNode config, WorkflowNodeEntity node) {
         List<ToolDefinition> tools = new ArrayList<>();
 
-        // Tools defined in config
+        // Tools defined in config (may come from Tool nodes via Agent or direct config)
         if (config.has("tools") && config.get("tools").isArray()) {
             for (JsonNode toolConfig : config.get("tools")) {
-                ToolDefinition tool = ToolDefinition.builder()
-                        .name(toolConfig.get("name").asText())
-                        .description(toolConfig.has("description") ? toolConfig.get("description").asText() : "")
-                        .parameters(toolConfig.has("parameters") ? toolConfig.get("parameters") : null)
-                        .sourcePortId(toolConfig.has("portId") ? toolConfig.get("portId").asText() : null)
-                        .build();
-                tools.add(tool);
+                // Check if this is OpenAI format (from Tool nodes) or simple format
+                if (toolConfig.has("type") && "function".equals(toolConfig.get("type").asText())) {
+                    // OpenAI format from Tool node: { type: "function", function: {...}, nodeId: "..." }
+                    JsonNode funcDef = toolConfig.get("function");
+                    if (funcDef != null) {
+                        ToolDefinition.ToolDefinitionBuilder builder = ToolDefinition.builder()
+                                .name(funcDef.has("name") ? funcDef.get("name").asText() : "unknown")
+                                .description(funcDef.has("description") ? funcDef.get("description").asText() : "")
+                                .parameters(funcDef.has("parameters") ? funcDef.get("parameters") : null);
+
+                        // Store Tool node ID so we can find the connected Function node
+                        if (toolConfig.has("nodeId")) {
+                            try {
+                                builder.nodeId(UUID.fromString(toolConfig.get("nodeId").asText()));
+                            } catch (Exception ignored) {}
+                        }
+                        tools.add(builder.build());
+                    }
+                } else {
+                    // Simple format: { name, description, parameters, portId }
+                    ToolDefinition tool = ToolDefinition.builder()
+                            .name(toolConfig.get("name").asText())
+                            .description(toolConfig.has("description") ? toolConfig.get("description").asText() : "")
+                            .parameters(toolConfig.has("parameters") ? toolConfig.get("parameters") : null)
+                            .sourcePortId(toolConfig.has("portId") ? toolConfig.get("portId").asText() : null)
+                            .build();
+                    tools.add(tool);
+                }
             }
         }
 
@@ -379,7 +406,19 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             // Find the connected node for this tool
             if (tool.getNodeId() != null) {
-                ctx.targetNode = findNodeById(node.workflow.nodes, tool.getNodeId());
+                WorkflowNodeEntity toolNode = findNodeById(node.workflow.nodes, tool.getNodeId());
+
+                // If the node is a TOOL node, find the connected Function node
+                if (toolNode != null && toolNode.type == NodeType.TOOL) {
+                    ctx.targetNode = findConnectedFunctionNode(toolNode, node.workflow);
+                    if (ctx.targetNode == null) {
+                        LOG.warnf("Tool node '%s' has no connected Function node", toolNode.name);
+                        // Still store the tool node - executeToolCall will handle the error
+                        ctx.targetNode = toolNode;
+                    }
+                } else {
+                    ctx.targetNode = toolNode;
+                }
             } else if (tool.getSourcePortId() != null && node.workflow != null) {
                 // Find node connected via this port
                 for (WorkflowEdgeEntity edge : node.workflow.edges) {
@@ -393,9 +432,36 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
 
             map.put(tool.getName(), ctx);
+            LOG.debugf("Registered tool in context map: %s -> targetNode: %s (type: %s)",
+                tool.getName(),
+                ctx.targetNode != null ? ctx.targetNode.name : "null",
+                ctx.targetNode != null ? ctx.targetNode.type : "null");
         }
 
+        LOG.debugf("Tool context map built with %d tools: %s", map.size(), map.keySet());
         return map;
+    }
+
+    /**
+     * Find the Function node connected to a Tool node's 'function' input port.
+     */
+    private WorkflowNodeEntity findConnectedFunctionNode(WorkflowNodeEntity toolNode,
+                                                          com.nuraly.workflows.entity.WorkflowEntity workflow) {
+        if (workflow == null || workflow.edges == null) {
+            return null;
+        }
+
+        for (WorkflowEdgeEntity edge : workflow.edges) {
+            // Check if this edge connects TO the Tool node's 'function' port
+            if (edge.targetNode != null &&
+                edge.targetNode.id.equals(toolNode.id) &&
+                "function".equals(edge.targetPortId) &&
+                edge.sourceNode != null) {
+                return edge.sourceNode;
+            }
+        }
+
+        return null;
     }
 
     private WorkflowNodeEntity findNodeById(List<WorkflowNodeEntity> nodes, UUID nodeId) {
@@ -409,18 +475,25 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     private String executeToolCall(ToolCall toolCall, Map<String, ToolContext> toolContextMap,
                                    ExecutionContext context) {
+        LOG.debugf("Executing tool call: %s with arguments: %s", toolCall.getName(), toolCall.getArguments());
+
         try {
             ToolContext toolCtx = toolContextMap.get(toolCall.getName());
             if (toolCtx == null || toolCtx.targetNode == null) {
+                LOG.warnf("Tool not found in context map: %s. Available tools: %s",
+                    toolCall.getName(), toolContextMap.keySet());
                 return objectMapper.writeValueAsString(
                         Map.of("error", "Tool not found: " + toolCall.getName())
                 );
             }
 
             WorkflowNodeEntity targetNode = toolCtx.targetNode;
+            LOG.debugf("Found target node for tool: %s (type: %s, id: %s)",
+                targetNode.name, targetNode.type, targetNode.id);
 
             // Get executor for the target node type
             if (!nodeExecutorFactory.hasExecutor(targetNode.type)) {
+                LOG.errorf("No executor for node type: %s", targetNode.type);
                 return objectMapper.writeValueAsString(
                         Map.of("error", "No executor for node type: " + targetNode.type)
                 );
@@ -435,16 +508,22 @@ public class LlmNodeExecutor implements NodeExecutor {
             NodeExecutionResult result = executor.execute(subContext, targetNode);
 
             if (result.isSuccess()) {
+                String toolResult;
                 if (result.getOutput() != null) {
-                    return objectMapper.writeValueAsString(result.getOutput());
+                    toolResult = objectMapper.writeValueAsString(result.getOutput());
+                } else {
+                    toolResult = "{\"success\": true}";
                 }
-                return "{\"success\": true}";
+                LOG.infof("Tool %s executed successfully, result: %s", toolCall.getName(), toolResult);
+                return toolResult;
             } else {
+                LOG.errorf("Tool %s execution failed: %s", toolCall.getName(), result.getErrorMessage());
                 return objectMapper.writeValueAsString(
                         Map.of("error", result.getErrorMessage())
                 );
             }
         } catch (Exception e) {
+            LOG.errorf("Tool %s execution threw exception: %s", toolCall.getName(), e.getMessage());
             try {
                 return objectMapper.writeValueAsString(
                         Map.of("error", "Tool execution failed: " + e.getMessage())

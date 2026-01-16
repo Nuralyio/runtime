@@ -64,4 +64,8 @@ public class Configuration {
 
     @ConfigProperty(name = "workflows.http.sync.timeout", defaultValue = "30000")
     public long httpSyncTimeout;
+
+    // Dev Mode - allows triggering draft workflows
+    @ConfigProperty(name = "workflows.dev-mode", defaultValue = "false")
+    public boolean devMode;
 }

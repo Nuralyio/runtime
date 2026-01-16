@@ -180,7 +180,12 @@ public class WorkflowExecutionConsumer {
      */
     private void sendSuccessReply(String replyTo, String correlationId, WorkflowExecutionEntity execution) {
         try {
+            LOG.infof("Building response for execution: %s, outputData length: %d, outputData: %s",
+                    execution.id,
+                    execution.outputData != null ? execution.outputData.length() : 0,
+                    execution.outputData != null ? execution.outputData.substring(0, Math.min(500, execution.outputData.length())) : "null");
             HttpWorkflowResponse response = buildHttpResponse(execution);
+            LOG.infof("Built response: statusCode=%d, body=%s", response.getStatusCode(), response.getBody());
             response.setCorrelationId(correlationId);
             connectionManager.publishReply(replyTo, correlationId, response);
             LOG.debugf("Sent success reply for execution: %s", execution.id);
@@ -217,30 +222,33 @@ public class WorkflowExecutionConsumer {
             try {
                 JsonNode output = objectMapper.readTree(execution.outputData);
 
+                // Look for httpResponse in variables (set by HTTP_END node)
+                JsonNode httpResponse = output.has("httpResponse") ? output.get("httpResponse") : output;
+
                 // Check if output is from HTTP_END node (has statusCode, headers, body)
-                if (output.has("statusCode")) {
-                    builder.statusCode(output.get("statusCode").asInt(200));
+                if (httpResponse.has("statusCode")) {
+                    builder.statusCode(httpResponse.get("statusCode").asInt(200));
                 } else {
                     builder.statusCode(200);
                 }
 
-                if (output.has("headers") && output.get("headers").isObject()) {
+                if (httpResponse.has("headers") && httpResponse.get("headers").isObject()) {
                     Map<String, String> headers = new HashMap<>();
-                    output.get("headers").fields().forEachRemaining(entry -> {
+                    httpResponse.get("headers").fields().forEachRemaining(entry -> {
                         headers.put(entry.getKey(), entry.getValue().asText());
                     });
                     builder.headers(headers);
                 }
 
-                if (output.has("contentType")) {
-                    builder.contentType(output.get("contentType").asText("application/json"));
+                if (httpResponse.has("contentType")) {
+                    builder.contentType(httpResponse.get("contentType").asText("application/json"));
                 }
 
-                if (output.has("body")) {
-                    builder.body(output.get("body"));
+                if (httpResponse.has("body")) {
+                    builder.body(httpResponse.get("body"));
                 } else {
                     // Use full output as body
-                    builder.body(output);
+                    builder.body(httpResponse);
                 }
 
             } catch (Exception e) {

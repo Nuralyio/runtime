@@ -148,7 +148,7 @@ public class WorkflowTriggerResource {
 
     @POST
     @Path("/webhooks/{token}")
-    @Operation(summary = "Webhook trigger endpoint")
+    @Operation(summary = "Webhook trigger endpoint (token-based)")
     @APIResponses(value = {
             @APIResponse(responseCode = "200", description = "Workflow triggered or completed"),
             @APIResponse(responseCode = "400", description = "Trigger is disabled or workflow not active"),

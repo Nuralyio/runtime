@@ -78,6 +78,7 @@ public class HttpEndNodeExecutor implements NodeExecutor {
                         responseBody = context.getVariables();
                     } else {
                         // Resolve expressions in the body template
+                        // Use ${variables.varName} syntax to reference variables
                         String resolvedBody = context.resolveExpression(bodyTemplate);
                         try {
                             responseBody = objectMapper.readTree(resolvedBody);
