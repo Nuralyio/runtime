@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Represents a workflow execution instance.
+ * Uses optimistic locking (@Version) to prevent concurrent modification issues
+ * when scaling horizontally with multiple worker instances.
+ */
+
 @Entity
 @Table(name = "workflow_executions")
 @Getter
@@ -64,4 +70,12 @@ public class WorkflowExecutionEntity extends PanacheEntityBase {
 
     @Column(name = "duration_ms")
     public Long durationMs;
+
+    /**
+     * Optimistic locking version for concurrent access control.
+     * Prevents race conditions when multiple workers try to update the same execution.
+     */
+    @Version
+    @Column(name = "version")
+    public Long version;
 }
