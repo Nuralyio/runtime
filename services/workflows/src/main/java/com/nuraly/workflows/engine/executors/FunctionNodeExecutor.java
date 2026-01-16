@@ -7,7 +7,10 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 import org.jboss.logging.Logger;
@@ -28,12 +31,17 @@ import org.jboss.logging.Logger;
  *   "timeout": 5000,                      // Execution timeout in ms
  *   "outputVariable": "result"            // Variable to store the result
  * }
+ *
+ * Enhanced with metrics tracking for monitoring execution performance.
  */
 @ApplicationScoped
 public class FunctionNodeExecutor implements NodeExecutor {
 
     private static final Logger LOG = Logger.getLogger(FunctionNodeExecutor.class);
     private static final int DEFAULT_TIMEOUT_MS = 5000;
+
+    @Inject
+    MeterRegistry meterRegistry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -60,6 +68,10 @@ public class FunctionNodeExecutor implements NodeExecutor {
         int timeout = config.has("timeout") ? config.get("timeout").asInt() : DEFAULT_TIMEOUT_MS;
 
         LOG.debugf("Executing function node: %s", node.name);
+
+        // Start timer for metrics
+        Timer.Sample timerSample = Timer.start(meterRegistry);
+        String status = "success";
 
         try (Context jsContext = Context.newBuilder("js")
                 .option("engine.WarnInterpreterOnly", "false")
@@ -113,8 +125,18 @@ public class FunctionNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.success(output);
 
         } catch (Exception e) {
+            status = "error";
             LOG.errorf("Function execution failed: %s - %s", node.name, e.getMessage());
             return NodeExecutionResult.failure("Function execution failed: " + e.getMessage());
+        } finally {
+            // Record metrics
+            timerSample.stop(Timer.builder("workflow.function.execution")
+                    .tag("node", node.name != null ? node.name : "unnamed")
+                    .tag("status", status)
+                    .register(meterRegistry));
+
+            meterRegistry.counter("workflow.function.executions.total",
+                    "status", status).increment();
         }
     }
 
