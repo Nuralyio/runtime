@@ -113,6 +113,16 @@ public class RabbitMQConnectionManager {
     }
 
     /**
+     * Check if the RabbitMQ connection is currently open.
+     * Used for health checks.
+     */
+    public boolean isConnected() {
+        synchronized (connectionLock) {
+            return connection != null && connection.isOpen();
+        }
+    }
+
+    /**
      * Create a temporary reply queue for synchronous execution.
      * The queue is exclusive and auto-delete.
      *
