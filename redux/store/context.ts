@@ -5,8 +5,10 @@ import { persistentAtom } from "@nanostores/persistent";
 const isServer = typeof window === "undefined";
 
 if (!isServer) {
-  if (!window["__INITIAL_APPLICATION_STATE__"]) {
-    window["__INITIAL_APPLICATION_STATE__"] = JSON.stringify([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const win = window as any;
+  if (!win["__INITIAL_APPLICATION_STATE__"]) {
+    win["__INITIAL_APPLICATION_STATE__"] = JSON.stringify([]);
   }
 }
 
@@ -48,9 +50,9 @@ export function setVar(contextId: string, varName: string, varValue: any) {
   const varType = getType(varValue);
   const currentContext = $context.get();
 
-  // Check if the value has changed
-  const currentVar = currentContext[contextId]?.[varName]?.value;
-  
+  // Check if the value has changed (reserved for future optimization)
+  const _currentVar = currentContext[contextId]?.[varName]?.value;
+  void _currentVar; // Suppress unused variable warning
 
   const updatedContext = {
     ...currentContext,
