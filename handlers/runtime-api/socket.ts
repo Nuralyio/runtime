@@ -103,6 +103,8 @@ export interface SocketInstance {
   connect(url?: string, path?: string): SocketInstance;
   subscribe(resourceId: string, contextId?: string): SocketInstance;
   unsubscribe(): SocketInstance;
+  subscribeWorkflow(workflowId: string): SocketInstance;
+  unsubscribeWorkflow(): SocketInstance;
   on(event: string, callback: EventCallback): SocketInstance;
   off(event: string, callback?: EventCallback): SocketInstance;
   emit(event: string, data?: any): SocketInstance;
@@ -119,6 +121,7 @@ function createSocketInstance(): SocketInstance {
   sharedState.activeInstances.add(instanceId);
 
   let currentSubscription: { resourceId: string; contextId?: string } | null = null;
+  let currentWorkflowSubscription: string | null = null;
 
   const instance: SocketInstance = {
     /**
@@ -248,6 +251,53 @@ function createSocketInstance(): SocketInstance {
     },
 
     /**
+     * Subscribe to a workflow (receive all execution events for this workflow)
+     * Use this to track HTTP trigger executions that happen externally
+     * @param workflowId - The workflow ID to subscribe to
+     */
+    subscribeWorkflow(workflowId: string): SocketInstance {
+      if (!sharedState.socket) {
+        console.warn('[Socket] Not connected. Call connect() first.');
+        return instance;
+      }
+
+      // Unsubscribe from previous workflow if exists
+      if (currentWorkflowSubscription) {
+        sharedState.socket.emit('unsubscribe:workflow', {
+          workflowId: currentWorkflowSubscription,
+        });
+      }
+
+      currentWorkflowSubscription = workflowId;
+
+      sharedState.socket.emit('subscribe:workflow', {
+        workflowId,
+      });
+
+      console.log(`[Socket] Subscribed to workflow: ${workflowId}`);
+
+      return instance;
+    },
+
+    /**
+     * Unsubscribe from current workflow
+     */
+    unsubscribeWorkflow(): SocketInstance {
+      if (!sharedState.socket || !currentWorkflowSubscription) {
+        return instance;
+      }
+
+      sharedState.socket.emit('unsubscribe:workflow', {
+        workflowId: currentWorkflowSubscription,
+      });
+
+      console.log(`[Socket] Unsubscribed from workflow: ${currentWorkflowSubscription}`);
+      currentWorkflowSubscription = null;
+
+      return instance;
+    },
+
+    /**
      * Add event listener (scoped to this instance)
      * @param event - Event name
      * @param callback - Callback function
@@ -308,12 +358,20 @@ function createSocketInstance(): SocketInstance {
      * Cleanup this instance (removes only this instance's listeners)
      */
     cleanup(): void {
-      // Unsubscribe if subscribed
+      // Unsubscribe from execution if subscribed
       if (currentSubscription && sharedState.socket) {
         sharedState.socket.emit('unsubscribe:execution', {
           executionId: currentSubscription.resourceId,
         });
         currentSubscription = null;
+      }
+
+      // Unsubscribe from workflow if subscribed
+      if (currentWorkflowSubscription && sharedState.socket) {
+        sharedState.socket.emit('unsubscribe:workflow', {
+          workflowId: currentWorkflowSubscription,
+        });
+        currentWorkflowSubscription = null;
       }
 
       // Remove all listeners owned by this instance

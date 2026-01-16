@@ -416,18 +416,27 @@ export class KvModal extends LitElement {
                         <div class="empty-state">
                           <nr-icon name="key" size="48" class="empty-state-icon"></nr-icon>
                           <div class="empty-state-text">No entries yet</div>
+                          ${!this.showEntryForm
+                            ? html`
+                                <button class="add-btn" @click=${() => (this.showEntryForm = true)}>
+                                  + Add Entry
+                                </button>
+                              `
+                            : nothing}
                         </div>
                       `
                     : this.entries.map(entry => this.renderEntryItem(entry))}
                 </div>
 
-                ${this.showEntryForm
-                  ? this.renderEntryForm()
-                  : html`
+                ${this.entries.length > 0 && !this.showEntryForm
+                  ? html`
                       <button class="add-btn" style="margin-top: 16px;" @click=${() => (this.showEntryForm = true)}>
                         + Add Entry
                       </button>
-                    `}
+                    `
+                  : nothing}
+
+                ${this.showEntryForm ? this.renderEntryForm() : nothing}
               `}
         </div>
       </div>
