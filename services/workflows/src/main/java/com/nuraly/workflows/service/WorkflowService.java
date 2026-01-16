@@ -6,6 +6,7 @@ import com.nuraly.workflows.dto.*;
 import com.nuraly.workflows.dto.mapper.WorkflowDTOMapper;
 import com.nuraly.workflows.dto.mapper.WorkflowEdgeDTOMapper;
 import com.nuraly.workflows.dto.mapper.WorkflowNodeDTOMapper;
+import com.nuraly.workflows.entity.NodeExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowEdgeEntity;
 import com.nuraly.workflows.entity.WorkflowEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
@@ -495,7 +496,9 @@ public class WorkflowService {
             throw new Exception("Node not found with id: " + nodeId);
         }
 
-        // Delete associated edges first
+        // Delete associated node executions first (foreign key constraint)
+        NodeExecutionEntity.delete("node.id = ?1", nodeId);
+        // Delete associated edges
         WorkflowEdgeEntity.delete("sourceNode.id = ?1 or targetNode.id = ?1", nodeId);
         node.delete();
     }
@@ -539,6 +542,7 @@ public class WorkflowService {
         edge.sourceNode = sourceNode;
         edge.targetNode = targetNode;
         edge.sourcePortId = sourcePortId;
+        edge.targetPortId = edgeDTO.getTargetPortId();
         edge.condition = edgeDTO.getCondition();
         edge.label = edgeDTO.getLabel();
         edge.priority = edgeDTO.getPriority() != null ? edgeDTO.getPriority() : 0;

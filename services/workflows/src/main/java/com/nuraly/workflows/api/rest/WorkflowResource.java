@@ -1,11 +1,15 @@
 package com.nuraly.workflows.api.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.dto.*;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowService;
 import com.nuraly.workflows.service.WorkflowExecutionService;
+import com.nuraly.workflows.service.WorkflowTriggerService;
+import jakarta.ws.rs.core.Response;
 import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -34,6 +38,12 @@ public class WorkflowResource {
 
     @Inject
     WorkflowExecutionService executionService;
+
+    @Inject
+    WorkflowTriggerService triggerService;
+
+    @Inject
+    Configuration configuration;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -388,6 +398,154 @@ public class WorkflowResource {
             return (String) user.get("uuid");
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    @GET
+    @Path("/{id}/trigger")
+    @Operation(summary = "Trigger workflow via HTTP GET")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Workflow executed successfully"),
+            @APIResponse(responseCode = "400", description = "Workflow has no HTTP trigger"),
+            @APIResponse(responseCode = "404", description = "Workflow not found"),
+            @APIResponse(responseCode = "504", description = "Workflow execution timed out")
+    })
+    public Response triggerWorkflowGet(@PathParam("id") UUID id) {
+        return triggerWorkflowWithPath(id, null, null);
+    }
+
+    @GET
+    @Path("/{id}/trigger/{path: .+}")
+    @Operation(summary = "Trigger workflow via HTTP GET with path")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Workflow executed successfully"),
+            @APIResponse(responseCode = "400", description = "Workflow has no HTTP trigger"),
+            @APIResponse(responseCode = "404", description = "Workflow not found"),
+            @APIResponse(responseCode = "504", description = "Workflow execution timed out")
+    })
+    public Response triggerWorkflowGetWithPath(
+            @PathParam("id") UUID id,
+            @PathParam("path") String path) {
+        return triggerWorkflowWithPath(id, path, null);
+    }
+
+    @POST
+    @Path("/{id}/trigger")
+    @Operation(summary = "Trigger workflow via HTTP POST")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Workflow executed successfully"),
+            @APIResponse(responseCode = "400", description = "Workflow has no HTTP trigger"),
+            @APIResponse(responseCode = "404", description = "Workflow not found"),
+            @APIResponse(responseCode = "504", description = "Workflow execution timed out")
+    })
+    public Response triggerWorkflow(
+            @PathParam("id") UUID id,
+            JsonNode payload) {
+        return triggerWorkflowWithPath(id, null, payload);
+    }
+
+    @POST
+    @Path("/{id}/trigger/{path: .+}")
+    @Operation(summary = "Trigger workflow via HTTP POST with custom path")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Workflow executed successfully"),
+            @APIResponse(responseCode = "400", description = "Workflow has no HTTP trigger"),
+            @APIResponse(responseCode = "404", description = "Workflow not found"),
+            @APIResponse(responseCode = "504", description = "Workflow execution timed out")
+    })
+    public Response triggerWorkflowWithPath(
+            @PathParam("id") UUID id,
+            @PathParam("path") String path,
+            JsonNode payload) {
+        try {
+            HttpWorkflowResponse response = triggerService.triggerByWorkflowId(
+                    id, path, payload, configuration.httpSyncTimeout);
+
+            if (response == null) {
+                return Response.status(Response.Status.GATEWAY_TIMEOUT)
+                        .entity("{\"error\": \"Workflow execution timed out\"}")
+                        .build();
+            }
+
+            Response.ResponseBuilder responseBuilder = Response.status(response.getStatusCode());
+
+            // Add execution ID header for frontend tracking via socket.io
+            if (response.getExecutionId() != null) {
+                responseBuilder.header("X-Execution-Id", response.getExecutionId().toString());
+            }
+
+            if (response.getContentType() != null) {
+                responseBuilder.type(response.getContentType());
+            }
+
+            if (response.getHeaders() != null) {
+                response.getHeaders().forEach(responseBuilder::header);
+            }
+
+            if (response.getBody() != null) {
+                responseBuilder.entity(response.getBody());
+            } else if (response.getError() != null) {
+                responseBuilder.entity("{\"error\": \"" + response.getError() + "\"}");
+            } else {
+                responseBuilder.entity("{\"status\": \"completed\"}");
+            }
+
+            return responseBuilder.build();
+
+        } catch (WorkflowNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"Workflow not found\"}")
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/trigger/chat")
+    @Operation(summary = "Trigger workflow from chatbot (async execution)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "202", description = "Workflow execution started"),
+            @APIResponse(responseCode = "400", description = "Workflow has no CHAT_START trigger"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public Response triggerWorkflowFromChat(
+            @PathParam("id") UUID id,
+            JsonNode payload) {
+        try {
+            // Start async execution and return immediately
+            // The chatbot will track progress via socket.io
+            var execution = triggerService.triggerAsync(id, "CHAT", payload);
+
+            if (execution == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("{\"error\": \"Failed to start workflow execution\"}")
+                        .build();
+            }
+
+            return Response.status(Response.Status.ACCEPTED)
+                    .header("X-Execution-Id", execution.id.toString())
+                    .entity("{\"executionId\": \"" + execution.id + "\", \"status\": \"QUEUED\"}")
+                    .build();
+
+        } catch (WorkflowNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"Workflow not found\"}")
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
         }
     }
 }

@@ -35,6 +35,9 @@ public class WorkflowTriggerService {
     private static final Logger LOG = Logger.getLogger(WorkflowTriggerService.class);
 
     @Inject
+    WorkflowTriggerService self; // Self-injection for CDI interception
+
+    @Inject
     WorkflowTriggerDTOMapper triggerDTOMapper;
 
     @Inject
@@ -128,6 +131,35 @@ public class WorkflowTriggerService {
         }
         trigger.enabled = false;
         trigger.persist();
+    }
+
+    /**
+     * Trigger workflow directly by workflow ID (sync mode for HTTP triggers).
+     *
+     * @param workflowId The workflow ID
+     * @param path       Optional custom path (from HTTP_START node config)
+     * @param payload    The request payload
+     * @param timeoutMs  Timeout in milliseconds
+     * @return The HTTP workflow response
+     */
+    public HttpWorkflowResponse triggerByWorkflowId(UUID workflowId, String path, JsonNode payload, long timeoutMs)
+            throws WorkflowNotFoundException {
+
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        if (workflow == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+
+        if (workflow.status != WorkflowStatus.ACTIVE && workflow.status != WorkflowStatus.DRAFT) {
+            throw new IllegalStateException("Workflow is not active or draft");
+        }
+
+        if (!hasHttpStartNode(workflow)) {
+            throw new IllegalStateException("Workflow has no HTTP trigger (HTTP_START node)");
+        }
+
+        // Execute synchronously
+        return executeSyncFromWorkflow(workflow, payload, "http_trigger", timeoutMs);
     }
 
     /**
@@ -252,6 +284,66 @@ public class WorkflowTriggerService {
     }
 
     /**
+     * Trigger workflow asynchronously by workflow ID.
+     * Used by chatbot to trigger workflows - returns immediately with execution entity.
+     * The chatbot will track progress via socket.io.
+     *
+     * @param workflowId  The workflow ID
+     * @param triggerType The trigger type (e.g., "CHAT", "API")
+     * @param payload     The input payload
+     * @return The execution entity (can be null if failed to queue)
+     */
+    public WorkflowExecutionEntity triggerAsync(UUID workflowId, String triggerType, JsonNode payload)
+            throws WorkflowNotFoundException {
+
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        if (workflow == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+
+        if (workflow.status != WorkflowStatus.ACTIVE && workflow.status != WorkflowStatus.DRAFT) {
+            throw new IllegalStateException("Workflow is not active or draft");
+        }
+
+        // Create execution in separate transaction
+        UUID executionId = self.createExecutionFromWorkflow(workflowId, payload, triggerType.toLowerCase());
+
+        // Re-fetch execution in current transaction
+        WorkflowExecutionEntity execution = WorkflowExecutionEntity.findById(executionId);
+
+        // Queue execution for async processing via RabbitMQ
+        try {
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    workflow.id,
+                    execution.triggeredBy,
+                    triggerType.toLowerCase(),
+                    execution.inputData,
+                    null
+            );
+            executionProducer.publishExecution(message);
+
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
+            eventService.logExecutionQueued(execution);
+
+            return execution;
+
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = "Failed to queue execution: " + e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+            LOG.errorf(e, "Failed to queue async execution for workflow %s", workflowId);
+            return null;
+        }
+    }
+
+    /**
      * Execute workflow asynchronously.
      */
     private void executeFromTrigger(WorkflowTriggerEntity trigger, JsonNode payload, String triggerType) throws Exception {
@@ -281,6 +373,85 @@ public class WorkflowTriggerService {
 
             eventService.logExecutionFailed(execution, e.getMessage());
             throw e;
+        }
+    }
+
+    /**
+     * Execute workflow synchronously directly from workflow (for direct HTTP triggers).
+     */
+    private HttpWorkflowResponse executeSyncFromWorkflow(WorkflowEntity workflow, JsonNode payload,
+                                                          String triggerType, long timeoutMs) {
+        // Use self-injection to ensure REQUIRES_NEW transaction is intercepted
+        // Returns execution ID since the entity will be detached after the transaction commits
+        UUID executionId = self.createExecutionFromWorkflow(workflow.id, payload, triggerType);
+
+        // Re-fetch the execution entity in current transaction context
+        WorkflowExecutionEntity execution = WorkflowExecutionEntity.findById(executionId);
+
+        // Generate correlation ID and create reply queue
+        String correlationId = UUID.randomUUID().toString();
+        String replyQueueName;
+
+        try {
+            replyQueueName = connectionManager.createReplyQueue(correlationId);
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = "Failed to create reply queue: " + e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+            return HttpWorkflowResponse.error(correlationId, executionId, e.getMessage());
+        }
+
+        try {
+            // Publish execution with reply queue
+            String inputData = "{}";
+            if (payload != null) {
+                inputData = objectMapper.writeValueAsString(payload);
+            }
+
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    executionId,
+                    workflow.id,
+                    "http_trigger",
+                    triggerType,
+                    inputData,
+                    null,
+                    replyQueueName,
+                    correlationId
+            );
+            executionProducer.publishSyncExecution(message, replyQueueName, correlationId);
+
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
+            LOG.infof("Waiting for sync workflow response: executionId=%s, correlationId=%s, timeout=%dms",
+                    executionId, correlationId, timeoutMs);
+
+            // Wait for reply
+            HttpWorkflowResponse response = connectionManager.waitForReply(replyQueueName, correlationId, timeoutMs);
+
+            if (response == null) {
+                LOG.warnf("Sync workflow execution timed out: executionId=%s", executionId);
+                return HttpWorkflowResponse.timeout(correlationId, executionId, timeoutMs);
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = "Sync execution failed: " + e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+            return HttpWorkflowResponse.error(correlationId, executionId, e.getMessage());
+
+        } finally {
+            connectionManager.cleanupReplyQueue(correlationId);
         }
     }
 
@@ -353,6 +524,40 @@ public class WorkflowTriggerService {
             // Cleanup reply queue
             connectionManager.cleanupReplyQueue(correlationId);
         }
+    }
+
+    /**
+     * Create execution entity from workflow (for direct HTTP triggers).
+     * Uses REQUIRES_NEW to ensure the execution is committed before returning.
+     * Returns the execution ID since the entity will be detached after this transaction commits.
+     */
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public UUID createExecutionFromWorkflow(UUID workflowId, JsonNode payload, String triggerType) {
+        // Re-fetch workflow in new transaction context
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        WorkflowExecutionEntity execution = new WorkflowExecutionEntity();
+        execution.workflow = workflow;
+        execution.status = ExecutionStatus.PENDING;
+        execution.triggeredBy = "http_trigger";
+        execution.triggerType = triggerType;
+        execution.startedAt = Instant.now();
+
+        String inputData = "{}";
+        if (payload != null) {
+            try {
+                inputData = objectMapper.writeValueAsString(payload);
+            } catch (Exception e) {
+                LOG.warnf("Failed to serialize payload: %s", e.getMessage());
+            }
+        }
+        execution.inputData = inputData;
+
+        execution.persist();
+
+        // Log event
+        eventService.logExecutionQueued(execution);
+
+        return execution.id;
     }
 
     /**

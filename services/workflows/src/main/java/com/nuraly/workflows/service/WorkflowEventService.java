@@ -186,6 +186,24 @@ public class WorkflowEventService {
         ));
     }
 
+    /**
+     * Send a chat message event - used by CHAT_OUTPUT nodes to send messages to chatbot in real-time
+     */
+    public void sendChatMessage(WorkflowExecutionEntity execution, String nodeId, String nodeName, String message, Map<String, Object> metadata) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("executionId", String.valueOf(execution.id));
+        data.put("workflowId", String.valueOf(execution.workflow.id));
+        data.put("applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "");
+        data.put("nodeId", nodeId);
+        data.put("nodeName", nodeName);
+        data.put("message", message);
+        data.put("sender", "bot");
+        if (metadata != null) {
+            data.put("metadata", metadata);
+        }
+        sendEvent("CHAT_MESSAGE", data);
+    }
+
     private void sendEvent(String eventType, Map<String, Object> data) {
         try {
             Map<String, Object> event = new HashMap<>();
