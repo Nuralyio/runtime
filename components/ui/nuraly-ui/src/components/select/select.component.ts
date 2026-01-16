@@ -577,6 +577,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
             role="listbox"
             aria-multiselectable="${this.multiple}"
             style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
+            @click=${(e: Event) => e.stopPropagation()}
           >
             ${this.searchable ? this.renderSearchInput() : nothing}
             <slot name="before-options"></slot>
@@ -622,6 +623,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
         class="options"
         role="listbox"
         style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
+        @click=${(e: Event) => e.stopPropagation()}
       >
         ${this.searchable ? this.renderSearchInput() : nothing}
         <slot name="before-options"></slot>
@@ -641,6 +643,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
         class="options"
         role="listbox"
         style=${this.maxHeight ? styleMap({ 'max-height': this.maxHeight }) : nothing}
+        @click=${(e: Event) => e.stopPropagation()}
       >
         ${this.searchable ? this.renderSearchInput() : nothing}
         <slot name="before-options"></slot>

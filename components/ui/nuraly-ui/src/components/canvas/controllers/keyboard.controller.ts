@@ -34,12 +34,54 @@ export class KeyboardController extends BaseCanvasController {
   }
 
   /**
+   * Check if an element or any of its shadow roots contain an editable element
+   */
+  private isEditableElement(element: Element | null): boolean {
+    if (!element) return false;
+
+    const tagName = element.tagName.toUpperCase();
+
+    // Check if it's a native editable element
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
+      return true;
+    }
+
+    // Check for contenteditable
+    if ((element as HTMLElement).isContentEditable) {
+      return true;
+    }
+
+    // Check if it's a custom input component (nr-input, nr-select, etc.)
+    if (tagName.startsWith('NR-') && (
+      tagName.includes('INPUT') ||
+      tagName.includes('SELECT') ||
+      tagName.includes('TEXTAREA')
+    )) {
+      return true;
+    }
+
+    // Check shadow root for editable elements
+    const shadowRoot = element.shadowRoot;
+    if (shadowRoot) {
+      const activeInShadow = shadowRoot.activeElement;
+      if (activeInShadow && this.isEditableElement(activeInShadow)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Handle keyboard events
    */
   private handleKeyDown(e: KeyboardEvent): void {
     // Don't handle key events if focus is in an input field
     const target = e.target as HTMLElement;
-    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    const activeElement = document.activeElement;
+
+    // Check both the event target and the active element
+    if (this.isEditableElement(target) || this.isEditableElement(activeElement)) {
       return;
     }
 

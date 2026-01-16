@@ -86,10 +86,13 @@ export class SelectEventController extends BaseSelectController implements Event
 
   /**
    * Handles clicks outside the component to close dropdown
+   * Uses composedPath() to properly detect clicks on slotted content
    */
   handleWindowClick = (event: Event): void => {
-    const target = event.target as Element;
-    if (!this.host.contains(target)) {
+    const path = event.composedPath();
+    // Check if click is inside the host element using composed path
+    // This works correctly with shadow DOM and slotted content
+    if (!path.includes(this.host)) {
       this.host.closeDropdown();
     }
   };

@@ -16,6 +16,7 @@ import {
   CanvasMode,
   CanvasType,
   ExecutionStatus,
+  WorkflowNodeType,
   createNodeFromTemplate,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-canvas.style.js';
@@ -24,6 +25,8 @@ import './workflow-node.component.js';
 import '../icon/icon.component.js';
 import '../input/input.component.js';
 import '../chatbot/chatbot.component.js';
+import { ChatbotCoreController } from '../chatbot/core/chatbot-core.controller.js';
+import { WorkflowSocketProvider } from '../chatbot/providers/workflow-socket-provider.js';
 
 // Controllers
 import {
@@ -158,6 +161,23 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   private previewNodeId: string | null = null;
 
+  // Chatbot preview controller and provider for CHAT_START nodes
+  private chatPreviewController: ChatbotCoreController | null = null;
+  private chatPreviewProvider: WorkflowSocketProvider | null = null;
+
+  // HTTP preview state
+  @state()
+  private httpPreviewBody: string = '{\n  \n}';
+
+  @state()
+  private httpPreviewResponse: string = '';
+
+  @state()
+  private httpPreviewLoading: boolean = false;
+
+  @state()
+  private httpPreviewError: string = '';
+
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
 
@@ -210,6 +230,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     super.disconnectedCallback();
     window.removeEventListener('mouseup', this.handleGlobalMouseUp);
     window.removeEventListener('mousemove', this.handleGlobalMouseMove);
+    // Clean up chat preview resources
+    this.cleanupChatPreview();
   }
 
   // Note: Keyboard handling is now in KeyboardController
@@ -298,14 +320,182 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }));
   }
 
-  private handleNodePreview(e: CustomEvent) {
+  private async handleNodePreview(e: CustomEvent) {
     const { node } = e.detail;
     // Toggle preview panel - close if same node, open if different
     if (this.previewNodeId === node.id) {
-      this.previewNodeId = null;
+      this.closePreviewPanel();
     } else {
+      // Clean up previous preview if any
+      await this.cleanupChatPreview();
+
       this.previewNodeId = node.id;
+
+      // If it's a CHAT_START node, initialize the workflow socket provider
+      if (node.type === WorkflowNodeType.CHAT_START && this.workflow?.id) {
+        await this.initializeChatPreview(this.workflow.id);
+      }
     }
+  }
+
+  /**
+   * Initialize chat preview with WorkflowSocketProvider
+   */
+  private async initializeChatPreview(workflowId: string): Promise<void> {
+    try {
+      // Create provider with workflow ID
+      this.chatPreviewProvider = new WorkflowSocketProvider();
+
+      // Get socket URL from current location or use default
+      const socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
+
+      await this.chatPreviewProvider.connect({
+        workflowId,
+        socketUrl,
+        socketPath: '/socket.io/workflow',
+        triggerEndpoint: '/api/v1/workflows/{workflowId}/trigger/chat',
+        responseTimeout: 60000,
+      });
+
+      // Listen for execution events to update node statuses on canvas
+      const socket = this.chatPreviewProvider.getSocket();
+      if (socket) {
+        socket.on('execution:node-started', (event: any) => {
+          const nodeId = event.data?.nodeId || event.nodeId;
+          if (nodeId) {
+            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'RUNNING' };
+          }
+        });
+
+        socket.on('execution:node-completed', (event: any) => {
+          const nodeId = event.data?.nodeId || event.nodeId;
+          if (nodeId) {
+            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'COMPLETED' };
+          }
+        });
+
+        socket.on('execution:node-failed', (event: any) => {
+          const nodeId = event.data?.nodeId || event.nodeId;
+          if (nodeId) {
+            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'FAILED' };
+          }
+        });
+
+        socket.on('execution:started', (event: any) => {
+          // Reset all node statuses when a new execution starts
+          this.nodeStatuses = {};
+        });
+      }
+
+      // Create controller with the provider
+      this.chatPreviewController = new ChatbotCoreController({
+        provider: this.chatPreviewProvider,
+        ui: {
+          onStateChange: () => {
+            // Force re-render when state changes
+            this.requestUpdate();
+          },
+        },
+      });
+
+      console.log('[Canvas] Chat preview initialized for workflow:', workflowId);
+    } catch (error) {
+      console.error('[Canvas] Failed to initialize chat preview:', error);
+      this.chatPreviewController = null;
+      this.chatPreviewProvider = null;
+    }
+  }
+
+  /**
+   * Cleanup chat preview controller and provider
+   */
+  private async cleanupChatPreview(): Promise<void> {
+    if (this.chatPreviewProvider) {
+      try {
+        await this.chatPreviewProvider.disconnect();
+      } catch (error) {
+        console.error('[Canvas] Error disconnecting chat preview:', error);
+      }
+      this.chatPreviewProvider = null;
+    }
+    this.chatPreviewController = null;
+  }
+
+  /**
+   * Send HTTP request to trigger workflow
+   */
+  private async sendHttpPreviewRequest(): Promise<void> {
+    const previewNode = this.getPreviewNode();
+    if (!previewNode || !this.workflow?.id) return;
+
+    const config = previewNode.configuration || {};
+    const httpPath = (config.httpPath as string) || '/webhook';
+
+    this.httpPreviewLoading = true;
+    this.httpPreviewError = '';
+    this.httpPreviewResponse = '';
+    // Reset node statuses when starting a new execution
+    this.nodeStatuses = {};
+
+    try {
+      // Parse the request body
+      let body: any;
+      try {
+        body = JSON.parse(this.httpPreviewBody);
+      } catch {
+        throw new Error('Invalid JSON in request body');
+      }
+
+      // Build the trigger URL
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
+      const triggerUrl = `${baseUrl}/api/v1/workflows/${this.workflow.id}/trigger/http`;
+
+      console.log('[Canvas] Sending HTTP preview request:', triggerUrl, body);
+
+      const response = await fetch(triggerUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const executionId = response.headers.get('X-Execution-Id');
+      let responseData: any;
+
+      try {
+        responseData = await response.json();
+      } catch {
+        responseData = await response.text();
+      }
+
+      if (!response.ok) {
+        throw new Error(responseData.message || responseData || `HTTP ${response.status}`);
+      }
+
+      // Format the response nicely
+      this.httpPreviewResponse = JSON.stringify({
+        status: response.status,
+        executionId,
+        data: responseData,
+      }, null, 2);
+
+    } catch (error) {
+      console.error('[Canvas] HTTP preview error:', error);
+      this.httpPreviewError = error instanceof Error ? error.message : String(error);
+    } finally {
+      this.httpPreviewLoading = false;
+    }
+  }
+
+  /**
+   * Reset HTTP preview state
+   */
+  private resetHttpPreview(): void {
+    this.httpPreviewBody = '{\n  \n}';
+    this.httpPreviewResponse = '';
+    this.httpPreviewError = '';
+    this.httpPreviewLoading = false;
   }
 
   private handleNodeTrigger(e: CustomEvent) {
@@ -321,6 +511,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private closePreviewPanel() {
     this.previewNodeId = null;
+    this.cleanupChatPreview();
+    this.resetHttpPreview();
   }
 
   /**
@@ -338,7 +530,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     const previewNode = this.getPreviewNode();
     if (!previewNode) return null;
 
-    const previewPanelWidth = 420;
+    const previewPanelWidth = 340;
     const panelOffset = 20;
 
     return {
@@ -453,13 +645,27 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   /**
    * Get nodes with execution statuses applied from nodeStatuses map
    * This ensures edges can derive their status from connected nodes
+   *
+   * When nodeStatuses has any entries (active real-time execution), only those
+   * nodes get status - this prevents edges from non-executed triggers from
+   * being colored based on saved workflow statuses.
    */
   private getNodesWithStatuses(): WorkflowNode[] {
-    return this.workflow.nodes.map(node =>
-      this.nodeStatuses[node.id]
-        ? { ...node, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus }
-        : node
-    );
+    const hasActiveExecution = Object.keys(this.nodeStatuses).length > 0;
+
+    return this.workflow.nodes.map(node => {
+      if (this.nodeStatuses[node.id]) {
+        // Node has real-time status from current execution
+        return { ...node, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus };
+      } else if (hasActiveExecution) {
+        // During active execution, nodes not in nodeStatuses have no status
+        // This prevents edges from other triggers from being colored
+        return { ...node, status: undefined };
+      } else {
+        // No active execution - use saved workflow status (for history view)
+        return node;
+      }
+    });
   }
 
   // Note: Edge rendering is now in edges.template.ts
@@ -546,48 +752,140 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         onUpdateDescription: (desc) => this.configController.updateDescription(desc),
         onUpdateConfig: (key, value) => this.configController.updateConfig(key, value),
       },
+      workflowId: this.workflow?.id,
     });
   }
 
-  private renderChatbotPreview() {
+  private renderPreviewPanel() {
     const previewNode = this.getPreviewNode();
     const position = this.getPreviewPanelPosition();
     if (!previewNode || !position) return html``;
 
     const config = previewNode.configuration || {};
+    const panelStyle = {
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+    };
+
+    // HTTP_START preview
+    if (previewNode.type === WorkflowNodeType.HTTP_START) {
+      const httpPath = (config.httpPath as string) || '/webhook';
+      return html`
+        <div class="chatbot-preview-panel http-preview-panel" style=${styleMap(panelStyle)} data-theme=${this.currentTheme}>
+          <div class="chatbot-preview-header">
+            <div class="chatbot-preview-title">
+              <nr-icon name="globe" size="small"></nr-icon>
+              <span>HTTP Test</span>
+            </div>
+            <button class="chatbot-preview-close" @click=${this.closePreviewPanel}>
+              <nr-icon name="x" size="small"></nr-icon>
+            </button>
+          </div>
+          <div class="http-preview-content">
+            <div class="http-preview-url">
+              <span class="http-method">POST</span>
+              <span class="http-path">${httpPath}</span>
+            </div>
+            <div class="http-preview-section">
+              <label>Request Body (JSON)</label>
+              <textarea
+                class="http-request-body"
+                .value=${this.httpPreviewBody}
+                @input=${(e: Event) => this.httpPreviewBody = (e.target as HTMLTextAreaElement).value}
+                placeholder='{ "key": "value" }'
+                ?disabled=${this.httpPreviewLoading}
+              ></textarea>
+            </div>
+            <div class="http-preview-actions">
+              <button
+                class="http-send-btn"
+                @click=${this.sendHttpPreviewRequest}
+                ?disabled=${this.httpPreviewLoading}
+              >
+                ${this.httpPreviewLoading ? html`
+                  <nr-icon name="loader" size="small"></nr-icon>
+                  <span>Sending...</span>
+                ` : html`
+                  <nr-icon name="send" size="small"></nr-icon>
+                  <span>Send Request</span>
+                `}
+              </button>
+            </div>
+            ${this.httpPreviewError ? html`
+              <div class="http-preview-error">
+                <nr-icon name="alert-circle" size="small"></nr-icon>
+                <span>${this.httpPreviewError}</span>
+              </div>
+            ` : ''}
+            ${this.httpPreviewResponse ? html`
+              <div class="http-preview-section">
+                <label>Response</label>
+                <pre class="http-response-body">${this.httpPreviewResponse}</pre>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Chat preview (CHAT_START or CHATBOT)
     const rawSuggestions = (config.suggestions as Array<{id?: string; text?: string}>) || [];
     const suggestions = rawSuggestions.map((s, i) => ({
       id: s.id || String(i),
       text: s.text || '',
     }));
 
-    const panelStyle = {
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-    };
+    const isChatStartNode = previewNode.type === WorkflowNodeType.CHAT_START;
+    const isConnected = this.chatPreviewProvider?.isConnected() ?? false;
+    const headerTitle = isChatStartNode ? 'Workflow Chat' : 'Chat Preview';
+    const headerIcon = isChatStartNode ? 'zap' : 'message-circle';
 
     return html`
       <div class="chatbot-preview-panel" style=${styleMap(panelStyle)} data-theme=${this.currentTheme}>
         <div class="chatbot-preview-header">
           <div class="chatbot-preview-title">
-            <nr-icon name="message-circle" size="small"></nr-icon>
-            <span>Chat Preview</span>
+            <nr-icon name=${headerIcon} size="small"></nr-icon>
+            <span>${headerTitle}</span>
+            ${isChatStartNode ? html`
+              <span class="chat-preview-status ${isConnected ? 'connected' : 'disconnected'}">
+                ${isConnected ? '● Connected' : '○ Connecting...'}
+              </span>
+            ` : ''}
           </div>
           <button class="chatbot-preview-close" @click=${this.closePreviewPanel}>
             <nr-icon name="x" size="small"></nr-icon>
           </button>
         </div>
         <div class="chatbot-preview-content">
-          <nr-chatbot
-            size=${(config.chatbotSize as string) || 'medium'}
-            variant=${(config.chatbotVariant as string) || 'default'}
-            .suggestions=${suggestions}
-            placeholder=${(config.placeholder as string) || 'Type a message...'}
-            botName=${(config.title as string) || 'Chat Assistant'}
-            ?showHeader=${true}
-            ?showSuggestions=${config.enableSuggestions !== false}
-            loadingType=${(config.loadingType as string) || 'dots'}
-          ></nr-chatbot>
+          ${isChatStartNode && this.chatPreviewController ? html`
+            <nr-chatbot
+              size="small"
+              variant="default"
+              .controller=${this.chatPreviewController}
+              .suggestions=${suggestions}
+              placeholder=${(config.placeholder as string) || 'Send a message...'}
+              botName="Workflow"
+              ?showHeader=${false}
+              ?showSuggestions=${suggestions.length > 0}
+              loadingType="dots"
+            ></nr-chatbot>
+          ` : isChatStartNode ? html`
+            <div class="chat-preview-loading">
+              <nr-icon name="loader" size="large"></nr-icon>
+              <span>Connecting to workflow...</span>
+            </div>
+          ` : html`
+            <nr-chatbot
+              size=${(config.chatbotSize as string) || 'medium'}
+              variant=${(config.chatbotVariant as string) || 'default'}
+              .suggestions=${suggestions}
+              placeholder=${(config.placeholder as string) || 'Type a message...'}
+              botName=${(config.title as string) || 'Chat Assistant'}
+              ?showHeader=${true}
+              ?showSuggestions=${config.enableSuggestions !== false}
+              loadingType=${(config.loadingType as string) || 'dots'}
+            ></nr-chatbot>
+          `}
         </div>
       </div>
     `;
@@ -634,7 +932,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}
-        ${this.renderChatbotPreview()}
+        ${this.renderPreviewPanel()}
         ${this.renderZoomControls()}
         ${this.renderContextMenu()}
       </div>

@@ -42,6 +42,7 @@ export interface ConfigPanelTemplateData {
   node: WorkflowNode | null;
   position: { x: number; y: number } | null;
   callbacks: ConfigPanelCallbacks;
+  workflowId?: string;
 }
 
 /**
@@ -989,9 +990,127 @@ function renderDebugNodeFields(
 function renderTypeFields(
   type: string,
   config: NodeConfiguration,
-  onUpdate: (key: string, value: unknown) => void
+  onUpdate: (key: string, value: unknown) => void,
+  workflowId?: string
 ): TemplateResult | typeof nothing {
   switch (type) {
+    case WorkflowNodeType.HTTP_START:
+      const wfId = workflowId || '{workflowId}';
+      const httpPath = (config.httpPath as string) || '/webhook';
+      const webhookUrl = `${window.location.origin}/api/v1/workflows/${wfId}/trigger${httpPath}`;
+      return html`
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Webhook URL</span>
+            <span class="config-section-desc">Use this URL to trigger the workflow</span>
+          </div>
+          <div class="config-field">
+            <div class="webhook-url-container">
+              <code class="webhook-url">${webhookUrl}</code>
+              <button
+                class="copy-btn"
+                @click=${() => {
+                  navigator.clipboard.writeText(webhookUrl);
+                }}
+                title="Copy URL"
+              >
+                <nr-icon name="copy" size="small"></nr-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">HTTP Settings</span>
+          </div>
+          <div class="config-field">
+            <label>Path</label>
+            <nr-input
+              value=${config.httpPath || '/webhook'}
+              placeholder="/webhook"
+              @nr-input=${(e: CustomEvent) => onUpdate('httpPath', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Custom path suffix for this trigger</span>
+          </div>
+          <div class="config-field">
+            <label>Allowed Methods</label>
+            <div class="method-checkboxes">
+              ${['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(method => {
+                const methods = (config.httpMethods as string[]) || ['POST'];
+                const isChecked = methods.includes(method);
+                return html`
+                  <label class="method-checkbox">
+                    <input
+                      type="checkbox"
+                      .checked=${isChecked}
+                      @change=${(e: Event) => {
+                        const checked = (e.target as HTMLInputElement).checked;
+                        const currentMethods = (config.httpMethods as string[]) || ['POST'];
+                        const newMethods = checked
+                          ? [...currentMethods, method]
+                          : currentMethods.filter(m => m !== method);
+                        onUpdate('httpMethods', newMethods.length > 0 ? newMethods : ['POST']);
+                      }}
+                    />
+                    <span class="method-label">${method}</span>
+                  </label>
+                `;
+              })}
+            </div>
+          </div>
+          <div class="config-field">
+            <label>Authentication</label>
+            <nr-select
+              .value=${config.httpAuth || 'none'}
+              .options=${[
+                { label: 'None', value: 'none' },
+                { label: 'API Key', value: 'api_key' },
+                { label: 'Bearer Token', value: 'bearer' },
+                { label: 'Basic Auth', value: 'basic' }
+              ]}
+              @nr-change=${(e: CustomEvent) => onUpdate('httpAuth', e.detail.value)}
+            ></nr-select>
+          </div>
+          <div class="config-field">
+            <label>Rate Limit (req/min)</label>
+            <nr-input
+              type="number"
+              value=${String(config.httpRateLimit || 100)}
+              @nr-input=${(e: CustomEvent) => onUpdate('httpRateLimit', parseInt(e.detail.value))}
+            ></nr-input>
+          </div>
+        </div>
+      `;
+
+    case WorkflowNodeType.HTTP_END:
+      return html`
+        <div class="config-field">
+          <label>Status Code</label>
+          <nr-input
+            type="number"
+            value=${String(config.httpStatusCode || 200)}
+            @nr-input=${(e: CustomEvent) => onUpdate('httpStatusCode', parseInt(e.detail.value))}
+          ></nr-input>
+        </div>
+        <div class="config-field">
+          <label>Content Type</label>
+          <nr-input
+            value=${config.httpContentType || 'application/json'}
+            placeholder="application/json"
+            @nr-input=${(e: CustomEvent) => onUpdate('httpContentType', e.detail.value)}
+          ></nr-input>
+        </div>
+        <div class="config-field">
+          <label>Response Body</label>
+          <nr-input
+            value=${config.httpResponseBody || '{{data}}'}
+            placeholder="{{data}}"
+            @nr-input=${(e: CustomEvent) => onUpdate('httpResponseBody', e.detail.value)}
+          ></nr-input>
+          <span class="field-description">Use \${variables.varName} to reference variables</span>
+        </div>
+      `;
+
     case WorkflowNodeType.HTTP:
       return html`
         <div class="config-field">
@@ -1021,14 +1140,47 @@ function renderTypeFields(
       `;
 
     case WorkflowNodeType.FUNCTION:
+      const defaultCode = `// Available variables:
+// - input: Data from previous node or tool arguments
+// - variables: Workflow variables
+// - args: Node configuration args
+
+// Example: Return a value
+return {
+  result: input.value * 2,
+  message: "Processed successfully"
+};`;
       return html`
-        <div class="config-field">
-          <label>Function ID</label>
-          <nr-input
-            value=${config.functionId || ''}
-            placeholder="Enter function ID"
-            @nr-input=${(e: CustomEvent) => onUpdate('functionId', e.detail.value)}
-          ></nr-input>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">JavaScript Code</span>
+            <span class="config-section-desc">Code executes in GraalVM JavaScript engine</span>
+          </div>
+          <div class="config-field">
+            <label>Code</label>
+            <textarea
+              class="code-editor"
+              .value=${config.code || defaultCode}
+              placeholder=${defaultCode}
+              rows="12"
+              @input=${(e: Event) => onUpdate('code', (e.target as HTMLTextAreaElement).value)}
+            ></textarea>
+            <span class="field-description">JavaScript code to execute. Use 'return' to output a value.</span>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Output</span>
+          </div>
+          <div class="config-field">
+            <label>Output Variable</label>
+            <nr-input
+              value=${config.outputVariable || ''}
+              placeholder="Optional: store result in variable"
+              @nr-input=${(e: CustomEvent) => onUpdate('outputVariable', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Variable name to store the function result</span>
+          </div>
         </div>
       `;
 
@@ -1112,6 +1264,100 @@ function renderTypeFields(
         </div>
       `;
 
+    case WorkflowNodeType.VARIABLE:
+      // Support both old format { name: value } and new format { name: { type, value } }
+      const rawVariables = (config.variables as Record<string, unknown>) || {};
+      const normalizedVars: Array<{ name: string; type: string; value: string }> = [];
+
+      for (const [key, val] of Object.entries(rawVariables)) {
+        if (val && typeof val === 'object' && 'type' in (val as object)) {
+          const v = val as { type: string; value: string };
+          normalizedVars.push({ name: key, type: v.type || 'string', value: v.value || '' });
+        } else {
+          normalizedVars.push({ name: key, type: 'string', value: String(val || '') });
+        }
+      }
+
+      const updateVariables = (vars: Array<{ name: string; type: string; value: string }>) => {
+        const newVars: Record<string, { type: string; value: string }> = {};
+        for (const v of vars) {
+          if (v.name) {
+            newVars[v.name] = { type: v.type, value: v.value };
+          }
+        }
+        onUpdate('variables', newVars);
+      };
+
+      return html`
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Variables</span>
+            <span class="config-section-desc">Set workflow variables</span>
+          </div>
+          <div class="config-columns-list">
+            ${normalizedVars.map((variable, index) => html`
+              <div class="config-column-item variable-item">
+                <div class="config-field variable-fields">
+                  <select
+                    class="variable-type-select"
+                    .value=${variable.type}
+                    @change=${(e: Event) => {
+                      const newVars = [...normalizedVars];
+                      newVars[index] = { ...variable, type: (e.target as HTMLSelectElement).value };
+                      updateVariables(newVars);
+                    }}
+                  >
+                    <option value="string" ?selected=${variable.type === 'string'}>String</option>
+                    <option value="number" ?selected=${variable.type === 'number'}>Number</option>
+                    <option value="expression" ?selected=${variable.type === 'expression'}>Expr</option>
+                  </select>
+                  <nr-input
+                    .value=${variable.name}
+                    placeholder="Name"
+                    class="variable-name-input"
+                    @nr-input=${(e: CustomEvent) => {
+                      const newVars = [...normalizedVars];
+                      newVars[index] = { ...variable, name: e.detail.value };
+                      updateVariables(newVars);
+                    }}
+                  ></nr-input>
+                  <nr-input
+                    .value=${variable.value}
+                    placeholder=${variable.type === 'expression' ? '\${input.field}' : variable.type === 'number' ? '0' : 'Value'}
+                    class="variable-value-input"
+                    @nr-input=${(e: CustomEvent) => {
+                      const newVars = [...normalizedVars];
+                      newVars[index] = { ...variable, value: e.detail.value };
+                      updateVariables(newVars);
+                    }}
+                  ></nr-input>
+                </div>
+                <button
+                  class="remove-column-btn"
+                  @click=${() => {
+                    const newVars = normalizedVars.filter((_, i) => i !== index);
+                    updateVariables(newVars);
+                  }}
+                >
+                  <nr-icon name="trash-2" size="small"></nr-icon>
+                </button>
+              </div>
+            `)}
+            <button
+              class="add-column-btn"
+              @click=${() => {
+                const newVars = [...normalizedVars, { name: `var${normalizedVars.length + 1}`, type: 'string', value: '' }];
+                updateVariables(newVars);
+              }}
+            >
+              <nr-icon name="plus" size="small"></nr-icon>
+              Add Variable
+            </button>
+          </div>
+          <span class="field-description">Expr: \${input.field} or \${variables.name}</span>
+        </div>
+      `;
+
     case WorkflowNodeType.EMAIL:
       return html`
         <div class="config-field">
@@ -1134,45 +1380,50 @@ function renderTypeFields(
 
     case AgentNodeType.AGENT:
       return html`
-        <div class="config-field">
-          <label>Agent ID</label>
-          <nr-input
-            value=${config.agentId || ''}
-            placeholder="Agent identifier"
-            @nr-input=${(e: CustomEvent) => onUpdate('agentId', e.detail.value)}
-          ></nr-input>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Connections</span>
+            <span class="config-section-desc">Connect nodes to the agent's input ports</span>
+          </div>
+          <div class="config-info-box">
+            <nr-icon name="cpu" size="small"></nr-icon>
+            <span><strong>LLM</strong> - Model configuration (provider, API key, model)</span>
+          </div>
+          <div class="config-info-box">
+            <nr-icon name="message-square" size="small"></nr-icon>
+            <span><strong>Prompt</strong> - System prompt template for agent behavior</span>
+          </div>
+          <div class="config-info-box">
+            <nr-icon name="database" size="small"></nr-icon>
+            <span><strong>Memory</strong> - Conversation history (optional)</span>
+          </div>
+          <div class="config-info-box">
+            <nr-icon name="tool" size="small"></nr-icon>
+            <span><strong>Tools</strong> - Connect Tool nodes for agent to use (optional)</span>
+          </div>
         </div>
-        <div class="config-field">
-          <label>System Prompt</label>
-          <nr-input
-            value=${config.systemPrompt || ''}
-            placeholder="System prompt for the agent"
-            @nr-input=${(e: CustomEvent) => onUpdate('systemPrompt', e.detail.value)}
-          ></nr-input>
-        </div>
-        <div class="config-field">
-          <label>Model</label>
-          <nr-input
-            value=${config.model || 'gpt-4'}
-            placeholder="gpt-4, claude-3, etc."
-            @nr-input=${(e: CustomEvent) => onUpdate('model', e.detail.value)}
-          ></nr-input>
-        </div>
-        <div class="config-field">
-          <label>Temperature</label>
-          <nr-input
-            type="number"
-            value=${String(config.temperature || 0.7)}
-            @nr-input=${(e: CustomEvent) => onUpdate('temperature', parseFloat(e.detail.value))}
-          ></nr-input>
-        </div>
-        <div class="config-field">
-          <label>Max Tokens</label>
-          <nr-input
-            type="number"
-            value=${String(config.maxTokens || 2048)}
-            @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', parseInt(e.detail.value))}
-          ></nr-input>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Agent Settings</span>
+          </div>
+          <div class="config-field">
+            <label>Agent ID</label>
+            <nr-input
+              value=${config.agentId || ''}
+              placeholder="Agent identifier"
+              @nr-input=${(e: CustomEvent) => onUpdate('agentId', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Unique identifier for this agent</span>
+          </div>
+          <div class="config-field">
+            <label>Max Iterations</label>
+            <nr-input
+              type="number"
+              value=${String(config.maxIterations || 10)}
+              @nr-input=${(e: CustomEvent) => onUpdate('maxIterations', parseInt(e.detail.value))}
+            ></nr-input>
+            <span class="field-description">Maximum tool call loops before stopping</span>
+          </div>
         </div>
       `;
 
@@ -1259,14 +1510,140 @@ function renderTypeFields(
       `;
 
     case AgentNodeType.TOOL:
+      // Parse parameters from JSON string or use empty array
+      let toolParameters: Array<{name: string; type: string; description: string; required: boolean}> = [];
+      try {
+        if (config.parameters && typeof config.parameters === 'string') {
+          toolParameters = JSON.parse(config.parameters as string);
+        } else if (Array.isArray(config.parameters)) {
+          toolParameters = config.parameters as Array<{name: string; type: string; description: string; required: boolean}>;
+        }
+      } catch {
+        toolParameters = [];
+      }
+
+      const updateToolParameters = (params: Array<{name: string; type: string; description: string; required: boolean}>) => {
+        onUpdate('parameters', params);
+      };
+
       return html`
-        <div class="config-field">
-          <label>Tool Name</label>
-          <nr-input
-            value=${config.toolName || ''}
-            placeholder="Tool identifier"
-            @nr-input=${(e: CustomEvent) => onUpdate('toolName', e.detail.value)}
-          ></nr-input>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Tool Definition</span>
+            <span class="config-section-desc">Define the tool for the LLM to use</span>
+          </div>
+          <div class="config-field">
+            <label>Tool Name</label>
+            <nr-input
+              value=${config.toolName || ''}
+              placeholder="e.g., get_weather, search_database"
+              @nr-input=${(e: CustomEvent) => onUpdate('toolName', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Unique identifier for the tool (snake_case)</span>
+          </div>
+          <div class="config-field">
+            <label>Description</label>
+            <nr-input
+              value=${config.description || ''}
+              placeholder="Describe what this tool does..."
+              @nr-input=${(e: CustomEvent) => onUpdate('description', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">The LLM uses this to decide when to call the tool</span>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Parameters</span>
+            <span class="config-section-desc">Define the parameters the tool accepts</span>
+          </div>
+          <div class="config-columns-list">
+            ${toolParameters.map((param, index) => html`
+              <div class="config-column-item tool-param-item">
+                <div class="config-field tool-param-fields">
+                  <nr-input
+                    .value=${param.name || ''}
+                    placeholder="Parameter name"
+                    class="tool-param-name"
+                    @nr-input=${(e: CustomEvent) => {
+                      const newParams = [...toolParameters];
+                      newParams[index] = { ...param, name: e.detail.value };
+                      updateToolParameters(newParams);
+                    }}
+                  ></nr-input>
+                  <select
+                    class="tool-param-type"
+                    .value=${param.type || 'string'}
+                    @change=${(e: Event) => {
+                      const newParams = [...toolParameters];
+                      newParams[index] = { ...param, type: (e.target as HTMLSelectElement).value };
+                      updateToolParameters(newParams);
+                    }}
+                  >
+                    <option value="string" ?selected=${param.type === 'string'}>String</option>
+                    <option value="number" ?selected=${param.type === 'number'}>Number</option>
+                    <option value="boolean" ?selected=${param.type === 'boolean'}>Boolean</option>
+                    <option value="array" ?selected=${param.type === 'array'}>Array</option>
+                    <option value="object" ?selected=${param.type === 'object'}>Object</option>
+                  </select>
+                  <label class="tool-param-required">
+                    <input
+                      type="checkbox"
+                      .checked=${param.required || false}
+                      @change=${(e: Event) => {
+                        const newParams = [...toolParameters];
+                        newParams[index] = { ...param, required: (e.target as HTMLInputElement).checked };
+                        updateToolParameters(newParams);
+                      }}
+                    />
+                    Required
+                  </label>
+                </div>
+                <div class="config-field">
+                  <nr-input
+                    .value=${param.description || ''}
+                    placeholder="Parameter description"
+                    class="tool-param-desc"
+                    @nr-input=${(e: CustomEvent) => {
+                      const newParams = [...toolParameters];
+                      newParams[index] = { ...param, description: e.detail.value };
+                      updateToolParameters(newParams);
+                    }}
+                  ></nr-input>
+                </div>
+                <button
+                  class="remove-column-btn"
+                  @click=${() => {
+                    const newParams = toolParameters.filter((_, i) => i !== index);
+                    updateToolParameters(newParams);
+                  }}
+                >
+                  <nr-icon name="trash-2" size="small"></nr-icon>
+                </button>
+              </div>
+            `)}
+            <button
+              class="add-column-btn"
+              @click=${() => {
+                const newParams = [...toolParameters, { name: '', type: 'string', description: '', required: false }];
+                updateToolParameters(newParams);
+              }}
+            >
+              <nr-icon name="plus" size="small"></nr-icon>
+              Add Parameter
+            </button>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Execution</span>
+            <span class="config-section-desc">Connect a Function node to execute when called</span>
+          </div>
+          <div class="config-info-box">
+            <nr-icon name="code" size="small"></nr-icon>
+            <span><strong>Function</strong> - Connect a Function node to the 'function' port</span>
+          </div>
         </div>
       `;
 
@@ -1299,6 +1676,63 @@ function renderTypeFields(
     case WorkflowNodeType.CHATBOT:
       return renderChatbotTriggerFields(config, onUpdate);
 
+    case WorkflowNodeType.CHAT_START:
+      return html`
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Output Variables</span>
+            <span class="config-section-desc">Variables available after chat input</span>
+          </div>
+          <div class="config-field">
+            <label>Output Variable</label>
+            <nr-input
+              value=${config.outputVariable || 'chatInput'}
+              placeholder="chatInput"
+              @nr-input=${(e: CustomEvent) => onUpdate('outputVariable', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Variable containing the full chat message object</span>
+          </div>
+        </div>
+      `;
+
+    case WorkflowNodeType.CHAT_OUTPUT:
+      return html`
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Message</span>
+            <span class="config-section-desc">Message to send back to the chatbot</span>
+          </div>
+          <div class="config-field">
+            <label>Message Expression</label>
+            <nr-input
+              value=${config.message || ''}
+              placeholder="\${variables.response}"
+              @nr-input=${(e: CustomEvent) => onUpdate('message', e.detail.value)}
+            ></nr-input>
+            <span class="field-description">Use \${variables.name} or \${input.field} to reference data</span>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-section-header">
+            <span class="config-section-title">Options</span>
+          </div>
+          <div class="config-field">
+            <label>Message Type</label>
+            <nr-select
+              .value=${config.messageType || 'text'}
+              .options=${[
+                { label: 'Text', value: 'text' },
+                { label: 'Markdown', value: 'markdown' },
+                { label: 'HTML', value: 'html' },
+                { label: 'JSON', value: 'json' }
+              ]}
+              @nr-change=${(e: CustomEvent) => onUpdate('messageType', e.detail.value)}
+            ></nr-select>
+            <span class="field-description">Format of the message content</span>
+          </div>
+        </div>
+      `;
+
     // DB Designer nodes
     case DbDesignerNodeType.TABLE:
       return renderTableNodeFields(config, onUpdate);
@@ -1329,7 +1763,7 @@ function renderTypeFields(
 export function renderConfigPanelTemplate(
   data: ConfigPanelTemplateData
 ): TemplateResult | typeof nothing {
-  const { node, position, callbacks } = data;
+  const { node, position, callbacks, workflowId } = data;
 
   if (!node || !position) return nothing;
 
@@ -1358,7 +1792,7 @@ export function renderConfigPanelTemplate(
       </div>
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
-        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig)}
+        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId)}
       </div>
     </div>
   `;
