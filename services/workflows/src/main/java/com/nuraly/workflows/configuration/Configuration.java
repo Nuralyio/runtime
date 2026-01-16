@@ -16,6 +16,10 @@ public class Configuration {
     @ConfigProperty(name = "nuraly.kv.service.url", defaultValue = "http://kv:7003")
     public String kvServiceUrl;
 
+    // Conduit - Database Connection & Query Service
+    @ConfigProperty(name = "nuraly.conduit.service.url", defaultValue = "http://conduit:7004")
+    public String conduitServiceUrl;
+
     // RabbitMQ
     @ConfigProperty(name = "rabbitmq.host", defaultValue = "rabbitmq")
     public String rabbitmqHost;
