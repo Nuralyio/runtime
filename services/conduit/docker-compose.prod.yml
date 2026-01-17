@@ -7,37 +7,32 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "7004:80"  # Expose single port to outside
+      - "7004:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - conduit-1
-      - conduit-2
-      - conduit-3
+      - conduit
     networks:
       - conduit-network
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/q/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    restart: unless-stopped
 
   # =============================================================================
-  # Conduit Instances (Horizontal Scaling)
+  # Conduit Service (use --scale conduit=N)
   # =============================================================================
-  conduit-1:
+  conduit:
     build:
       context: .
       dockerfile: Dockerfile.dev
     environment:
-      - SCALING_INSTANCE_ID=conduit-1
       - REDIS_URL=redis://redis:6379
-      - KV_SERVICE_URL=http://kv:7003
-      - DB_POOL_MAX_SIZE=20
-      - SCALING_GLOBAL_MAX_CONNECTIONS=100
+      - KV_SERVICE_URL=${KV_SERVICE_URL:-http://kv:7003}
+      - DB_POOL_MAX_SIZE=${DB_POOL_MAX_SIZE:-20}
+      - SCALING_GLOBAL_MAX_CONNECTIONS=${SCALING_GLOBAL_MAX_CONNECTIONS:-100}
       - SCALING_ENABLED=true
+      - CACHE_CREDENTIAL_TTL=${CACHE_CREDENTIAL_TTL:-300}
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     networks:
       - conduit-network
     healthcheck:
@@ -46,50 +41,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
-
-  conduit-2:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    environment:
-      - SCALING_INSTANCE_ID=conduit-2
-      - REDIS_URL=redis://redis:6379
-      - KV_SERVICE_URL=http://kv:7003
-      - DB_POOL_MAX_SIZE=20
-      - SCALING_GLOBAL_MAX_CONNECTIONS=100
-      - SCALING_ENABLED=true
-    depends_on:
-      - redis
-    networks:
-      - conduit-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7004/q/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-
-  conduit-3:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    environment:
-      - SCALING_INSTANCE_ID=conduit-3
-      - REDIS_URL=redis://redis:6379
-      - KV_SERVICE_URL=http://kv:7003
-      - DB_POOL_MAX_SIZE=20
-      - SCALING_GLOBAL_MAX_CONNECTIONS=100
-      - SCALING_ENABLED=true
-    depends_on:
-      - redis
-    networks:
-      - conduit-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7004/q/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+    restart: unless-stopped
 
   # =============================================================================
   # Redis (Shared Cache & Coordination)
@@ -107,6 +59,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    restart: unless-stopped
 
 networks:
   conduit-network:
