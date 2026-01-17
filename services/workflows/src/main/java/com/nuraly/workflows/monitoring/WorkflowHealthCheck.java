@@ -2,6 +2,7 @@ package com.nuraly.workflows.monitoring;
 
 import com.nuraly.workflows.http.HttpClientManager;
 import com.nuraly.workflows.messaging.RabbitMQConnectionManager;
+import io.quarkus.redis.datasource.RedisDataSource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.health.HealthCheck;
@@ -41,7 +42,7 @@ public class WorkflowHealthCheck {
 
     /**
      * Readiness check - is the service ready to accept traffic?
-     * Checks HTTP pool, RabbitMQ connection, and system resources.
+     * Checks HTTP pool, RabbitMQ connection, Redis, and system resources.
      */
     @Readiness
     @ApplicationScoped
@@ -52,6 +53,9 @@ public class WorkflowHealthCheck {
 
         @Inject
         RabbitMQConnectionManager rabbitMQConnectionManager;
+
+        @Inject
+        RedisDataSource redisDataSource;
 
         @Override
         public HealthCheckResponse call() {
@@ -85,6 +89,18 @@ public class WorkflowHealthCheck {
             } catch (Exception e) {
                 builder.withData("rabbitmq.error", e.getMessage());
                 isReady = false;
+            }
+
+            // Check Redis connection
+            try {
+                // Simple ping to check connection
+                String pong = redisDataSource.value(String.class).get("health-check-ping");
+                builder.withData("redis.connected", true);
+            } catch (Exception e) {
+                builder.withData("redis.connected", false);
+                builder.withData("redis.error", e.getMessage());
+                // Redis is optional - don't mark as not ready
+                builder.withData("redis.warning", "Redis unavailable - caching disabled");
             }
 
             // Check memory usage
