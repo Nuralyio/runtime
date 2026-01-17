@@ -85,6 +85,18 @@
             <version>${hikaricp.version}</version>
         </dependency>
 
+        <!-- Redis for Caching and Distributed Coordination -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-redis-client</artifactId>
+        </dependency>
+
+        <!-- Health Checks -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+
         <!-- Code Generation -->
         <dependency>
             <groupId>org.projectlombok</groupId>

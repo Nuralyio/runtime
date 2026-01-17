@@ -259,11 +259,11 @@ public class DatabaseResource {
     }
 
     /**
-     * Get connection pool statistics.
+     * Get connection pool statistics for a specific pool.
      */
     @GET
     @Path("/pool/stats")
-    @Operation(summary = "Get pool stats", description = "Get connection pool statistics")
+    @Operation(summary = "Get pool stats", description = "Get connection pool statistics for a specific connection")
     @APIResponse(responseCode = "200", description = "Pool statistics")
     public Response getPoolStats(
             @Parameter(description = "Application ID", required = true)
@@ -285,6 +285,18 @@ public class DatabaseResource {
                     .build();
         }
 
+        return Response.ok(stats).build();
+    }
+
+    /**
+     * Get aggregate pool statistics across all pools for this instance.
+     */
+    @GET
+    @Path("/pool/aggregate")
+    @Operation(summary = "Get aggregate pool stats", description = "Get aggregate connection pool statistics for this instance (useful for monitoring horizontal scaling)")
+    @APIResponse(responseCode = "200", description = "Aggregate pool statistics")
+    public Response getAggregatePoolStats() {
+        ConnectionPoolManager.AggregatePoolStats stats = databaseService.getAggregatePoolStats();
         return Response.ok(stats).build();
     }
 

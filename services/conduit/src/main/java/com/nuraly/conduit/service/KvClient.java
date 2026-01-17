@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.conduit.dto.DatabaseCredential;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -17,6 +18,7 @@ import java.time.Duration;
 
 /**
  * Client for fetching database credentials from the KV service.
+ * Uses Redis caching to reduce load on KV service.
  */
 @ApplicationScoped
 public class KvClient {
@@ -26,19 +28,46 @@ public class KvClient {
     @ConfigProperty(name = "kv.service.url")
     String kvServiceUrl;
 
+    @ConfigProperty(name = "kv.service.timeout-ms", defaultValue = "5000")
+    long kvServiceTimeoutMs;
+
+    @Inject
+    CredentialCacheService cacheService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
     /**
-     * Fetch database credentials from KV store.
+     * Fetch database credentials from KV store with caching.
      *
      * @param connectionPath KV key path (e.g., "postgresql/production-db")
      * @param applicationId  Application ID for scoping
      * @return DatabaseCredential or null if not found
      */
     public DatabaseCredential getCredential(String connectionPath, String applicationId) {
+        // Try cache first
+        DatabaseCredential cached = cacheService.get(connectionPath, applicationId);
+        if (cached != null) {
+            return cached;
+        }
+
+        // Fetch from KV service
+        DatabaseCredential credential = fetchFromKvService(connectionPath, applicationId);
+
+        // Cache the result
+        if (credential != null) {
+            cacheService.put(connectionPath, applicationId, credential);
+        }
+
+        return credential;
+    }
+
+    /**
+     * Fetch credential directly from KV service (bypasses cache).
+     */
+    public DatabaseCredential fetchFromKvService(String connectionPath, String applicationId) {
         try {
             String encodedPath = URLEncoder.encode(connectionPath, StandardCharsets.UTF_8);
             String url = String.format("%s/api/v1/kv/entries/%s?applicationId=%s",
@@ -49,6 +78,7 @@ public class KvClient {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
+                    .timeout(Duration.ofMillis(kvServiceTimeoutMs))
                     .GET()
                     .build();
 
@@ -96,5 +126,20 @@ public class KvClient {
      */
     public boolean credentialExists(String connectionPath, String applicationId) {
         return getCredential(connectionPath, applicationId) != null;
+    }
+
+    /**
+     * Invalidate cached credential (call when credential is updated).
+     */
+    public void invalidateCredential(String connectionPath, String applicationId) {
+        cacheService.invalidate(connectionPath, applicationId);
+    }
+
+    /**
+     * Refresh credential from KV service (bypasses and updates cache).
+     */
+    public DatabaseCredential refreshCredential(String connectionPath, String applicationId) {
+        cacheService.invalidate(connectionPath, applicationId);
+        return getCredential(connectionPath, applicationId);
     }
 }
