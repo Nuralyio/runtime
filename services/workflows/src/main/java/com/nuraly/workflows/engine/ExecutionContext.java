@@ -100,6 +100,26 @@ public class ExecutionContext {
         }
     }
 
+    /**
+     * Restore variables from JSON string (used for checkpoint recovery).
+     */
+    public void restoreVariables(String variablesJson) {
+        if (variablesJson != null && !variablesJson.isEmpty()) {
+            try {
+                this.variables = (ObjectNode) objectMapper.readTree(variablesJson);
+            } catch (Exception e) {
+                // Keep existing variables if parsing fails
+            }
+        }
+    }
+
+    /**
+     * Get all node outputs (used for checkpointing).
+     */
+    public Map<UUID, JsonNode> getNodeOutputs() {
+        return nodeOutputs;
+    }
+
     public String resolveExpression(String expression) {
         if (expression == null) {
             return null;
