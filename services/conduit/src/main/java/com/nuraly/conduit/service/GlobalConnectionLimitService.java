@@ -5,6 +5,7 @@ import io.quarkus.redis.datasource.value.ValueCommands;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -14,6 +15,8 @@ import java.util.UUID;
 /**
  * Tracks global connection usage across all instances for horizontal scaling.
  * Prevents overwhelming the database when multiple instances are running.
+ *
+ * Gracefully degrades to single-instance mode if Redis is unavailable.
  */
 @ApplicationScoped
 public class GlobalConnectionLimitService {
@@ -23,7 +26,7 @@ public class GlobalConnectionLimitService {
     private static final String INSTANCE_REGISTRY_KEY = "conduit:instances:";
 
     @Inject
-    RedisDataSource redisDataSource;
+    Instance<RedisDataSource> redisDataSourceInstance;
 
     @ConfigProperty(name = "scaling.global-max-connections", defaultValue = "100")
     int globalMaxConnections;
@@ -36,25 +39,41 @@ public class GlobalConnectionLimitService {
 
     private ValueCommands<String, String> valueCommands;
     private String instanceId;
+    private boolean redisAvailable = false;
 
     @PostConstruct
     void init() {
-        this.valueCommands = redisDataSource.value(String.class, String.class);
         this.instanceId = configuredInstanceId.isEmpty()
             ? "conduit-" + UUID.randomUUID().toString().substring(0, 8)
             : configuredInstanceId;
 
-        if (scalingEnabled) {
-            registerInstance();
+        if (!scalingEnabled) {
+            LOG.infof("Scaling coordination disabled. Instance: %s", instanceId);
+            return;
         }
 
-        LOG.infof("Global connection limit service initialized. Instance: %s, Global max: %d, Enabled: %s",
-                instanceId, globalMaxConnections, scalingEnabled);
+        try {
+            if (redisDataSourceInstance.isResolvable()) {
+                RedisDataSource redisDataSource = redisDataSourceInstance.get();
+                this.valueCommands = redisDataSource.value(String.class, String.class);
+                // Test connection
+                valueCommands.get(INSTANCE_REGISTRY_KEY + "ping");
+                redisAvailable = true;
+                registerInstance();
+                LOG.infof("Scaling coordination initialized. Instance: %s, Global max: %d",
+                        instanceId, globalMaxConnections);
+            } else {
+                LOG.warn("Redis not configured, scaling coordination disabled");
+            }
+        } catch (Exception e) {
+            LOG.warnf("Redis unavailable, scaling coordination disabled: %s", e.getMessage());
+            redisAvailable = false;
+        }
     }
 
     @PreDestroy
     void shutdown() {
-        if (scalingEnabled) {
+        if (isEnabled()) {
             unregisterInstance();
         }
     }
@@ -70,13 +89,13 @@ public class GlobalConnectionLimitService {
      * Report current connection count for this instance.
      */
     public void reportConnections(String poolKey, int activeConnections) {
-        if (!scalingEnabled) {
+        if (!isEnabled()) {
             return;
         }
 
         try {
             String key = GLOBAL_CONNECTIONS_KEY + instanceId + ":" + poolKey;
-            valueCommands.setex(key, 60, String.valueOf(activeConnections)); // 60s TTL for auto-cleanup
+            valueCommands.setex(key, 60, String.valueOf(activeConnections));
         } catch (Exception e) {
             LOG.debugf("Failed to report connections: %s", e.getMessage());
         }
@@ -86,8 +105,8 @@ public class GlobalConnectionLimitService {
      * Check if we can acquire more connections based on global limit.
      */
     public boolean canAcquireConnection(int requestedConnections) {
-        if (!scalingEnabled) {
-            return true;
+        if (!isEnabled()) {
+            return true; // No coordination = allow
         }
 
         try {
@@ -108,15 +127,12 @@ public class GlobalConnectionLimitService {
 
     /**
      * Get estimated total connections across all instances.
-     * This is an approximation based on reported values.
      */
     public int getEstimatedGlobalConnections() {
-        if (!scalingEnabled) {
+        if (!isEnabled()) {
             return 0;
         }
 
-        // Note: In production, you'd want to use Redis SCAN for this
-        // For simplicity, we track per-instance totals
         try {
             String totalKey = GLOBAL_CONNECTIONS_KEY + "total";
             String total = valueCommands.get(totalKey);
@@ -131,13 +147,13 @@ public class GlobalConnectionLimitService {
      * Update the total connection count for this instance.
      */
     public void updateInstanceTotal(int totalConnections) {
-        if (!scalingEnabled) {
+        if (!isEnabled()) {
             return;
         }
 
         try {
             String key = INSTANCE_REGISTRY_KEY + instanceId + ":connections";
-            valueCommands.setex(key, 30, String.valueOf(totalConnections)); // 30s TTL
+            valueCommands.setex(key, 30, String.valueOf(totalConnections));
         } catch (Exception e) {
             LOG.debugf("Failed to update instance total: %s", e.getMessage());
         }
@@ -147,8 +163,8 @@ public class GlobalConnectionLimitService {
      * Get the number of active instances.
      */
     public int getActiveInstanceCount() {
-        if (!scalingEnabled) {
-            return 1;
+        if (!isEnabled()) {
+            return 1; // Single instance mode
         }
 
         try {
@@ -164,21 +180,20 @@ public class GlobalConnectionLimitService {
      * Calculate recommended max pool size for this instance based on global limits.
      */
     public int getRecommendedPoolSize(int defaultPoolSize) {
-        if (!scalingEnabled) {
-            return defaultPoolSize;
+        if (!isEnabled()) {
+            return defaultPoolSize; // Use default in single-instance mode
         }
 
         int instanceCount = getActiveInstanceCount();
         int recommended = globalMaxConnections / instanceCount;
 
-        // Don't go below minimum or above configured default
         return Math.max(5, Math.min(recommended, defaultPoolSize));
     }
 
     private void registerInstance() {
         try {
             String key = INSTANCE_REGISTRY_KEY + instanceId;
-            valueCommands.setex(key, 60, "active"); // 60s TTL, needs heartbeat
+            valueCommands.setex(key, 60, "active");
             incrementInstanceCount(1);
             LOG.infof("Registered instance: %s", instanceId);
         } catch (Exception e) {
@@ -212,7 +227,7 @@ public class GlobalConnectionLimitService {
      * Send heartbeat to keep instance registration alive.
      */
     public void heartbeat() {
-        if (!scalingEnabled) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -222,5 +237,9 @@ public class GlobalConnectionLimitService {
         } catch (Exception e) {
             LOG.debugf("Failed to send heartbeat: %s", e.getMessage());
         }
+    }
+
+    private boolean isEnabled() {
+        return scalingEnabled && redisAvailable && valueCommands != null;
     }
 }

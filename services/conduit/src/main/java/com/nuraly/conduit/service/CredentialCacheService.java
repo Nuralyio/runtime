@@ -7,16 +7,17 @@ import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.value.ValueCommands;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
-
-import java.time.Duration;
 
 /**
  * Redis-based credential caching service.
  * Reduces load on KV service by caching credentials with TTL.
  * Supports horizontal scaling with shared cache across instances.
+ *
+ * Gracefully degrades to no-op if Redis is unavailable.
  */
 @ApplicationScoped
 public class CredentialCacheService {
@@ -25,7 +26,7 @@ public class CredentialCacheService {
     private static final String CACHE_PREFIX = "conduit:credential:";
 
     @Inject
-    RedisDataSource redisDataSource;
+    Instance<RedisDataSource> redisDataSourceInstance;
 
     @ConfigProperty(name = "cache.credential.ttl-seconds", defaultValue = "300")
     long credentialTtlSeconds;
@@ -35,18 +36,37 @@ public class CredentialCacheService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private ValueCommands<String, String> valueCommands;
+    private boolean redisAvailable = false;
 
     @PostConstruct
     void init() {
-        this.valueCommands = redisDataSource.value(String.class, String.class);
-        LOG.infof("Credential cache initialized. Enabled: %s, TTL: %ds", cacheEnabled, credentialTtlSeconds);
+        if (!cacheEnabled) {
+            LOG.info("Credential cache disabled by configuration");
+            return;
+        }
+
+        try {
+            if (redisDataSourceInstance.isResolvable()) {
+                RedisDataSource redisDataSource = redisDataSourceInstance.get();
+                this.valueCommands = redisDataSource.value(String.class, String.class);
+                // Test connection
+                valueCommands.get(CACHE_PREFIX + "ping");
+                redisAvailable = true;
+                LOG.infof("Credential cache initialized. TTL: %ds", credentialTtlSeconds);
+            } else {
+                LOG.warn("Redis not configured, credential caching disabled");
+            }
+        } catch (Exception e) {
+            LOG.warnf("Redis unavailable, credential caching disabled: %s", e.getMessage());
+            redisAvailable = false;
+        }
     }
 
     /**
      * Get cached credential or return null if not cached.
      */
     public DatabaseCredential get(String connectionPath, String applicationId) {
-        if (!cacheEnabled) {
+        if (!isEnabled()) {
             return null;
         }
 
@@ -71,7 +91,7 @@ public class CredentialCacheService {
      * Cache a credential with TTL.
      */
     public void put(String connectionPath, String applicationId, DatabaseCredential credential) {
-        if (!cacheEnabled || credential == null) {
+        if (!isEnabled() || credential == null) {
             return;
         }
 
@@ -89,7 +109,7 @@ public class CredentialCacheService {
      * Invalidate cached credential.
      */
     public void invalidate(String connectionPath, String applicationId) {
-        if (!cacheEnabled) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -106,6 +126,10 @@ public class CredentialCacheService {
      * Check if cache is healthy (Redis connection works).
      */
     public boolean isHealthy() {
+        if (!isEnabled()) {
+            return true; // Not enabled = healthy (graceful degradation)
+        }
+
         try {
             valueCommands.get(CACHE_PREFIX + "health-check");
             return true;
@@ -113,6 +137,10 @@ public class CredentialCacheService {
             LOG.warnf("Redis health check failed: %s", e.getMessage());
             return false;
         }
+    }
+
+    private boolean isEnabled() {
+        return cacheEnabled && redisAvailable && valueCommands != null;
     }
 
     private String buildKey(String connectionPath, String applicationId) {
