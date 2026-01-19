@@ -8,7 +8,9 @@ import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.value.SetArgs;
 import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -21,6 +23,9 @@ import java.util.UUID;
 /**
  * Redis-based caching service for workflow definitions.
  * Reduces database load by caching frequently accessed workflows.
+ *
+ * GRACEFUL DEGRADATION: If Redis is unavailable, operations are skipped
+ * and the system falls back to database-only mode.
  *
  * Cache keys:
  * - workflow:{id} - Full workflow entity
@@ -35,23 +40,53 @@ public class WorkflowCacheService {
     private static final String WORKFLOW_KEY_PREFIX = "workflow:";
     private static final String NODES_KEY_SUFFIX = ":nodes";
 
-    private final ValueCommands<String, String> redis;
+    @Inject
+    Instance<RedisDataSource> redisDataSourceInstance;
+
+    private ValueCommands<String, String> redis;
     private final ObjectMapper objectMapper;
+    private boolean redisAvailable = false;
 
     @ConfigProperty(name = "redis.cache.workflow.ttl", defaultValue = "300")
     int workflowTtlSeconds;
 
-    @Inject
-    public WorkflowCacheService(RedisDataSource redisDataSource) {
-        this.redis = redisDataSource.value(String.class, String.class);
+    public WorkflowCacheService() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+    @PostConstruct
+    void init() {
+        try {
+            if (redisDataSourceInstance.isResolvable()) {
+                RedisDataSource dataSource = redisDataSourceInstance.get();
+                this.redis = dataSource.value(String.class, String.class);
+                // Test connection
+                redis.get("__ping__");
+                redisAvailable = true;
+                LOG.info("Redis cache service initialized successfully");
+            } else {
+                LOG.info("Redis not configured - caching disabled");
+            }
+        } catch (Exception e) {
+            LOG.warn("Redis unavailable - caching disabled: " + e.getMessage());
+            redisAvailable = false;
+        }
+    }
+
     /**
-     * Get workflow from cache, or load from database if not cached.
+     * Check if Redis caching is available.
+     */
+    public boolean isAvailable() {
+        return redisAvailable;
+    }
+
+    /**
+     * Get workflow from cache, or empty if not cached or Redis unavailable.
      */
     public Optional<WorkflowEntity> getWorkflow(UUID workflowId) {
+        if (!redisAvailable) return Optional.empty();
+
         String key = WORKFLOW_KEY_PREFIX + workflowId;
         try {
             String cached = redis.get(key);
@@ -62,6 +97,7 @@ public class WorkflowCacheService {
             LOG.debugf("Cache MISS for workflow: %s", workflowId);
         } catch (Exception e) {
             LOG.warnf("Error reading workflow from cache: %s", e.getMessage());
+            checkRedisConnection();
         }
         return Optional.empty();
     }
@@ -70,15 +106,16 @@ public class WorkflowCacheService {
      * Cache a workflow entity.
      */
     public void cacheWorkflow(WorkflowEntity workflow) {
-        if (workflow == null || workflow.id == null) return;
+        if (!redisAvailable || workflow == null || workflow.id == null) return;
 
         String key = WORKFLOW_KEY_PREFIX + workflow.id;
         try {
             String json = objectMapper.writeValueAsString(workflow);
             redis.set(key, json, new SetArgs().ex(Duration.ofSeconds(workflowTtlSeconds)));
             LOG.debugf("Cached workflow: %s (TTL: %ds)", workflow.id, workflowTtlSeconds);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             LOG.warnf("Error caching workflow: %s", e.getMessage());
+            checkRedisConnection();
         }
     }
 
@@ -86,6 +123,8 @@ public class WorkflowCacheService {
      * Get workflow nodes from cache.
      */
     public Optional<List<WorkflowNodeEntity>> getWorkflowNodes(UUID workflowId) {
+        if (!redisAvailable) return Optional.empty();
+
         String key = WORKFLOW_KEY_PREFIX + workflowId + NODES_KEY_SUFFIX;
         try {
             String cached = redis.get(key);
@@ -96,6 +135,7 @@ public class WorkflowCacheService {
             }
         } catch (Exception e) {
             LOG.warnf("Error reading workflow nodes from cache: %s", e.getMessage());
+            checkRedisConnection();
         }
         return Optional.empty();
     }
@@ -104,15 +144,16 @@ public class WorkflowCacheService {
      * Cache workflow nodes.
      */
     public void cacheWorkflowNodes(UUID workflowId, List<WorkflowNodeEntity> nodes) {
-        if (workflowId == null || nodes == null) return;
+        if (!redisAvailable || workflowId == null || nodes == null) return;
 
         String key = WORKFLOW_KEY_PREFIX + workflowId + NODES_KEY_SUFFIX;
         try {
             String json = objectMapper.writeValueAsString(nodes);
             redis.set(key, json, new SetArgs().ex(Duration.ofSeconds(workflowTtlSeconds)));
             LOG.debugf("Cached %d nodes for workflow: %s", nodes.size(), workflowId);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             LOG.warnf("Error caching workflow nodes: %s", e.getMessage());
+            checkRedisConnection();
         }
     }
 
@@ -120,7 +161,7 @@ public class WorkflowCacheService {
      * Invalidate workflow cache (call on workflow update/delete).
      */
     public void invalidateWorkflow(UUID workflowId) {
-        if (workflowId == null) return;
+        if (!redisAvailable || workflowId == null) return;
 
         try {
             redis.getdel(WORKFLOW_KEY_PREFIX + workflowId);
@@ -128,6 +169,7 @@ public class WorkflowCacheService {
             LOG.debugf("Invalidated cache for workflow: %s", workflowId);
         } catch (Exception e) {
             LOG.warnf("Error invalidating workflow cache: %s", e.getMessage());
+            checkRedisConnection();
         }
     }
 
@@ -147,5 +189,21 @@ public class WorkflowCacheService {
             cacheWorkflow(workflow);
         }
         return workflow;
+    }
+
+    /**
+     * Re-check Redis connection after an error.
+     */
+    private void checkRedisConnection() {
+        try {
+            if (redis != null) {
+                redis.get("__ping__");
+            }
+        } catch (Exception e) {
+            if (redisAvailable) {
+                LOG.warn("Redis connection lost - switching to database-only mode");
+                redisAvailable = false;
+            }
+        }
     }
 }

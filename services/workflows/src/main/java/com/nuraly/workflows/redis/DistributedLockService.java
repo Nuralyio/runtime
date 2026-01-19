@@ -2,20 +2,23 @@ package com.nuraly.workflows.redis;
 
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
-import io.quarkus.redis.datasource.value.SetArgs;
 import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import java.time.Duration;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
  * Redis-based distributed lock service.
  * Prevents duplicate execution of scheduled triggers across multiple worker instances.
+ *
+ * GRACEFUL DEGRADATION: If Redis is unavailable, locks are not enforced
+ * and duplicate executions may occur (original behavior before Redis).
  *
  * Uses Redis SETNX (SET if Not eXists) pattern for atomic lock acquisition.
  *
@@ -30,8 +33,12 @@ public class DistributedLockService {
     private static final Logger LOG = Logger.getLogger(DistributedLockService.class);
     private static final String LOCK_KEY_PREFIX = "lock:";
 
-    private final ValueCommands<String, String> valueCommands;
-    private final KeyCommands<String> keyCommands;
+    @Inject
+    Instance<RedisDataSource> redisDataSourceInstance;
+
+    private ValueCommands<String, String> valueCommands;
+    private KeyCommands<String> keyCommands;
+    private boolean redisAvailable = false;
 
     // Unique identifier for this worker instance
     private final String workerId = UUID.randomUUID().toString();
@@ -39,14 +46,35 @@ public class DistributedLockService {
     @ConfigProperty(name = "redis.lock.ttl", defaultValue = "60")
     int lockTtlSeconds;
 
-    @Inject
-    public DistributedLockService(RedisDataSource redisDataSource) {
-        this.valueCommands = redisDataSource.value(String.class, String.class);
-        this.keyCommands = redisDataSource.key(String.class);
+    @PostConstruct
+    void init() {
+        try {
+            if (redisDataSourceInstance.isResolvable()) {
+                RedisDataSource dataSource = redisDataSourceInstance.get();
+                this.valueCommands = dataSource.value(String.class, String.class);
+                this.keyCommands = dataSource.key(String.class);
+                // Test connection
+                keyCommands.exists("__ping__");
+                redisAvailable = true;
+                LOG.infof("Redis lock service initialized (workerId: %s)", workerId);
+            } else {
+                LOG.info("Redis not configured - distributed locking disabled");
+            }
+        } catch (Exception e) {
+            LOG.warn("Redis unavailable - distributed locking disabled: " + e.getMessage());
+            redisAvailable = false;
+        }
     }
 
     /**
-     * Try to acquire a lock. Returns true if lock was acquired.
+     * Check if Redis locking is available.
+     */
+    public boolean isAvailable() {
+        return redisAvailable;
+    }
+
+    /**
+     * Try to acquire a lock. Returns true if lock was acquired or Redis unavailable.
      */
     public boolean tryLock(String lockName) {
         return tryLock(lockName, lockTtlSeconds);
@@ -54,8 +82,14 @@ public class DistributedLockService {
 
     /**
      * Try to acquire a lock with custom TTL.
+     * Returns true if lock acquired OR if Redis is unavailable (fail-open).
      */
     public boolean tryLock(String lockName, int ttlSeconds) {
+        if (!redisAvailable) {
+            // Fail open - allow operation if Redis unavailable
+            return true;
+        }
+
         String key = LOCK_KEY_PREFIX + lockName;
         try {
             // SETNX with expiration - atomic operation
@@ -70,7 +104,9 @@ public class DistributedLockService {
             return false;
         } catch (Exception e) {
             LOG.warnf("Error acquiring lock %s: %s", lockName, e.getMessage());
-            return false;
+            checkRedisConnection();
+            // Fail open on error
+            return true;
         }
     }
 
@@ -78,6 +114,8 @@ public class DistributedLockService {
      * Release a lock. Only releases if this worker owns the lock.
      */
     public void unlock(String lockName) {
+        if (!redisAvailable) return;
+
         String key = LOCK_KEY_PREFIX + lockName;
         try {
             // Only delete if we own the lock
@@ -90,6 +128,7 @@ public class DistributedLockService {
             }
         } catch (Exception e) {
             LOG.warnf("Error releasing lock %s: %s", lockName, e.getMessage());
+            checkRedisConnection();
         }
     }
 
@@ -97,6 +136,8 @@ public class DistributedLockService {
      * Extend lock TTL (for long-running operations).
      */
     public boolean extendLock(String lockName, int additionalSeconds) {
+        if (!redisAvailable) return true;
+
         String key = LOCK_KEY_PREFIX + lockName;
         try {
             String owner = valueCommands.get(key);
@@ -108,7 +149,8 @@ public class DistributedLockService {
             return false;
         } catch (Exception e) {
             LOG.warnf("Error extending lock %s: %s", lockName, e.getMessage());
-            return false;
+            checkRedisConnection();
+            return true;
         }
     }
 
@@ -116,17 +158,20 @@ public class DistributedLockService {
      * Check if a lock is currently held.
      */
     public boolean isLocked(String lockName) {
+        if (!redisAvailable) return false;
+
         String key = LOCK_KEY_PREFIX + lockName;
         try {
             return keyCommands.exists(key);
         } catch (Exception e) {
+            checkRedisConnection();
             return false;
         }
     }
 
     /**
      * Execute action with lock. Acquires lock, executes, then releases.
-     * Returns empty Optional if lock could not be acquired.
+     * Returns result if successful, or executes without lock if Redis unavailable.
      */
     public <T> LockResult<T> withLock(String lockName, Supplier<T> action) {
         if (!tryLock(lockName)) {
@@ -188,6 +233,22 @@ public class DistributedLockService {
      */
     public String getWorkerId() {
         return workerId;
+    }
+
+    /**
+     * Re-check Redis connection after an error.
+     */
+    private void checkRedisConnection() {
+        try {
+            if (keyCommands != null) {
+                keyCommands.exists("__ping__");
+            }
+        } catch (Exception e) {
+            if (redisAvailable) {
+                LOG.warn("Redis connection lost - distributed locking disabled");
+                redisAvailable = false;
+            }
+        }
     }
 
     /**
