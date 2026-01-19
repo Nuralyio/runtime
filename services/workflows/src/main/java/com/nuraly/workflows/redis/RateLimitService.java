@@ -3,13 +3,18 @@ package com.nuraly.workflows.redis;
 import io.quarkus.redis.datasource.RedisDataSource;
 import io.quarkus.redis.datasource.keys.KeyCommands;
 import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 /**
  * Redis-based distributed rate limiting service.
  * Uses sliding window counter pattern for accurate rate limiting across all workers.
+ *
+ * GRACEFUL DEGRADATION: If Redis is unavailable, rate limiting is disabled
+ * and all requests are allowed (fail-open policy).
  *
  * Rate limit keys:
  * - ratelimit:user:{userId}:executions - Per-user execution limit
@@ -22,18 +27,44 @@ public class RateLimitService {
     private static final Logger LOG = Logger.getLogger(RateLimitService.class);
     private static final String RATE_LIMIT_PREFIX = "ratelimit:";
 
-    private final ValueCommands<String, Long> valueCommands;
-    private final KeyCommands<String> keyCommands;
-
     @Inject
-    public RateLimitService(RedisDataSource redisDataSource) {
-        this.valueCommands = redisDataSource.value(String.class, Long.class);
-        this.keyCommands = redisDataSource.key(String.class);
+    Instance<RedisDataSource> redisDataSourceInstance;
+
+    private ValueCommands<String, Long> valueCommands;
+    private KeyCommands<String> keyCommands;
+    private boolean redisAvailable = false;
+
+    @PostConstruct
+    void init() {
+        try {
+            if (redisDataSourceInstance.isResolvable()) {
+                RedisDataSource dataSource = redisDataSourceInstance.get();
+                this.valueCommands = dataSource.value(String.class, Long.class);
+                this.keyCommands = dataSource.key(String.class);
+                // Test connection
+                keyCommands.exists("__ping__");
+                redisAvailable = true;
+                LOG.info("Redis rate limit service initialized successfully");
+            } else {
+                LOG.info("Redis not configured - rate limiting disabled");
+            }
+        } catch (Exception e) {
+            LOG.warn("Redis unavailable - rate limiting disabled: " + e.getMessage());
+            redisAvailable = false;
+        }
+    }
+
+    /**
+     * Check if Redis rate limiting is available.
+     */
+    public boolean isAvailable() {
+        return redisAvailable;
     }
 
     /**
      * Check if action is allowed under rate limit.
      * Increments counter and returns true if under limit.
+     * Returns true (allow) if Redis is unavailable.
      *
      * @param key Rate limit key (e.g., "user:123:executions")
      * @param limit Maximum allowed requests
@@ -41,6 +72,11 @@ public class RateLimitService {
      * @return true if allowed, false if rate limited
      */
     public boolean tryAcquire(String key, int limit, int windowSeconds) {
+        if (!redisAvailable) {
+            // Fail open - allow request if Redis unavailable
+            return true;
+        }
+
         String redisKey = RATE_LIMIT_PREFIX + key;
         try {
             // Increment counter
@@ -58,7 +94,8 @@ public class RateLimitService {
             return allowed;
         } catch (Exception e) {
             LOG.warnf("Error checking rate limit for %s: %s", key, e.getMessage());
-            // Fail open - allow request if Redis is unavailable
+            checkRedisConnection();
+            // Fail open - allow request if Redis error
             return true;
         }
     }
@@ -120,11 +157,14 @@ public class RateLimitService {
      * Get current count for a rate limit key.
      */
     public long getCurrentCount(String key) {
+        if (!redisAvailable) return 0;
+
         String redisKey = RATE_LIMIT_PREFIX + key;
         try {
             Long count = valueCommands.get(redisKey);
             return count != null ? count : 0;
         } catch (Exception e) {
+            checkRedisConnection();
             return 0;
         }
     }
@@ -141,12 +181,31 @@ public class RateLimitService {
      * Reset rate limit counter (for testing or admin purposes).
      */
     public void resetLimit(String key) {
+        if (!redisAvailable) return;
+
         String redisKey = RATE_LIMIT_PREFIX + key;
         try {
             keyCommands.del(redisKey);
             LOG.debugf("Reset rate limit: %s", key);
         } catch (Exception e) {
             LOG.warnf("Error resetting rate limit: %s", e.getMessage());
+            checkRedisConnection();
+        }
+    }
+
+    /**
+     * Re-check Redis connection after an error.
+     */
+    private void checkRedisConnection() {
+        try {
+            if (keyCommands != null) {
+                keyCommands.exists("__ping__");
+            }
+        } catch (Exception e) {
+            if (redisAvailable) {
+                LOG.warn("Redis connection lost - rate limiting disabled");
+                redisAvailable = false;
+            }
         }
     }
 }

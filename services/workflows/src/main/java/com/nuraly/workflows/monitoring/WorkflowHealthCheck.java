@@ -2,7 +2,7 @@ package com.nuraly.workflows.monitoring;
 
 import com.nuraly.workflows.http.HttpClientManager;
 import com.nuraly.workflows.messaging.RabbitMQConnectionManager;
-import io.quarkus.redis.datasource.RedisDataSource;
+import com.nuraly.workflows.redis.WorkflowCacheService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.health.HealthCheck;
@@ -42,7 +42,7 @@ public class WorkflowHealthCheck {
 
     /**
      * Readiness check - is the service ready to accept traffic?
-     * Checks HTTP pool, RabbitMQ connection, Redis, and system resources.
+     * Checks HTTP pool, RabbitMQ connection, Redis (optional), and system resources.
      */
     @Readiness
     @ApplicationScoped
@@ -55,7 +55,7 @@ public class WorkflowHealthCheck {
         RabbitMQConnectionManager rabbitMQConnectionManager;
 
         @Inject
-        RedisDataSource redisDataSource;
+        WorkflowCacheService workflowCacheService;
 
         @Override
         public HealthCheckResponse call() {
@@ -91,16 +91,16 @@ public class WorkflowHealthCheck {
                 isReady = false;
             }
 
-            // Check Redis connection
+            // Check Redis connection (optional - doesn't affect readiness)
             try {
-                // Simple ping to check connection
-                String pong = redisDataSource.value(String.class).get("health-check-ping");
-                builder.withData("redis.connected", true);
+                boolean redisAvailable = workflowCacheService.isAvailable();
+                builder.withData("redis.available", redisAvailable);
+                if (!redisAvailable) {
+                    builder.withData("redis.note", "Redis unavailable - running in degraded mode (no caching/checkpoints)");
+                }
             } catch (Exception e) {
-                builder.withData("redis.connected", false);
-                builder.withData("redis.error", e.getMessage());
-                // Redis is optional - don't mark as not ready
-                builder.withData("redis.warning", "Redis unavailable - caching disabled");
+                builder.withData("redis.available", false);
+                builder.withData("redis.note", "Redis unavailable - running in degraded mode");
             }
 
             // Check memory usage
