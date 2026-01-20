@@ -454,7 +454,8 @@ export async function getRelationships(
 export async function executeQuery(
   connectionPath: string,
   applicationId: string,
-  request: QueryRequest
+  request: QueryRequest,
+  timeoutMs: number = 30000
 ): Promise<QueryResult> {
   try {
     const params = new URLSearchParams({
@@ -462,13 +463,19 @@ export async function executeQuery(
       connectionPath,
     });
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     const response = await fetch(`${getDbManagerUrl()}/execute?${params}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const text = await response.text();
@@ -477,6 +484,9 @@ export async function executeQuery(
 
     return await response.json();
   } catch (err: any) {
+    if (err.name === 'AbortError') {
+      return { success: false, error: `Query timed out after ${timeoutMs / 1000}s` };
+    }
     return { success: false, error: err.message || 'Query execution failed' };
   }
 }
