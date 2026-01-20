@@ -1,5 +1,6 @@
 package com.nuraly.workflows.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nuraly.workflows.entity.enums.NodeType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -23,6 +24,7 @@ public class WorkflowNodeEntity extends PanacheEntityBase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
+    @JsonIgnore
     public WorkflowEntity workflow;
 
     @Column(nullable = false)

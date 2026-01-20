@@ -8,6 +8,7 @@ import com.nuraly.workflows.dto.HttpWorkflowResponse;
 import com.nuraly.workflows.engine.WorkflowEngine;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
+import com.nuraly.workflows.redis.DistributedLockService;
 import com.nuraly.workflows.service.WorkflowEventService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
@@ -44,6 +45,9 @@ public class WorkflowExecutionConsumer {
 
     @Inject
     WorkflowEventService eventService;
+
+    @Inject
+    DistributedLockService lockService;
 
     /**
      * Configurable prefetch count for parallel message processing.
@@ -138,6 +142,21 @@ public class WorkflowExecutionConsumer {
 
     @Transactional
     void processExecution(WorkflowExecutionMessage message) {
+        // Acquire distributed lock to prevent concurrent processing of same execution
+        // across multiple worker instances
+        if (!lockService.tryLockExecution(message.getExecutionId())) {
+            LOG.infof("Execution %s is being processed by another worker, skipping", message.getExecutionId());
+            return;
+        }
+
+        try {
+            processExecutionWithLock(message);
+        } finally {
+            lockService.unlockExecution(message.getExecutionId());
+        }
+    }
+
+    private void processExecutionWithLock(WorkflowExecutionMessage message) {
         // Retry logic to handle race condition where execution might not be committed yet
         WorkflowExecutionEntity execution = null;
         int maxRetries = 5;
