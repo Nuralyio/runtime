@@ -4,14 +4,10 @@ import { kvModalStyles } from './KvModal.style';
 import { getVarValue } from '../../../../../redux/store/context';
 import { APIS_URL } from '../../../../../../../services/constants';
 import {
-  getKvNamespaces,
   getKvEntries,
-  getCachedKvNamespaces,
   getCachedKvEntries,
-  updateCachedNamespaces,
   updateCachedEntries,
   $kvCache,
-  type KvNamespace,
   type KvEntry,
   type KvValueType,
   type KvEntryVersion
@@ -20,34 +16,29 @@ import {
 /**
  * KvModal Component
  *
- * A modal for managing KV storage:
- * - Namespaces tab: View/create/delete namespaces
+ * A modal for managing KV storage (flat entry model):
  * - Entries tab: View/add/edit/delete key-value entries
- * - Secrets tab: Rotate secrets and view version history
+ * - Secrets tab: View/rotate secrets and version history
  */
 @customElement('kv-modal')
 export class KvModal extends LitElement {
   static override styles = [kvModalStyles];
 
-  @state() private activeTab: 'namespaces' | 'entries' | 'secrets' = 'namespaces';
+  @state() private activeTab: 'entries' | 'secrets' = 'entries';
   @state() private loading = false;
-  @state() private namespaces: KvNamespace[] = [];
-  @state() private selectedNamespaceId: string | null = null;
   @state() private entries: KvEntry[] = [];
   @state() private versions: KvEntryVersion[] = [];
 
-  // Create namespace form
-  @state() private showCreateNamespaceForm = false;
-  @state() private newNamespaceName = '';
-  @state() private newNamespaceDescription = '';
-  @state() private newNamespaceIsSecret = false;
+  // Filter options
+  @state() private filterScope = '';
+  @state() private filterPrefix = '';
 
   // Create/edit entry form
   @state() private showEntryForm = false;
   @state() private editingEntry: KvEntry | null = null;
   @state() private entryKey = '';
   @state() private entryValue = '';
-  @state() private entryValueType: KvValueType = 'STRING';
+  @state() private entryIsSecret = false;
   @state() private entryTtl: number | null = null;
 
   // Secrets tab
@@ -68,18 +59,13 @@ export class KvModal extends LitElement {
       const appId = this.getAppId();
       if (appId && cache[appId]) {
         const data = cache[appId];
-        this.namespaces = data.namespaces;
+        this.entries = data.entries;
         this.loading = data.loading;
-
-        // Load entries for selected namespace
-        if (this.selectedNamespaceId && data.entries[this.selectedNamespaceId]) {
-          this.entries = data.entries[this.selectedNamespaceId];
-        }
       }
     });
 
     // Load data
-    this.loadNamespaces();
+    this.loadEntries();
   }
 
   override disconnectedCallback(): void {
@@ -95,48 +81,39 @@ export class KvModal extends LitElement {
     return app?.uuid || null;
   }
 
-  private async loadNamespaces(): Promise<void> {
+  private async loadEntries(): Promise<void> {
     const appId = this.getAppId();
     if (!appId) return;
 
     // Check cache first
-    const cached = getCachedKvNamespaces(appId);
+    const cached = getCachedKvEntries(appId, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
     if (cached) {
-      this.namespaces = cached;
+      this.entries = cached;
       this.loading = false;
       return;
     }
 
     // Fetch from API
     this.loading = true;
-    const namespaces = await getKvNamespaces(appId);
-    if (namespaces) {
-      this.namespaces = namespaces;
+    const entries = await getKvEntries(appId, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
+    if (entries) {
+      this.entries = entries;
     }
     this.loading = false;
   }
 
-  private async loadEntries(namespaceId: string): Promise<void> {
+  private async loadVersionHistory(keyPath: string): Promise<void> {
     const appId = this.getAppId();
-    if (!appId || !namespaceId) return;
+    if (!appId) return;
 
-    // Check cache first
-    const cached = getCachedKvEntries(appId, namespaceId);
-    if (cached) {
-      this.entries = cached;
-      return;
-    }
-
-    // Fetch from API
-    const entries = await getKvEntries(appId, namespaceId);
-    if (entries) {
-      this.entries = entries;
-    }
-  }
-
-  private async loadVersionHistory(namespaceId: string, keyPath: string): Promise<void> {
     try {
-      const response = await fetch(APIS_URL.getKvVersions(namespaceId, keyPath), {
+      const response = await fetch(APIS_URL.getKvVersions(appId, keyPath), {
         credentials: 'include'
       });
       if (response.ok) {
@@ -148,19 +125,12 @@ export class KvModal extends LitElement {
     }
   }
 
-  private resetNamespaceForm(): void {
-    this.showCreateNamespaceForm = false;
-    this.newNamespaceName = '';
-    this.newNamespaceDescription = '';
-    this.newNamespaceIsSecret = false;
-  }
-
   private resetEntryForm(): void {
     this.showEntryForm = false;
     this.editingEntry = null;
     this.entryKey = '';
     this.entryValue = '';
-    this.entryValueType = 'STRING';
+    this.entryIsSecret = false;
     this.entryTtl = null;
   }
 
@@ -178,101 +148,34 @@ export class KvModal extends LitElement {
 
   // CRUD Operations
 
-  private async handleCreateNamespace(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.newNamespaceName) return;
-
-    try {
-      const response = await fetch(APIS_URL.createKvNamespace(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          name: this.newNamespaceName,
-          description: this.newNamespaceDescription || undefined,
-          applicationId: appId,
-          isSecretNamespace: this.newNamespaceIsSecret,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to create namespace');
-      }
-
-      const newNamespace = await response.json();
-      const updatedNamespaces = [...this.namespaces, newNamespace];
-      this.namespaces = updatedNamespaces;
-      updateCachedNamespaces(appId, updatedNamespaces);
-      this.resetNamespaceForm();
-      this.showMessage('success', `Namespace "${newNamespace.name}" created successfully`);
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to create namespace');
-    }
-  }
-
-  private async handleDeleteNamespace(nsId: string): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId) return;
-
-    const ns = this.namespaces.find(n => n.id === nsId);
-    if (!confirm(`Are you sure you want to delete namespace "${ns?.name}"? This will delete all entries.`)) return;
-
-    try {
-      const response = await fetch(APIS_URL.deleteKvNamespace(nsId), {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to delete namespace');
-      }
-
-      const updatedNamespaces = this.namespaces.filter(n => n.id !== nsId);
-      this.namespaces = updatedNamespaces;
-      updateCachedNamespaces(appId, updatedNamespaces);
-
-      if (this.selectedNamespaceId === nsId) {
-        this.selectedNamespaceId = null;
-        this.entries = [];
-      }
-
-      this.showMessage('success', 'Namespace deleted successfully');
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to delete namespace');
-    }
-  }
-
   private async handleSetEntry(): Promise<void> {
     const appId = this.getAppId();
-    if (!appId || !this.selectedNamespaceId || !this.entryKey) return;
+    if (!appId || !this.entryKey) return;
 
     try {
-      // Parse value based on type
+      // Parse value if it looks like JSON
       let parsedValue: any = this.entryValue;
-      if (this.entryValueType === 'JSON') {
+      if (this.entryValue.trim().startsWith('{') || this.entryValue.trim().startsWith('[')) {
         try {
           parsedValue = JSON.parse(this.entryValue);
         } catch {
-          throw new Error('Invalid JSON value');
+          // Keep as string if not valid JSON
         }
-      } else if (this.entryValueType === 'NUMBER') {
+      } else if (this.entryValue === 'true' || this.entryValue === 'false') {
+        parsedValue = this.entryValue === 'true';
+      } else if (!isNaN(Number(this.entryValue)) && this.entryValue.trim() !== '') {
         parsedValue = Number(this.entryValue);
-        if (isNaN(parsedValue)) {
-          throw new Error('Invalid number value');
-        }
-      } else if (this.entryValueType === 'BOOLEAN') {
-        parsedValue = this.entryValue.toLowerCase() === 'true';
       }
 
-      const response = await fetch(APIS_URL.setKvEntry(this.selectedNamespaceId, this.entryKey), {
+      const response = await fetch(APIS_URL.setKvEntry(this.entryKey), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          applicationId: appId,
+          scope: this.filterScope || undefined,
           value: parsedValue,
-          valueType: this.entryValueType,
+          isSecret: this.entryIsSecret,
           ttlSeconds: this.entryTtl || undefined,
         }),
       });
@@ -295,7 +198,10 @@ export class KvModal extends LitElement {
       }
 
       this.entries = updatedEntries;
-      updateCachedEntries(appId, this.selectedNamespaceId, updatedEntries);
+      updateCachedEntries(appId, updatedEntries, {
+        scope: this.filterScope || undefined,
+        prefix: this.filterPrefix || undefined
+      });
       this.resetEntryForm();
       this.showMessage('success', `Entry "${this.entryKey}" saved successfully`);
     } catch (error: any) {
@@ -305,12 +211,12 @@ export class KvModal extends LitElement {
 
   private async handleDeleteEntry(keyPath: string): Promise<void> {
     const appId = this.getAppId();
-    if (!appId || !this.selectedNamespaceId) return;
+    if (!appId) return;
 
     if (!confirm(`Are you sure you want to delete entry "${keyPath}"?`)) return;
 
     try {
-      const response = await fetch(APIS_URL.deleteKvEntry(this.selectedNamespaceId, keyPath), {
+      const response = await fetch(APIS_URL.deleteKvEntry(appId, keyPath), {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -322,7 +228,10 @@ export class KvModal extends LitElement {
 
       const updatedEntries = this.entries.filter(e => e.keyPath !== keyPath);
       this.entries = updatedEntries;
-      updateCachedEntries(appId, this.selectedNamespaceId, updatedEntries);
+      updateCachedEntries(appId, updatedEntries, {
+        scope: this.filterScope || undefined,
+        prefix: this.filterPrefix || undefined
+      });
       this.showMessage('success', 'Entry deleted successfully');
     } catch (error: any) {
       this.showMessage('error', error.message || 'Failed to delete entry');
@@ -331,10 +240,10 @@ export class KvModal extends LitElement {
 
   private async handleRotateSecret(): Promise<void> {
     const appId = this.getAppId();
-    if (!appId || !this.selectedNamespaceId || !this.selectedSecretKey || !this.rotateNewValue) return;
+    if (!appId || !this.selectedSecretKey || !this.rotateNewValue) return;
 
     try {
-      const response = await fetch(APIS_URL.rotateKvSecret(this.selectedNamespaceId, this.selectedSecretKey), {
+      const response = await fetch(APIS_URL.rotateKvSecret(appId, this.selectedSecretKey), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -355,10 +264,13 @@ export class KvModal extends LitElement {
         e.keyPath === this.selectedSecretKey ? updatedEntry : e
       );
       this.entries = updatedEntries;
-      updateCachedEntries(appId, this.selectedNamespaceId, updatedEntries);
+      updateCachedEntries(appId, updatedEntries, {
+        scope: this.filterScope || undefined,
+        prefix: this.filterPrefix || undefined
+      });
 
       // Reload version history
-      await this.loadVersionHistory(this.selectedNamespaceId, this.selectedSecretKey);
+      await this.loadVersionHistory(this.selectedSecretKey);
 
       this.resetRotateForm();
       this.showMessage('success', 'Secret rotated successfully');
@@ -369,12 +281,12 @@ export class KvModal extends LitElement {
 
   private async handleRollback(version: number): Promise<void> {
     const appId = this.getAppId();
-    if (!appId || !this.selectedNamespaceId || !this.selectedSecretKey) return;
+    if (!appId || !this.selectedSecretKey) return;
 
     if (!confirm(`Are you sure you want to rollback to version ${version}?`)) return;
 
     try {
-      const response = await fetch(APIS_URL.rollbackKvEntry(this.selectedNamespaceId, this.selectedSecretKey), {
+      const response = await fetch(APIS_URL.rollbackKvEntry(appId, this.selectedSecretKey), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -393,10 +305,13 @@ export class KvModal extends LitElement {
         e.keyPath === this.selectedSecretKey ? updatedEntry : e
       );
       this.entries = updatedEntries;
-      updateCachedEntries(appId, this.selectedNamespaceId, updatedEntries);
+      updateCachedEntries(appId, updatedEntries, {
+        scope: this.filterScope || undefined,
+        prefix: this.filterPrefix || undefined
+      });
 
       // Reload version history
-      await this.loadVersionHistory(this.selectedNamespaceId, this.selectedSecretKey);
+      await this.loadVersionHistory(this.selectedSecretKey);
 
       this.showMessage('success', `Rolled back to version ${version}`);
     } catch (error: any) {
@@ -408,29 +323,25 @@ export class KvModal extends LitElement {
     this.editingEntry = entry;
     this.entryKey = entry.keyPath;
     this.entryValue = typeof entry.value === 'object' ? JSON.stringify(entry.value, null, 2) : String(entry.value);
-    this.entryValueType = entry.valueType;
+    this.entryIsSecret = entry.isSecret;
     this.entryTtl = null;
     this.showEntryForm = true;
   }
 
-  private handleSelectNamespace(nsId: string): void {
-    this.selectedNamespaceId = nsId;
-    this.loadEntries(nsId);
-    this.activeTab = 'entries';
-  }
-
   private handleSelectSecretEntry(keyPath: string): void {
     this.selectedSecretKey = keyPath;
-    if (this.selectedNamespaceId) {
-      this.loadVersionHistory(this.selectedNamespaceId, keyPath);
-    }
+    this.loadVersionHistory(keyPath);
+  }
+
+  private handleFilterChange(): void {
+    this.loadEntries();
   }
 
   // Helper methods
 
   private formatValue(entry: KvEntry): string {
-    if (entry.isEncrypted) {
-      return '••••••••';
+    if (entry.isEncrypted || entry.isSecret) {
+      return '********';
     }
     const value = entry.value;
     if (typeof value === 'object') {
@@ -455,160 +366,47 @@ export class KvModal extends LitElement {
     return new Date(dateStr).toLocaleString();
   }
 
-  private getSecretNamespaces(): KvNamespace[] {
-    return this.namespaces.filter(ns => ns.isSecretNamespace);
-  }
-
   private getSecretEntries(): KvEntry[] {
-    const ns = this.namespaces.find(n => n.id === this.selectedNamespaceId);
-    if (!ns?.isSecretNamespace) return [];
-    return this.entries;
+    return this.entries.filter(e => e.isSecret);
   }
 
   // Render methods
-
-  private renderNamespacesTab() {
-    return html`
-      <div class="tab-content">
-        ${this.loading
-          ? html`<div class="loading">Loading namespaces...</div>`
-          : html`
-              <div class="namespaces-section">
-                <div class="section-title">
-                  Namespaces <span class="count">${this.namespaces.length}</span>
-                </div>
-                <div class="namespace-list">
-                  ${this.namespaces.length === 0
-                    ? html`
-                        <div class="empty-state">
-                          <div class="empty-state-icon">📦</div>
-                          <div class="empty-state-text">No namespaces yet</div>
-                        </div>
-                      `
-                    : this.namespaces.map(ns => this.renderNamespaceItem(ns))}
-                </div>
-              </div>
-
-              ${this.showCreateNamespaceForm
-                ? this.renderCreateNamespaceForm()
-                : html`
-                    <button class="add-btn" @click=${() => (this.showCreateNamespaceForm = true)}>
-                      + Create Namespace
-                    </button>
-                  `}
-            `}
-      </div>
-    `;
-  }
-
-  private renderNamespaceItem(ns: KvNamespace) {
-    return html`
-      <div
-        class="namespace-item ${ns.isSecretNamespace ? 'secret' : ''} ${this.selectedNamespaceId === ns.id ? 'selected' : ''}"
-        @click=${() => this.handleSelectNamespace(ns.id)}
-      >
-        <div class="namespace-info">
-          <div class="namespace-icon ${ns.isSecretNamespace ? 'secret' : ''}">
-            ${ns.isSecretNamespace ? '🔒' : '📁'}
-          </div>
-          <div class="namespace-details">
-            <div class="namespace-name">${ns.name}</div>
-            ${ns.description ? html`<div class="namespace-desc">${ns.description}</div>` : nothing}
-          </div>
-        </div>
-        <div class="namespace-meta">
-          ${ns.isSecretNamespace ? html`<span class="secret-badge">Secret</span>` : nothing}
-          <button
-            class="action-btn delete"
-            @click=${(e: Event) => {
-              e.stopPropagation();
-              this.handleDeleteNamespace(ns.id);
-            }}
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  private renderCreateNamespaceForm() {
-    return html`
-      <div class="create-form">
-        <div class="create-form-header">
-          <span class="create-form-title">Create Namespace</span>
-          <button class="cancel-btn" @click=${this.resetNamespaceForm}>Cancel</button>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <nr-input
-            .value=${this.newNamespaceName}
-            placeholder="e.g., app-config"
-            @nr-input=${(e: CustomEvent) => (this.newNamespaceName = e.detail?.value || '')}
-          ></nr-input>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Description (optional)</label>
-          <nr-input
-            .value=${this.newNamespaceDescription}
-            placeholder="What is this namespace for?"
-            @nr-input=${(e: CustomEvent) => (this.newNamespaceDescription = e.detail?.value || '')}
-          ></nr-input>
-        </div>
-
-        <div class="form-group">
-          <div class="toggle-container">
-            <label class="toggle-switch">
-              <input
-                type="checkbox"
-                .checked=${this.newNamespaceIsSecret}
-                @change=${(e: Event) => (this.newNamespaceIsSecret = (e.target as HTMLInputElement).checked)}
-              />
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="toggle-label">Secret Namespace (values will be encrypted)</span>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button
-            class="add-btn"
-            ?disabled=${!this.newNamespaceName}
-            @click=${this.handleCreateNamespace}
-          >
-            Create Namespace
-          </button>
-        </div>
-      </div>
-    `;
-  }
 
   private renderEntriesTab() {
     return html`
       <div class="tab-content">
         <div class="entries-section">
-          <div class="namespace-selector">
-            <label>Namespace</label>
-            <nr-select
-              .value=${this.selectedNamespaceId || ''}
-              .options=${this.namespaces.map(ns => ({
-                label: `${ns.name}${ns.isSecretNamespace ? ' 🔒' : ''}`,
-                value: ns.id
-              }))}
-              placeholder="Select a namespace..."
-              @nr-change=${(e: CustomEvent) => {
-                const nsId = e.detail?.value || '';
-                this.selectedNamespaceId = nsId || null;
-                if (nsId) this.loadEntries(nsId);
-                else this.entries = [];
-              }}
-            ></nr-select>
+          <div class="filter-bar">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Scope (optional)</label>
+              <nr-input
+                .value=${this.filterScope}
+                placeholder="e.g., workflow, user"
+                @nr-input=${(e: CustomEvent) => {
+                  this.filterScope = e.detail?.value || '';
+                }}
+                @nr-blur=${() => this.handleFilterChange()}
+              ></nr-input>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Key prefix (optional)</label>
+              <nr-input
+                .value=${this.filterPrefix}
+                placeholder="e.g., config/"
+                @nr-input=${(e: CustomEvent) => {
+                  this.filterPrefix = e.detail?.value || '';
+                }}
+                @nr-blur=${() => this.handleFilterChange()}
+              ></nr-input>
+            </div>
+            <button class="action-btn" style="align-self: flex-end; padding: 8px 12px;" @click=${() => this.loadEntries()}>
+              Refresh
+            </button>
           </div>
 
-          ${this.selectedNamespaceId
-            ? html`
+          ${this.loading
+            ? html`<div class="loading">Loading entries...</div>`
+            : html`
                 <div class="section-title">
                   Entries <span class="count">${this.entries.length}</span>
                 </div>
@@ -616,26 +414,29 @@ export class KvModal extends LitElement {
                   ${this.entries.length === 0
                     ? html`
                         <div class="empty-state">
-                          <div class="empty-state-icon">📝</div>
-                          <div class="empty-state-text">No entries in this namespace</div>
+                          <nr-icon name="key" size="48" class="empty-state-icon"></nr-icon>
+                          <div class="empty-state-text">No entries yet</div>
+                          ${!this.showEntryForm
+                            ? html`
+                                <button class="add-btn" @click=${() => (this.showEntryForm = true)}>
+                                  + Add Entry
+                                </button>
+                              `
+                            : nothing}
                         </div>
                       `
                     : this.entries.map(entry => this.renderEntryItem(entry))}
                 </div>
 
-                ${this.showEntryForm
-                  ? this.renderEntryForm()
-                  : html`
+                ${this.entries.length > 0 && !this.showEntryForm
+                  ? html`
                       <button class="add-btn" style="margin-top: 16px;" @click=${() => (this.showEntryForm = true)}>
                         + Add Entry
                       </button>
-                    `}
-              `
-            : html`
-                <div class="empty-state">
-                  <div class="empty-state-icon">👆</div>
-                  <div class="empty-state-text">Select a namespace to view entries</div>
-                </div>
+                    `
+                  : nothing}
+
+                ${this.showEntryForm ? this.renderEntryForm() : nothing}
               `}
         </div>
       </div>
@@ -644,12 +445,17 @@ export class KvModal extends LitElement {
 
   private renderEntryItem(entry: KvEntry) {
     return html`
-      <div class="entry-item">
+      <div class="entry-item ${entry.isSecret ? 'secret' : ''}">
         <div class="entry-info">
-          <div class="entry-key">${entry.keyPath}</div>
-          <div class="entry-value ${entry.isEncrypted ? 'masked' : ''}">${this.formatValue(entry)}</div>
+          <div class="entry-key">
+            ${entry.isSecret ? html`<nr-icon name="lock" size="14" class="secret-icon"></nr-icon>` : nothing}
+            ${entry.keyPath}
+          </div>
+          <div class="entry-value ${entry.isSecret ? 'masked' : ''}">${this.formatValue(entry)}</div>
           <div class="entry-meta">
             <span class="type-badge">${entry.valueType}</span>
+            ${entry.scope ? html`<span class="scope-badge">${entry.scope}</span>` : nothing}
+            ${entry.isSecret ? html`<span class="secret-badge">Secret</span>` : nothing}
             <span class="version-badge">v${entry.version}</span>
             <span class="ttl-badge">${this.formatExpiry(entry.expiresAt)}</span>
           </div>
@@ -676,29 +482,14 @@ export class KvModal extends LitElement {
           <label class="form-label">Key Path</label>
           <nr-input
             .value=${this.entryKey}
-            placeholder="e.g., database/host"
+            placeholder="e.g., config/database/host"
             ?disabled=${isEditing}
             @nr-input=${(e: CustomEvent) => (this.entryKey = e.detail?.value || '')}
           ></nr-input>
-          <div class="form-description">Use / for hierarchical keys</div>
+          <div class="form-description">Use / for hierarchical keys. Value type is auto-detected.</div>
         </div>
 
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Value Type</label>
-            <nr-select
-              .value=${this.entryValueType}
-              .options=${[
-                { label: 'String', value: 'STRING' },
-                { label: 'JSON', value: 'JSON' },
-                { label: 'Number', value: 'NUMBER' },
-                { label: 'Boolean', value: 'BOOLEAN' },
-                { label: 'Binary (Base64)', value: 'BINARY' }
-              ]}
-              @nr-change=${(e: CustomEvent) => (this.entryValueType = e.detail?.value as KvValueType)}
-            ></nr-select>
-          </div>
-
           <div class="form-group">
             <label class="form-label">TTL (seconds)</label>
             <nr-input
@@ -708,39 +499,35 @@ export class KvModal extends LitElement {
               @nr-input=${(e: CustomEvent) => (this.entryTtl = e.detail?.value ? Number(e.detail.value) : null)}
             ></nr-input>
           </div>
+
+          <div class="form-group">
+            <div class="toggle-container" style="margin-top: 24px;">
+              <label class="toggle-switch">
+                <input
+                  type="checkbox"
+                  .checked=${this.entryIsSecret}
+                  ?disabled=${isEditing}
+                  @change=${(e: Event) => (this.entryIsSecret = (e.target as HTMLInputElement).checked)}
+                />
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label">Secret (encrypted)</span>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">Value</label>
-          ${this.entryValueType === 'JSON'
-            ? html`
-                <textarea
-                  rows="4"
-                  style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px;"
-                  .value=${this.entryValue}
-                  placeholder='{"key": "value"}'
-                  @input=${(e: Event) => (this.entryValue = (e.target as HTMLTextAreaElement).value)}
-                ></textarea>
-              `
-            : this.entryValueType === 'BOOLEAN'
-              ? html`
-                  <nr-select
-                    .value=${this.entryValue || 'true'}
-                    .options=${[
-                      { label: 'true', value: 'true' },
-                      { label: 'false', value: 'false' }
-                    ]}
-                    @nr-change=${(e: CustomEvent) => (this.entryValue = e.detail?.value || 'true')}
-                  ></nr-select>
-                `
-              : html`
-                  <nr-input
-                    .value=${this.entryValue}
-                    placeholder="Enter value..."
-                    type=${this.entryValueType === 'NUMBER' ? 'number' : 'text'}
-                    @nr-input=${(e: CustomEvent) => (this.entryValue = e.detail?.value || '')}
-                  ></nr-input>
-                `}
+          <textarea
+            rows="4"
+            style="width: 100%; font-family: monospace; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; box-sizing: border-box;"
+            .value=${this.entryValue}
+            placeholder='Enter value (JSON, string, number, or boolean)'
+            @input=${(e: Event) => (this.entryValue = (e.target as HTMLTextAreaElement).value)}
+          ></textarea>
+          <div class="form-description">
+            Type is auto-detected: {"key": "value"} = JSON, 123 = Number, true/false = Boolean, otherwise String
+          </div>
         </div>
 
         <div class="form-actions">
@@ -757,64 +544,40 @@ export class KvModal extends LitElement {
   }
 
   private renderSecretsTab() {
-    const secretNamespaces = this.getSecretNamespaces();
+    const secretEntries = this.getSecretEntries();
 
     return html`
       <div class="tab-content">
         <div class="secrets-section">
-          ${secretNamespaces.length === 0
+          ${secretEntries.length === 0
             ? html`
                 <div class="empty-state">
-                  <div class="empty-state-icon">🔐</div>
-                  <div class="empty-state-text">No secret namespaces. Create one in the Namespaces tab.</div>
+                  <nr-icon name="lock" size="48" class="empty-state-icon"></nr-icon>
+                  <div class="empty-state-text">No secret entries. Mark an entry as secret when creating it.</div>
                 </div>
               `
             : html`
                 <div class="secret-entry-selector">
                   <div class="form-group">
-                    <label class="form-label">Secret Namespace</label>
+                    <label class="form-label">Select Secret Entry</label>
                     <nr-select
-                      .value=${this.selectedNamespaceId || ''}
-                      .options=${secretNamespaces.map(ns => ({
-                        label: ns.name,
-                        value: ns.id
+                      .value=${this.selectedSecretKey || ''}
+                      .options=${secretEntries.map(entry => ({
+                        label: entry.keyPath,
+                        value: entry.keyPath
                       }))}
-                      placeholder="Select a namespace..."
+                      placeholder="Select a secret..."
                       @nr-change=${(e: CustomEvent) => {
-                        const nsId = e.detail?.value || '';
-                        this.selectedNamespaceId = nsId || null;
-                        this.selectedSecretKey = null;
-                        this.versions = [];
-                        if (nsId) this.loadEntries(nsId);
-                        else this.entries = [];
+                        const key = e.detail?.value || '';
+                        if (key) {
+                          this.handleSelectSecretEntry(key);
+                        } else {
+                          this.selectedSecretKey = null;
+                          this.versions = [];
+                        }
                       }}
                     ></nr-select>
                   </div>
-
-                  ${this.selectedNamespaceId
-                    ? html`
-                        <div class="form-group">
-                          <label class="form-label">Secret Entry</label>
-                          <nr-select
-                            .value=${this.selectedSecretKey || ''}
-                            .options=${this.entries.map(entry => ({
-                              label: entry.keyPath,
-                              value: entry.keyPath
-                            }))}
-                            placeholder="Select an entry..."
-                            @nr-change=${(e: CustomEvent) => {
-                              const key = e.detail?.value || '';
-                              this.selectedSecretKey = key || null;
-                              if (key && this.selectedNamespaceId) {
-                                this.loadVersionHistory(this.selectedNamespaceId, key);
-                              } else {
-                                this.versions = [];
-                              }
-                            }}
-                          ></nr-select>
-                        </div>
-                      `
-                    : nothing}
                 </div>
 
                 ${this.selectedSecretKey
@@ -823,7 +586,7 @@ export class KvModal extends LitElement {
                         ? this.renderRotateForm()
                         : html`
                             <button class="add-btn" @click=${() => (this.showRotateForm = true)}>
-                              🔄 Rotate Secret
+                              Rotate Secret
                             </button>
                           `}
 
@@ -847,7 +610,7 @@ export class KvModal extends LitElement {
     return html`
       <div class="rotate-form">
         <div class="rotate-warning">
-          <span class="rotate-warning-icon">⚠️</span>
+          <nr-icon name="alert-triangle" size="16" class="rotate-warning-icon"></nr-icon>
           <span>Rotating a secret will create a new version. The old value will be preserved in version history.</span>
         </div>
 
@@ -906,12 +669,6 @@ export class KvModal extends LitElement {
 
         <div class="tabs-header">
           <button
-            class="tab-btn ${this.activeTab === 'namespaces' ? 'active' : ''}"
-            @click=${() => (this.activeTab = 'namespaces')}
-          >
-            Namespaces
-          </button>
-          <button
             class="tab-btn ${this.activeTab === 'entries' ? 'active' : ''}"
             @click=${() => (this.activeTab = 'entries')}
           >
@@ -925,7 +682,6 @@ export class KvModal extends LitElement {
           </button>
         </div>
 
-        ${this.activeTab === 'namespaces' ? this.renderNamespacesTab() : nothing}
         ${this.activeTab === 'entries' ? this.renderEntriesTab() : nothing}
         ${this.activeTab === 'secrets' ? this.renderSecretsTab() : nothing}
       </div>

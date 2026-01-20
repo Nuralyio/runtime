@@ -42,9 +42,20 @@ export const kvModalStyles = css`
     padding: 0;
   }
 
-  /* Namespace Section */
-  .namespaces-section {
-    margin-bottom: 24px;
+  /* Filter Bar */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--bg-secondary, #f9fafb);
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    align-items: flex-end;
+  }
+
+  .filter-bar .form-group {
+    flex: 1;
   }
 
   .section-title {
@@ -248,6 +259,25 @@ export const kvModalStyles = css`
     border-radius: 4px;
     text-transform: uppercase;
     font-weight: 600;
+  }
+
+  .scope-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .secret-icon {
+    margin-right: 4px;
+    color: #f59e0b;
+    vertical-align: middle;
+  }
+
+  .entry-item.secret {
+    border-left: 3px solid #f59e0b;
   }
 
   .ttl-badge {
@@ -488,9 +518,9 @@ export const kvModalStyles = css`
   }
 
   .empty-state-icon {
-    font-size: 48px;
     margin-bottom: 12px;
     opacity: 0.5;
+    color: var(--text-secondary, #6b7280);
   }
 
   .empty-state-text {
