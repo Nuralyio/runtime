@@ -465,6 +465,7 @@ export const workflowNodeStyles = css`
     min-width: 160px;
     min-height: auto;
     padding: 0;
+    overflow: hidden;
   }
 
   .db-table-header {
@@ -472,7 +473,6 @@ export const workflowNodeStyles = css`
     align-items: center;
     justify-content: center;
     padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
-    border-radius: var(--nuraly-border-radius-medium, 8px) var(--nuraly-border-radius-medium, 8px) 0 0;
     border-bottom: 2px solid rgba(0, 0, 0, 0.2);
   }
 
@@ -578,12 +578,6 @@ export const workflowNodeStyles = css`
     color: var(--nuraly-color-text-secondary, #525252);
   }
 
-  /* DB Table node - Carbon theme (sharp corners) */
-  .node-container.db-table-node[data-theme="carbon-light"] .db-table-header,
-  .node-container.db-table-node[data-theme="carbon-dark"] .db-table-header,
-  .node-container.db-table-node[data-theme="carbon"] .db-table-header {
-    border-radius: 0;
-  }
 `;
 
 export const styles = workflowNodeStyles;

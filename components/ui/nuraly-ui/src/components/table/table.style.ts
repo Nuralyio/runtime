@@ -128,11 +128,13 @@ export default css`
     text-align: center;
     border-bottom: var(--nuraly-table-border-width, 1px) solid var(--nuraly-table-row-border-color, #f0f0f0);
     padding: 10px;
+    font-size: var(--nuraly-table-font-size, 14px);
   }
 
   th {
     cursor: pointer;
     padding: 10px;
+    font-size: var(--nuraly-table-font-size, 14px);
   }
 
   th span {
@@ -174,11 +176,13 @@ export default css`
   :host([size='small']) td,
   :host([size='small']) th {
     padding: 5px;
+    font-size: 12px;
   }
 
   :host([size='large']) td,
   :host([size='large']) th {
     padding: 15px;
+    font-size: 16px;
   }
 
   /* Pagination Styles */
@@ -258,15 +262,18 @@ export default css`
   /* Size Variants for Pagination */
   .pagination-container[data-size='small'] .left-content .items-details {
     padding: 5px;
+    font-size: 12px;
   }
 
   .pagination-container[data-size='large'] .left-content .items-details {
     padding: 15px;
+    font-size: 16px;
   }
 
   .pagination-container[data-size='small'] .left-content .select-details {
     padding: 5px;
     gap: 6px;
+    font-size: 12px;
   }
 
   .pagination-container[data-size='large'] .left-content .select-details {
@@ -276,6 +283,7 @@ export default css`
 
   .pagination-container[data-size='small'] .right-content .page-details {
     padding: 5px;
+    font-size: 12px;
   }
 
   .pagination-container[data-size='large'] .right-content .page-details {

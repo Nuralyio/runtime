@@ -24,6 +24,9 @@ import '../chatbot-trigger/chatbot-trigger-fields.component.js';
 // Import KV secret select component
 import '../../kv-secret-select/kv-secret-select.component.js';
 
+// Import label component
+import '../../label/label.component.js';
+
 /**
  * Callbacks for config panel interactions
  */
@@ -53,7 +56,7 @@ function renderCommonFields(
 ): TemplateResult {
   return html`
     <div class="config-field">
-      <label>Name</label>
+      <nr-label size="small">Name</nr-label>
       <nr-input
         value=${node.name}
         placeholder="Node name"
@@ -61,7 +64,7 @@ function renderCommonFields(
       ></nr-input>
     </div>
     <div class="config-field">
-      <label>Description</label>
+      <nr-label size="small">Description</nr-label>
       <nr-input
         value=${node.metadata?.description || ''}
         placeholder="Description"
@@ -1609,7 +1612,7 @@ export function renderConfigPanelTemplate(
           >
             <nr-icon name=${template?.icon || 'box'} size="small"></nr-icon>
           </div>
-          <span>${node.name}</span>
+          <nr-label size="medium">${node.name}</nr-label>
         </div>
         <button class="config-panel-close" @click=${callbacks.onClose}>
           <nr-icon name="x" size="small"></nr-icon>
