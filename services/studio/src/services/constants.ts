@@ -85,4 +85,29 @@ export const APIS_URL = {
   },
   bulkDeleteKvEntries: (appId: string) =>
     `${API_BASE}/api/v1/kv/bulk/delete?applicationId=${appId}`,
+
+  // Conduit Database Endpoints
+  testDbConnection: (appId: string, connectionPath: string) =>
+    `${API_BASE}/api/v1/db/test-connection?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
+  testDbConnectionInline: () =>
+    `${API_BASE}/api/v1/db/test-connection/inline`,
+  listDbSchemas: (appId: string, connectionPath: string) =>
+    `${API_BASE}/api/v1/db/schemas?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
+  listDbTables: (appId: string, connectionPath: string, schema?: string) => {
+    const params = new URLSearchParams({ applicationId: appId, connectionPath });
+    if (schema) params.append('schema', schema);
+    return `${API_BASE}/api/v1/db/tables?${params.toString()}`;
+  },
+  getDbColumns: (appId: string, connectionPath: string, schema: string, table: string) =>
+    `${API_BASE}/api/v1/db/columns?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}&schema=${schema}&table=${table}`,
+  getDbRelationships: (appId: string, connectionPath: string, schema: string, table: string) =>
+    `${API_BASE}/api/v1/db/relationships?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}&schema=${schema}&table=${table}`,
+  executeDbQuery: (appId: string, connectionPath: string) =>
+    `${API_BASE}/api/v1/db/execute?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
+  getDbPoolStats: (appId: string, connectionPath: string) =>
+    `${API_BASE}/api/v1/db/pool/stats?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
+  closeDbPool: (appId: string, connectionPath: string) =>
+    `${API_BASE}/api/v1/db/pool?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
+  dbHealth: () =>
+    `${API_BASE}/api/v1/db/health`,
 };

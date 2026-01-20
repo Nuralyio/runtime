@@ -205,6 +205,11 @@ export default [{
       const flowTab = { id: 'flow', label: 'Workflows', type: 'flow' };
       openEditorTab(flowTab);
       setCurrentEditorTab(flowTab);
+    } else if(action === "open-database"){
+      // Open the Database tab
+      const dbTab = { id: 'database', label: 'Database', type: 'database' };
+      openEditorTab(dbTab);
+      setCurrentEditorTab(dbTab);
     } else if(action === "export"){
       // Export application functionality
       const currentEditingApplication = GetVar("currentEditingApplication");
