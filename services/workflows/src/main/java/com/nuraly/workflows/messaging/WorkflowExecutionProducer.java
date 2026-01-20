@@ -29,6 +29,9 @@ public class WorkflowExecutionProducer {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+    /**
+     * Publish a workflow execution message (async mode).
+     */
     public void publishExecution(WorkflowExecutionMessage message) {
         try (Channel channel = connectionManager.createChannel()) {
             String messageJson = objectMapper.writeValueAsString(message);
@@ -52,6 +55,46 @@ public class WorkflowExecutionProducer {
         } catch (Exception e) {
             LOG.errorf(e, "Failed to publish workflow execution message: %s", message);
             throw new RuntimeException("Failed to publish workflow execution", e);
+        }
+    }
+
+    /**
+     * Publish a workflow execution message for synchronous execution.
+     * Includes replyTo queue and correlationId for response routing.
+     *
+     * @param message       The execution message
+     * @param replyTo       The reply queue name
+     * @param correlationId The correlation ID for matching request/response
+     */
+    public void publishSyncExecution(WorkflowExecutionMessage message, String replyTo, String correlationId) {
+        // Set sync execution fields on the message
+        message.setReplyTo(replyTo);
+        message.setCorrelationId(correlationId);
+        message.setSyncExecution(true);
+
+        try (Channel channel = connectionManager.createChannel()) {
+            String messageJson = objectMapper.writeValueAsString(message);
+
+            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
+                    .contentType("application/json")
+                    .deliveryMode(2) // Persistent
+                    .correlationId(correlationId)
+                    .replyTo(replyTo)
+                    .build();
+
+            channel.basicPublish(
+                    configuration.rabbitmqExchange,
+                    configuration.rabbitmqExecutionsRoutingKey,
+                    properties,
+                    messageJson.getBytes(StandardCharsets.UTF_8)
+            );
+
+            LOG.infof("Published sync workflow execution: executionId=%s, workflowId=%s, replyTo=%s, correlationId=%s",
+                    message.getExecutionId(), message.getWorkflowId(), replyTo, correlationId);
+
+        } catch (Exception e) {
+            LOG.errorf(e, "Failed to publish sync workflow execution message: %s", message);
+            throw new RuntimeException("Failed to publish sync workflow execution", e);
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.nuraly.workflows.api.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuraly.workflows.configuration.Configuration;
+import com.nuraly.workflows.dto.HttpWorkflowResponse;
 import com.nuraly.workflows.dto.WorkflowTriggerDTO;
 import com.nuraly.workflows.exception.TriggerNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
@@ -10,10 +13,12 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import java.util.List;
@@ -25,8 +30,15 @@ import java.util.UUID;
 @Tag(name = "Workflow Triggers", description = "Operations related to workflow triggers")
 public class WorkflowTriggerResource {
 
+    private static final Logger LOG = Logger.getLogger(WorkflowTriggerResource.class);
+
     @Inject
     WorkflowTriggerService triggerService;
+
+    @Inject
+    Configuration configuration;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GET
     @Path("/workflows/{workflowId}/triggers")
@@ -136,24 +148,95 @@ public class WorkflowTriggerResource {
 
     @POST
     @Path("/webhooks/{token}")
-    @Operation(summary = "Webhook trigger endpoint")
+    @Operation(summary = "Webhook trigger endpoint (token-based)")
     @APIResponses(value = {
-            @APIResponse(responseCode = "200", description = "Workflow triggered"),
+            @APIResponse(responseCode = "200", description = "Workflow triggered or completed"),
             @APIResponse(responseCode = "400", description = "Trigger is disabled or workflow not active"),
-            @APIResponse(responseCode = "404", description = "Invalid webhook token")
+            @APIResponse(responseCode = "404", description = "Invalid webhook token"),
+            @APIResponse(responseCode = "504", description = "Sync workflow execution timed out")
     })
-    public RestResponse<String> triggerWebhook(
+    public Response triggerWebhook(
             @PathParam("token") String token,
             JsonNode payload) {
         try {
+            // Check if workflow has HTTP_START node (sync mode)
+            if (configuration.httpSyncEnabled && triggerService.hasHttpStartNode(token)) {
+                LOG.infof("Triggering sync webhook: token=%s", token);
+                return triggerWebhookSync(token, payload);
+            }
+
+            // Async mode (default)
             triggerService.triggerByWebhook(token, payload);
-            return RestResponse.ok("{\"status\": \"triggered\"}");
+            return Response.ok("{\"status\": \"triggered\"}").build();
+
         } catch (TriggerNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"Invalid webhook token\"}")
+                    .build();
         } catch (IllegalStateException e) {
-            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
         } catch (Exception e) {
-            return RestResponse.status(RestResponse.Status.INTERNAL_SERVER_ERROR);
+            LOG.errorf(e, "Webhook trigger failed: token=%s", token);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"Internal server error\"}")
+                    .build();
+        }
+    }
+
+    /**
+     * Synchronous webhook execution.
+     * Waits for workflow completion and returns HTTP_END response.
+     */
+    private Response triggerWebhookSync(String token, JsonNode payload) {
+        try {
+            HttpWorkflowResponse response = triggerService.triggerByWebhookSync(
+                    token, payload, configuration.httpSyncTimeout);
+
+            if (response == null) {
+                return Response.status(Response.Status.GATEWAY_TIMEOUT)
+                        .entity("{\"error\": \"Workflow execution timed out\"}")
+                        .build();
+            }
+
+            // Build response with HTTP_END node output
+            Response.ResponseBuilder responseBuilder = Response.status(response.getStatusCode());
+
+            // Set content type
+            if (response.getContentType() != null) {
+                responseBuilder.type(response.getContentType());
+            }
+
+            // Set custom headers from HTTP_END node
+            if (response.getHeaders() != null) {
+                response.getHeaders().forEach(responseBuilder::header);
+            }
+
+            // Set body
+            if (response.getBody() != null) {
+                responseBuilder.entity(response.getBody());
+            } else if (response.getError() != null) {
+                responseBuilder.entity("{\"error\": \"" + response.getError() + "\"}");
+            } else {
+                responseBuilder.entity("{\"status\": \"completed\"}");
+            }
+
+            return responseBuilder.build();
+
+        } catch (TriggerNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\": \"Invalid webhook token\"}")
+                    .build();
+        } catch (IllegalStateException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
+        } catch (Exception e) {
+            LOG.errorf(e, "Sync webhook execution failed: token=%s", token);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
         }
     }
 }

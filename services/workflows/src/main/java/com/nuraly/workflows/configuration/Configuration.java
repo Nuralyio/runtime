@@ -12,6 +12,14 @@ public class Configuration {
     @ConfigProperty(name = "nuraly.functions.service.url", defaultValue = "http://functions:7001")
     public String functionsServiceUrl;
 
+    // KV Service
+    @ConfigProperty(name = "nuraly.kv.service.url", defaultValue = "http://kv:7003")
+    public String kvServiceUrl;
+
+    // Conduit - Database Connection & Query Service
+    @ConfigProperty(name = "nuraly.conduit.service.url", defaultValue = "http://conduit:7004")
+    public String conduitServiceUrl;
+
     // RabbitMQ
     @ConfigProperty(name = "rabbitmq.host", defaultValue = "rabbitmq")
     public String rabbitmqHost;
@@ -53,4 +61,15 @@ public class Configuration {
     // Webhook Base URL
     @ConfigProperty(name = "workflows.webhook.base-url", defaultValue = "http://localhost:7002")
     public String webhookBaseUrl;
+
+    // Synchronous HTTP Workflow Settings
+    @ConfigProperty(name = "workflows.http.sync.enabled", defaultValue = "true")
+    public boolean httpSyncEnabled;
+
+    @ConfigProperty(name = "workflows.http.sync.timeout", defaultValue = "30000")
+    public long httpSyncTimeout;
+
+    // Dev Mode - allows triggering draft workflows
+    @ConfigProperty(name = "workflows.dev-mode", defaultValue = "false")
+    public boolean devMode;
 }

@@ -1,10 +1,12 @@
 package com.nuraly.workflows.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.workflows.dto.*;
 import com.nuraly.workflows.dto.mapper.WorkflowDTOMapper;
 import com.nuraly.workflows.dto.mapper.WorkflowEdgeDTOMapper;
 import com.nuraly.workflows.dto.mapper.WorkflowNodeDTOMapper;
+import com.nuraly.workflows.entity.NodeExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowEdgeEntity;
 import com.nuraly.workflows.entity.WorkflowEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
@@ -218,18 +220,25 @@ public class WorkflowService {
         ValidationResult result = new ValidationResult();
         result.setValid(true);
 
-        // Check for start node
+        // Check for start node (START or HTTP_START)
         boolean hasStartNode = entity.nodes.stream()
-                .anyMatch(n -> n.type == NodeType.START);
+                .anyMatch(n -> n.type == NodeType.START || n.type == NodeType.HTTP_START);
         if (!hasStartNode) {
-            result.addError("Workflow must have a START node");
+            result.addError("Workflow must have a START or HTTP_START node");
         }
 
-        // Check for end node
+        // Check for end node (END or HTTP_END)
         boolean hasEndNode = entity.nodes.stream()
-                .anyMatch(n -> n.type == NodeType.END);
+                .anyMatch(n -> n.type == NodeType.END || n.type == NodeType.HTTP_END);
         if (!hasEndNode) {
-            result.addError("Workflow must have at least one END node");
+            result.addError("Workflow must have at least one END or HTTP_END node");
+        }
+
+        // If workflow has HTTP_START, it should have HTTP_END (warning)
+        boolean hasHttpStart = entity.nodes.stream().anyMatch(n -> n.type == NodeType.HTTP_START);
+        boolean hasHttpEnd = entity.nodes.stream().anyMatch(n -> n.type == NodeType.HTTP_END);
+        if (hasHttpStart && !hasHttpEnd) {
+            result.addWarning("Workflow has HTTP_START but no HTTP_END node. HTTP requests won't receive a response.");
         }
 
         // Check all nodes are connected
@@ -250,7 +259,121 @@ public class WorkflowService {
             validateNodeConfiguration(node, result);
         }
 
+        // Validate HTTP_START path/method conflicts within this workflow
+        validateHttpStartConflictsWithinWorkflow(entity, result);
+
+        // Validate HTTP_START path/method conflicts with other workflows in same application
+        validateHttpStartConflictsAcrossWorkflows(entity, result);
+
         return result;
+    }
+
+    private void validateHttpStartConflictsWithinWorkflow(WorkflowEntity entity, ValidationResult result) {
+        List<WorkflowNodeEntity> httpStartNodes = entity.nodes.stream()
+                .filter(n -> n.type == NodeType.HTTP_START)
+                .collect(Collectors.toList());
+
+        if (httpStartNodes.size() <= 1) {
+            return; // No conflict possible with 0 or 1 HTTP_START nodes
+        }
+
+        // Check for path+method conflicts within this workflow
+        Map<String, WorkflowNodeEntity> pathMethodMap = new HashMap<>();
+        for (WorkflowNodeEntity node : httpStartNodes) {
+            List<String> pathMethods = extractPathMethods(node);
+            for (String pathMethod : pathMethods) {
+                if (pathMethodMap.containsKey(pathMethod)) {
+                    WorkflowNodeEntity existingNode = pathMethodMap.get(pathMethod);
+                    result.addError("HTTP_START nodes '" + existingNode.name + "' and '" + node.name +
+                            "' have conflicting path/method: " + pathMethod);
+                } else {
+                    pathMethodMap.put(pathMethod, node);
+                }
+            }
+        }
+    }
+
+    private void validateHttpStartConflictsAcrossWorkflows(WorkflowEntity entity, ValidationResult result) {
+        List<WorkflowNodeEntity> httpStartNodes = entity.nodes.stream()
+                .filter(n -> n.type == NodeType.HTTP_START)
+                .collect(Collectors.toList());
+
+        if (httpStartNodes.isEmpty()) {
+            return;
+        }
+
+        // Get all active workflows in the same application
+        List<WorkflowEntity> otherWorkflows;
+        if (entity.applicationId != null && !entity.applicationId.isEmpty()) {
+            otherWorkflows = WorkflowEntity.list("applicationId = ?1 and status = ?2 and id != ?3",
+                    entity.applicationId, WorkflowStatus.ACTIVE, entity.id);
+        } else {
+            // If no applicationId, check globally (less common case)
+            otherWorkflows = WorkflowEntity.list("status = ?1 and id != ?2",
+                    WorkflowStatus.ACTIVE, entity.id);
+        }
+
+        // Collect all path+methods from other workflows
+        Map<String, String> existingPathMethods = new HashMap<>(); // path+method -> workflow name
+        for (WorkflowEntity otherWorkflow : otherWorkflows) {
+            for (WorkflowNodeEntity node : otherWorkflow.nodes) {
+                if (node.type == NodeType.HTTP_START) {
+                    List<String> pathMethods = extractPathMethods(node);
+                    for (String pathMethod : pathMethods) {
+                        existingPathMethods.put(pathMethod, otherWorkflow.name);
+                    }
+                }
+            }
+        }
+
+        // Check for conflicts
+        for (WorkflowNodeEntity node : httpStartNodes) {
+            List<String> pathMethods = extractPathMethods(node);
+            for (String pathMethod : pathMethods) {
+                if (existingPathMethods.containsKey(pathMethod)) {
+                    String conflictingWorkflow = existingPathMethods.get(pathMethod);
+                    result.addError("HTTP_START node '" + node.name + "' has path/method '" + pathMethod +
+                            "' that conflicts with active workflow '" + conflictingWorkflow + "'");
+                }
+            }
+        }
+    }
+
+    private List<String> extractPathMethods(WorkflowNodeEntity node) {
+        List<String> pathMethods = new ArrayList<>();
+
+        if (node.configuration == null || node.configuration.isEmpty()) {
+            return pathMethods;
+        }
+
+        try {
+            JsonNode config = objectMapper.readTree(node.configuration);
+            String path = config.has("httpPath") ? config.get("httpPath").asText() : "/webhook";
+
+            // Normalize path
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+
+            List<String> methods = new ArrayList<>();
+            if (config.has("httpMethods") && config.get("httpMethods").isArray()) {
+                for (JsonNode methodNode : config.get("httpMethods")) {
+                    methods.add(methodNode.asText().toUpperCase());
+                }
+            }
+
+            if (methods.isEmpty()) {
+                methods.add("POST"); // Default method
+            }
+
+            for (String method : methods) {
+                pathMethods.add(method + ":" + path);
+            }
+        } catch (Exception e) {
+            // If config parsing fails, return empty list
+        }
+
+        return pathMethods;
     }
 
     private void validateNodeConfiguration(WorkflowNodeEntity node, ValidationResult result) {
@@ -266,6 +389,78 @@ public class WorkflowService {
             if (node.configuration == null || node.configuration.isEmpty()) {
                 result.addError("SubWorkflow node '" + node.name + "' must have a configuration with workflowId");
             }
+        } else if (node.type == NodeType.HTTP_START) {
+            validateHttpStartNodeConfiguration(node, result);
+        } else if (node.type == NodeType.HTTP_END) {
+            validateHttpEndNodeConfiguration(node, result);
+        }
+    }
+
+    private void validateHttpStartNodeConfiguration(WorkflowNodeEntity node, ValidationResult result) {
+        if (node.configuration == null || node.configuration.isEmpty()) {
+            result.addWarning("HTTP_START node '" + node.name + "' has no configuration, using defaults");
+            return;
+        }
+
+        try {
+            JsonNode config = objectMapper.readTree(node.configuration);
+
+            // Validate httpPath
+            if (config.has("httpPath")) {
+                String path = config.get("httpPath").asText();
+                if (path == null || path.trim().isEmpty()) {
+                    result.addError("HTTP_START node '" + node.name + "' has empty httpPath");
+                } else if (!path.startsWith("/")) {
+                    result.addWarning("HTTP_START node '" + node.name + "' httpPath should start with '/'");
+                }
+            }
+
+            // Validate httpMethods
+            if (config.has("httpMethods")) {
+                JsonNode methods = config.get("httpMethods");
+                if (!methods.isArray() || methods.size() == 0) {
+                    result.addWarning("HTTP_START node '" + node.name + "' has no HTTP methods defined, defaulting to POST");
+                } else {
+                    for (JsonNode method : methods) {
+                        String m = method.asText().toUpperCase();
+                        if (!m.equals("GET") && !m.equals("POST") && !m.equals("PUT") &&
+                                !m.equals("DELETE") && !m.equals("PATCH")) {
+                            result.addError("HTTP_START node '" + node.name + "' has invalid HTTP method: " + m);
+                        }
+                    }
+                }
+            }
+
+            // Validate httpAuth
+            if (config.has("httpAuth")) {
+                String auth = config.get("httpAuth").asText();
+                if (!auth.equals("none") && !auth.equals("api_key") &&
+                        !auth.equals("bearer") && !auth.equals("basic")) {
+                    result.addError("HTTP_START node '" + node.name + "' has invalid httpAuth: " + auth);
+                }
+            }
+        } catch (Exception e) {
+            result.addError("HTTP_START node '" + node.name + "' has invalid configuration JSON");
+        }
+    }
+
+    private void validateHttpEndNodeConfiguration(WorkflowNodeEntity node, ValidationResult result) {
+        if (node.configuration == null || node.configuration.isEmpty()) {
+            return; // HTTP_END can work with defaults
+        }
+
+        try {
+            JsonNode config = objectMapper.readTree(node.configuration);
+
+            // Validate httpStatusCode
+            if (config.has("httpStatusCode")) {
+                int statusCode = config.get("httpStatusCode").asInt();
+                if (statusCode < 100 || statusCode >= 600) {
+                    result.addError("HTTP_END node '" + node.name + "' has invalid status code: " + statusCode);
+                }
+            }
+        } catch (Exception e) {
+            result.addError("HTTP_END node '" + node.name + "' has invalid configuration JSON");
         }
     }
 
@@ -301,7 +496,9 @@ public class WorkflowService {
             throw new Exception("Node not found with id: " + nodeId);
         }
 
-        // Delete associated edges first
+        // Delete associated node executions first (foreign key constraint)
+        NodeExecutionEntity.delete("node.id = ?1", nodeId);
+        // Delete associated edges
         WorkflowEdgeEntity.delete("sourceNode.id = ?1 or targetNode.id = ?1", nodeId);
         node.delete();
     }
@@ -345,6 +542,7 @@ public class WorkflowService {
         edge.sourceNode = sourceNode;
         edge.targetNode = targetNode;
         edge.sourcePortId = sourcePortId;
+        edge.targetPortId = edgeDTO.getTargetPortId();
         edge.condition = edgeDTO.getCondition();
         edge.label = edgeDTO.getLabel();
         edge.priority = edgeDTO.getPriority() != null ? edgeDTO.getPriority() : 0;

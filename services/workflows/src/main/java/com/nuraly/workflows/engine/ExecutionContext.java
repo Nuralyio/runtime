@@ -117,7 +117,15 @@ public class ExecutionContext {
             String varName = result.substring(start + 12, end);
 
             JsonNode value = getVariable(varName);
-            String replacement = value != null ? value.asText() : "";
+            String replacement = "";
+            if (value != null) {
+                // Use toString() for arrays/objects to get JSON, asText() for primitives
+                if (value.isArray() || value.isObject()) {
+                    replacement = value.toString();
+                } else {
+                    replacement = value.asText();
+                }
+            }
 
             result = result.replace(fullMatch, replacement);
         }
@@ -132,7 +140,15 @@ public class ExecutionContext {
             String path = result.substring(start + 8, end);
 
             JsonNode value = getJsonPath(input, path);
-            String replacement = value != null ? value.asText() : "";
+            String replacement = "";
+            if (value != null) {
+                // Use toString() for arrays/objects to get JSON, asText() for primitives
+                if (value.isArray() || value.isObject()) {
+                    replacement = value.toString();
+                } else {
+                    replacement = value.asText();
+                }
+            }
 
             result = result.replace(fullMatch, replacement);
         }

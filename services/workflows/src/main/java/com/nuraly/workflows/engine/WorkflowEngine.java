@@ -40,10 +40,10 @@ public class WorkflowEngine {
         execution.persist();
 
         try {
-            // Find start node
-            WorkflowNodeEntity startNode = findStartNode(execution.workflow);
+            // Find start node based on trigger type
+            WorkflowNodeEntity startNode = findStartNode(execution.workflow, execution.triggerType);
             if (startNode == null) {
-                throw new WorkflowExecutionException("No START node found in workflow");
+                throw new WorkflowExecutionException("No START node found in workflow for trigger type: " + execution.triggerType);
             }
 
             // Execute workflow
@@ -130,7 +130,7 @@ public class WorkflowEngine {
         }
 
         // If this is an END node, we're done
-        if (node.type == NodeType.END) {
+        if (node.type == NodeType.END || node.type == NodeType.HTTP_END) {
             return;
         }
 
@@ -142,7 +142,12 @@ public class WorkflowEngine {
         }
 
         // Execute all next nodes (sequentially for transaction safety)
+        // Pass the current node's output as input to the next node
         for (WorkflowNodeEntity nextNode : nextNodes) {
+            // Set the output of the current node as input for the next node
+            if (result.getOutput() != null) {
+                context.setInput(result.getOutput());
+            }
             executeFromNode(context, nextNode);
         }
     }
@@ -153,6 +158,7 @@ public class WorkflowEngine {
         int retryDelay = node.retryDelayMs != null ? node.retryDelayMs : configuration.nodeRetryDelay;
 
         NodeExecutor executor = nodeExecutorFactory.getExecutor(node.type);
+        String lastError = null;
 
         for (int attempt = 1; attempt <= maxRetries + 1; attempt++) {
             try {
@@ -165,15 +171,19 @@ public class WorkflowEngine {
                     return result;
                 }
 
+                // Store the error for reporting if retries exhausted
+                lastError = result.getErrorMessage();
+
                 // Retry
                 if (attempt <= maxRetries) {
-                    System.out.println("Node '" + node.name + "' failed, retrying (attempt " + (attempt + 1) + ")...");
+                    System.out.println("Node '" + node.name + "' failed (" + lastError + "), retrying (attempt " + (attempt + 1) + ")...");
                     Thread.sleep(retryDelay);
                 }
 
             } catch (Exception e) {
+                lastError = e.getMessage();
                 if (attempt > maxRetries) {
-                    return NodeExecutionResult.failure(e.getMessage());
+                    return NodeExecutionResult.failure(lastError);
                 }
 
                 System.out.println("Node '" + node.name + "' threw exception, retrying (attempt " + (attempt + 1) + "): " + e.getMessage());
@@ -186,12 +196,43 @@ public class WorkflowEngine {
             }
         }
 
-        return NodeExecutionResult.failure("Max retries exceeded");
+        return NodeExecutionResult.failure("Max retries exceeded" + (lastError != null ? ": " + lastError : ""));
     }
 
-    private WorkflowNodeEntity findStartNode(WorkflowEntity workflow) {
+    /**
+     * Find the appropriate start node based on trigger type.
+     * - "chat" trigger -> CHAT_START node
+     * - "http_trigger" or "webhook" trigger -> HTTP_START node
+     * - Otherwise -> START node (fallback)
+     */
+    private WorkflowNodeEntity findStartNode(WorkflowEntity workflow, String triggerType) {
+        NodeType targetType;
+
+        if (triggerType != null) {
+            String normalizedTrigger = triggerType.toLowerCase();
+            if (normalizedTrigger.contains("chat")) {
+                targetType = NodeType.CHAT_START;
+            } else if (normalizedTrigger.contains("http") || normalizedTrigger.contains("webhook")) {
+                targetType = NodeType.HTTP_START;
+            } else {
+                targetType = NodeType.START;
+            }
+
+            // Try to find the specific trigger node
+            Optional<WorkflowNodeEntity> specificNode = workflow.nodes.stream()
+                    .filter(n -> n.type == targetType)
+                    .findFirst();
+
+            if (specificNode.isPresent()) {
+                return specificNode.get();
+            }
+        }
+
+        // Fallback: look for any start node (START, HTTP_START, or CHAT_START)
         return workflow.nodes.stream()
-                .filter(n -> n.type == NodeType.START)
+                .filter(n -> n.type == NodeType.START ||
+                            n.type == NodeType.HTTP_START ||
+                            n.type == NodeType.CHAT_START)
                 .findFirst()
                 .orElse(null);
     }
