@@ -422,7 +422,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [AgentNodeType.HUMAN_INPUT]: '#4ade80',
   [AgentNodeType.OUTPUT_PARSER]: '#2dd4bf',
   // DB Designer nodes
-  [DbDesignerNodeType.TABLE]: '#3b82f6', // Blue for tables
+  [DbDesignerNodeType.TABLE]: '#64748b', // Soft slate for tables
   [DbDesignerNodeType.VIEW]: '#a855f7', // Purple for views
   [DbDesignerNodeType.INDEX]: '#f59e0b', // Amber for indexes
   [DbDesignerNodeType.RELATIONSHIP]: '#ec4899', // Pink for relationships

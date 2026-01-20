@@ -465,6 +465,7 @@ export const workflowCanvasStyles = css`
     height: 24px;
     border-radius: var(--nuraly-border-radius-small, 4px);
     color: var(--nuraly-color-text-on-color, white);
+    margin-right: var(--nuraly-spacing-2, 8px);
   }
 
   .config-panel-icon nr-icon {
