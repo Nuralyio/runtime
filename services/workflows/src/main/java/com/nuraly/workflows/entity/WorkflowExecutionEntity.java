@@ -59,6 +59,9 @@ public class WorkflowExecutionEntity extends PanacheEntityBase {
     @Column(name = "trigger_type")
     public String triggerType; // "manual", "schedule", "webhook", "event"
 
+    @Column(name = "revision")
+    public Integer revision; // null = current draft, number = specific revision
+
     @OneToMany(mappedBy = "execution", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     public List<NodeExecutionEntity> nodeExecutions = new ArrayList<>();
 

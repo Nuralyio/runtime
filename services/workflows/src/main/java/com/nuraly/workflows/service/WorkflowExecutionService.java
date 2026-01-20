@@ -120,6 +120,81 @@ public class WorkflowExecutionService {
         return executionDTOMapper.toDTO(execution);
     }
 
+    /**
+     * Execute a specific revision of a workflow.
+     * The revision snapshot will be used instead of the current workflow state.
+     */
+    public WorkflowExecutionDTO executeWorkflowRevision(UUID workflowId, Integer revision,
+                                                         ExecuteWorkflowRequest request, String userUuid)
+            throws WorkflowNotFoundException, InvalidWorkflowException {
+
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        if (workflow == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+
+        // Create execution record with revision
+        WorkflowExecutionEntity execution = new WorkflowExecutionEntity();
+        execution.workflow = workflow;
+        execution.status = ExecutionStatus.PENDING;
+        execution.triggeredBy = userUuid != null ? userUuid : "system";
+        execution.triggerType = "manual";
+        execution.revision = revision;
+        execution.startedAt = Instant.now();
+
+        String inputData = "{}";
+        String variables = null;
+
+        if (request != null && request.getInput() != null) {
+            try {
+                inputData = objectMapper.writeValueAsString(request.getInput());
+            } catch (Exception e) {
+                inputData = "{}";
+            }
+        }
+        execution.inputData = inputData;
+
+        if (request != null && request.getVariables() != null) {
+            variables = request.getVariables();
+            execution.variables = variables;
+        }
+
+        execution.persist();
+
+        // Log event - execution created
+        eventService.logExecutionQueued(execution);
+
+        // Queue execution for async processing via RabbitMQ with revision info
+        try {
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    workflow.id,
+                    execution.triggeredBy,
+                    execution.triggerType,
+                    inputData,
+                    variables,
+                    revision
+            );
+            executionProducer.publishExecution(message);
+
+            // Update status to QUEUED
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
+        } catch (Exception e) {
+            // If queueing fails, mark as failed
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = "Failed to queue execution: " + e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+        }
+
+        return executionDTOMapper.toDTO(execution);
+    }
+
     public List<WorkflowExecutionDTO> getExecutions(UUID workflowId) {
         List<WorkflowExecutionEntity> executions = WorkflowExecutionEntity.list(
                 "workflow.id = ?1 order by startedAt desc", workflowId);
