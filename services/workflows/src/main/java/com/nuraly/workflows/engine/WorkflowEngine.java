@@ -8,11 +8,14 @@ import com.nuraly.workflows.entity.*;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.exception.WorkflowExecutionException;
+import com.nuraly.workflows.dto.revision.RevisionSnapshotDTO;
+import com.nuraly.workflows.exception.RevisionNotFoundException;
 import com.nuraly.workflows.monitoring.WorkflowMetricsService;
 import com.nuraly.workflows.redis.ExecutionCheckpointService;
 import com.nuraly.workflows.redis.ExecutionCheckpointService.ExecutionCheckpoint;
 import com.nuraly.workflows.redis.WorkflowCacheService;
 import com.nuraly.workflows.service.WorkflowEventService;
+import com.nuraly.workflows.service.WorkflowRevisionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -48,6 +51,9 @@ public class WorkflowEngine {
     @Inject
     WorkflowMetricsService metricsService;
 
+    @Inject
+    WorkflowRevisionService revisionService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
@@ -56,6 +62,20 @@ public class WorkflowEngine {
         long startTime = System.currentTimeMillis();
 
         ExecutionContext context = new ExecutionContext(execution);
+
+        // Load revision snapshot if executing a specific revision
+        if (execution.revision != null) {
+            try {
+                RevisionSnapshotDTO snapshot = revisionService.getRevisionSnapshot(
+                        execution.workflow.id, execution.revision);
+                context.setRevisionSnapshot(snapshot);
+                LOG.infof("Executing workflow %s with revision %d snapshot",
+                        execution.workflow.id, execution.revision);
+            } catch (RevisionNotFoundException e) {
+                throw new WorkflowExecutionException(
+                        "Revision " + execution.revision + " not found for workflow " + execution.workflow.id);
+            }
+        }
 
         execution.status = ExecutionStatus.RUNNING;
         execution.persist();
@@ -186,6 +206,17 @@ public class WorkflowEngine {
         // Mark node as in-progress for crash detection
         checkpointService.markNodeInProgress(context.getExecution().id, node.id);
 
+        // Override node configuration from snapshot if doing revision execution
+        // This allows executing with historical node configurations
+        String originalConfiguration = node.configuration;
+        if (context.isRevisionExecution()) {
+            String snapshotConfig = context.getNodeConfiguration(node.id, node.configuration);
+            if (snapshotConfig != null) {
+                node.configuration = snapshotConfig;
+                LOG.debugf("Using snapshot configuration for node %s (revision execution)", node.name);
+            }
+        }
+
         // Create node execution record
         NodeExecutionEntity nodeExecution = new NodeExecutionEntity();
         nodeExecution.execution = context.getExecution();
@@ -205,8 +236,14 @@ public class WorkflowEngine {
         // Emit node started event for real-time tracking
         eventService.logNodeStarted(nodeExecution);
 
-        // Execute node with retry logic
-        NodeExecutionResult result = executeNodeWithRetry(context, node, nodeExecution);
+        // Execute node with retry logic - use try-finally to ensure config is restored
+        NodeExecutionResult result;
+        try {
+            result = executeNodeWithRetry(context, node, nodeExecution);
+        } finally {
+            // Restore original configuration to avoid JPA dirty checking issues
+            node.configuration = originalConfiguration;
+        }
 
         // Update node execution record
         nodeExecution.completedAt = Instant.now();

@@ -3,6 +3,8 @@ package com.nuraly.workflows.engine;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.dto.revision.RevisionSnapshotDTO;
+import com.nuraly.workflows.dto.revision.WorkflowNodeVersionDTO;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import lombok.Getter;
@@ -25,6 +27,10 @@ public class ExecutionContext {
     private WorkflowNodeEntity currentNode;
     private boolean cancelled;
     private boolean paused;
+
+    // Revision snapshot for versioned execution
+    private RevisionSnapshotDTO revisionSnapshot;
+    private Map<UUID, WorkflowNodeVersionDTO> snapshotNodeMap;
 
     public ExecutionContext(WorkflowExecutionEntity execution) {
         this.execution = execution;
@@ -192,5 +198,43 @@ public class ExecutionContext {
         }
 
         return current;
+    }
+
+    /**
+     * Set the revision snapshot for versioned execution.
+     * This builds a lookup map for quick node access.
+     */
+    public void setRevisionSnapshot(RevisionSnapshotDTO snapshot) {
+        this.revisionSnapshot = snapshot;
+        this.snapshotNodeMap = new HashMap<>();
+        if (snapshot != null && snapshot.getNodes() != null) {
+            for (WorkflowNodeVersionDTO nodeVersion : snapshot.getNodes()) {
+                snapshotNodeMap.put(nodeVersion.getNodeId(), nodeVersion);
+            }
+        }
+    }
+
+    /**
+     * Check if this execution is using a revision snapshot.
+     */
+    public boolean isRevisionExecution() {
+        return revisionSnapshot != null;
+    }
+
+    /**
+     * Get the node configuration, preferring snapshot version if available.
+     */
+    public String getNodeConfiguration(UUID nodeId, String fallbackConfiguration) {
+        if (snapshotNodeMap != null && snapshotNodeMap.containsKey(nodeId)) {
+            return snapshotNodeMap.get(nodeId).getConfiguration();
+        }
+        return fallbackConfiguration;
+    }
+
+    /**
+     * Get the node version DTO from snapshot if available.
+     */
+    public WorkflowNodeVersionDTO getSnapshotNode(UUID nodeId) {
+        return snapshotNodeMap != null ? snapshotNodeMap.get(nodeId) : null;
     }
 }

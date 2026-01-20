@@ -13,6 +13,7 @@ public class WorkflowExecutionMessage implements Serializable {
     private String inputData;
     private String variables;
     private Instant queuedAt;
+    private Integer revision; // null = current draft, number = specific revision
 
     // Fields for synchronous HTTP workflow execution
     private String replyTo;        // Reply queue name
@@ -32,6 +33,17 @@ public class WorkflowExecutionMessage implements Serializable {
         this.variables = variables;
         this.queuedAt = Instant.now();
         this.syncExecution = false;
+        this.revision = null;
+    }
+
+    /**
+     * Constructor for revision-based execution
+     */
+    public WorkflowExecutionMessage(UUID executionId, UUID workflowId, String triggeredBy,
+                                     String triggerType, String inputData, String variables,
+                                     Integer revision) {
+        this(executionId, workflowId, triggeredBy, triggerType, inputData, variables);
+        this.revision = revision;
     }
 
     /**
@@ -102,6 +114,14 @@ public class WorkflowExecutionMessage implements Serializable {
         this.queuedAt = queuedAt;
     }
 
+    public Integer getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Integer revision) {
+        this.revision = revision;
+    }
+
     public String getReplyTo() {
         return replyTo;
     }
@@ -135,6 +155,7 @@ public class WorkflowExecutionMessage implements Serializable {
                 ", triggeredBy='" + triggeredBy + '\'' +
                 ", triggerType='" + triggerType + '\'' +
                 ", queuedAt=" + queuedAt +
+                ", revision=" + revision +
                 ", syncExecution=" + syncExecution +
                 ", replyTo='" + replyTo + '\'' +
                 ", correlationId='" + correlationId + '\'' +

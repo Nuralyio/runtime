@@ -23,6 +23,7 @@ public class WorkflowExecutionDTO {
     private String errorMessage;
     private String triggeredBy;
     private String triggerType;
+    private Integer revision; // null = current draft, number = specific revision
     private List<NodeExecutionDTO> nodeExecutions;
     private Instant startedAt;
     private Instant completedAt;
