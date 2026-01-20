@@ -133,6 +133,7 @@ import { createModalFunctions } from './modal';
 import { createPopconfirmFunctions } from './popconfirm';
 import { createUserFunctions } from './user';
 import { createWorkflowFunctions } from './workflow';
+import { createDatabaseFunctions } from './database';
 import { createSocketFunctions } from './socket';
 
 /**
@@ -231,6 +232,7 @@ export function createGlobalHandlerFunctions(runtimeContext: any) {
     ...createPopconfirmFunctions(),
     ...createUserFunctions(),
     ...createWorkflowFunctions(),
+    ...createDatabaseFunctions(),
     ...createSocketFunctions(),
   };
 }
