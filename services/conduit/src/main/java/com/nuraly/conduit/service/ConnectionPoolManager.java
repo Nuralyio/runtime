@@ -249,7 +249,7 @@ public class ConnectionPoolManager {
 
         // Pool identification (includes instance ID for horizontal scaling)
         String instanceId = connectionLimitService.getInstanceId();
-        config.setPoolName(instanceId + ":" + poolKey);
+        config.setPoolName(instanceId + "-" + poolKey);
 
         // Connection settings
         config.setJdbcUrl(credential.buildJdbcUrl());
@@ -319,7 +319,7 @@ public class ConnectionPoolManager {
     }
 
     private String buildPoolKey(String applicationId, String connectionPath) {
-        return applicationId + ":" + connectionPath;
+        return applicationId + "-" + connectionPath;
     }
 
     /**
