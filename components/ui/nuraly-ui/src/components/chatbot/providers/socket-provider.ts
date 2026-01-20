@@ -296,7 +296,7 @@ export class SocketProvider implements ChatbotProvider {
       return;
     }
 
-    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const messageId = `msg_${Date.now()}_${crypto.randomUUID().slice(0, 9)}`;
     const payload = this.buildPayload(text, context, messageId);
 
     try {
