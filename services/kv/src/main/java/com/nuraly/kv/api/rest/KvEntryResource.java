@@ -3,10 +3,8 @@ package com.nuraly.kv.api.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.kv.dto.*;
 import com.nuraly.kv.exception.KvEntryNotFoundException;
-import com.nuraly.kv.exception.KvNamespaceNotFoundException;
 import com.nuraly.kv.exception.KvVersionConflictException;
 import com.nuraly.kv.service.KvEntryService;
-import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -19,9 +17,8 @@ import org.jboss.resteasy.reactive.RestResponse;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-@Path("/api/v1/kv/{namespaceId}")
+@Path("/api/v1/kv")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "KV Entries", description = "Operations for managing KV entries")
@@ -34,210 +31,110 @@ public class KvEntryResource {
 
     @GET
     @Path("/entries")
-    @RequiresPermission(
-        permissionType = "kv-entry:read",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
-    @Operation(summary = "List entries in a namespace")
+    @Operation(summary = "List entries")
     @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "Entries retrieved successfully"),
-        @APIResponse(responseCode = "404", description = "Namespace not found")
+        @APIResponse(responseCode = "200", description = "Entries retrieved successfully")
     })
     public RestResponse<List<KvEntryDTO>> listEntries(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
+            @QueryParam("scope") String scope,
+            @QueryParam("scopedResourceId") String scopedResourceId,
             @QueryParam("prefix") String prefix) {
-        try {
-            List<KvEntryDTO> entries = entryService.listEntries(namespaceId, prefix);
-            return RestResponse.ok(entries);
-        } catch (KvNamespaceNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
         }
+        List<KvEntryDTO> entries = entryService.listEntries(applicationId, scope, scopedResourceId, prefix);
+        return RestResponse.ok(entries);
     }
 
     @GET
-    @Path("/entries/{keyPath}")
-    @RequiresPermission(
-        permissionType = "kv-entry:read",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
+    @Path("/entries/{keyPath: .+}")
     @Operation(summary = "Get an entry by key")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Entry retrieved successfully"),
         @APIResponse(responseCode = "404", description = "Entry not found")
     })
     public RestResponse<KvEntryDTO> getEntry(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
             @PathParam("keyPath") String keyPath,
             @HeaderParam("X-USER") String userHeader) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         try {
             String userId = extractUserUuid(userHeader);
-            KvEntryDTO entry = entryService.getEntry(namespaceId, keyPath, userId);
+            KvEntryDTO entry = entryService.getEntry(applicationId, keyPath, userId);
             return RestResponse.ok(entry);
-        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+        } catch (KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }
 
     @PUT
-    @Path("/entries/{keyPath}")
-    // @RequiresPermission(
-    //     permissionType = "kv-entry:write",
-    //     resourceType = "kv-namespace",
-    //     resourceId = "#{namespaceId}"
-    // )
+    @Path("/entries/{keyPath: .+}")
     @Operation(summary = "Set an entry value")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Entry set successfully"),
-        @APIResponse(responseCode = "404", description = "Namespace not found"),
         @APIResponse(responseCode = "409", description = "Version conflict")
     })
     public RestResponse<KvEntryDTO> setEntry(
-            @PathParam("namespaceId") UUID namespaceId,
             @PathParam("keyPath") String keyPath,
             @HeaderParam("X-USER") String userHeader,
             @Valid SetKvEntryRequest request) {
         try {
             String userId = extractUserUuid(userHeader);
-            KvEntryDTO entry = entryService.setEntry(namespaceId, keyPath, request, userId);
+            KvEntryDTO entry = entryService.setEntry(keyPath, request, userId);
             return RestResponse.ok(entry);
-        } catch (KvNamespaceNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
         } catch (KvVersionConflictException e) {
             return RestResponse.status(RestResponse.Status.CONFLICT);
         }
     }
 
     @DELETE
-    @Path("/entries/{keyPath}")
-    @RequiresPermission(
-        permissionType = "kv-entry:delete",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
+    @Path("/entries/{keyPath: .+}")
     @Operation(summary = "Delete an entry")
     @APIResponses(value = {
         @APIResponse(responseCode = "204", description = "Entry deleted successfully"),
         @APIResponse(responseCode = "404", description = "Entry not found")
     })
     public RestResponse<Void> deleteEntry(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
             @PathParam("keyPath") String keyPath,
             @HeaderParam("X-USER") String userHeader) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         try {
             String userId = extractUserUuid(userHeader);
-            entryService.deleteEntry(namespaceId, keyPath, userId);
+            entryService.deleteEntry(applicationId, keyPath, userId);
             return RestResponse.noContent();
-        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+        } catch (KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }
 
     @POST
-    @Path("/bulk/get")
-    @RequiresPermission(
-        permissionType = "kv-entry:read",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
-    @Operation(summary = "Bulk get entries")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "Bulk get completed"),
-        @APIResponse(responseCode = "404", description = "Namespace not found")
-    })
-    public RestResponse<BulkOperationResponse> bulkGet(
-            @PathParam("namespaceId") UUID namespaceId,
-            @HeaderParam("X-USER") String userHeader,
-            @Valid BulkGetRequest request) {
-        try {
-            String userId = extractUserUuid(userHeader);
-            BulkOperationResponse response = entryService.bulkGet(namespaceId, request, userId);
-            return RestResponse.ok(response);
-        } catch (KvNamespaceNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
-        }
-    }
-
-    @POST
-    @Path("/bulk/set")
-    @RequiresPermission(
-        permissionType = "kv-entry:write",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
-    @Operation(summary = "Bulk set entries")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "Bulk set completed"),
-        @APIResponse(responseCode = "404", description = "Namespace not found")
-    })
-    public RestResponse<BulkOperationResponse> bulkSet(
-            @PathParam("namespaceId") UUID namespaceId,
-            @HeaderParam("X-USER") String userHeader,
-            @Valid BulkSetRequest request) {
-        try {
-            String userId = extractUserUuid(userHeader);
-            BulkOperationResponse response = entryService.bulkSet(namespaceId, request, userId);
-            return RestResponse.ok(response);
-        } catch (KvNamespaceNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
-        }
-    }
-
-    @POST
-    @Path("/bulk/delete")
-    @RequiresPermission(
-        permissionType = "kv-entry:delete",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
-    @Operation(summary = "Bulk delete entries")
-    @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "Bulk delete completed"),
-        @APIResponse(responseCode = "404", description = "Namespace not found")
-    })
-    public RestResponse<BulkOperationResponse> bulkDelete(
-            @PathParam("namespaceId") UUID namespaceId,
-            @HeaderParam("X-USER") String userHeader,
-            @Valid BulkDeleteRequest request) {
-        try {
-            String userId = extractUserUuid(userHeader);
-            BulkOperationResponse response = entryService.bulkDelete(namespaceId, request, userId);
-            return RestResponse.ok(response);
-        } catch (KvNamespaceNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
-        }
-    }
-
-    // Secret/Versioning operations (merged from KvSecretResource)
-
-    @POST
-    @Path("/entries/{keyPath}/rotate")
-    @RequiresPermission(
-        permissionType = "kv-secret:rotate",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
+    @Path("/entries/{keyPath: .+}/rotate")
     @Operation(summary = "Rotate a secret value")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Secret rotated successfully"),
-        @APIResponse(responseCode = "400", description = "Not a secret namespace"),
-        @APIResponse(responseCode = "404", description = "Entry not found")
+        @APIResponse(responseCode = "404", description = "Entry not found"),
+        @APIResponse(responseCode = "400", description = "Entry is not a secret")
     })
     public RestResponse<KvEntryDTO> rotateSecret(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
             @PathParam("keyPath") String keyPath,
             @HeaderParam("X-USER") String userHeader,
             Map<String, Object> body) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         try {
             String userId = extractUserUuid(userHeader);
             Object newValue = body.get("value");
-            if (newValue == null) {
-                return RestResponse.status(RestResponse.Status.BAD_REQUEST);
-            }
-            KvEntryDTO rotated = entryService.rotateSecret(namespaceId, keyPath, newValue, userId);
-            return RestResponse.ok(rotated);
-        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+            KvEntryDTO entry = entryService.rotateSecret(applicationId, keyPath, newValue, userId);
+            return RestResponse.ok(entry);
+        } catch (KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         } catch (IllegalStateException e) {
             return RestResponse.status(RestResponse.Status.BAD_REQUEST);
@@ -245,55 +142,105 @@ public class KvEntryResource {
     }
 
     @GET
-    @Path("/entries/{keyPath}/versions")
-    @RequiresPermission(
-        permissionType = "kv-entry:read",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
-    @Operation(summary = "Get version history of an entry")
+    @Path("/entries/{keyPath: .+}/versions")
+    @Operation(summary = "Get version history for an entry")
     @APIResponses(value = {
-        @APIResponse(responseCode = "200", description = "Version history retrieved successfully"),
+        @APIResponse(responseCode = "200", description = "Version history retrieved"),
         @APIResponse(responseCode = "404", description = "Entry not found")
     })
     public RestResponse<List<KvEntryVersionDTO>> getVersionHistory(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
             @PathParam("keyPath") String keyPath) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         try {
-            List<KvEntryVersionDTO> versions = entryService.getVersionHistory(namespaceId, keyPath);
+            List<KvEntryVersionDTO> versions = entryService.getVersionHistory(applicationId, keyPath);
             return RestResponse.ok(versions);
-        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+        } catch (KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }
 
     @POST
-    @Path("/entries/{keyPath}/rollback")
-    @RequiresPermission(
-        permissionType = "kv-secret:rotate",
-        resourceType = "kv-namespace",
-        resourceId = "#{namespaceId}"
-    )
+    @Path("/entries/{keyPath: .+}/rollback")
     @Operation(summary = "Rollback to a previous version")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Rollback successful"),
         @APIResponse(responseCode = "404", description = "Entry or version not found")
     })
     public RestResponse<KvEntryDTO> rollbackToVersion(
-            @PathParam("namespaceId") UUID namespaceId,
+            @QueryParam("applicationId") String applicationId,
             @PathParam("keyPath") String keyPath,
             @HeaderParam("X-USER") String userHeader,
-            @QueryParam("version") Long targetVersion) {
+            Map<String, Object> body) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
         try {
-            if (targetVersion == null) {
-                return RestResponse.status(RestResponse.Status.BAD_REQUEST);
-            }
             String userId = extractUserUuid(userHeader);
-            KvEntryDTO entry = entryService.rollbackToVersion(namespaceId, keyPath, targetVersion, userId);
+            Long targetVersion = ((Number) body.get("version")).longValue();
+            KvEntryDTO entry = entryService.rollbackToVersion(applicationId, keyPath, targetVersion, userId);
             return RestResponse.ok(entry);
-        } catch (KvNamespaceNotFoundException | KvEntryNotFoundException e) {
+        } catch (KvEntryNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
+    }
+
+    @POST
+    @Path("/bulk/get")
+    @Operation(summary = "Bulk get entries")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Bulk get completed")
+    })
+    public RestResponse<BulkOperationResponse> bulkGet(
+            @QueryParam("applicationId") String applicationId,
+            @HeaderParam("X-USER") String userHeader,
+            @Valid BulkGetRequest request) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+        String userId = extractUserUuid(userHeader);
+        BulkOperationResponse response = entryService.bulkGet(applicationId, request, userId);
+        return RestResponse.ok(response);
+    }
+
+    @POST
+    @Path("/bulk/set")
+    @Operation(summary = "Bulk set entries")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Bulk set completed")
+    })
+    public RestResponse<BulkOperationResponse> bulkSet(
+            @QueryParam("applicationId") String applicationId,
+            @QueryParam("scope") String scope,
+            @QueryParam("scopedResourceId") String scopedResourceId,
+            @HeaderParam("X-USER") String userHeader,
+            @Valid BulkSetRequest request) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+        String userId = extractUserUuid(userHeader);
+        BulkOperationResponse response = entryService.bulkSet(applicationId, scope, scopedResourceId, request, userId);
+        return RestResponse.ok(response);
+    }
+
+    @POST
+    @Path("/bulk/delete")
+    @Operation(summary = "Bulk delete entries")
+    @APIResponses(value = {
+        @APIResponse(responseCode = "200", description = "Bulk delete completed")
+    })
+    public RestResponse<BulkOperationResponse> bulkDelete(
+            @QueryParam("applicationId") String applicationId,
+            @HeaderParam("X-USER") String userHeader,
+            @Valid BulkDeleteRequest request) {
+        if (applicationId == null || applicationId.isEmpty()) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+        String userId = extractUserUuid(userHeader);
+        BulkOperationResponse response = entryService.bulkDelete(applicationId, request, userId);
+        return RestResponse.ok(response);
     }
 
     private String extractUserUuid(String userHeader) {

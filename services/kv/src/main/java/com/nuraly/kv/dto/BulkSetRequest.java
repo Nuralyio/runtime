@@ -16,7 +16,7 @@ public class BulkSetRequest {
     public static class BulkSetEntry {
         private String key;
         private Object value;
-        private String valueType;
+        private Boolean isSecret;
         private Long ttlSeconds;
     }
 }

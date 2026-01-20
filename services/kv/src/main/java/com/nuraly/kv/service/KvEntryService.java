@@ -7,7 +7,6 @@ import com.nuraly.kv.dto.mapper.KvEntryDTOMapper;
 import com.nuraly.kv.dto.mapper.KvEntryVersionDTOMapper;
 import com.nuraly.kv.entity.KvEntryEntity;
 import com.nuraly.kv.entity.KvEntryVersionEntity;
-import com.nuraly.kv.entity.KvNamespaceEntity;
 import com.nuraly.kv.entity.enums.KvValueType;
 import com.nuraly.kv.exception.KvEntryNotFoundException;
 import com.nuraly.kv.exception.KvVersionConflictException;
@@ -21,9 +20,6 @@ import java.util.*;
 @ApplicationScoped
 @Transactional
 public class KvEntryService {
-
-    @Inject
-    KvNamespaceService namespaceService;
 
     @Inject
     KvEncryptionService encryptionService;
@@ -42,50 +38,65 @@ public class KvEntryService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<KvEntryDTO> listEntries(UUID namespaceId, String prefix) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
+    public List<KvEntryDTO> listEntries(String applicationId, String scope, String scopedResourceId, String prefix) {
+        StringBuilder query = new StringBuilder();
+        Map<String, Object> params = new HashMap<>();
 
-        List<KvEntryEntity> entries;
-        if (prefix != null && !prefix.isEmpty()) {
-            entries = KvEntryEntity.list("namespace = ?1 and keyPath like ?2",
-                namespace, prefix + "%");
-        } else {
-            entries = KvEntryEntity.list("namespace", namespace);
+        query.append("applicationId = :applicationId");
+        params.put("applicationId", applicationId);
+
+        if (scope != null && !scope.isEmpty()) {
+            query.append(" AND scope = :scope");
+            params.put("scope", scope);
         }
+
+        if (scopedResourceId != null && !scopedResourceId.isEmpty()) {
+            query.append(" AND scopedResourceId = :scopedResourceId");
+            params.put("scopedResourceId", scopedResourceId);
+        }
+
+        if (prefix != null && !prefix.isEmpty()) {
+            query.append(" AND keyPath LIKE :prefix");
+            params.put("prefix", prefix + "%");
+        }
+
+        List<KvEntryEntity> entries = KvEntryEntity.list(query.toString(), params);
 
         List<KvEntryDTO> dtos = new ArrayList<>();
         for (KvEntryEntity entry : entries) {
             KvEntryDTO dto = entryMapper.toDTO(entry);
-            dto.setValue(decryptAndParseValue(entry, namespace.isSecretNamespace));
+            dto.setValue(decryptAndParseValue(entry));
             dtos.add(dto);
         }
         return dtos;
     }
 
-    public KvEntryDTO getEntry(UUID namespaceId, String keyPath, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
-        KvEntryEntity entry = findEntry(namespace, keyPath);
+    public KvEntryDTO getEntry(String applicationId, String keyPath, String userId) {
+        KvEntryEntity entry = findEntry(applicationId, keyPath);
 
-        auditService.logRead(namespaceId, entry.id, keyPath, userId, true);
+        auditService.logRead(null, entry.id, keyPath, userId, true);
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
-        dto.setValue(decryptAndParseValue(entry, namespace.isSecretNamespace));
+        dto.setValue(decryptAndParseValue(entry));
         return dto;
     }
 
-    public KvEntryDTO setEntry(UUID namespaceId, String keyPath, SetKvEntryRequest request, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
+    public KvEntryDTO setEntry(String keyPath, SetKvEntryRequest request, String userId) {
+        String applicationId = request.getApplicationId();
 
-        KvEntryEntity entry = KvEntryEntity.find("namespace = ?1 and keyPath = ?2",
-            namespace, keyPath).firstResult();
+        KvEntryEntity entry = KvEntryEntity.find("applicationId = ?1 AND keyPath = ?2",
+            applicationId, keyPath).firstResult();
 
         boolean isNew = entry == null;
 
         if (isNew) {
             entry = new KvEntryEntity();
-            entry.namespace = namespace;
+            entry.applicationId = applicationId;
+            entry.scope = request.getScope();
+            entry.scopedResourceId = request.getScopedResourceId();
             entry.keyPath = keyPath;
             entry.createdBy = userId;
+            entry.isSecret = Boolean.TRUE.equals(request.getIsSecret());
         } else {
             if (request.getExpectedVersion() != null &&
                 !request.getExpectedVersion().equals(entry.version)) {
@@ -94,26 +105,25 @@ public class KvEntryService {
                     " but found " + entry.version);
             }
 
-            if (Boolean.TRUE.equals(namespace.isSecretNamespace)) {
+            if (Boolean.TRUE.equals(entry.isSecret)) {
                 saveVersionHistory(entry, userId, "update");
             }
         }
 
-        String valueToStore = serializeValue(request.getValue(), request.getValueType());
-        if (Boolean.TRUE.equals(namespace.isSecretNamespace)) {
+        KvValueType detectedType = detectValueType(request.getValue());
+        String valueToStore = serializeValue(request.getValue(), detectedType);
+
+        if (Boolean.TRUE.equals(entry.isSecret)) {
             valueToStore = encryptionService.encrypt(valueToStore);
             entry.isEncrypted = true;
         }
 
         entry.valueData = valueToStore;
-        entry.valueType = request.getValueType() != null ? request.getValueType() : KvValueType.STRING;
+        entry.valueType = detectedType;
         entry.metadata = request.getMetadata();
         entry.updatedBy = userId;
 
         Long ttl = request.getTtlSeconds();
-        if (ttl == null && namespace.defaultTtlSeconds != null) {
-            ttl = namespace.defaultTtlSeconds;
-        }
         if (ttl != null && ttl > 0) {
             entry.expiresAt = Instant.now().plusSeconds(ttl);
         } else {
@@ -122,12 +132,12 @@ public class KvEntryService {
 
         entry.persist();
 
-        auditService.logWrite(namespaceId, entry.id, keyPath, userId, true);
+        auditService.logWrite(null, entry.id, keyPath, userId, true);
 
         if (isNew) {
-            eventService.publishEntryCreated(namespaceId, entry.id, keyPath);
+            eventService.publishEntryCreated(null, entry.id, keyPath);
         } else {
-            eventService.publishEntryUpdated(namespaceId, entry.id, keyPath);
+            eventService.publishEntryUpdated(null, entry.id, keyPath);
         }
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
@@ -135,46 +145,44 @@ public class KvEntryService {
         return dto;
     }
 
-    public void deleteEntry(UUID namespaceId, String keyPath, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
-        KvEntryEntity entry = findEntry(namespace, keyPath);
+    public void deleteEntry(String applicationId, String keyPath, String userId) {
+        KvEntryEntity entry = findEntry(applicationId, keyPath);
 
         UUID entryId = entry.id;
         entry.delete();
 
-        auditService.logDelete(namespaceId, entryId, keyPath, userId, true);
-        eventService.publishEntryDeleted(namespaceId, entryId, keyPath);
+        auditService.logDelete(null, entryId, keyPath, userId, true);
+        eventService.publishEntryDeleted(null, entryId, keyPath);
     }
 
-    public KvEntryDTO rotateSecret(UUID namespaceId, String keyPath, Object newValue, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
+    public KvEntryDTO rotateSecret(String applicationId, String keyPath, Object newValue, String userId) {
+        KvEntryEntity entry = findEntry(applicationId, keyPath);
 
-        if (!Boolean.TRUE.equals(namespace.isSecretNamespace)) {
-            throw new IllegalStateException("Rotation only supported for secret namespaces");
+        if (!Boolean.TRUE.equals(entry.isSecret)) {
+            throw new IllegalStateException("Rotation only supported for secret entries");
         }
-
-        KvEntryEntity entry = findEntry(namespace, keyPath);
 
         saveVersionHistory(entry, userId, "rotation");
 
-        String valueToStore = serializeValue(newValue, entry.valueType);
+        KvValueType detectedType = detectValueType(newValue);
+        String valueToStore = serializeValue(newValue, detectedType);
         valueToStore = encryptionService.encrypt(valueToStore);
 
         entry.valueData = valueToStore;
+        entry.valueType = detectedType;
         entry.updatedBy = userId;
         entry.persist();
 
-        auditService.logRotate(namespaceId, entry.id, keyPath, userId, true);
-        eventService.publishSecretRotated(namespaceId, entry.id, keyPath, entry.version);
+        auditService.logRotate(null, entry.id, keyPath, userId, true);
+        eventService.publishSecretRotated(null, entry.id, keyPath, entry.version);
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
         dto.setValue(newValue);
         return dto;
     }
 
-    public List<KvEntryVersionDTO> getVersionHistory(UUID namespaceId, String keyPath) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
-        KvEntryEntity entry = findEntry(namespace, keyPath);
+    public List<KvEntryVersionDTO> getVersionHistory(String applicationId, String keyPath) {
+        KvEntryEntity entry = findEntry(applicationId, keyPath);
 
         List<KvEntryVersionEntity> versions = KvEntryVersionEntity.list(
             "entry = ?1 order by version desc", entry);
@@ -189,9 +197,8 @@ public class KvEntryService {
         return dtos;
     }
 
-    public KvEntryDTO rollbackToVersion(UUID namespaceId, String keyPath, Long targetVersion, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
-        KvEntryEntity entry = findEntry(namespace, keyPath);
+    public KvEntryDTO rollbackToVersion(String applicationId, String keyPath, Long targetVersion, String userId) {
+        KvEntryEntity entry = findEntry(applicationId, keyPath);
 
         KvEntryVersionEntity versionEntity = KvEntryVersionEntity.find(
             "entry = ?1 and version = ?2", entry, targetVersion).firstResult();
@@ -206,27 +213,25 @@ public class KvEntryService {
         entry.updatedBy = userId;
         entry.persist();
 
-        auditService.logRollback(namespaceId, entry.id, keyPath, userId, true);
+        auditService.logRollback(null, entry.id, keyPath, userId, true);
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
-        dto.setValue(decryptAndParseValue(entry, namespace.isSecretNamespace));
+        dto.setValue(decryptAndParseValue(entry));
         return dto;
     }
 
-    public BulkOperationResponse bulkGet(UUID namespaceId, BulkGetRequest request, String userId) {
-        KvNamespaceEntity namespace = namespaceService.getNamespaceEntityById(namespaceId);
-
+    public BulkOperationResponse bulkGet(String applicationId, BulkGetRequest request, String userId) {
         BulkOperationResponse response = new BulkOperationResponse();
         response.setResults(new HashMap<>());
 
         for (String key : request.getKeys()) {
             try {
-                KvEntryEntity entry = KvEntryEntity.find("namespace = ?1 and keyPath = ?2",
-                    namespace, key).firstResult();
+                KvEntryEntity entry = KvEntryEntity.find("applicationId = ?1 AND keyPath = ?2",
+                    applicationId, key).firstResult();
 
                 if (entry != null) {
                     KvEntryDTO dto = entryMapper.toDTO(entry);
-                    dto.setValue(decryptAndParseValue(entry, namespace.isSecretNamespace));
+                    dto.setValue(decryptAndParseValue(entry));
                     response.getResults().put(key, dto);
                     response.setSuccessCount(response.getSuccessCount() + 1);
                 } else {
@@ -242,20 +247,22 @@ public class KvEntryService {
         return response;
     }
 
-    public BulkOperationResponse bulkSet(UUID namespaceId, BulkSetRequest request, String userId) {
+    public BulkOperationResponse bulkSet(String applicationId, String scope, String scopedResourceId,
+                                         BulkSetRequest request, String userId) {
         BulkOperationResponse response = new BulkOperationResponse();
         response.setResults(new HashMap<>());
 
         for (BulkSetRequest.BulkSetEntry bulkEntry : request.getEntries()) {
             try {
                 SetKvEntryRequest setRequest = new SetKvEntryRequest();
+                setRequest.setApplicationId(applicationId);
+                setRequest.setScope(scope);
+                setRequest.setScopedResourceId(scopedResourceId);
                 setRequest.setValue(bulkEntry.getValue());
-                if (bulkEntry.getValueType() != null) {
-                    setRequest.setValueType(KvValueType.valueOf(bulkEntry.getValueType()));
-                }
+                setRequest.setIsSecret(bulkEntry.getIsSecret());
                 setRequest.setTtlSeconds(bulkEntry.getTtlSeconds());
 
-                KvEntryDTO dto = setEntry(namespaceId, bulkEntry.getKey(), setRequest, userId);
+                KvEntryDTO dto = setEntry(bulkEntry.getKey(), setRequest, userId);
                 response.getResults().put(bulkEntry.getKey(), dto);
                 response.setSuccessCount(response.getSuccessCount() + 1);
             } catch (Exception e) {
@@ -267,12 +274,12 @@ public class KvEntryService {
         return response;
     }
 
-    public BulkOperationResponse bulkDelete(UUID namespaceId, BulkDeleteRequest request, String userId) {
+    public BulkOperationResponse bulkDelete(String applicationId, BulkDeleteRequest request, String userId) {
         BulkOperationResponse response = new BulkOperationResponse();
 
         for (String key : request.getKeys()) {
             try {
-                deleteEntry(namespaceId, key, userId);
+                deleteEntry(applicationId, key, userId);
                 response.setSuccessCount(response.getSuccessCount() + 1);
             } catch (Exception e) {
                 response.getFailedKeys().add(key);
@@ -283,9 +290,9 @@ public class KvEntryService {
         return response;
     }
 
-    private KvEntryEntity findEntry(KvNamespaceEntity namespace, String keyPath) {
-        KvEntryEntity entry = KvEntryEntity.find("namespace = ?1 and keyPath = ?2",
-            namespace, keyPath).firstResult();
+    private KvEntryEntity findEntry(String applicationId, String keyPath) {
+        KvEntryEntity entry = KvEntryEntity.find("applicationId = ?1 AND keyPath = ?2",
+            applicationId, keyPath).firstResult();
 
         if (entry == null) {
             throw new KvEntryNotFoundException("Entry not found: " + keyPath);
@@ -303,6 +310,37 @@ public class KvEntryService {
         versionEntity.persist();
     }
 
+    private KvValueType detectValueType(Object value) {
+        if (value == null) {
+            return KvValueType.STRING;
+        }
+
+        if (value instanceof Boolean) {
+            return KvValueType.BOOLEAN;
+        }
+
+        if (value instanceof Number) {
+            return KvValueType.NUMBER;
+        }
+
+        if (value instanceof Map || value instanceof List) {
+            return KvValueType.JSON;
+        }
+
+        if (value instanceof String) {
+            String str = (String) value;
+            if (str.startsWith("{") || str.startsWith("[")) {
+                try {
+                    objectMapper.readTree(str);
+                    return KvValueType.JSON;
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        return KvValueType.STRING;
+    }
+
     private String serializeValue(Object value, KvValueType type) {
         if (value == null) {
             return null;
@@ -310,6 +348,9 @@ public class KvEntryService {
 
         if (type == KvValueType.JSON) {
             try {
+                if (value instanceof String) {
+                    return (String) value;
+                }
                 return objectMapper.writeValueAsString(value);
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Invalid JSON value", e);
@@ -319,9 +360,9 @@ public class KvEntryService {
         return String.valueOf(value);
     }
 
-    private Object decryptAndParseValue(KvEntryEntity entry, Boolean isSecretNamespace) {
+    private Object decryptAndParseValue(KvEntryEntity entry) {
         return decryptAndParseValue(entry.valueData, entry.valueType,
-            Boolean.TRUE.equals(isSecretNamespace) && Boolean.TRUE.equals(entry.isEncrypted));
+            Boolean.TRUE.equals(entry.isSecret) && Boolean.TRUE.equals(entry.isEncrypted));
     }
 
     private Object decryptAndParseValue(String valueData, KvValueType type, boolean isEncrypted) {

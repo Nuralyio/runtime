@@ -15,11 +15,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "kv_entries", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"namespace_id", "key_path"})
+    @UniqueConstraint(columnNames = {"application_id", "key_path"})
 })
 @Getter
 @Setter
-@ToString(exclude = {"valueData", "namespace", "versions"})
+@ToString(exclude = {"valueData", "versions"})
 public class KvEntryEntity extends PanacheEntityBase {
 
     @Id
@@ -27,9 +27,14 @@ public class KvEntryEntity extends PanacheEntityBase {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     public UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "namespace_id", nullable = false)
-    public KvNamespaceEntity namespace;
+    @Column(name = "application_id", nullable = false)
+    public String applicationId;
+
+    @Column(name = "scope", length = 64)
+    public String scope;
+
+    @Column(name = "scoped_resource_id")
+    public String scopedResourceId;
 
     @Column(name = "key_path", nullable = false, length = 512)
     public String keyPath;
@@ -41,6 +46,9 @@ public class KvEntryEntity extends PanacheEntityBase {
     @Enumerated(EnumType.STRING)
     @Column(name = "value_type", nullable = false)
     public KvValueType valueType = KvValueType.STRING;
+
+    @Column(name = "is_secret")
+    public Boolean isSecret = false;
 
     @Column(name = "is_encrypted")
     public Boolean isEncrypted = false;
