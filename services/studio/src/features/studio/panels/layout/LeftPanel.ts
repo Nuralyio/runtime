@@ -39,10 +39,13 @@ export class LeftPanel extends LitElement {
       return html``;
     }
 
-    // Use different micro-app for workflow mode
-    const componentUUID = this.currentTabType === "flow"
-      ? "workflow_left_panel_container"
-      : "331";
+    // Use different micro-app based on tab type
+    let componentUUID = "331"; // Default left panel
+    if (this.currentTabType === "flow") {
+      componentUUID = "workflow_left_panel_container";
+    } else if (this.currentTabType === "database") {
+      componentUUID = "database_left_panel_container";
+    }
 
     return html`
       <div

@@ -19,6 +19,15 @@ export const Application = /* js */`
       icon: "git-branch",
     },
     {
+      id: "database",
+      label: "Database",
+      value: {
+        value: "database",
+        action: "open-database"
+      },
+      icon: "database",
+    },
+    {
       id: "kv-storage",
       label: "KV Storage",
       value: {
