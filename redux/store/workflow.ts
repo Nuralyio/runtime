@@ -1,6 +1,7 @@
 import { atom, map } from "nanostores";
-import type { Workflow, WorkflowNode, WorkflowEdge } from "../../components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
+import type { Workflow, WorkflowNode, WorkflowEdge, CanvasViewport } from "../../components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { workflowService, type ExecutionResult } from "../../../../services/workflow.service";
+import { getKvEntry, setKvEntry } from "./kv";
 
 /**
  * Save status enum
@@ -650,4 +651,102 @@ export async function createNewWorkflow(appId: string, name: string): Promise<Wo
  */
 export async function loadWorkflowById(workflowId: string): Promise<Workflow | null> {
   return loadWorkflow(workflowId);
+}
+
+// ============================================================================
+// Workflow Canvas Viewport (per user, per workflow)
+// ============================================================================
+
+/**
+ * In-memory cache for workflow viewports
+ */
+export const $workflowViewports = atom<Record<string, CanvasViewport>>({});
+
+/**
+ * Build KV key path for workflow viewport
+ */
+function buildWorkflowViewportKeyPath(workflowId: string): string {
+  return `_user_prefs/workflow_viewport/${workflowId}`;
+}
+
+/**
+ * Get default viewport
+ */
+export function getDefaultWorkflowViewport(): CanvasViewport {
+  return {
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+  };
+}
+
+/**
+ * Get viewport for a workflow (from cache or KV)
+ */
+export async function getWorkflowViewport(
+  workflowId: string,
+  applicationId: string
+): Promise<CanvasViewport | null> {
+  // Check in-memory cache first
+  const cached = $workflowViewports.get()[workflowId];
+  if (cached) return cached;
+
+  // Fetch from KV
+  const keyPath = buildWorkflowViewportKeyPath(workflowId);
+  const entry = await getKvEntry(applicationId, keyPath);
+
+  if (entry?.value) {
+    const viewport = entry.value as CanvasViewport;
+    // Update cache
+    $workflowViewports.set({
+      ...$workflowViewports.get(),
+      [workflowId]: viewport,
+    });
+    return viewport;
+  }
+
+  return null;
+}
+
+/**
+ * Save viewport for a workflow to KV
+ */
+export async function saveWorkflowViewport(
+  workflowId: string,
+  applicationId: string,
+  viewport: CanvasViewport
+): Promise<boolean> {
+  // Update in-memory cache immediately
+  $workflowViewports.set({
+    ...$workflowViewports.get(),
+    [workflowId]: viewport,
+  });
+
+  // Persist to KV with user scope
+  const keyPath = buildWorkflowViewportKeyPath(workflowId);
+  const result = await setKvEntry(keyPath, {
+    applicationId,
+    scope: 'user',
+    value: viewport,
+    isSecret: false,
+  });
+
+  return result !== null;
+}
+
+/**
+ * Migrate viewport from workflow to KV (one-time migration)
+ * Call this when loading a workflow that has viewport in the workflow data
+ */
+export async function migrateWorkflowViewportToKv(
+  workflowId: string,
+  applicationId: string,
+  viewport: CanvasViewport
+): Promise<void> {
+  // Check if already migrated (exists in KV)
+  const existing = await getWorkflowViewport(workflowId, applicationId);
+  if (!existing) {
+    // Migrate to KV
+    await saveWorkflowViewport(workflowId, applicationId, viewport);
+  }
 }

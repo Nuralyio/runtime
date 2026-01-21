@@ -15,6 +15,7 @@ import {
   executeQuery,
   testConnectionFromKv,
 } from "./database";
+import { getKvEntry, setKvEntry } from "./kv";
 
 // ============================================================================
 // Types
@@ -27,6 +28,12 @@ export interface DatabaseConnection {
   status: 'unknown' | 'connected' | 'error';
   lastError?: string;
   lastTestedAt?: number;
+}
+
+export interface DatabaseCanvasViewport {
+  zoom: number;
+  panX: number;
+  panY: number;
 }
 
 export interface QueryHistoryItem {
@@ -401,3 +408,86 @@ $databaseConnections.subscribe((connections) => {
     instance.VarsProxy.databaseConnections = [...connections];
   }
 });
+
+// ============================================================================
+// Database Canvas Viewport (per user, per connection)
+// ============================================================================
+
+/**
+ * In-memory cache for viewports
+ */
+export const $databaseViewports = atom<Record<string, DatabaseCanvasViewport>>({});
+
+/**
+ * Build KV key path for viewport
+ */
+function buildViewportKeyPath(connectionPath: string): string {
+  // Encode connection path to be URL-safe
+  const encodedPath = connectionPath.replace(/\//g, '__');
+  return `_user_prefs/db_viewport/${encodedPath}`;
+}
+
+/**
+ * Get viewport for a connection (from cache or KV)
+ */
+export async function getDatabaseViewport(
+  connectionPath: string,
+  applicationId: string
+): Promise<DatabaseCanvasViewport | null> {
+  // Check in-memory cache first
+  const cached = $databaseViewports.get()[connectionPath];
+  if (cached) return cached;
+
+  // Fetch from KV
+  const keyPath = buildViewportKeyPath(connectionPath);
+  const entry = await getKvEntry(applicationId, keyPath);
+
+  if (entry?.value) {
+    const viewport = entry.value as DatabaseCanvasViewport;
+    // Update cache
+    $databaseViewports.set({
+      ...$databaseViewports.get(),
+      [connectionPath]: viewport,
+    });
+    return viewport;
+  }
+
+  return null;
+}
+
+/**
+ * Save viewport for a connection to KV
+ */
+export async function saveDatabaseViewport(
+  connectionPath: string,
+  applicationId: string,
+  viewport: DatabaseCanvasViewport
+): Promise<boolean> {
+  // Update in-memory cache immediately
+  $databaseViewports.set({
+    ...$databaseViewports.get(),
+    [connectionPath]: viewport,
+  });
+
+  // Persist to KV with user scope
+  const keyPath = buildViewportKeyPath(connectionPath);
+  const result = await setKvEntry(keyPath, {
+    applicationId,
+    scope: 'user',
+    value: viewport,
+    isSecret: false,
+  });
+
+  return result !== null;
+}
+
+/**
+ * Get default viewport
+ */
+export function getDefaultViewport(): DatabaseCanvasViewport {
+  return {
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+  };
+}
