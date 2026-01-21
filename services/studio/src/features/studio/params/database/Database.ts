@@ -26,8 +26,11 @@ import {
   getDatabaseViewport,
   saveDatabaseViewport,
   getDefaultViewport,
+  getDatabaseTablePositions,
+  saveDatabaseTablePositions,
   type DatabaseConnection,
   type DatabaseCanvasViewport,
+  type TablePositions,
 } from "../../../runtime/redux/store/conduit";
 import type {
   SchemaDTO,
@@ -344,7 +347,9 @@ export class DatabasePage extends LitElement {
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
   private viewportSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+  private positionsSaveTimeout: ReturnType<typeof setTimeout> | null = null;
   private currentViewport: DatabaseCanvasViewport = getDefaultViewport();
+  private savedTablePositions: TablePositions = {};
 
   override connectedCallback() {
     super.connectedCallback();
@@ -369,6 +374,7 @@ export class DatabasePage extends LitElement {
     if (this.unsubscribeState) this.unsubscribeState();
     if (this.unsubscribeConnections) this.unsubscribeConnections();
     if (this.viewportSaveTimeout) clearTimeout(this.viewportSaveTimeout);
+    if (this.positionsSaveTimeout) clearTimeout(this.positionsSaveTimeout);
   }
 
   private async loadConnections() {
@@ -463,6 +469,10 @@ export class DatabasePage extends LitElement {
     const savedViewport = await getDatabaseViewport(this.currentConnection.path, appId);
     this.currentViewport = savedViewport || getDefaultViewport();
 
+    // Load saved table positions for this connection and schema
+    const savedPositions = await getDatabaseTablePositions(this.currentConnection.path, schemaName, appId);
+    this.savedTablePositions = savedPositions || {};
+
     // Build the canvas workflow
     this.buildSchemaWorkflow();
   }
@@ -472,18 +482,34 @@ export class DatabasePage extends LitElement {
     const edges: WorkflowEdge[] = [];
     const tablePositions = new Map<string, { x: number; y: number }>();
 
-    // Calculate grid positions for tables
+    // Calculate grid positions for tables (used as fallback for new tables)
     const gridCols = 3;
     const nodeWidth = 250;
     const nodeHeight = 200;
     const paddingX = 50;
     const paddingY = 50;
 
+    // Track which grid positions are used by saved tables
+    let nextGridIndex = 0;
+
     this.tables.forEach((table, index) => {
-      const col = index % gridCols;
-      const row = Math.floor(index / gridCols);
-      const x = paddingX + col * (nodeWidth + paddingX);
-      const y = paddingY + row * (nodeHeight + paddingY);
+      let x: number;
+      let y: number;
+
+      // Use saved position if available, otherwise use grid layout
+      const savedPos = this.savedTablePositions[table.name];
+      if (savedPos) {
+        x = savedPos.x;
+        y = savedPos.y;
+      } else {
+        // Find next available grid position
+        const col = nextGridIndex % gridCols;
+        const row = Math.floor(nextGridIndex / gridCols);
+        x = paddingX + col * (nodeWidth + paddingX);
+        y = paddingY + row * (nodeHeight + paddingY);
+        nextGridIndex++;
+      }
+
       tablePositions.set(table.name, { x, y });
 
       const columns = this.tableColumns.get(table.name) || [];
@@ -555,6 +581,35 @@ export class DatabasePage extends LitElement {
     if (node.configuration.tableName) {
       this.selectedTableName = node.configuration.tableName as string;
     }
+  }
+
+  private handleNodeMoved(event: CustomEvent<{ node: WorkflowNode; position: { x: number; y: number } }>) {
+    const { node, position } = event.detail;
+    const tableName = node.configuration.tableName as string;
+    if (!tableName) return;
+
+    // Update local positions cache
+    this.savedTablePositions = {
+      ...this.savedTablePositions,
+      [tableName]: { x: position.x, y: position.y },
+    };
+
+    // Debounce saving to KV (500ms)
+    if (this.positionsSaveTimeout) {
+      clearTimeout(this.positionsSaveTimeout);
+    }
+
+    this.positionsSaveTimeout = setTimeout(() => {
+      const appId = $currentApplication.get()?.uuid;
+      if (appId && this.currentConnection && this.currentSchema) {
+        saveDatabaseTablePositions(
+          this.currentConnection.path,
+          this.currentSchema,
+          appId,
+          this.savedTablePositions
+        );
+      }
+    }, 500);
   }
 
   private handleViewportChanged(event: CustomEvent<{ viewport: DatabaseCanvasViewport }>) {
@@ -754,6 +809,7 @@ export class DatabasePage extends LitElement {
                 .showToolbar=${true}
                 @workflow-changed=${this.handleCanvasWorkflowChanged}
                 @node-selected=${this.handleNodeSelected}
+                @node-moved=${this.handleNodeMoved}
                 @viewport-changed=${this.handleViewportChanged}
               ></workflow-canvas>
             ` : html`
