@@ -19,6 +19,8 @@ export interface TableHost {
   loading: boolean;
   emptyText: string;
   emptyIcon?: string;
+  serverSide: boolean;
+  totalCount: number;
   
   // State
   itemPerPage: number[];

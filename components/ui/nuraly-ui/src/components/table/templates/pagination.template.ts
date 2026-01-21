@@ -53,14 +53,14 @@ export function renderPaginationTemplate(data: PaginationTemplateData): Template
           <nr-icon
             class="left-arrow"
             data-enabled=${data.enablePrevious}
-            name="caret-left"
+            name="chevron-left"
             @click=${data.enablePrevious ? data.onPreviousPage : nothing}
           ></nr-icon>
 
           <nr-icon
             class="right-arrow"
             data-enabled=${data.enableNext}
-            name="caret-right"
+            name="chevron-right"
             @click=${data.enableNext ? data.onNextPage : nothing}
           ></nr-icon>
         </span>
