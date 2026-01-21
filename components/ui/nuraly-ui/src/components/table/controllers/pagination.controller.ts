@@ -15,8 +15,15 @@ export class TablePaginationController extends BaseTableController {
    */
   initPagination(): void {
     try {
-      this.host.displayedRows = this.host.rowsCopy.slice(0, this.host.selectedItemPerPage);
-      this.host.currentPage = this.host.rowsCopy.length > 0 ? 1 : 0;
+      if (this.host.serverSide) {
+        // Server-side: displayedRows is set directly from rows
+        this.host.displayedRows = [...this.host.rows];
+        this.host.currentPage = this.host.rows.length > 0 ? 1 : 0;
+      } else {
+        // Client-side: slice from rowsCopy
+        this.host.displayedRows = this.host.rowsCopy.slice(0, this.host.selectedItemPerPage);
+        this.host.currentPage = this.host.rowsCopy.length > 0 ? 1 : 0;
+      }
       this.requestUpdate();
     } catch (error) {
       this.handleError(error as Error, 'initPagination');
@@ -29,7 +36,25 @@ export class TablePaginationController extends BaseTableController {
   handleItemPerPageChange(selectedItemPerPage: number): void {
     try {
       this.host.selectedItemPerPage = selectedItemPerPage;
-      this.initPagination();
+      this.host.currentPage = 1; // Reset to first page
+
+      if (this.host.serverSide) {
+        // Emit event for server-side consumers to refetch
+        this.dispatchEvent(
+          new CustomEvent('onPaginate', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              page: 1,
+              limit: selectedItemPerPage,
+              offset: 0
+            }
+          })
+        );
+        this.requestUpdate();
+      } else {
+        this.initPagination();
+      }
     } catch (error) {
       this.handleError(error as Error, 'handleItemPerPageChange');
     }
@@ -43,17 +68,25 @@ export class TablePaginationController extends BaseTableController {
       this.host.currentPage = page;
       const startIndex = (page - 1) * this.host.selectedItemPerPage;
       const endIndex = startIndex + this.host.selectedItemPerPage;
-      
-      this.host.displayedRows = this.host.rowsCopy.slice(startIndex, endIndex);
-      
+
+      // Only slice client-side when not in server-side mode
+      if (!this.host.serverSide) {
+        this.host.displayedRows = this.host.rowsCopy.slice(startIndex, endIndex);
+      }
+
+      // Emit enhanced event with pagination info for server-side consumers
       this.dispatchEvent(
         new CustomEvent('onPaginate', {
           bubbles: true,
           composed: true,
-          detail: { value: this.host.currentPage }
+          detail: {
+            page: this.host.currentPage,
+            limit: this.host.selectedItemPerPage,
+            offset: startIndex
+          }
         })
       );
-      
+
       this.requestUpdate();
     } catch (error) {
       this.handleError(error as Error, 'handlePageChange');
@@ -64,7 +97,10 @@ export class TablePaginationController extends BaseTableController {
    * Get total number of pages
    */
   getTotalPages(): number {
-    return Math.ceil(this.host.rowsCopy.length / this.host.selectedItemPerPage);
+    const total = this.host.serverSide
+      ? this.host.totalCount
+      : this.host.rowsCopy.length;
+    return Math.ceil(total / this.host.selectedItemPerPage);
   }
 
   /**

@@ -78,6 +78,8 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: Boolean }) loading = false;
   @property({ type: String }) emptyText = 'No data available';
   @property({ type: String }) emptyIcon: string | undefined;
+  @property({ type: Boolean }) serverSide = false;
+  @property({ type: Number }) totalCount = 0;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];
@@ -138,6 +140,20 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
     if (_changedProperties.has('rows')) {
       this.expand = Array(this.rows.length).fill(false);
     }
+
+    // Server-side pagination: rows are already paginated from backend
+    if (this.serverSide) {
+      if (_changedProperties.has('rows')) {
+        this.displayedRows = [...this.rows];
+        // Initialize currentPage on first data load
+        if (!this.currentPage && this.rows.length > 0) {
+          this.currentPage = 1;
+        }
+      }
+      return;
+    }
+
+    // Client-side pagination logic
     if (_changedProperties.has('sortAttribute') && this.sortController.isSortActive()) {
       this._initPagination();
       this.selectionController.initSelection();
@@ -253,14 +269,15 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
    * Render the table component with all templates
    */
   override render() {
-    const numberOfPages = Math.ceil(this.rowsCopy.length / this.selectedItemPerPage);
-    const fromItem = this.currentPage > 0 
-      ? this.currentPage * this.selectedItemPerPage - this.selectedItemPerPage + 1 
+    const totalItems = this.serverSide ? this.totalCount : this.rowsCopy.length;
+    const numberOfPages = Math.ceil(totalItems / this.selectedItemPerPage);
+    const fromItem = this.currentPage > 0
+      ? this.currentPage * this.selectedItemPerPage - this.selectedItemPerPage + 1
       : 0;
-    const toItem = this.currentPage * this.selectedItemPerPage <= this.rowsCopy.length
+    const toItem = this.currentPage * this.selectedItemPerPage <= totalItems
       ? this.currentPage * this.selectedItemPerPage
-      : this.rowsCopy.length;
-    const enableNext = toItem < this.rowsCopy.length;
+      : totalItems;
+    const enableNext = toItem < totalItems;
     const enablePrevious = fromItem > 1;
 
     return html`
@@ -319,7 +336,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
       </div>
 
       ${renderPaginationTemplate({
-        numberOfItems: this.rowsCopy.length,
+        numberOfItems: totalItems,
         itemPerPage: this.itemPerPage,
         selectedItemPerPage: this.selectedItemPerPage,
         currentPage: this.currentPage,
