@@ -225,11 +225,11 @@ export const workflowNodeStyles = css`
 
   .port {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--nuraly-color-border-strong, #4a4a4a);
-    border: 2px solid var(--nuraly-color-border-interactive, #666);
+    border: 1.5px solid var(--nuraly-color-border-interactive, #666);
     cursor: crosshair;
     pointer-events: auto;
     transition: transform var(--nuraly-transition-fast, 0.15s) ease,
@@ -260,14 +260,14 @@ export const workflowNodeStyles = css`
 
   /* Input ports - left side */
   .port.input {
-    left: -5px;
+    left: -4px;
     background: var(--nuraly-color-border-strong, #6b7280);
     border-color: var(--nuraly-color-border-interactive, #525252);
   }
 
   /* Output ports - right side */
   .port.output {
-    right: -5px;
+    right: -4px;
     background: var(--nuraly-color-interactive, #3b82f6);
     border-color: var(--nuraly-color-interactive-emphasis, #2563eb);
   }
@@ -293,6 +293,17 @@ export const workflowNodeStyles = css`
     border-color: var(--nuraly-color-support-error-emphasis, #dc2626);
   }
 
+  /* Config ports - bottom side */
+  .port.config {
+    bottom: -4px;
+    background: var(--nuraly-color-support-info, #06b6d4);
+    border-color: var(--nuraly-color-support-info-emphasis, #0891b2);
+  }
+
+  .port.config:hover {
+    background: var(--nuraly-color-support-info-emphasis, #0891b2);
+  }
+
   /* Port labels */
   .port-label {
     position: absolute;
@@ -310,6 +321,12 @@ export const workflowNodeStyles = css`
 
   .port-label.output {
     left: calc(100% + 8px);
+  }
+
+  .port-label.config {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   /* Error display */

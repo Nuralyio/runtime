@@ -298,6 +298,43 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private renderConfigPort(port: NodePort, index: number, total: number) {
+    // Position config ports evenly spaced along the bottom using percentages
+    const portSpacing = 45; // Space between ports in px (wider for labels)
+    // Center the group of ports, offset each by index
+    const leftPercent = 50; // Center point
+    const offsetFromCenter = (index - (total - 1) / 2) * portSpacing;
+
+    const style = {
+      left: `calc(${leftPercent}% + ${offsetFromCenter}px - 5px)`,
+    };
+
+    const classes = {
+      port: true,
+      config: true,
+      connecting: this.connectingPortId === port.id,
+      compatible: this.connectingPortId !== null && this.connectingPortId !== port.id,
+    };
+
+    return html`
+      <div
+        class=${classMap(classes)}
+        style=${styleMap(style)}
+        @mousedown=${(e: MouseEvent) => this.handlePortMouseDown(e, port, true)}
+        @mouseup=${(e: MouseEvent) => this.handlePortMouseUp(e, port, true)}
+        @mouseenter=${() => this.handlePortMouseEnter(port.id)}
+        @mouseleave=${() => this.handlePortMouseLeave()}
+        data-port-id=${port.id}
+        data-node-id=${this.node.id}
+        title=${port.label || port.id}
+      >
+        ${port.label ? html`
+          <span class="port-label config">${port.label}</span>
+        ` : nothing}
+      </div>
+    `;
+  }
+
   override render() {
     // Use special rendering for DB Table nodes
     if (this.isDbTableNode()) {
@@ -389,6 +426,9 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
           )}
           ${this.node.ports.outputs.map((port, i) =>
             this.renderPort(port, false, i, this.node.ports.outputs.length)
+          )}
+          ${this.node.ports.configs?.map((port, i) =>
+            this.renderConfigPort(port, i, this.node.ports.configs!.length)
           )}
         </div>
       </div>
