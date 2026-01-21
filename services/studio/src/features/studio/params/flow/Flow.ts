@@ -12,7 +12,12 @@ import {
   updateCurrentWorkflow,
   saveCurrentWorkflowDebounced,
   setLastSavedWorkflow,
+  getWorkflowViewport,
+  saveWorkflowViewport,
+  migrateWorkflowViewportToKv,
+  getDefaultWorkflowViewport,
 } from "../../../runtime/redux/store/workflow";
+import type { CanvasViewport } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { $context } from "../../../runtime/redux/store/context";
 import {
   handleWorkflowChanged,
@@ -377,6 +382,8 @@ export class FlowPage extends LitElement {
 
   private unsubscribeWorkflow: (() => void) | null = null;
   private unsubscribeSaveStatus: (() => void) | null = null;
+  private viewportSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+  private currentViewport: CanvasViewport = getDefaultWorkflowViewport();
   private unsubscribeContext: (() => void) | null = null;
 
   override connectedCallback() {
@@ -428,6 +435,9 @@ export class FlowPage extends LitElement {
     }
     if (this.unsubscribeContext) {
       this.unsubscribeContext();
+    }
+    if (this.viewportSaveTimeout) {
+      clearTimeout(this.viewportSaveTimeout);
     }
   }
 
@@ -623,7 +633,23 @@ export class FlowPage extends LitElement {
       // Get or create the current workflow
       const workflow = await getOrCreateWorkflow(appId);
       if (workflow) {
-        this.workflow = workflow;
+        // Load viewport from KV (or migrate from workflow if exists)
+        let viewport = await getWorkflowViewport(workflow.id, appId);
+
+        if (!viewport && workflow.viewport) {
+          // Migrate existing viewport from workflow to KV
+          await migrateWorkflowViewportToKv(workflow.id, appId, workflow.viewport);
+          viewport = workflow.viewport;
+        }
+
+        this.currentViewport = viewport || getDefaultWorkflowViewport();
+
+        // Set workflow with viewport from KV (not from workflow data)
+        this.workflow = {
+          ...workflow,
+          viewport: this.currentViewport,
+        };
+
         // Subscribe to workflow events (for external HTTP triggers)
         this.subscribeToWorkflow(workflow.id);
       }
@@ -638,18 +664,25 @@ export class FlowPage extends LitElement {
   }
 
   /**
-   * Handle viewport changes (pan/zoom) and save to workflow
+   * Handle viewport changes (pan/zoom) and save to KV
    */
-  private handleViewportChanged(event: CustomEvent<{ viewport: { zoom: number; panX: number; panY: number } }>) {
+  private handleViewportChanged(event: CustomEvent<{ viewport: CanvasViewport }>) {
     const { viewport } = event.detail;
     if (!this.workflow) return;
 
-    // Update workflow with new viewport and trigger save
-    const updatedWorkflow = {
-      ...this.workflow,
-      viewport,
-    };
-    handleWorkflowChanged(updatedWorkflow);
+    this.currentViewport = viewport;
+
+    // Debounce saving to KV (500ms)
+    if (this.viewportSaveTimeout) {
+      clearTimeout(this.viewportSaveTimeout);
+    }
+
+    this.viewportSaveTimeout = setTimeout(() => {
+      const appId = $currentApplication.get()?.uuid;
+      if (appId && this.workflow) {
+        saveWorkflowViewport(this.workflow.id, appId, viewport);
+      }
+    }, 500);
   }
 
   /**

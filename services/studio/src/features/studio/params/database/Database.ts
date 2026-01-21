@@ -23,7 +23,11 @@ import {
   runQuery,
   testCurrentConnection,
   parseKvEntriesToConnections,
+  getDatabaseViewport,
+  saveDatabaseViewport,
+  getDefaultViewport,
   type DatabaseConnection,
+  type DatabaseCanvasViewport,
 } from "../../../runtime/redux/store/conduit";
 import type {
   SchemaDTO,
@@ -339,6 +343,8 @@ export class DatabasePage extends LitElement {
 
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
+  private viewportSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+  private currentViewport: DatabaseCanvasViewport = getDefaultViewport();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -362,6 +368,7 @@ export class DatabasePage extends LitElement {
     super.disconnectedCallback();
     if (this.unsubscribeState) this.unsubscribeState();
     if (this.unsubscribeConnections) this.unsubscribeConnections();
+    if (this.viewportSaveTimeout) clearTimeout(this.viewportSaveTimeout);
   }
 
   private async loadConnections() {
@@ -452,6 +459,10 @@ export class DatabasePage extends LitElement {
     this.tableColumns = columnsMap;
     this.tableRelationships = relationshipsMap;
 
+    // Load saved viewport for this connection
+    const savedViewport = await getDatabaseViewport(this.currentConnection.path, appId);
+    this.currentViewport = savedViewport || getDefaultViewport();
+
     // Build the canvas workflow
     this.buildSchemaWorkflow();
   }
@@ -529,6 +540,7 @@ export class DatabasePage extends LitElement {
       name: this.currentSchema || 'Schema',
       nodes,
       edges,
+      viewport: this.currentViewport,
     };
   }
 
@@ -543,6 +555,23 @@ export class DatabasePage extends LitElement {
     if (node.configuration.tableName) {
       this.selectedTableName = node.configuration.tableName as string;
     }
+  }
+
+  private handleViewportChanged(event: CustomEvent<{ viewport: DatabaseCanvasViewport }>) {
+    const { viewport } = event.detail;
+    this.currentViewport = viewport;
+
+    // Debounce saving to KV (500ms)
+    if (this.viewportSaveTimeout) {
+      clearTimeout(this.viewportSaveTimeout);
+    }
+
+    this.viewportSaveTimeout = setTimeout(() => {
+      const appId = $currentApplication.get()?.uuid;
+      if (appId && this.currentConnection) {
+        saveDatabaseViewport(this.currentConnection.path, appId, viewport);
+      }
+    }, 500);
   }
 
   private async handleRunQuery(offset = 0, limit = this.queryLimit) {
@@ -725,6 +754,7 @@ export class DatabasePage extends LitElement {
                 .showToolbar=${true}
                 @workflow-changed=${this.handleCanvasWorkflowChanged}
                 @node-selected=${this.handleNodeSelected}
+                @viewport-changed=${this.handleViewportChanged}
               ></workflow-canvas>
             ` : html`
               <div class="empty-state">
