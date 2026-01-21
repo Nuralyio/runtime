@@ -96,6 +96,7 @@ export enum ExecutionStatus {
 export enum PortType {
   INPUT = 'INPUT',
   OUTPUT = 'OUTPUT',
+  CONFIG = 'CONFIG',
   CONDITIONAL_TRUE = 'CONDITIONAL_TRUE',
   CONDITIONAL_FALSE = 'CONDITIONAL_FALSE',
   CONDITIONAL_DEFAULT = 'CONDITIONAL_DEFAULT',
@@ -269,6 +270,7 @@ export interface WorkflowNode {
   configuration: NodeConfiguration;
   ports: {
     inputs: NodePort[];
+    configs?: NodePort[];
     outputs: NodePort[];
   };
   metadata?: {
@@ -361,6 +363,7 @@ export interface NodeTemplate {
   defaultConfig: NodeConfiguration;
   defaultPorts: {
     inputs: NodePort[];
+    configs?: NodePort[];
     outputs: NodePort[];
   };
 }
@@ -842,10 +845,12 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [
         { id: 'in', type: PortType.INPUT, label: 'Input' },
-        { id: 'llm', type: PortType.INPUT, label: 'LLM' },
-        { id: 'prompt', type: PortType.INPUT, label: 'Prompt' },
-        { id: 'memory', type: PortType.INPUT, label: 'Memory' },
-        { id: 'tools', type: PortType.INPUT, label: 'Tools', multiple: true },
+      ],
+      configs: [
+        { id: 'llm', type: PortType.CONFIG, label: 'LLM' },
+        { id: 'prompt', type: PortType.CONFIG, label: 'Prompt' },
+        { id: 'memory', type: PortType.CONFIG, label: 'Memory' },
+        { id: 'tools', type: PortType.CONFIG, label: 'Tools', multiple: true },
       ],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Output' },
@@ -1255,6 +1260,7 @@ export function createNodeFromTemplate(
     configuration: { ...template.defaultConfig },
     ports: {
       inputs: template.defaultPorts.inputs.map(p => ({ ...p })),
+      configs: template.defaultPorts.configs?.map(p => ({ ...p })),
       outputs: template.defaultPorts.outputs.map(p => ({ ...p })),
     },
     metadata: {
