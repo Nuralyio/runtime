@@ -95,6 +95,7 @@ export interface QueryRequest {
 export interface QueryResult {
   rows?: Record<string, any>[];
   rowCount?: number;
+  totalCount?: number;
   affectedRows?: number;
   generatedKeys?: any[];
   executionTimeMs?: number;
