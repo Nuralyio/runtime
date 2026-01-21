@@ -36,6 +36,13 @@ export interface DatabaseCanvasViewport {
   panY: number;
 }
 
+export interface TablePosition {
+  x: number;
+  y: number;
+}
+
+export type TablePositions = Record<string, TablePosition>;
+
 export interface QueryHistoryItem {
   id: string;
   connectionPath: string;
@@ -490,4 +497,89 @@ export function getDefaultViewport(): DatabaseCanvasViewport {
     panX: 0,
     panY: 0,
   };
+}
+
+// ============================================================================
+// Database Table Positions (per user, per connection, per schema)
+// ============================================================================
+
+/**
+ * In-memory cache for table positions
+ */
+export const $databaseTablePositions = atom<Record<string, TablePositions>>({});
+
+/**
+ * Build KV key path for table positions
+ */
+function buildTablePositionsKeyPath(connectionPath: string, schemaName: string): string {
+  const encodedPath = connectionPath.replace(/\//g, '__');
+  const encodedSchema = schemaName.replace(/\//g, '__');
+  return `_user_prefs/db_positions/${encodedPath}/${encodedSchema}`;
+}
+
+/**
+ * Build cache key for table positions
+ */
+function buildTablePositionsCacheKey(connectionPath: string, schemaName: string): string {
+  return `${connectionPath}::${schemaName}`;
+}
+
+/**
+ * Get table positions for a connection and schema (from cache or KV)
+ */
+export async function getDatabaseTablePositions(
+  connectionPath: string,
+  schemaName: string,
+  applicationId: string
+): Promise<TablePositions | null> {
+  const cacheKey = buildTablePositionsCacheKey(connectionPath, schemaName);
+
+  // Check in-memory cache first
+  const cached = $databaseTablePositions.get()[cacheKey];
+  if (cached) return cached;
+
+  // Fetch from KV
+  const keyPath = buildTablePositionsKeyPath(connectionPath, schemaName);
+  const entry = await getKvEntry(applicationId, keyPath);
+
+  if (entry?.value) {
+    const positions = entry.value as TablePositions;
+    // Update cache
+    $databaseTablePositions.set({
+      ...$databaseTablePositions.get(),
+      [cacheKey]: positions,
+    });
+    return positions;
+  }
+
+  return null;
+}
+
+/**
+ * Save table positions for a connection and schema to KV
+ */
+export async function saveDatabaseTablePositions(
+  connectionPath: string,
+  schemaName: string,
+  applicationId: string,
+  positions: TablePositions
+): Promise<boolean> {
+  const cacheKey = buildTablePositionsCacheKey(connectionPath, schemaName);
+
+  // Update in-memory cache immediately
+  $databaseTablePositions.set({
+    ...$databaseTablePositions.get(),
+    [cacheKey]: positions,
+  });
+
+  // Persist to KV with user scope
+  const keyPath = buildTablePositionsKeyPath(connectionPath, schemaName);
+  const result = await setKvEntry(keyPath, {
+    applicationId,
+    scope: 'user',
+    value: positions,
+    isSecret: false,
+  });
+
+  return result !== null;
 }
