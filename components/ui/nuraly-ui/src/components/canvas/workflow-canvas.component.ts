@@ -634,6 +634,14 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }));
   }
 
+  dispatchNodeMoved(node: WorkflowNode, position: Position) {
+    this.dispatchEvent(new CustomEvent('node-moved', {
+      detail: { node, position },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   // Note: Port position calculation is now in ConnectionController
   private getPortPosition(node: WorkflowNode, portId: string, isInput: boolean): Position {
     return this.connectionController.getPortPosition(node, portId, isInput);

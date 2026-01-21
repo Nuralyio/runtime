@@ -95,6 +95,14 @@ export class DragController extends BaseCanvasController {
    */
   stopDrag(): void {
     if (this._host.dragState) {
+      // Dispatch node-moved event for each moved node
+      this._host.selectedNodeIds.forEach(nodeId => {
+        const node = this._host.workflow.nodes.find(n => n.id === nodeId);
+        if (node) {
+          this._host.dispatchNodeMoved(node, node.position);
+        }
+      });
+
       this._host.dragState = null;
       this._host.dispatchWorkflowChanged();
     }
