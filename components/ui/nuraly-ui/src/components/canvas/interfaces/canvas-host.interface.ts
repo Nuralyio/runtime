@@ -95,6 +95,7 @@ export interface CanvasHost extends EventTarget {
   dispatchWorkflowChanged(): void;
   dispatchViewportChanged(): void;
   dispatchNodeSelected(node: WorkflowNode): void;
+  dispatchNodeMoved(node: WorkflowNode, position: Position): void;
 }
 
 /**
