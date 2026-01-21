@@ -331,6 +331,12 @@ export class DatabasePage extends LitElement {
   @state()
   private selectedTableName: string | null = null;
 
+  @state()
+  private queryPage = 1;
+
+  @state()
+  private queryLimit = 20;
+
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
 
@@ -539,9 +545,14 @@ export class DatabasePage extends LitElement {
     }
   }
 
-  private async handleRunQuery() {
+  private async handleRunQuery(offset = 0, limit = this.queryLimit) {
     const appId = $currentApplication.get()?.uuid;
     if (!appId || !this.currentSchema || !this.selectedTableName) return;
+
+    // Reset page to 1 when starting a fresh query
+    if (offset === 0) {
+      this.queryPage = 1;
+    }
 
     // Get non-binary columns for preview (exclude embedding, bytea, etc.)
     const columns = this.tableColumns.get(this.selectedTableName) || [];
@@ -554,10 +565,18 @@ export class DatabasePage extends LitElement {
       schema: this.currentSchema,
       table: this.selectedTableName,
       select: safeColumns.length > 0 ? safeColumns : undefined,
-      limit: 100,
+      limit,
+      offset,
     };
 
     await runQuery(appId, query);
+  }
+
+  private handlePaginate(e: CustomEvent) {
+    const { page, limit, offset } = e.detail;
+    this.queryPage = page;
+    this.queryLimit = limit;
+    this.handleRunQuery(offset, limit);
   }
 
   private async handleTestConnection() {
@@ -684,7 +703,7 @@ export class DatabasePage extends LitElement {
             </button>
             <button
               class="toolbar-button primary"
-              @click=${this.handleRunQuery}
+              @click=${() => this.handleRunQuery()}
               ?disabled=${!this.selectedTableName || this.isExecutingQuery}
             >
               ${this.isExecutingQuery ? 'Running...' : `Query ${this.selectedTableName || 'Table'}`}
@@ -724,7 +743,9 @@ export class DatabasePage extends LitElement {
                   Query Results
                   ${this.queryResult ? html`
                     <span class="results-meta">
-                      - ${this.queryResult.rowCount || 0} rows
+                      - ${this.queryResult.totalCount != null
+                        ? `${this.queryResult.rowCount || 0} of ${this.queryResult.totalCount} rows`
+                        : `${this.queryResult.rowCount || 0} rows`}
                       ${this.queryResult.executionTimeMs ? ` in ${this.queryResult.executionTimeMs}ms` : ''}
                     </span>
                   ` : ''}
@@ -744,6 +765,9 @@ export class DatabasePage extends LitElement {
                     fixedHeader
                     .scrollConfig=${{ y: 200 }}
                     emptyText="No results"
+                    serverSide
+                    .totalCount=${this.queryResult?.totalCount || 0}
+                    @onPaginate=${this.handlePaginate}
                   ></nr-table>
                 ` : html`
                   <div class="empty-state" style="padding: 24px;">
@@ -754,7 +778,7 @@ export class DatabasePage extends LitElement {
             </div>
           ` : html`
             <div class="query-panel-header" @click=${() => this.showQueryPanel = true} style="border-top: 1px solid var(--n-color-border, #e5e7eb); background: var(--n-color-surface, #fff);">
-              <span>Query Results ${this.queryResult ? `(${this.queryResult.rowCount || 0} rows)` : ''}</span>
+              <span>Query Results ${this.queryResult ? `(${this.queryResult.totalCount != null ? `${this.queryResult.rowCount || 0} of ${this.queryResult.totalCount}` : this.queryResult.rowCount || 0} rows)` : ''}</span>
               <svg class="toggle-icon collapsed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
