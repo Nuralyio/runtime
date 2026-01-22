@@ -154,6 +154,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean, reflect: true})
   boxed = false;
 
+  /** Show messages area (set to false for input-only mode) */
+  @property({type: Boolean})
+  showMessages = true;
+
   /** Enable file upload functionality */
   @property({type: Boolean})
   enableFileUpload = false;
@@ -297,7 +301,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     // Sync controller state to component properties
     if (state.messages) this.messages = state.messages;
     if (state.threads) this.threads = state.threads;
-    if (state.suggestions) this.suggestions = state.suggestions;
+    // Only overwrite suggestions if controller state has non-empty suggestions
+    if (state.suggestions && state.suggestions.length > 0) {
+      this.suggestions = state.suggestions;
+    }
     if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
     this.chatStarted = state.messages?.length > 0;
     this.isBotTyping = state.isTyping || false;
@@ -323,6 +330,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   override render() {
     const templateData: ChatbotMainTemplateData = {
       boxed: this.boxed,
+      showMessages: this.showMessages,
       messages: this.messages,
       isTyping: this.isBotTyping,
       loadingIndicator: this.loadingIndicator,

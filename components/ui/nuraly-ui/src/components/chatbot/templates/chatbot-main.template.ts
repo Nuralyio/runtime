@@ -40,7 +40,10 @@ import { ChatbotMessage, ChatbotSuggestion, ChatbotLoadingType } from '../chatbo
 export interface ChatbotMainTemplateData {
   // Display mode
   boxed?: boolean;
-  
+
+  /** Show messages area (set to false for input-only mode) */
+  showMessages?: boolean;
+
   // Messages
   messages: ChatbotMessage[];
   isTyping: boolean;
@@ -119,21 +122,29 @@ export function renderChatbotMain(
         
         <slot name="header"></slot>
         
-        <div class="chatbot-content" part="content">
-          ${renderMessages(
-            data.messages,
-            renderSuggestions(data.chatStarted, data.suggestions, handlers.suggestion),
-            data.isTyping 
-              ? renderBotTypingIndicator(
-                  data.isTyping, 
-                  data.loadingIndicator || ChatbotLoadingType.Spinner
-                )
-              : nothing,
-            handlers.message
-          )}
-          
-          <slot name="messages"></slot>
-        </div>
+        ${data.showMessages !== false ? html`
+          <div class="chatbot-content" part="content">
+            ${renderMessages(
+              data.messages,
+              renderSuggestions(data.chatStarted, data.suggestions, handlers.suggestion),
+              data.isTyping
+                ? renderBotTypingIndicator(
+                    data.isTyping,
+                    data.loadingIndicator || ChatbotLoadingType.Spinner
+                  )
+                : nothing,
+              handlers.message
+            )}
+            <slot name="messages"></slot>
+          </div>
+        ` : html`
+          <!-- Input-only mode: render suggestions above input -->
+          ${data.suggestions && data.suggestions.length > 0 ? html`
+            <div class="input-only-suggestions" part="input-only-suggestions">
+              ${renderSuggestions(false, data.suggestions, handlers.suggestion)}
+            </div>
+          ` : nothing}
+        `}
         
         ${renderInputBox(data.inputBox, handlers.inputBox)}
         

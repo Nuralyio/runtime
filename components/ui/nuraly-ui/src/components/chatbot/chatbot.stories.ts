@@ -117,6 +117,10 @@ chatbot.controller = controller;
       control: { type: 'boolean' },
       description: 'Enable boxed layout for large widths (ChatGPT-style)'
     },
+    showMessages: {
+      control: { type: 'boolean' },
+      description: 'Show messages area (set to false for input-only mode)'
+    },
     enableModuleSelection: {
       control: { type: 'boolean' },
       description: 'Enable module selection dropdown'
@@ -2541,6 +2545,171 @@ export const AutoLoadingConversations: Story = {
             .autoScroll=${true}
             .showThreads=${true}
             .boxed=${true}
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+// ===== INPUT-ONLY MODE STORIES =====
+
+/**
+ * Input-only mode - shows only the input area without messages.
+ * Useful for embedded command inputs or quick actions.
+ */
+export const InputOnly: Story = {
+  args: {
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showMessages: false,
+    showSendButton: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#input-only-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          responses: {
+            default: 'Command received! Processing your request...'
+          }
+        });
+        chatbot.controller = controller;
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; width: 600px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 18px;">Input-Only Mode</h3>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+            Shows only the input area without displaying messages.
+            Perfect for command inputs, search bars, or embedded quick actions.
+          </p>
+        </div>
+
+        <div style="border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <nr-chatbot
+            id="input-only-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showMessages=${false}
+            .showSendButton=${args.showSendButton}
+            placeholder="Type a command..."
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Input-only mode with suggestions displayed as bubbles above the input.
+ */
+export const InputOnlyWithSuggestions: Story = {
+  args: {
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showMessages: false,
+    showSendButton: true
+  },
+  render: (args) => {
+    const quickActionSuggestions: ChatbotSuggestion[] = [
+      { id: 'action1', text: 'Create new project', enabled: true },
+      { id: 'action2', text: 'Open settings', enabled: true },
+      { id: 'action3', text: 'Search files', enabled: true },
+      { id: 'action4', text: 'Run build', enabled: true }
+    ];
+
+    setTimeout(() => {
+      const chatbot = document.querySelector('#input-only-suggestions-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          responses: {
+            'Create new project': 'Creating a new project for you...',
+            'Open settings': 'Opening settings panel...',
+            'Search files': 'Starting file search...',
+            'Run build': 'Running build process...',
+            default: 'Executing command...'
+          }
+        });
+        chatbot.controller = controller;
+        chatbot.suggestions = quickActionSuggestions;
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; width: 600px;">
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 20px; border-radius: 12px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 18px;">Input-Only With Suggestions</h3>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+            Suggestions appear as clickable bubbles above the input.
+            Click a suggestion or type your own command.
+          </p>
+        </div>
+
+        <div style="padding-top: 50px;">
+          <nr-chatbot
+            id="input-only-suggestions-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showMessages=${false}
+            .showSendButton=${args.showSendButton}
+            .suggestions=${quickActionSuggestions}
+            placeholder="Type a command or click a suggestion..."
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Input-only mode with file upload enabled.
+ */
+export const InputOnlyWithFileUpload: Story = {
+  args: {
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showMessages: false,
+    showSendButton: true,
+    enableFileUpload: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#input-only-file-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          responses: {
+            default: 'File received! Processing your upload...'
+          }
+        });
+        chatbot.controller = controller;
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; width: 600px;">
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 18px;">Input-Only With File Upload</h3>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+            Input-only mode with file upload functionality enabled.
+            Upload files to attach to your command.
+          </p>
+        </div>
+
+        <div style="border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <nr-chatbot
+            id="input-only-file-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showMessages=${false}
+            .showSendButton=${args.showSendButton}
+            .enableFileUpload=${true}
+            placeholder="Type a command or upload a file..."
           ></nr-chatbot>
         </div>
       </div>
