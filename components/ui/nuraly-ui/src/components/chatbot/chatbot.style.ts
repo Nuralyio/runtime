@@ -23,7 +23,7 @@ export default css`
     background-color: var(--nuraly-color-chatbot-background, #ffffff);
     border-radius: var(--nuraly-border-radius-chatbot);
     position: relative;
-    border: var(--nuraly-border-width-chatbot-input, 1px) solid var(--nuraly-color-chatbot-border);
+    border: var(--nuraly-border-width-chatbot-input, 1px) solid var(--nuraly-color-chatbot-border, #e0e0e0);
   }
 
   .chatbot-container {
@@ -651,7 +651,44 @@ export default css`
       opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
-    }  
+    }
+
+  /* Input-only mode styles - suggestions float above the container */
+  .chat-container:has(.input-only-suggestions) {
+    position: relative;
+    overflow: visible;
+  }
+
+  .chatbot-container:has(.input-only-suggestions) {
+    overflow: visible;
+  }
+
+  .chatbot-main:has(.input-only-suggestions) {
+    overflow: visible;
+  }
+
+  .input-only-suggestions {
+    position: absolute;
+    bottom: calc(100% + var(--nuraly-spacing-03, 0.5rem));
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .input-only-suggestions .suggestion-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--nuraly-spacing-02, 0.25rem);
+    margin: 0;
+    padding: 0;
+    pointer-events: auto;
+  }
+
   .file-upload-area {
     display: none;
     position: absolute;
