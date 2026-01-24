@@ -1,23 +1,36 @@
 package com.nuraly.workflows.engine.memory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.llm.dto.LlmMessage;
+import io.quarkus.redis.datasource.RedisDataSource;
+import io.quarkus.redis.datasource.value.ValueCommands;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * In-memory storage for conversation context.
+ * Storage for conversation context with support for both in-memory and Redis backends.
  *
  * This store holds conversation history keyed by conversation ID.
  * It supports two cutoff modes:
  * - Token-based: limits context by estimated token count
  * - Message-based: limits context by number of messages
  *
- * Note: This is purely in-memory and will be lost on application restart.
+ * Storage backends:
+ * - "memory": In-memory storage (default, lost on restart, single worker only)
+ * - "redis": Redis-based storage (persistent, supports distributed workers)
+ *
+ * Configure via: workflows.memory.storage=redis
  */
 @ApplicationScoped
 public class ContextMemoryStore {
@@ -27,8 +40,37 @@ public class ContextMemoryStore {
     // Approximate tokens per character (conservative estimate for multi-language support)
     private static final double TOKENS_PER_CHAR = 0.25;
 
+    @Inject
+    Configuration configuration;
+
+    @Inject
+    RedisDataSource redisDataSource;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     // In-memory storage: conversationId -> list of messages
-    private final Map<String, List<LlmMessage>> conversations = new ConcurrentHashMap<>();
+    private final Map<String, List<LlmMessage>> inMemoryStore = new ConcurrentHashMap<>();
+
+    // Redis commands (initialized lazily)
+    private ValueCommands<String, String> redisCommands;
+
+    private boolean useRedis = false;
+
+    @PostConstruct
+    void init() {
+        useRedis = "redis".equalsIgnoreCase(configuration.memoryStorage);
+        if (useRedis) {
+            try {
+                redisCommands = redisDataSource.value(String.class, String.class);
+                LOG.info("Context memory store initialized with Redis backend");
+            } catch (Exception e) {
+                LOG.warnf("Failed to initialize Redis, falling back to in-memory: %s", e.getMessage());
+                useRedis = false;
+            }
+        } else {
+            LOG.info("Context memory store initialized with in-memory backend");
+        }
+    }
 
     /**
      * Add a message to a conversation.
@@ -39,9 +81,31 @@ public class ContextMemoryStore {
             return;
         }
 
-        conversations.computeIfAbsent(conversationId, k -> new ArrayList<>()).add(message);
+        if (useRedis) {
+            addMessageToRedis(conversationId, message);
+        } else {
+            addMessageToMemory(conversationId, message);
+        }
+    }
+
+    private void addMessageToMemory(String conversationId, LlmMessage message) {
+        inMemoryStore.computeIfAbsent(conversationId, k -> new ArrayList<>()).add(message);
         LOG.debugf("Added message to conversation %s (role: %s), total messages: %d",
-                conversationId, message.getRole(), conversations.get(conversationId).size());
+                conversationId, message.getRole(), inMemoryStore.get(conversationId).size());
+    }
+
+    private void addMessageToRedis(String conversationId, LlmMessage message) {
+        try {
+            String key = getRedisKey(conversationId);
+            List<LlmMessage> messages = getMessagesFromRedis(conversationId);
+            messages.add(message);
+            String json = objectMapper.writeValueAsString(messages);
+            redisCommands.setex(key, configuration.memoryTtlSeconds, json);
+            LOG.debugf("Added message to Redis conversation %s (role: %s), total messages: %d",
+                    conversationId, message.getRole(), messages.size());
+        } catch (Exception e) {
+            LOG.errorf("Failed to add message to Redis: %s", e.getMessage());
+        }
     }
 
     /**
@@ -52,8 +116,20 @@ public class ContextMemoryStore {
             return;
         }
 
-        for (LlmMessage message : messages) {
-            addMessage(conversationId, message);
+        if (useRedis) {
+            try {
+                String key = getRedisKey(conversationId);
+                List<LlmMessage> existingMessages = getMessagesFromRedis(conversationId);
+                existingMessages.addAll(messages);
+                String json = objectMapper.writeValueAsString(existingMessages);
+                redisCommands.setex(key, configuration.memoryTtlSeconds, json);
+            } catch (Exception e) {
+                LOG.errorf("Failed to add messages to Redis: %s", e.getMessage());
+            }
+        } else {
+            for (LlmMessage message : messages) {
+                addMessageToMemory(conversationId, message);
+            }
         }
     }
 
@@ -66,7 +142,9 @@ public class ContextMemoryStore {
      * @return List of messages in chronological order
      */
     public List<LlmMessage> getMessagesByCount(String conversationId, int maxMessages) {
-        List<LlmMessage> allMessages = conversations.get(conversationId);
+        List<LlmMessage> allMessages = useRedis
+                ? getMessagesFromRedis(conversationId)
+                : inMemoryStore.get(conversationId);
 
         if (allMessages == null || allMessages.isEmpty()) {
             return new ArrayList<>();
@@ -90,7 +168,9 @@ public class ContextMemoryStore {
      * @return List of messages in chronological order
      */
     public List<LlmMessage> getMessagesByTokens(String conversationId, int maxTokens) {
-        List<LlmMessage> allMessages = conversations.get(conversationId);
+        List<LlmMessage> allMessages = useRedis
+                ? getMessagesFromRedis(conversationId)
+                : inMemoryStore.get(conversationId);
 
         if (allMessages == null || allMessages.isEmpty()) {
             return new ArrayList<>();
@@ -128,7 +208,10 @@ public class ContextMemoryStore {
      * Get all messages for a conversation without any cutoff.
      */
     public List<LlmMessage> getAllMessages(String conversationId) {
-        List<LlmMessage> messages = conversations.get(conversationId);
+        if (useRedis) {
+            return getMessagesFromRedis(conversationId);
+        }
+        List<LlmMessage> messages = inMemoryStore.get(conversationId);
         return messages != null ? new ArrayList<>(messages) : new ArrayList<>();
     }
 
@@ -136,7 +219,15 @@ public class ContextMemoryStore {
      * Clear a conversation's history.
      */
     public void clearConversation(String conversationId) {
-        conversations.remove(conversationId);
+        if (useRedis) {
+            try {
+                redisCommands.getdel(getRedisKey(conversationId));
+            } catch (Exception e) {
+                LOG.errorf("Failed to clear Redis conversation: %s", e.getMessage());
+            }
+        } else {
+            inMemoryStore.remove(conversationId);
+        }
         LOG.debugf("Cleared conversation: %s", conversationId);
     }
 
@@ -144,16 +235,50 @@ public class ContextMemoryStore {
      * Check if a conversation exists.
      */
     public boolean hasConversation(String conversationId) {
-        return conversations.containsKey(conversationId) &&
-               !conversations.get(conversationId).isEmpty();
+        if (useRedis) {
+            try {
+                String value = redisCommands.get(getRedisKey(conversationId));
+                return value != null && !value.isEmpty();
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return inMemoryStore.containsKey(conversationId) &&
+               !inMemoryStore.get(conversationId).isEmpty();
     }
 
     /**
      * Get the total number of messages in a conversation.
      */
     public int getMessageCount(String conversationId) {
-        List<LlmMessage> messages = conversations.get(conversationId);
+        if (useRedis) {
+            return getMessagesFromRedis(conversationId).size();
+        }
+        List<LlmMessage> messages = inMemoryStore.get(conversationId);
         return messages != null ? messages.size() : 0;
+    }
+
+    /**
+     * Get the Redis key for a conversation.
+     */
+    private String getRedisKey(String conversationId) {
+        return configuration.memoryRedisKeyPrefix + conversationId;
+    }
+
+    /**
+     * Get messages from Redis.
+     */
+    private List<LlmMessage> getMessagesFromRedis(String conversationId) {
+        try {
+            String json = redisCommands.get(getRedisKey(conversationId));
+            if (json == null || json.isEmpty()) {
+                return new ArrayList<>();
+            }
+            return objectMapper.readValue(json, new TypeReference<List<LlmMessage>>() {});
+        } catch (Exception e) {
+            LOG.errorf("Failed to get messages from Redis: %s", e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -204,5 +329,12 @@ public class ContextMemoryStore {
             return 0;
         }
         return messages.stream().mapToInt(this::estimateTokens).sum();
+    }
+
+    /**
+     * Check if Redis backend is being used.
+     */
+    public boolean isUsingRedis() {
+        return useRedis;
     }
 }

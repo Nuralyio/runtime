@@ -121,6 +121,12 @@
             <version>5.16.0</version>
         </dependency>
 
+        <!-- Redis (for distributed context memory) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-redis-client</artifactId>
+        </dependency>
+
         <!-- Code Generation -->
         <dependency>
             <groupId>org.projectlombok</groupId>
