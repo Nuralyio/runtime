@@ -275,6 +275,57 @@ public class RabbitMQConnectionManager {
         }
     }
 
+    /**
+     * Publish a message to a specific queue (for message buffering).
+     *
+     * @param queueName The queue name
+     * @param message   The message body
+     */
+    public void publishToQueue(String queueName, String message) {
+        try (Channel channel = createChannel()) {
+            // Declare queue if not exists (durable, non-exclusive, non-auto-delete)
+            channel.queueDeclare(queueName, true, false, false, null);
+
+            AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
+                    .contentType("application/json")
+                    .deliveryMode(2) // Persistent
+                    .build();
+
+            channel.basicPublish(
+                    "",        // Default exchange
+                    queueName, // Queue name as routing key
+                    properties,
+                    message.getBytes(StandardCharsets.UTF_8)
+            );
+
+            LOG.debugf("Published message to queue: %s", queueName);
+
+        } catch (Exception e) {
+            LOG.errorf(e, "Failed to publish message to queue: %s", queueName);
+            throw new RuntimeException("Failed to publish to queue", e);
+        }
+    }
+
+    /**
+     * Consume a single message from a queue (for message replay).
+     * Returns null if queue is empty.
+     *
+     * @param queueName The queue name
+     * @return The message body, or null if empty
+     */
+    public String consumeFromQueue(String queueName) {
+        try (Channel channel = createChannel()) {
+            GetResponse response = channel.basicGet(queueName, true);
+            if (response == null) {
+                return null;
+            }
+            return new String(response.getBody(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            LOG.errorf(e, "Failed to consume from queue: %s", queueName);
+            return null;
+        }
+    }
+
     private void closeConnection() {
         synchronized (connectionLock) {
             if (connection != null && connection.isOpen()) {
