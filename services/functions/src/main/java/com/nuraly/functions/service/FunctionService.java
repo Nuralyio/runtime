@@ -29,7 +29,7 @@ public class FunctionService {
     FunctionInvoker functionInvoker;
 
     @Inject
-    Deployment deployment;
+    WasmRuntimeService wasmRuntime;
 
     @Inject
     PermissionClient permissionClient;
@@ -216,7 +216,7 @@ public class FunctionService {
     }
 
     /**
-     * Deploy a function.
+     * Deploy a function (with WASM, build = deploy, so this just verifies status).
      * Permission is verified by the gateway.
      *
      * @param functionId The ID of the function to deploy.
@@ -228,7 +228,11 @@ public class FunctionService {
             throws FunctionNotFoundException, PermissionDeniedException, Exception {
         checkFunctionPermission(functionId, userUuid);
 
-        deployment.deploy(functionId);
+        // With WASM, build automatically deploys to runtime
+        // If not deployed, trigger a build
+        if (!wasmRuntime.isDeployed(functionId.toString())) {
+            buildFunctionDockerImage(functionId, userUuid);
+        }
     }
     public String invokeFunction(UUID functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);

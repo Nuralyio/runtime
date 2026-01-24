@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.functions.dto.FunctionDTO;
 import com.nuraly.functions.dto.InvokeRequest;
-import com.nuraly.functions.service.Deployment;
 import com.nuraly.functions.service.FunctionService;
 import com.nuraly.functions.exception.FunctionNotFoundException;
 
@@ -44,9 +43,6 @@ public class FunctionResource {
 
     @Inject
     FunctionService functionService;
-
-    @Inject
-    Deployment deployment;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
