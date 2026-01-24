@@ -593,142 +593,58 @@ public class ContainerManager {
 
 ---
 
-### 6. Secure Network Service (Block localhost)
+### 6. Network Configuration
 
-**File**: `src/main/java/com/nuraly/functions/service/SecureNetworkService.java`
+Add network security settings to `Configuration.java`:
 
 ```java
-package com.nuraly.functions.service;
+// Network security (configurable)
+@ConfigProperty(name = "nuraly.wasm.network.enabled", defaultValue = "true")
+public boolean NetworkEnabled;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.regex.Pattern;
+@ConfigProperty(name = "nuraly.wasm.network.block-localhost", defaultValue = "true")
+public boolean BlockLocalhost;
 
-/**
- * Secure HTTP client that blocks localhost and internal networks.
- * Prevents SSRF (Server-Side Request Forgery) attacks.
- */
-@ApplicationScoped
-public class SecureNetworkService {
+@ConfigProperty(name = "nuraly.wasm.network.block-private-ips", defaultValue = "true")
+public boolean BlockPrivateIps;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(10))
-        .followRedirects(HttpClient.Redirect.NORMAL)
-        .build();
+@ConfigProperty(name = "nuraly.wasm.network.blocked-hosts", defaultValue = "")
+public Optional<List<String>> BlockedHosts;
 
-    // Blocked hostnames
-    private static final Pattern BLOCKED_HOSTS = Pattern.compile(
-        "^(localhost|127\\..*|0\\.0\\.0\\.0|\\[::1\\]|\\[::ffff:127\\..*\\])$",
-        Pattern.CASE_INSENSITIVE
-    );
+@ConfigProperty(name = "nuraly.wasm.network.allowed-hosts", defaultValue = "")
+public Optional<List<String>> AllowedHosts;  // If set, only these hosts allowed
 
-    /**
-     * Secure fetch - blocks localhost and private IPs
-     */
-    public HttpResponse<String> fetch(String url, String method, String body) throws Exception {
-        URI uri = URI.create(url);
-
-        // Check hostname
-        String host = uri.getHost();
-        if (host == null) {
-            throw new SecurityException("Invalid URL: no host");
-        }
-
-        // Block localhost patterns
-        if (BLOCKED_HOSTS.matcher(host).matches()) {
-            throw new SecurityException("Blocked: localhost access not allowed");
-        }
-
-        // Resolve and check IP
-        InetAddress address = InetAddress.getByName(host);
-        if (isPrivateOrLocalAddress(address)) {
-            throw new SecurityException("Blocked: private/local network access not allowed");
-        }
-
-        // Build request
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-            .uri(uri)
-            .timeout(Duration.ofSeconds(30));
-
-        if (body != null && !body.isEmpty()) {
-            requestBuilder
-                .header("Content-Type", "application/json")
-                .method(method, HttpRequest.BodyPublishers.ofString(body));
-        } else {
-            requestBuilder.method(method, HttpRequest.BodyPublishers.noBody());
-        }
-
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-    }
-
-    /**
-     * Check if address is private or local
-     */
-    private boolean isPrivateOrLocalAddress(InetAddress address) {
-        return address.isLoopbackAddress()      // 127.x.x.x, ::1
-            || address.isSiteLocalAddress()     // 10.x.x.x, 172.16-31.x.x, 192.168.x.x
-            || address.isLinkLocalAddress()     // 169.254.x.x
-            || address.isAnyLocalAddress()      // 0.0.0.0
-            || isCloudMetadata(address);        // Cloud metadata IPs
-    }
-
-    /**
-     * Block cloud metadata endpoints (AWS, GCP, Azure)
-     */
-    private boolean isCloudMetadata(InetAddress address) {
-        String ip = address.getHostAddress();
-        return ip.equals("169.254.169.254")     // AWS/GCP metadata
-            || ip.equals("169.254.170.2")       // AWS ECS metadata
-            || ip.startsWith("fd00:");          // AWS VPC IPv6
-    }
-}
+@ConfigProperty(name = "nuraly.wasm.network.timeout-seconds", defaultValue = "30")
+public int NetworkTimeoutSeconds;
 ```
 
----
+Add to `application.properties`:
 
-### 7. Update WASM Runtime with Network Access
+```properties
+# Network security (all configurable)
+nuraly.wasm.network.enabled=true
+nuraly.wasm.network.block-localhost=true
+nuraly.wasm.network.block-private-ips=true
+nuraly.wasm.network.blocked-hosts=
+nuraly.wasm.network.allowed-hosts=
+nuraly.wasm.network.timeout-seconds=30
+```
 
-**File**: `src/main/java/com/nuraly/functions/service/WasmRuntimeService.java` (add host functions)
+Example configurations:
 
-```java
-// Add to WasmRuntimeService.java
+```properties
+# Block nothing (full access)
+nuraly.wasm.network.block-localhost=false
+nuraly.wasm.network.block-private-ips=false
 
-@Inject
-SecureNetworkService networkService;
+# Allowlist mode (only specific hosts)
+nuraly.wasm.network.allowed-hosts=api.github.com,api.stripe.com
 
-/**
- * Register host functions for WASM modules
- */
-private void registerHostFunctions(Instance instance) {
-    // Secure fetch - blocks localhost/private IPs
-    instance.registerHostFunction("env", "fetch", (urlPtr, methodPtr, bodyPtr) -> {
-        try {
-            String url = readString(instance, urlPtr);
-            String method = readString(instance, methodPtr);
-            String body = readString(instance, bodyPtr);
+# Block specific hosts
+nuraly.wasm.network.blocked-hosts=evil.com,malware.net
 
-            var response = networkService.fetch(url, method, body);
-
-            return writeString(instance, """
-                {"status": %d, "body": %s}
-                """.formatted(response.statusCode(), response.body()));
-
-        } catch (SecurityException e) {
-            return writeString(instance, """
-                {"error": "BLOCKED", "message": "%s"}
-                """.formatted(e.getMessage()));
-        } catch (Exception e) {
-            return writeString(instance, """
-                {"error": "FAILED", "message": "%s"}
-                """.formatted(e.getMessage()));
-        }
-    });
-}
+# Disable network entirely
+nuraly.wasm.network.enabled=false
 ```
 
 ---
@@ -824,11 +740,10 @@ sudo chmod 755 /var/nuraly/wasm
 ### Step 2: Update Code
 - [ ] Add Chicory dependency to pom.xml
 - [ ] Remove Kubernetes dependency from pom.xml
-- [ ] Update Configuration.java (remove K8s, add WASM)
+- [ ] Update Configuration.java (remove K8s, add WASM + network config)
 - [ ] Update application.properties
 - [ ] Create WasmCompilerService.java
 - [ ] Create WasmRuntimeService.java
-- [ ] Create SecureNetworkService.java (blocks localhost)
 - [ ] Replace FunctionInvoker.java
 - [ ] Update ContainerManager.java
 - [ ] Delete Deployment.java
