@@ -98,4 +98,48 @@ public class Configuration {
 
     @ConfigProperty(name = "workflows.service.timeout", defaultValue = "120000")
     public long serviceTimeout; // Default 2 minutes
+
+    // =====================================================
+    // Persistent Trigger Settings
+    // =====================================================
+
+    // Instance identification for cluster awareness
+    @ConfigProperty(name = "workflows.instance.id", defaultValue = "${HOSTNAME:localhost}")
+    public String instanceId;
+
+    // Trigger ownership lease duration (how long before an orphan can be claimed)
+    @ConfigProperty(name = "workflows.trigger.lease.duration-ms", defaultValue = "30000")
+    public long triggerLeaseDurationMs;
+
+    // Trigger heartbeat interval (how often to renew leases)
+    @ConfigProperty(name = "workflows.trigger.heartbeat.interval-ms", defaultValue = "10000")
+    public long triggerHeartbeatIntervalMs;
+
+    // Orphan check interval (how often to look for expired leases)
+    @ConfigProperty(name = "workflows.trigger.orphan-check.interval-ms", defaultValue = "15000")
+    public long triggerOrphanCheckIntervalMs;
+
+    // Message buffer max size per trigger
+    @ConfigProperty(name = "workflows.trigger.buffer.max-size", defaultValue = "10000")
+    public int triggerBufferMaxSize;
+
+    // Message buffer TTL (how long to keep buffered messages)
+    @ConfigProperty(name = "workflows.trigger.buffer.ttl-ms", defaultValue = "86400000")
+    public long triggerBufferTtlMs;
+
+    // Dev mode max duration (prevents forgetting to release dev mode)
+    @ConfigProperty(name = "workflows.trigger.dev-mode.max-duration-ms", defaultValue = "3600000")
+    public long devModeMaxDurationMs;
+
+    // Auto-release dev mode when expires
+    @ConfigProperty(name = "workflows.trigger.dev-mode.auto-release", defaultValue = "true")
+    public boolean devModeAutoRelease;
+
+    // Telegram connector settings
+    @ConfigProperty(name = "workflows.trigger.telegram.polling-timeout-s", defaultValue = "30")
+    public int telegramPollingTimeoutSeconds;
+
+    // Slack connector settings
+    @ConfigProperty(name = "workflows.trigger.slack.reconnect-delay-ms", defaultValue = "5000")
+    public long slackReconnectDelayMs;
 }
