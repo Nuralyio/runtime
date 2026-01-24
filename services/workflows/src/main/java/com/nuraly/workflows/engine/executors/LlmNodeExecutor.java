@@ -13,6 +13,7 @@ import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.LlmProviderFactory;
 import com.nuraly.workflows.llm.dto.*;
+import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -70,6 +71,12 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     WorkflowEventService eventService;
+
+    @Inject
+    ContextMemoryStore contextMemoryStore;
+
+    @Inject
+    ContextMemoryNodeExecutor contextMemoryNodeExecutor;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -148,11 +155,33 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
 
+        // Find connected memory node (optional)
+        WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+        MemoryConfig memoryConfig = null;
+        String conversationId = null;
+
+        if (memoryNode != null) {
+            LOG.debugf("Found connected memory node: %s", memoryNode.name);
+            memoryConfig = parseMemoryConfig(memoryNode, context);
+            conversationId = memoryConfig.conversationId;
+            LOG.debugf("Memory config: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
+                    memoryConfig.cutoffMode, memoryConfig.maxMessages, memoryConfig.maxTokens, conversationId);
+        }
+
         // Build initial messages
         List<LlmMessage> messages = new ArrayList<>();
 
         if (systemPrompt != null && !systemPrompt.isEmpty()) {
             messages.add(LlmMessage.system(systemPrompt));
+        }
+
+        // Load conversation history from memory (if connected)
+        if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+            List<LlmMessage> history = loadConversationHistory(conversationId, memoryConfig);
+            if (!history.isEmpty()) {
+                LOG.debugf("Loaded %d messages from conversation history for: %s", history.size(), conversationId);
+                messages.addAll(history);
+            }
         }
 
         // Get user prompt from input
@@ -234,6 +263,19 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
         }
 
+        // Save messages to memory (if connected)
+        if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+            // Save the user message
+            contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
+
+            // Save the assistant response
+            if (lastResponse != null && lastResponse.getContent() != null) {
+                contextMemoryStore.addMessage(conversationId, LlmMessage.assistant(lastResponse.getContent()));
+            }
+            LOG.debugf("Saved messages to conversation history: %s (total: %d messages)",
+                    conversationId, contextMemoryStore.getMessageCount(conversationId));
+        }
+
         // Build output
         ObjectNode output = objectMapper.createObjectNode();
 
@@ -254,6 +296,13 @@ public class LlmNodeExecutor implements NodeExecutor {
                 usage.put("totalTokens", lastResponse.getUsage().getTotalTokens());
                 output.set("usage", usage);
             }
+        }
+
+        // Add memory info to output
+        if (conversationId != null && !conversationId.isEmpty()) {
+            output.put("conversationId", conversationId);
+            output.put("memoryEnabled", true);
+            output.put("totalMessages", contextMemoryStore.getMessageCount(conversationId));
         }
 
         // Store response in variables if configured
@@ -650,5 +699,137 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static class ToolContext {
         ToolDefinition definition;
         WorkflowNodeEntity targetNode;
+    }
+
+    /**
+     * Find a memory node connected to this LLM node's 'memory' input port.
+     */
+    private WorkflowNodeEntity findConnectedMemoryNode(WorkflowNodeEntity node) {
+        if (node.workflow == null || node.workflow.edges == null) {
+            return null;
+        }
+
+        for (WorkflowEdgeEntity edge : node.workflow.edges) {
+            // Check if this edge connects TO our node's 'memory' port
+            if (edge.targetNode != null &&
+                edge.targetNode.id.equals(node.id) &&
+                "memory".equals(edge.targetPortId) &&
+                edge.sourceNode != null &&
+                edge.sourceNode.type == NodeType.MEMORY) {
+                return edge.sourceNode;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse memory configuration from the memory node.
+     */
+    private MemoryConfig parseMemoryConfig(WorkflowNodeEntity memoryNode, ExecutionContext context) {
+        MemoryConfig config = new MemoryConfig();
+
+        try {
+            JsonNode nodeConfig = memoryNode.configuration != null
+                    ? objectMapper.readTree(memoryNode.configuration)
+                    : objectMapper.createObjectNode();
+
+            config.cutoffMode = nodeConfig.has("cutoffMode")
+                    ? nodeConfig.get("cutoffMode").asText()
+                    : "message";
+
+            config.maxMessages = nodeConfig.has("maxMessages")
+                    ? nodeConfig.get("maxMessages").asInt()
+                    : 50;
+
+            config.maxTokens = nodeConfig.has("maxTokens")
+                    ? nodeConfig.get("maxTokens").asInt()
+                    : 4000;
+
+            String conversationIdExpression = nodeConfig.has("conversationIdExpression")
+                    ? nodeConfig.get("conversationIdExpression").asText()
+                    : "${input.threadId}";
+
+            // Resolve the conversation ID
+            config.conversationId = context.resolveExpression(conversationIdExpression);
+
+            // If expression didn't resolve, try common fallbacks
+            if (config.conversationId == null || config.conversationId.isEmpty() ||
+                config.conversationId.equals(conversationIdExpression)) {
+                config.conversationId = tryResolveConversationId(context);
+            }
+        } catch (Exception e) {
+            LOG.warnf("Failed to parse memory config: %s", e.getMessage());
+            config.cutoffMode = "message";
+            config.maxMessages = 50;
+            config.maxTokens = 4000;
+        }
+
+        return config;
+    }
+
+    /**
+     * Try to resolve conversation ID from common input fields.
+     */
+    private String tryResolveConversationId(ExecutionContext context) {
+        JsonNode input = context.getInput();
+        if (input == null) {
+            return null;
+        }
+
+        // Try common field names
+        String[] fields = {"threadId", "conversationId", "sessionId", "chatId", "thread_id", "conversation_id"};
+
+        for (String field : fields) {
+            if (input.has(field) && !input.get(field).isNull()) {
+                return input.get(field).asText();
+            }
+        }
+
+        // Try nested body
+        if (input.has("body") && input.get("body").isObject()) {
+            JsonNode body = input.get("body");
+            for (String field : fields) {
+                if (body.has(field) && !body.get(field).isNull()) {
+                    return body.get(field).asText();
+                }
+            }
+        }
+
+        // Try variables
+        for (String field : fields) {
+            JsonNode varValue = context.getVariable(field);
+            if (varValue != null && !varValue.isNull()) {
+                return varValue.asText();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Load conversation history from memory store with cutoff applied.
+     */
+    private List<LlmMessage> loadConversationHistory(String conversationId, MemoryConfig config) {
+        if (conversationId == null || conversationId.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if ("token".equalsIgnoreCase(config.cutoffMode)) {
+            return contextMemoryStore.getMessagesByTokens(conversationId, config.maxTokens);
+        } else {
+            // Default to message-based cutoff
+            return contextMemoryStore.getMessagesByCount(conversationId, config.maxMessages);
+        }
+    }
+
+    /**
+     * Helper class to hold memory configuration.
+     */
+    private static class MemoryConfig {
+        String cutoffMode = "message";
+        int maxMessages = 50;
+        int maxTokens = 4000;
+        String conversationId;
     }
 }
