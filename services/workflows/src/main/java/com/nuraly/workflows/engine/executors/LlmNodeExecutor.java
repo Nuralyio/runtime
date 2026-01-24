@@ -155,30 +155,6 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
 
-        // Check for memory config - either from connected node or from config (passed by Agent)
-        MemoryConfig memoryConfig = null;
-        String conversationId = null;
-
-        // First check if memoryConfig is passed in node configuration (from Agent)
-        if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
-            config.get("memoryConfig").get("enabled").asBoolean()) {
-            LOG.debugf("Found memory config in node configuration (from Agent)");
-            memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
-            conversationId = memoryConfig.conversationId;
-            LOG.debugf("Memory config from Agent: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
-                    memoryConfig.cutoffMode, memoryConfig.maxMessages, memoryConfig.maxTokens, conversationId);
-        } else {
-            // Fallback: Find connected memory node (for direct LLM usage without Agent)
-            WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
-            if (memoryNode != null) {
-                LOG.debugf("Found connected memory node: %s", memoryNode.name);
-                memoryConfig = parseMemoryConfig(memoryNode, context);
-                conversationId = memoryConfig.conversationId;
-                LOG.debugf("Memory config from node: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
-                        memoryConfig.cutoffMode, memoryConfig.maxMessages, memoryConfig.maxTokens, conversationId);
-            }
-        }
-
         // Build initial messages
         List<LlmMessage> messages = new ArrayList<>();
 
@@ -186,12 +162,48 @@ public class LlmNodeExecutor implements NodeExecutor {
             messages.add(LlmMessage.system(systemPrompt));
         }
 
-        // Load conversation history from memory (if connected)
-        if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
-            List<LlmMessage> history = loadConversationHistory(conversationId, memoryConfig);
-            if (!history.isEmpty()) {
-                LOG.debugf("Loaded %d messages from conversation history for: %s", history.size(), conversationId);
-                messages.addAll(history);
+        // Memory handling variables
+        boolean historyFromAgent = false;
+        MemoryConfig memoryConfig = null;
+        String conversationId = null;
+
+        // Check for conversation history passed by Agent (Option A: Agent handles memory)
+        if (config.has("conversationHistory") && config.get("conversationHistory").isArray()) {
+            historyFromAgent = true;
+            LOG.debugf("Found conversation history from Agent (%d messages)",
+                    config.get("conversationHistory").size());
+            for (JsonNode msgNode : config.get("conversationHistory")) {
+                LlmMessage msg = parseMessageFromJson(msgNode);
+                if (msg != null) {
+                    messages.add(msg);
+                }
+            }
+        } else {
+            // Fallback: Load from memory store for direct LLM usage (without Agent)
+
+            // Check for memory config in node configuration
+            if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
+                config.get("memoryConfig").get("enabled").asBoolean()) {
+                LOG.debugf("Found memory config in node configuration");
+                memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
+                conversationId = memoryConfig.conversationId;
+            } else {
+                // Find connected memory node
+                WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+                if (memoryNode != null) {
+                    LOG.debugf("Found connected memory node: %s", memoryNode.name);
+                    memoryConfig = parseMemoryConfig(memoryNode, context);
+                    conversationId = memoryConfig.conversationId;
+                }
+            }
+
+            // Load conversation history from memory store
+            if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+                List<LlmMessage> history = loadConversationHistory(conversationId, memoryConfig);
+                if (!history.isEmpty()) {
+                    LOG.debugf("Loaded %d messages from memory store for: %s", history.size(), conversationId);
+                    messages.addAll(history);
+                }
             }
         }
 
@@ -274,8 +286,8 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
         }
 
-        // Save messages to memory (if connected)
-        if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+        // Save messages to memory only if NOT from Agent (Agent handles its own saving)
+        if (!historyFromAgent && memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
             // Save the user message
             contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
 
@@ -309,8 +321,8 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
         }
 
-        // Add memory info to output
-        if (conversationId != null && !conversationId.isEmpty()) {
+        // Add memory info to output (only for direct LLM usage, not when Agent handles memory)
+        if (!historyFromAgent && conversationId != null && !conversationId.isEmpty()) {
             output.put("conversationId", conversationId);
             output.put("memoryEnabled", true);
             output.put("totalMessages", contextMemoryStore.getMessageCount(conversationId));
@@ -809,6 +821,35 @@ public class LlmNodeExecutor implements NodeExecutor {
         }
 
         return config;
+    }
+
+    /**
+     * Parse LlmMessage from JSON (from conversation history passed by Agent).
+     */
+    private LlmMessage parseMessageFromJson(JsonNode msgNode) {
+        if (msgNode == null || !msgNode.has("role")) {
+            return null;
+        }
+
+        String roleStr = msgNode.get("role").asText().toUpperCase();
+        LlmMessage.Role role;
+        try {
+            role = LlmMessage.Role.valueOf(roleStr);
+        } catch (IllegalArgumentException e) {
+            LOG.warnf("Unknown message role: %s", roleStr);
+            return null;
+        }
+
+        String content = msgNode.has("content") ? msgNode.get("content").asText() : null;
+        String toolCallId = msgNode.has("toolCallId") ? msgNode.get("toolCallId").asText() : null;
+        String name = msgNode.has("name") ? msgNode.get("name").asText() : null;
+
+        return LlmMessage.builder()
+                .role(role)
+                .content(content)
+                .toolCallId(toolCallId)
+                .name(name)
+                .build();
     }
 
     /**

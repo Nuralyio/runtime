@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.entity.WorkflowEdgeEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.llm.dto.LlmMessage;
 import com.nuraly.workflows.service.WorkflowEventService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -57,6 +59,9 @@ public class AgentNodeExecutor implements NodeExecutor {
 
     @Inject
     WorkflowEventService eventService;
+
+    @Inject
+    ContextMemoryStore contextMemoryStore;
 
     @Override
     public NodeType getType() {
@@ -204,53 +209,68 @@ public class AgentNodeExecutor implements NodeExecutor {
             LOG.debugf("Agent has %d tools available", toolsArray.size());
         }
 
-        // If memory node is connected, parse its config and pass to LLM
+        // Memory handling - Agent owns the memory, loads messages, passes to LLM
+        String conversationId = null;
+        List<LlmMessage> conversationHistory = new ArrayList<>();
+
         if (memoryNode != null && memoryNode.type == NodeType.MEMORY) {
             LOG.debugf("Found connected memory node: %s", memoryNode.name);
 
-            ObjectNode memoryConfig = objectMapper.createObjectNode();
-            memoryConfig.put("enabled", true);
-            memoryConfig.put("memoryNodeId", memoryNode.id.toString());
-
             // Parse memory node configuration
+            String cutoffMode = "message";
+            int maxMessages = 50;
+            int maxTokens = 4000;
+            String conversationIdExpression = "${input.threadId}";
+
             if (memoryNode.configuration != null) {
                 try {
                     JsonNode nodeConfig = objectMapper.readTree(memoryNode.configuration);
-
-                    // Copy memory settings
-                    if (nodeConfig.has("cutoffMode")) {
-                        memoryConfig.put("cutoffMode", nodeConfig.get("cutoffMode").asText());
-                    } else {
-                        memoryConfig.put("cutoffMode", "message");
-                    }
-
-                    if (nodeConfig.has("maxMessages")) {
-                        memoryConfig.put("maxMessages", nodeConfig.get("maxMessages").asInt());
-                    } else {
-                        memoryConfig.put("maxMessages", 50);
-                    }
-
-                    if (nodeConfig.has("maxTokens")) {
-                        memoryConfig.put("maxTokens", nodeConfig.get("maxTokens").asInt());
-                    } else {
-                        memoryConfig.put("maxTokens", 4000);
-                    }
-
-                    if (nodeConfig.has("conversationIdExpression")) {
-                        memoryConfig.put("conversationIdExpression", nodeConfig.get("conversationIdExpression").asText());
-                    } else {
-                        memoryConfig.put("conversationIdExpression", "${input.threadId}");
-                    }
+                    cutoffMode = nodeConfig.has("cutoffMode") ? nodeConfig.get("cutoffMode").asText() : "message";
+                    maxMessages = nodeConfig.has("maxMessages") ? nodeConfig.get("maxMessages").asInt() : 50;
+                    maxTokens = nodeConfig.has("maxTokens") ? nodeConfig.get("maxTokens").asInt() : 4000;
+                    conversationIdExpression = nodeConfig.has("conversationIdExpression")
+                        ? nodeConfig.get("conversationIdExpression").asText()
+                        : "${input.threadId}";
                 } catch (Exception e) {
                     LOG.warnf("Failed to parse memory node config: %s", e.getMessage());
-                    memoryConfig.put("cutoffMode", "message");
-                    memoryConfig.put("maxMessages", 50);
-                    memoryConfig.put("maxTokens", 4000);
                 }
             }
 
-            mergedConfig.set("memoryConfig", memoryConfig);
-            LOG.debugf("Memory config added: %s", memoryConfig.toString());
+            // Resolve conversation ID
+            conversationId = context.resolveExpression(conversationIdExpression);
+            if (conversationId == null || conversationId.isEmpty() || conversationId.equals(conversationIdExpression)) {
+                conversationId = resolveConversationId(context);
+            }
+
+            // Load conversation history from memory store
+            if (conversationId != null && !conversationId.isEmpty()) {
+                if ("token".equalsIgnoreCase(cutoffMode)) {
+                    conversationHistory = contextMemoryStore.getMessagesByTokens(conversationId, maxTokens);
+                } else {
+                    conversationHistory = contextMemoryStore.getMessagesByCount(conversationId, maxMessages);
+                }
+                LOG.debugf("Loaded %d messages from conversation history for: %s", conversationHistory.size(), conversationId);
+
+                // Pass conversation history to LLM as JSON array
+                if (!conversationHistory.isEmpty()) {
+                    ArrayNode historyArray = objectMapper.createArrayNode();
+                    for (LlmMessage msg : conversationHistory) {
+                        ObjectNode msgNode = objectMapper.createObjectNode();
+                        msgNode.put("role", msg.getRole().toString().toLowerCase());
+                        if (msg.getContent() != null) {
+                            msgNode.put("content", msg.getContent());
+                        }
+                        if (msg.getToolCallId() != null) {
+                            msgNode.put("toolCallId", msg.getToolCallId());
+                        }
+                        if (msg.getName() != null) {
+                            msgNode.put("name", msg.getName());
+                        }
+                        historyArray.add(msgNode);
+                    }
+                    mergedConfig.set("conversationHistory", historyArray);
+                }
+            }
         }
 
         // Create a temporary node with merged configuration for LLM execution
@@ -297,8 +317,31 @@ public class AgentNodeExecutor implements NodeExecutor {
             return llmResult;
         }
 
-        // Memory is handled by the LLM node - it will save the interaction
-        // automatically when a memory node is connected via the 'memory' port
+        // Save new messages to memory (Agent handles this, not LLM)
+        if (memoryNode != null && conversationId != null && !conversationId.isEmpty()) {
+            // Get user prompt to save
+            String userPrompt = extractUserPrompt(context);
+            if (userPrompt != null && !userPrompt.isEmpty()) {
+                contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
+            }
+
+            // Get assistant response to save
+            if (llmResult.getOutput() != null) {
+                JsonNode outputNode = llmResult.getOutput();
+                String assistantResponse = null;
+                if (outputNode.has("content")) {
+                    assistantResponse = outputNode.get("content").asText();
+                } else if (outputNode.has("response")) {
+                    assistantResponse = outputNode.get("response").asText();
+                }
+                if (assistantResponse != null && !assistantResponse.isEmpty()) {
+                    contextMemoryStore.addMessage(conversationId, LlmMessage.assistant(assistantResponse));
+                }
+            }
+
+            LOG.debugf("Saved messages to conversation: %s (total: %d)",
+                    conversationId, contextMemoryStore.getMessageCount(conversationId));
+        }
 
         // Build agent output
         ObjectNode output = objectMapper.createObjectNode();
@@ -384,6 +427,76 @@ public class AgentNodeExecutor implements NodeExecutor {
                     portId.startsWith("memory") || portId.startsWith("context")) {
                     LOG.debugf("Found memory node connected via port: %s", portId);
                     return edge.sourceNode;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve conversation ID from common input fields.
+     */
+    private String resolveConversationId(ExecutionContext context) {
+        JsonNode input = context.getInput();
+        if (input == null) {
+            return null;
+        }
+
+        // Try common field names
+        String[] fields = {"threadId", "conversationId", "sessionId", "chatId", "thread_id", "conversation_id"};
+
+        for (String field : fields) {
+            if (input.has(field) && !input.get(field).isNull()) {
+                return input.get(field).asText();
+            }
+        }
+
+        // Try nested body
+        if (input.has("body") && input.get("body").isObject()) {
+            JsonNode body = input.get("body");
+            for (String field : fields) {
+                if (body.has(field) && !body.get(field).isNull()) {
+                    return body.get(field).asText();
+                }
+            }
+        }
+
+        // Try variables
+        for (String field : fields) {
+            JsonNode varValue = context.getVariable(field);
+            if (varValue != null && !varValue.isNull()) {
+                return varValue.asText();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract user prompt from context input.
+     */
+    private String extractUserPrompt(ExecutionContext context) {
+        JsonNode input = context.getInput();
+        if (input == null) {
+            return null;
+        }
+
+        // Try common field names
+        String[] fields = {"prompt", "message", "query", "text", "input"};
+
+        for (String field : fields) {
+            if (input.has(field) && !input.get(field).isNull()) {
+                return input.get(field).asText();
+            }
+        }
+
+        // Try nested body
+        if (input.has("body") && input.get("body").isObject()) {
+            JsonNode body = input.get("body");
+            for (String field : fields) {
+                if (body.has(field) && !body.get(field).isNull()) {
+                    return body.get(field).asText();
                 }
             }
         }
