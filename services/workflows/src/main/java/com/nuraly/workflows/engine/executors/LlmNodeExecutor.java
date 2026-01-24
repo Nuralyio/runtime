@@ -702,21 +702,53 @@ public class LlmNodeExecutor implements NodeExecutor {
     }
 
     /**
-     * Find a memory node connected to this LLM node's 'memory' input port.
+     * Find a memory node connected to this LLM node.
+     * Supports multiple connection methods:
+     * - 'memory' input port
+     * - 'context' input port
+     * - 'context_memory' input port
+     * - Tool-like ports: 'tool_memory', 'tool_context'
+     * - Any edge from a MEMORY node type
      */
     private WorkflowNodeEntity findConnectedMemoryNode(WorkflowNodeEntity node) {
         if (node.workflow == null || node.workflow.edges == null) {
             return null;
         }
 
+        // Accepted port names for context memory connection
+        List<String> acceptedPorts = Arrays.asList(
+            "memory", "context", "context_memory",
+            "tool_memory", "tool_context", "tool_context_memory"
+        );
+
         for (WorkflowEdgeEntity edge : node.workflow.edges) {
-            // Check if this edge connects TO our node's 'memory' port
-            if (edge.targetNode != null &&
-                edge.targetNode.id.equals(node.id) &&
-                "memory".equals(edge.targetPortId) &&
-                edge.sourceNode != null &&
-                edge.sourceNode.type == NodeType.MEMORY) {
-                return edge.sourceNode;
+            if (edge.sourceNode == null || edge.sourceNode.type != NodeType.MEMORY) {
+                continue;
+            }
+
+            // Check if this edge connects TO our node
+            if (edge.targetNode != null && edge.targetNode.id.equals(node.id)) {
+                String portId = edge.targetPortId;
+
+                // Accept if port is in accepted list or starts with accepted prefixes
+                if (portId == null || acceptedPorts.contains(portId) ||
+                    portId.startsWith("memory") || portId.startsWith("context")) {
+                    LOG.debugf("Found memory node connected via port: %s", portId);
+                    return edge.sourceNode;
+                }
+            }
+
+            // Also check if memory node is connected FROM our node (reverse direction)
+            if (edge.sourceNode != null && edge.targetNode != null &&
+                edge.sourceNode.id.equals(node.id) &&
+                edge.targetNode.type == NodeType.MEMORY) {
+                String portId = edge.sourcePortId;
+                if (portId != null && (acceptedPorts.contains(portId) ||
+                    portId.startsWith("memory") || portId.startsWith("context") ||
+                    portId.startsWith("tool_memory") || portId.startsWith("tool_context"))) {
+                    LOG.debugf("Found memory node connected via output port: %s", portId);
+                    return edge.targetNode;
+                }
             }
         }
 
