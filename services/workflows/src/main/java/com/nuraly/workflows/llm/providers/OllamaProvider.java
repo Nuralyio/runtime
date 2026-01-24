@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -14,10 +15,14 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Ollama LLM Provider implementation.
@@ -26,24 +31,16 @@ import java.util.Set;
 @ApplicationScoped
 public class OllamaProvider implements LlmProvider {
 
+    private static final Logger LOG = Logger.getLogger(OllamaProvider.class);
     private static final String DEFAULT_API_URL = "http://localhost:11434";
-    private static final Set<String> SUPPORTED_MODELS = Set.of(
-            "llama3", "llama3.1", "llama3.2", "llama3.3",
-            "llama2", "llama2:13b", "llama2:70b",
-            "mistral", "mistral:7b", "mistral-nemo",
-            "mixtral", "mixtral:8x7b", "mixtral:8x22b",
-            "codellama", "codellama:7b", "codellama:13b", "codellama:34b",
-            "deepseek-coder", "deepseek-coder-v2",
-            "phi3", "phi3:mini", "phi3:medium",
-            "gemma", "gemma:2b", "gemma:7b", "gemma2",
-            "qwen", "qwen2", "qwen2.5",
-            "command-r", "command-r-plus"
-    );
+    private static final long CACHE_TTL_MS = 60_000; // Cache models for 1 minute
 
     @ConfigProperty(name = "ollama.api.url", defaultValue = DEFAULT_API_URL)
     String apiUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Set<String> cachedModels = ConcurrentHashMap.newKeySet();
+    private final AtomicLong cacheTimestamp = new AtomicLong(0);
 
     @Override
     public String getName() {
@@ -55,18 +52,129 @@ public class OllamaProvider implements LlmProvider {
         if (model == null) {
             return false;
         }
-        // Support known models or any model (Ollama allows custom models)
-        return SUPPORTED_MODELS.contains(model) ||
-               model.startsWith("llama") ||
-               model.startsWith("mistral") ||
-               model.startsWith("mixtral") ||
-               model.startsWith("codellama") ||
-               model.startsWith("deepseek") ||
-               model.startsWith("phi") ||
-               model.startsWith("gemma") ||
-               model.startsWith("qwen") ||
-               model.startsWith("command-r") ||
-               model.contains(":");  // Custom models with tags like "mymodel:latest"
+        // Query available models from Ollama server
+        List<String> availableModels = getAvailableModels();
+        if (!availableModels.isEmpty()) {
+            // Check exact match or base model match (e.g., "llama3.2" matches "llama3.2:latest")
+            for (String available : availableModels) {
+                if (available.equals(model) ||
+                    available.startsWith(model + ":") ||
+                    model.equals(available.split(":")[0])) {
+                    return true;
+                }
+            }
+        }
+        // Fallback: accept any model name (Ollama will return an error if not found)
+        return true;
+    }
+
+    /**
+     * Get list of available models from the Ollama server.
+     * Results are cached for 1 minute to avoid excessive API calls.
+     *
+     * @return List of available model names, or empty list if server is unreachable
+     */
+    public List<String> getAvailableModels() {
+        return getAvailableModels(null);
+    }
+
+    /**
+     * Get list of available models from the specified Ollama server.
+     * Results are cached for 1 minute to avoid excessive API calls.
+     *
+     * @param baseUrl Optional base URL override for the Ollama server
+     * @return List of available model names, or empty list if server is unreachable
+     */
+    public List<String> getAvailableModels(String baseUrl) {
+        String effectiveUrl = resolveBaseUrl(baseUrl);
+
+        // Check cache validity (only use cache for default URL)
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            long now = System.currentTimeMillis();
+            if (now - cacheTimestamp.get() < CACHE_TTL_MS && !cachedModels.isEmpty()) {
+                return new ArrayList<>(cachedModels);
+            }
+
+            // Fetch from server
+            List<String> models = fetchModelsFromServer(effectiveUrl);
+            if (!models.isEmpty()) {
+                cachedModels.clear();
+                cachedModels.addAll(models);
+                cacheTimestamp.set(now);
+            }
+            return models;
+        }
+
+        // For custom URLs, always fetch fresh
+        return fetchModelsFromServer(effectiveUrl);
+    }
+
+    /**
+     * Refresh the cached model list from the Ollama server.
+     *
+     * @return List of available model names
+     */
+    public List<String> refreshAvailableModels() {
+        cacheTimestamp.set(0); // Invalidate cache
+        return getAvailableModels();
+    }
+
+    /**
+     * Resolve the effective base URL to use.
+     *
+     * @param requestBaseUrl Optional base URL from request
+     * @return The effective base URL
+     */
+    private String resolveBaseUrl(String requestBaseUrl) {
+        if (requestBaseUrl != null && !requestBaseUrl.isEmpty()) {
+            // Remove trailing slash if present
+            return requestBaseUrl.endsWith("/") ?
+                    requestBaseUrl.substring(0, requestBaseUrl.length() - 1) : requestBaseUrl;
+        }
+        return apiUrl;
+    }
+
+    private List<String> fetchModelsFromServer(String baseUrl) {
+        String tagsUrl = baseUrl + "/api/tags";
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(tagsUrl);
+            httpGet.addHeader("Accept", "application/json");
+
+            var response = httpClient.execute(httpGet);
+            int statusCode = response.getCode();
+            String responseBody = EntityUtils.toString(response.getEntity());
+
+            if (statusCode >= 200 && statusCode < 300) {
+                return parseModelsResponse(responseBody);
+            } else {
+                LOG.warnv("Failed to fetch Ollama models (status {0}): {1}", statusCode, responseBody);
+                return Collections.emptyList();
+            }
+        } catch (Exception e) {
+            LOG.warnv("Failed to connect to Ollama server at {0}: {1}", tagsUrl, e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<String> parseModelsResponse(String responseBody) {
+        try {
+            JsonNode json = objectMapper.readTree(responseBody);
+            List<String> models = new ArrayList<>();
+
+            if (json.has("models") && json.get("models").isArray()) {
+                for (JsonNode modelNode : json.get("models")) {
+                    if (modelNode.has("name")) {
+                        models.add(modelNode.get("name").asText());
+                    }
+                }
+            }
+
+            return models;
+        } catch (Exception e) {
+            LOG.warnv("Failed to parse Ollama models response: {0}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -78,7 +186,10 @@ public class OllamaProvider implements LlmProvider {
     public LlmResponse chat(LlmRequest request, String apiKey) {
         try {
             ObjectNode requestBody = buildRequestBody(request);
-            String chatUrl = apiUrl + "/api/chat";
+            String effectiveBaseUrl = resolveBaseUrl(request.getBaseUrl());
+            String chatUrl = effectiveBaseUrl + "/api/chat";
+
+            LOG.debugv("Calling Ollama at {0}", chatUrl);
 
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 HttpPost httpPost = new HttpPost(chatUrl);

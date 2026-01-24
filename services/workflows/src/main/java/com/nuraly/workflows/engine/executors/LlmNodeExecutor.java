@@ -35,9 +35,10 @@ import java.util.*;
  *
  * Node Configuration:
  * {
- *   "provider": "openai" | "anthropic" | "gemini",
+ *   "provider": "openai" | "anthropic" | "gemini" | "ollama",
  *   "model": "gpt-4o",
- *   "apiKeyPath": "openai/my-key", // KV store path for API key
+ *   "apiKeyPath": "openai/my-key", // KV store path for API key (optional for Ollama)
+ *   "apiUrlPath": "ollama/server-url", // KV store path for API URL (optional, for Ollama)
  *   "systemPrompt": "You are a helpful assistant...",
  *   "temperature": 0.7,
  *   "maxTokens": 4096,
@@ -89,17 +90,36 @@ public class LlmNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("Unknown LLM provider: " + providerName);
         }
 
-        // Get API key from KV store
+        // Get API key from KV store (optional for Ollama)
         String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
-        if (apiKeyPath == null || apiKeyPath.isEmpty()) {
+        String apiKey = null;
+
+        boolean isOllama = "ollama".equalsIgnoreCase(providerName);
+
+        if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
+            apiKey = fetchFromKvStore(apiKeyPath, context);
+            if (apiKey == null || apiKey.isEmpty()) {
+                if (!isOllama) {
+                    // API key is required for non-Ollama providers
+                    LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
+                    return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
+                }
+                LOG.debugf("No API key found for Ollama provider (this is typically fine)");
+            }
+        } else if (!isOllama) {
+            // API key path is required for non-Ollama providers
             LOG.error("LLM node error: API key path is required");
             return NodeExecutionResult.failure("API key path is required");
         }
 
-        String apiKey = fetchApiKey(apiKeyPath, context);
-        if (apiKey == null || apiKey.isEmpty()) {
-            LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
-            return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
+        // Get API URL from KV store (optional, primarily for Ollama)
+        String apiUrlPath = config.has("apiUrlPath") ? config.get("apiUrlPath").asText() : null;
+        String baseUrl = null;
+        if (apiUrlPath != null && !apiUrlPath.isEmpty()) {
+            baseUrl = fetchFromKvStore(apiUrlPath, context);
+            if (baseUrl != null) {
+                LOG.debugf("Using custom API URL from KV store: %s", baseUrl);
+            }
         }
 
         // Build tool definitions from config and connected nodes
@@ -143,6 +163,7 @@ public class LlmNodeExecutor implements NodeExecutor {
                     .tools(tools.isEmpty() ? null : tools)
                     .temperature(temperature)
                     .maxTokens(maxTokens)
+                    .baseUrl(baseUrl)
                     .build();
 
             // Call LLM
@@ -248,7 +269,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         return null;
     }
 
-    private String fetchApiKey(String keyPath, ExecutionContext context) {
+    private String fetchFromKvStore(String keyPath, ExecutionContext context) {
         try {
             String appId = null;
             // Try to get app ID from context
@@ -264,7 +285,7 @@ public class LlmNodeExecutor implements NodeExecutor {
                 return null;
             }
 
-            // Call KV service to get the secret
+            // Call KV service to get the value
             String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
                     java.net.URLEncoder.encode(keyPath, "UTF-8") +
                     "?applicationId=" + appId;
@@ -287,7 +308,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             return null;
         } catch (Exception e) {
-            System.err.println("Failed to fetch API key: " + e.getMessage());
+            LOG.warnf("Failed to fetch value from KV store (%s): %s", keyPath, e.getMessage());
             return null;
         }
     }

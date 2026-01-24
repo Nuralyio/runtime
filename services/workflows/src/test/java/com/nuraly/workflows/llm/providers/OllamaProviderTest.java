@@ -85,10 +85,17 @@ class OllamaProviderTest {
     }
 
     @Test
-    void testSupportsModel_UnsupportedModels() {
-        assertFalse(provider.supportsModel("gpt-4"));
-        assertFalse(provider.supportsModel("claude-3-opus"));
+    void testSupportsModel_NullModel() {
+        // Null model should return false
         assertFalse(provider.supportsModel(null));
+    }
+
+    @Test
+    void testSupportsModel_AcceptsAnyModel() {
+        // Ollama accepts any model name (will return error if model not found)
+        assertTrue(provider.supportsModel("gpt-4"));
+        assertTrue(provider.supportsModel("claude-3-opus"));
+        assertTrue(provider.supportsModel("any-custom-model"));
     }
 
     @Test
@@ -168,5 +175,53 @@ class OllamaProviderTest {
         var response = provider.chat(request, "");
         assertNotNull(response);
         assertFalse(response.isSuccess());
+    }
+
+    @Test
+    void testChatWithCustomBaseUrl() {
+        // Test that custom baseUrl from request is used
+        provider.apiUrl = "http://default-server:11434";
+
+        LlmRequest request = LlmRequest.builder()
+                .model("llama3.2")
+                .messages(List.of(LlmMessage.user("Hello")))
+                .baseUrl("http://custom-server:11434")
+                .build();
+
+        // Should fail with connection error to custom URL, not default
+        var response = provider.chat(request, null);
+        assertNotNull(response);
+        assertFalse(response.isSuccess());
+        assertTrue(response.getError().contains("Ollama request failed"));
+    }
+
+    @Test
+    void testGetAvailableModelsWithConnectionError() {
+        // Set a non-existent URL
+        provider.apiUrl = "http://localhost:99999";
+
+        // Should return empty list, not throw
+        var models = provider.getAvailableModels();
+        assertNotNull(models);
+        assertTrue(models.isEmpty());
+    }
+
+    @Test
+    void testGetAvailableModelsWithCustomBaseUrl() {
+        provider.apiUrl = "http://localhost:11434";
+
+        // Should handle custom URL without throwing
+        var models = provider.getAvailableModels("http://localhost:99999");
+        assertNotNull(models);
+        assertTrue(models.isEmpty());
+    }
+
+    @Test
+    void testRefreshAvailableModels() {
+        provider.apiUrl = "http://localhost:99999";
+
+        // Should not throw
+        var models = provider.refreshAvailableModels();
+        assertNotNull(models);
     }
 }
