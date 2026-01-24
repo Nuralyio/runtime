@@ -5,16 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.engine.script.WasmJavaScriptEngine;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class TransformNodeExecutor implements NodeExecutor {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    WasmJavaScriptEngine jsEngine;
 
     @Override
     public NodeType getType() {
@@ -54,31 +57,15 @@ public class TransformNodeExecutor implements NodeExecutor {
         if (config.has("script")) {
             String script = config.get("script").asText();
 
-            try (Context jsContext = Context.newBuilder("js")
-                    .option("engine.WarnInterpreterOnly", "false")
-                    .build()) {
-
-                // Inject variables
+            try {
                 String variablesJson = context.getVariablesAsString();
-                jsContext.eval("js", "var variables = " + variablesJson);
-
                 String inputJson = objectMapper.writeValueAsString(context.getInput());
-                jsContext.eval("js", "var input = " + inputJson);
 
-                // Execute script
-                Value result = jsContext.eval("js", script);
+                // Execute script using WASM JavaScript engine
+                JsonNode output = jsEngine.executeScript(script, variablesJson, inputJson, null);
 
-                // Convert result to JSON
-                JsonNode output;
-                if (result.isNull()) {
+                if (output == null) {
                     output = objectMapper.createObjectNode();
-                } else {
-                    String resultJson = result.toString();
-                    try {
-                        output = objectMapper.readTree(resultJson);
-                    } catch (Exception e) {
-                        output = objectMapper.createObjectNode().put("result", resultJson);
-                    }
                 }
 
                 // Store in variables if specified
@@ -88,6 +75,8 @@ public class TransformNodeExecutor implements NodeExecutor {
                 }
 
                 return NodeExecutionResult.success(output);
+            } catch (Exception e) {
+                return NodeExecutionResult.failure("Script execution failed: " + e.getMessage());
             }
         }
 
