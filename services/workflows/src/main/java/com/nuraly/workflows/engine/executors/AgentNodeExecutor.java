@@ -15,13 +15,14 @@ import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Agent Node Executor - Executes AI agent logic using a connected LLM node.
  *
  * The agent gets its LLM configuration from a connected LLM node (via 'llm' input port),
- * and optionally uses a Memory node (via 'memory' input port) for conversation history.
+ * and optionally uses a Memory node (via 'memory' or 'context' input port) for conversation history.
  * Tools can be connected via the 'tools' input port for function calling.
  *
  * Node Configuration:
@@ -34,7 +35,7 @@ import java.util.List;
  * - 'in': User prompt/message
  * - 'llm': Connected LLM node (required) - provides model, API key, etc.
  * - 'prompt': Connected Prompt node (optional) - system prompt template
- * - 'memory': Connected Memory node (optional) - provides conversation history
+ * - 'memory' or 'context': Connected Memory node (optional) - provides conversation history
  * - 'tools': Connected Tool nodes (optional) - tools for function calling
  */
 @ApplicationScoped
@@ -42,6 +43,11 @@ public class AgentNodeExecutor implements NodeExecutor {
 
     private static final Logger LOG = Logger.getLogger(AgentNodeExecutor.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // Accepted port names for memory/context connection
+    private static final List<String> MEMORY_PORTS = Arrays.asList(
+        "memory", "context", "context_memory"
+    );
 
     @Inject
     LlmNodeExecutor llmExecutor;
@@ -74,8 +80,8 @@ public class AgentNodeExecutor implements NodeExecutor {
         // Find the connected Prompt node (optional)
         WorkflowNodeEntity promptNode = findConnectedNode(node, "prompt");
 
-        // Find the connected Memory node (optional)
-        WorkflowNodeEntity memoryNode = findConnectedNode(node, "memory");
+        // Find the connected Memory node (optional) - check multiple port names
+        WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
 
         // Find connected Tool nodes (optional, can be multiple)
         List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, "tools");
@@ -198,9 +204,54 @@ public class AgentNodeExecutor implements NodeExecutor {
             LOG.debugf("Agent has %d tools available", toolsArray.size());
         }
 
-        // If memory node is connected, include its ID so LLM can use it
-        // The LLM node will handle loading/saving conversation history when
-        // it detects the connected memory node via the 'memory' port
+        // If memory node is connected, parse its config and pass to LLM
+        if (memoryNode != null && memoryNode.type == NodeType.MEMORY) {
+            LOG.debugf("Found connected memory node: %s", memoryNode.name);
+
+            ObjectNode memoryConfig = objectMapper.createObjectNode();
+            memoryConfig.put("enabled", true);
+            memoryConfig.put("memoryNodeId", memoryNode.id.toString());
+
+            // Parse memory node configuration
+            if (memoryNode.configuration != null) {
+                try {
+                    JsonNode nodeConfig = objectMapper.readTree(memoryNode.configuration);
+
+                    // Copy memory settings
+                    if (nodeConfig.has("cutoffMode")) {
+                        memoryConfig.put("cutoffMode", nodeConfig.get("cutoffMode").asText());
+                    } else {
+                        memoryConfig.put("cutoffMode", "message");
+                    }
+
+                    if (nodeConfig.has("maxMessages")) {
+                        memoryConfig.put("maxMessages", nodeConfig.get("maxMessages").asInt());
+                    } else {
+                        memoryConfig.put("maxMessages", 50);
+                    }
+
+                    if (nodeConfig.has("maxTokens")) {
+                        memoryConfig.put("maxTokens", nodeConfig.get("maxTokens").asInt());
+                    } else {
+                        memoryConfig.put("maxTokens", 4000);
+                    }
+
+                    if (nodeConfig.has("conversationIdExpression")) {
+                        memoryConfig.put("conversationIdExpression", nodeConfig.get("conversationIdExpression").asText());
+                    } else {
+                        memoryConfig.put("conversationIdExpression", "${input.threadId}");
+                    }
+                } catch (Exception e) {
+                    LOG.warnf("Failed to parse memory node config: %s", e.getMessage());
+                    memoryConfig.put("cutoffMode", "message");
+                    memoryConfig.put("maxMessages", 50);
+                    memoryConfig.put("maxTokens", 4000);
+                }
+            }
+
+            mergedConfig.set("memoryConfig", memoryConfig);
+            LOG.debugf("Memory config added: %s", memoryConfig.toString());
+        }
 
         // Create a temporary node with merged configuration for LLM execution
         WorkflowNodeEntity tempLlmNode = new WorkflowNodeEntity();
@@ -309,5 +360,34 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
 
         return connectedNodes;
+    }
+
+    /**
+     * Find a memory node connected to this agent node.
+     * Checks multiple port names: 'memory', 'context', 'context_memory'
+     */
+    private WorkflowNodeEntity findConnectedMemoryNode(WorkflowNodeEntity node) {
+        if (node.workflow == null || node.workflow.edges == null) {
+            return null;
+        }
+
+        for (WorkflowEdgeEntity edge : node.workflow.edges) {
+            // Check if this edge connects TO our node
+            if (edge.targetNode != null &&
+                edge.targetNode.id.equals(node.id) &&
+                edge.sourceNode != null &&
+                edge.sourceNode.type == NodeType.MEMORY) {
+
+                String portId = edge.targetPortId;
+                // Accept if port is in accepted list or starts with memory/context
+                if (portId == null || MEMORY_PORTS.contains(portId) ||
+                    portId.startsWith("memory") || portId.startsWith("context")) {
+                    LOG.debugf("Found memory node connected via port: %s", portId);
+                    return edge.sourceNode;
+                }
+            }
+        }
+
+        return null;
     }
 }

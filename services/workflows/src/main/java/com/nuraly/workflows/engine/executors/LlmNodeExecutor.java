@@ -155,17 +155,28 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
 
-        // Find connected memory node (optional)
-        WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+        // Check for memory config - either from connected node or from config (passed by Agent)
         MemoryConfig memoryConfig = null;
         String conversationId = null;
 
-        if (memoryNode != null) {
-            LOG.debugf("Found connected memory node: %s", memoryNode.name);
-            memoryConfig = parseMemoryConfig(memoryNode, context);
+        // First check if memoryConfig is passed in node configuration (from Agent)
+        if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
+            config.get("memoryConfig").get("enabled").asBoolean()) {
+            LOG.debugf("Found memory config in node configuration (from Agent)");
+            memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
             conversationId = memoryConfig.conversationId;
-            LOG.debugf("Memory config: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
+            LOG.debugf("Memory config from Agent: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
                     memoryConfig.cutoffMode, memoryConfig.maxMessages, memoryConfig.maxTokens, conversationId);
+        } else {
+            // Fallback: Find connected memory node (for direct LLM usage without Agent)
+            WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+            if (memoryNode != null) {
+                LOG.debugf("Found connected memory node: %s", memoryNode.name);
+                memoryConfig = parseMemoryConfig(memoryNode, context);
+                conversationId = memoryConfig.conversationId;
+                LOG.debugf("Memory config from node: mode=%s, maxMessages=%d, maxTokens=%d, conversationId=%s",
+                        memoryConfig.cutoffMode, memoryConfig.maxMessages, memoryConfig.maxTokens, conversationId);
+            }
         }
 
         // Build initial messages
@@ -795,6 +806,40 @@ public class LlmNodeExecutor implements NodeExecutor {
             config.cutoffMode = "message";
             config.maxMessages = 50;
             config.maxTokens = 4000;
+        }
+
+        return config;
+    }
+
+    /**
+     * Parse memory configuration from JSON (passed by Agent node via config).
+     */
+    private MemoryConfig parseMemoryConfigFromJson(JsonNode memoryConfigJson, ExecutionContext context) {
+        MemoryConfig config = new MemoryConfig();
+
+        config.cutoffMode = memoryConfigJson.has("cutoffMode")
+                ? memoryConfigJson.get("cutoffMode").asText()
+                : "message";
+
+        config.maxMessages = memoryConfigJson.has("maxMessages")
+                ? memoryConfigJson.get("maxMessages").asInt()
+                : 50;
+
+        config.maxTokens = memoryConfigJson.has("maxTokens")
+                ? memoryConfigJson.get("maxTokens").asInt()
+                : 4000;
+
+        String conversationIdExpression = memoryConfigJson.has("conversationIdExpression")
+                ? memoryConfigJson.get("conversationIdExpression").asText()
+                : "${input.threadId}";
+
+        // Resolve the conversation ID
+        config.conversationId = context.resolveExpression(conversationIdExpression);
+
+        // If expression didn't resolve, try common fallbacks
+        if (config.conversationId == null || config.conversationId.isEmpty() ||
+            config.conversationId.equals(conversationIdExpression)) {
+            config.conversationId = tryResolveConversationId(context);
         }
 
         return config;
