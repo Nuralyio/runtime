@@ -593,6 +593,146 @@ public class ContainerManager {
 
 ---
 
+### 6. Secure Network Service (Block localhost)
+
+**File**: `src/main/java/com/nuraly/functions/service/SecureNetworkService.java`
+
+```java
+package com.nuraly.functions.service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.regex.Pattern;
+
+/**
+ * Secure HTTP client that blocks localhost and internal networks.
+ * Prevents SSRF (Server-Side Request Forgery) attacks.
+ */
+@ApplicationScoped
+public class SecureNetworkService {
+
+    private final HttpClient httpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .build();
+
+    // Blocked hostnames
+    private static final Pattern BLOCKED_HOSTS = Pattern.compile(
+        "^(localhost|127\\..*|0\\.0\\.0\\.0|\\[::1\\]|\\[::ffff:127\\..*\\])$",
+        Pattern.CASE_INSENSITIVE
+    );
+
+    /**
+     * Secure fetch - blocks localhost and private IPs
+     */
+    public HttpResponse<String> fetch(String url, String method, String body) throws Exception {
+        URI uri = URI.create(url);
+
+        // Check hostname
+        String host = uri.getHost();
+        if (host == null) {
+            throw new SecurityException("Invalid URL: no host");
+        }
+
+        // Block localhost patterns
+        if (BLOCKED_HOSTS.matcher(host).matches()) {
+            throw new SecurityException("Blocked: localhost access not allowed");
+        }
+
+        // Resolve and check IP
+        InetAddress address = InetAddress.getByName(host);
+        if (isPrivateOrLocalAddress(address)) {
+            throw new SecurityException("Blocked: private/local network access not allowed");
+        }
+
+        // Build request
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+            .uri(uri)
+            .timeout(Duration.ofSeconds(30));
+
+        if (body != null && !body.isEmpty()) {
+            requestBuilder
+                .header("Content-Type", "application/json")
+                .method(method, HttpRequest.BodyPublishers.ofString(body));
+        } else {
+            requestBuilder.method(method, HttpRequest.BodyPublishers.noBody());
+        }
+
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+    }
+
+    /**
+     * Check if address is private or local
+     */
+    private boolean isPrivateOrLocalAddress(InetAddress address) {
+        return address.isLoopbackAddress()      // 127.x.x.x, ::1
+            || address.isSiteLocalAddress()     // 10.x.x.x, 172.16-31.x.x, 192.168.x.x
+            || address.isLinkLocalAddress()     // 169.254.x.x
+            || address.isAnyLocalAddress()      // 0.0.0.0
+            || isCloudMetadata(address);        // Cloud metadata IPs
+    }
+
+    /**
+     * Block cloud metadata endpoints (AWS, GCP, Azure)
+     */
+    private boolean isCloudMetadata(InetAddress address) {
+        String ip = address.getHostAddress();
+        return ip.equals("169.254.169.254")     // AWS/GCP metadata
+            || ip.equals("169.254.170.2")       // AWS ECS metadata
+            || ip.startsWith("fd00:");          // AWS VPC IPv6
+    }
+}
+```
+
+---
+
+### 7. Update WASM Runtime with Network Access
+
+**File**: `src/main/java/com/nuraly/functions/service/WasmRuntimeService.java` (add host functions)
+
+```java
+// Add to WasmRuntimeService.java
+
+@Inject
+SecureNetworkService networkService;
+
+/**
+ * Register host functions for WASM modules
+ */
+private void registerHostFunctions(Instance instance) {
+    // Secure fetch - blocks localhost/private IPs
+    instance.registerHostFunction("env", "fetch", (urlPtr, methodPtr, bodyPtr) -> {
+        try {
+            String url = readString(instance, urlPtr);
+            String method = readString(instance, methodPtr);
+            String body = readString(instance, bodyPtr);
+
+            var response = networkService.fetch(url, method, body);
+
+            return writeString(instance, """
+                {"status": %d, "body": %s}
+                """.formatted(response.statusCode(), response.body()));
+
+        } catch (SecurityException e) {
+            return writeString(instance, """
+                {"error": "BLOCKED", "message": "%s"}
+                """.formatted(e.getMessage()));
+        } catch (Exception e) {
+            return writeString(instance, """
+                {"error": "FAILED", "message": "%s"}
+                """.formatted(e.getMessage()));
+        }
+    });
+}
+```
+
+---
+
 ## New Template Structure
 
 ```
@@ -688,6 +828,7 @@ sudo chmod 755 /var/nuraly/wasm
 - [ ] Update application.properties
 - [ ] Create WasmCompilerService.java
 - [ ] Create WasmRuntimeService.java
+- [ ] Create SecureNetworkService.java (blocks localhost)
 - [ ] Replace FunctionInvoker.java
 - [ ] Update ContainerManager.java
 - [ ] Delete Deployment.java
