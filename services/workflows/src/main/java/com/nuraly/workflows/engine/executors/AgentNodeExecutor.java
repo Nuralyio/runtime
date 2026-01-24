@@ -198,8 +198,9 @@ public class AgentNodeExecutor implements NodeExecutor {
             LOG.debugf("Agent has %d tools available", toolsArray.size());
         }
 
-        // TODO: If memory node is connected, load conversation history
-        // and add it to the context/messages
+        // If memory node is connected, include its ID so LLM can use it
+        // The LLM node will handle loading/saving conversation history when
+        // it detects the connected memory node via the 'memory' port
 
         // Create a temporary node with merged configuration for LLM execution
         WorkflowNodeEntity tempLlmNode = new WorkflowNodeEntity();
@@ -245,7 +246,8 @@ public class AgentNodeExecutor implements NodeExecutor {
             return llmResult;
         }
 
-        // TODO: If memory node is connected, save the interaction
+        // Memory is handled by the LLM node - it will save the interaction
+        // automatically when a memory node is connected via the 'memory' port
 
         // Build agent output
         ObjectNode output = objectMapper.createObjectNode();
