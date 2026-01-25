@@ -39,3 +39,7 @@
 	path = services/journal
 	url = https://github.com/Nuralyio/journal.git
 	branch = main
+[submodule "libs/shared-java-library"]
+	path = libs/shared-java-library
+	url = https://github.com/Nuralyio/shared-java-library.git
+	branch = main
