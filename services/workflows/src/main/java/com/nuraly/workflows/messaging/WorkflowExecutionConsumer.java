@@ -8,6 +8,7 @@ import com.nuraly.workflows.dto.HttpWorkflowResponse;
 import com.nuraly.workflows.engine.WorkflowEngine;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
+import com.nuraly.workflows.redis.DistributedLockService;
 import com.nuraly.workflows.service.WorkflowEventService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
@@ -18,12 +19,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @ApplicationScoped
 public class WorkflowExecutionConsumer {
@@ -42,9 +46,23 @@ public class WorkflowExecutionConsumer {
     @Inject
     WorkflowEventService eventService;
 
+    @Inject
+    DistributedLockService lockService;
+
+    /**
+     * Configurable prefetch count for parallel message processing.
+     * Higher values allow more concurrent executions per worker instance.
+     * Default: 10 (configurable via workflows.consumer.prefetch)
+     */
+    @ConfigProperty(name = "workflows.consumer.prefetch", defaultValue = "10")
+    int prefetchCount;
+
     private final ObjectMapper objectMapper;
     private Channel consumerChannel;
     private String consumerTag;
+
+    /** Flag to track if consumer is currently processing a message (for graceful shutdown) */
+    private final AtomicBoolean isProcessing = new AtomicBoolean(false);
 
     public WorkflowExecutionConsumer() {
         this.objectMapper = new ObjectMapper();
@@ -62,7 +80,9 @@ public class WorkflowExecutionConsumer {
     private void startConsuming() {
         try {
             consumerChannel = connectionManager.createChannel();
-            consumerChannel.basicQos(1); // Process one message at a time
+            // Configurable prefetch for parallel processing - enables horizontal scaling
+            consumerChannel.basicQos(prefetchCount);
+            LOG.infof("Consumer prefetch count set to: %d", prefetchCount);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String messageBody = new String(delivery.getBody(), StandardCharsets.UTF_8);
@@ -72,6 +92,7 @@ public class WorkflowExecutionConsumer {
                 String replyTo = delivery.getProperties().getReplyTo();
                 String correlationId = delivery.getProperties().getCorrelationId();
 
+                isProcessing.set(true);
                 try {
                     WorkflowExecutionMessage message = objectMapper.readValue(messageBody, WorkflowExecutionMessage.class);
                     LOG.infof("Received workflow execution message: executionId=%s, syncExecution=%s",
@@ -100,6 +121,8 @@ public class WorkflowExecutionConsumer {
 
                     // Reject and don't requeue (move to DLQ if configured)
                     consumerChannel.basicNack(deliveryTag, false, false);
+                } finally {
+                    isProcessing.set(false);
                 }
             };
 
@@ -119,6 +142,21 @@ public class WorkflowExecutionConsumer {
 
     @Transactional
     void processExecution(WorkflowExecutionMessage message) {
+        // Acquire distributed lock to prevent concurrent processing of same execution
+        // across multiple worker instances
+        if (!lockService.tryLockExecution(message.getExecutionId())) {
+            LOG.infof("Execution %s is being processed by another worker, skipping", message.getExecutionId());
+            return;
+        }
+
+        try {
+            processExecutionWithLock(message);
+        } finally {
+            lockService.unlockExecution(message.getExecutionId());
+        }
+    }
+
+    private void processExecutionWithLock(WorkflowExecutionMessage message) {
         // Retry logic to handle race condition where execution might not be committed yet
         WorkflowExecutionEntity execution = null;
         int maxRetries = 5;
@@ -270,6 +308,22 @@ public class WorkflowExecutionConsumer {
     }
 
     private void stopConsuming() {
+        LOG.info("Shutdown event received, initiating graceful shutdown...");
+
+        // Wait for current execution to complete (up to 30 seconds)
+        int maxWaitSeconds = 30;
+        int waited = 0;
+        while (isProcessing.get() && waited < maxWaitSeconds) {
+            LOG.infof("Waiting for current execution to complete... (%d/%d seconds)", waited, maxWaitSeconds);
+            try {
+                Thread.sleep(1000);
+                waited++;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
         try {
             if (consumerChannel != null && consumerChannel.isOpen()) {
                 if (consumerTag != null) {
@@ -281,5 +335,13 @@ public class WorkflowExecutionConsumer {
         } catch (Exception e) {
             LOG.error("Error stopping consumer: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Check if consumer is currently processing a message.
+     * Useful for health checks and monitoring.
+     */
+    public boolean isProcessing() {
+        return isProcessing.get();
     }
 }

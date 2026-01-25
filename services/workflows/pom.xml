@@ -77,11 +77,41 @@
             <artifactId>quarkus-quartz</artifactId>
         </dependency>
 
-        <!-- HTTP Client (for HTTP node) -->
+        <!-- HTTP Client (for HTTP node) - with connection pooling support -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
             <version>5.2</version>
+        </dependency>
+
+        <!-- Fault Tolerance (Circuit Breaker, Retry, Timeout) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+        </dependency>
+
+        <!-- Metrics (Micrometer + Prometheus) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Caching (Caffeine) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-cache</artifactId>
+        </dependency>
+
+        <!-- Health Checks -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-health</artifactId>
+        </dependency>
+
+        <!-- Redis (Caching, Checkpoints, Distributed Locks) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-redis-client</artifactId>
         </dependency>
 
         <!-- RabbitMQ -->

@@ -1,5 +1,6 @@
 package com.nuraly.workflows.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,14 +22,17 @@ public class WorkflowEdgeEntity extends PanacheEntityBase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
+    @JsonIgnore
     public WorkflowEntity workflow;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_node_id", nullable = false)
+    @JsonIgnore
     public WorkflowNodeEntity sourceNode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_node_id", nullable = false)
+    @JsonIgnore
     public WorkflowNodeEntity targetNode;
 
     @Column(name = "source_port_id")
