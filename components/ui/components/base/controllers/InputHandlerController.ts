@@ -128,12 +128,13 @@ export class InputHandlerController implements ReactiveController, Disposable {
     );
 
     // Component updated event (from original connectedCallback)
+    // Use SYNC processing for immediate UI updates without lag
     this.subscription.add(
       eventDispatcher.on(`component-updated:${String(component.uuid)}`, () => {
-        setTimeout(() => {
-          this.processInputs();
-          this.styleController?.processStyles();
-        }, 0);
+        // Use synchronous processing for immediate feedback
+        // This skips async handler execution for performance
+        this.processInputsSync();
+        this.styleController?.processStylesSync();
       })
     );
 
@@ -164,6 +165,63 @@ export class InputHandlerController implements ReactiveController, Disposable {
         this.processInputs();
       })
     );
+  }
+
+  /**
+   * Process all component inputs SYNCHRONOUSLY
+   * Only processes static values - skips handler execution for performance
+   * Used for rapid updates (e.g., typing in property panel)
+   */
+  processInputsSync(): void {
+    if (isServer || !this.isConnected) return;
+
+    const inputs = Editor.getComponentBreakpointInputs(this.host.component);
+
+    // Process only static inputs synchronously (skip handlers)
+    if (inputs) {
+      for (const name of Object.keys(inputs)) {
+        const input = inputs[name];
+        if (!input) continue;
+
+        // Skip handler types - they require async execution
+        if (input.type === "handler") continue;
+
+        // Check Instance value first
+        const instanceValue = this.host.component?.Instance?.[name];
+        if (instanceValue !== undefined) {
+          if (this.host.resolvedInputs[name] !== instanceValue) {
+            this.host.resolvedInputs[name] = instanceValue;
+          }
+          continue;
+        }
+
+        // Check inputHandlers - skip if present (requires async)
+        if (this.host.component?.inputHandlers?.[name]) continue;
+
+        // Process static value synchronously
+        const { value } = input;
+        if (this.host.resolvedInputs[name] !== value) {
+          this.host.resolvedInputs[name] = value;
+        }
+      }
+    }
+
+    // Apply Instance values directly
+    const instance = this.host.component?.Instance;
+    if (instance) {
+      for (const key of Object.keys(instance)) {
+        const value = instance[key];
+        if (value !== undefined && this.host.resolvedInputs[key] !== value) {
+          this.host.resolvedInputs[key] = value;
+        }
+      }
+    }
+
+    // Apply translations
+    this.applyTranslations();
+
+    // Trigger re-render
+    this.host.requestUpdate();
   }
 
   /**
