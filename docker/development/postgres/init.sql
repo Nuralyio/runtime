@@ -17,12 +17,16 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'workflows_dev')\gexec
 SELECT 'CREATE DATABASE kv_dev'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'kv_dev')\gexec
 
+SELECT 'CREATE DATABASE journal_dev'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'journal_dev')\gexec
+
 -- Grant privileges to postgres user on all databases
 GRANT ALL PRIVILEGES ON DATABASE nuraly_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE functions_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE keycloak TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE workflows_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE kv_dev TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE journal_dev TO postgres;
 
 -- Switch to workflows_dev database and create Quartz tables
 \c workflows_dev;

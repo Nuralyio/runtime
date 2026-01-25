@@ -33,7 +33,8 @@
       "Bash(kubectl describe:*)",
       "Bash(kubectl rollout:*)",
       "Bash(kubectl wait:*)",
-      "Bash(kubectl delete:*)"
+      "Bash(kubectl delete:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []
