@@ -20,8 +20,11 @@ public class QueryResult {
     /** Result rows (for QUERY operation) */
     private List<Map<String, Object>> rows;
 
-    /** Total row count returned */
+    /** Row count returned in this response */
     private int rowCount;
+
+    /** Total matching rows in database (for paginated queries) */
+    private Long totalCount;
 
     /** Rows affected (for INSERT/UPDATE/DELETE) */
     private int affectedRows;
@@ -45,6 +48,19 @@ public class QueryResult {
         return QueryResult.builder()
                 .rows(rows)
                 .rowCount(rows != null ? rows.size() : 0)
+                .executionTimeMs(executionTimeMs)
+                .success(true)
+                .build();
+    }
+
+    /**
+     * Create a successful paginated query result with total count.
+     */
+    public static QueryResult successPaginated(List<Map<String, Object>> rows, Long totalCount, long executionTimeMs) {
+        return QueryResult.builder()
+                .rows(rows)
+                .rowCount(rows != null ? rows.size() : 0)
+                .totalCount(totalCount)
                 .executionTimeMs(executionTimeMs)
                 .success(true)
                 .build();

@@ -241,6 +241,47 @@ public class PostgresConnector implements DatabaseConnector {
     }
 
     private QueryResult executeQuery(Connection conn, QueryRequest request, long start) throws SQLException {
+        // Build table reference
+        StringBuilder tableRef = new StringBuilder();
+        if (request.getSchema() != null && !request.getSchema().isEmpty()) {
+            tableRef.append(quoteIdentifier(request.getSchema())).append(".");
+        }
+        tableRef.append(quoteIdentifier(request.getTable()));
+
+        // Build WHERE clause
+        List<Object> params = new ArrayList<>();
+        String whereClause = "";
+        if (request.getFilter() != null) {
+            whereClause = buildWhereClause(request.getFilter(), params);
+        }
+
+        // Check if pagination is requested
+        boolean isPaginated = request.getLimit() != null || request.getOffset() != null;
+        Long totalCount = null;
+
+        // Execute COUNT query if paginated
+        if (isPaginated) {
+            StringBuilder countSql = new StringBuilder("SELECT COUNT(*) FROM ");
+            countSql.append(tableRef);
+            if (!whereClause.isEmpty()) {
+                countSql.append(" WHERE ").append(whereClause);
+            }
+
+            LOG.debugf("Executing count query: %s with params: %s", countSql, params);
+
+            try (PreparedStatement countStmt = conn.prepareStatement(countSql.toString())) {
+                for (int i = 0; i < params.size(); i++) {
+                    countStmt.setObject(i + 1, params.get(i));
+                }
+                try (ResultSet countRs = countStmt.executeQuery()) {
+                    if (countRs.next()) {
+                        totalCount = countRs.getLong(1);
+                    }
+                }
+            }
+        }
+
+        // Build main SELECT query
         StringBuilder sql = new StringBuilder("SELECT ");
 
         // Select columns
@@ -252,20 +293,10 @@ public class PostgresConnector implements DatabaseConnector {
                     .toList()));
         }
 
-        // From table
-        sql.append(" FROM ");
-        if (request.getSchema() != null && !request.getSchema().isEmpty()) {
-            sql.append(quoteIdentifier(request.getSchema())).append(".");
-        }
-        sql.append(quoteIdentifier(request.getTable()));
+        sql.append(" FROM ").append(tableRef);
 
-        // Where clause
-        List<Object> params = new ArrayList<>();
-        if (request.getFilter() != null) {
-            String whereClause = buildWhereClause(request.getFilter(), params);
-            if (!whereClause.isEmpty()) {
-                sql.append(" WHERE ").append(whereClause);
-            }
+        if (!whereClause.isEmpty()) {
+            sql.append(" WHERE ").append(whereClause);
         }
 
         // Order by
@@ -305,6 +336,10 @@ public class PostgresConnector implements DatabaseConnector {
                 }
 
                 long executionTime = System.currentTimeMillis() - start;
+
+                if (isPaginated && totalCount != null) {
+                    return QueryResult.successPaginated(rows, totalCount, executionTime);
+                }
                 return QueryResult.success(rows, executionTime);
             }
         }

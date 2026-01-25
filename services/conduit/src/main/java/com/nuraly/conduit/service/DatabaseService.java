@@ -128,6 +128,13 @@ public class DatabaseService {
     }
 
     /**
+     * Get aggregate pool statistics across all pools.
+     */
+    public ConnectionPoolManager.AggregatePoolStats getAggregatePoolStats() {
+        return poolManager.getAggregateStats();
+    }
+
+    /**
      * Close a connection pool.
      */
     public void closePool(String connectionPath, String applicationId) {
