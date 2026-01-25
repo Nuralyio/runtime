@@ -162,6 +162,78 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # Journal - Audit Log Service
+  journal:
+    build:
+      context: ./services/journal
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7005:7005"
+    volumes:
+      - ./services/journal:/app
+      - journal_maven_cache:/root/.m2
+    environment:
+      - NODE_ENV=development
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/journal_dev
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=password
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # TextLens - OCR API Service
+  textlens-api:
+    build:
+      context: ./services/textlens
+      dockerfile: Dockerfile.api
+    ports:
+      - "7006:8000"
+    volumes:
+      - ./services/textlens:/app
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/dev.env
+    depends_on:
+      - redis
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # TextLens - OCR Worker Service
+  textlens-worker:
+    build:
+      context: ./services/textlens
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./services/textlens:/app
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    env_file:
+      - config/dev.env
+    depends_on:
+      - redis
+      - rabbitmq
+      - textlens-api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # API Gateway
   gateway:
     build:
@@ -336,6 +408,7 @@ volumes:
   workflows_maven_cache:
   kv_maven_cache:
   conduit_maven_cache:
+  journal_maven_cache:
 
 networks:
   nuraly-network:
