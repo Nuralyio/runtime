@@ -380,11 +380,20 @@ export class InputGenerator {
     }
     
     // Add options for select inputs only (radio buttons get options through value array)
-    if (property.type === 'select' && property.options) {
-      baseInput.input.options = {
-        type: "array",
-        value: property.options
-      };
+    if (property.type === 'select') {
+      if (property.optionsHandler) {
+        // Dynamic options via handler
+        baseInput.input.options = {
+          type: "handler",
+          value: property.optionsHandler
+        };
+      } else if (property.options) {
+        // Static options
+        baseInput.input.options = {
+          type: "array",
+          value: property.options
+        };
+      }
     }
     
     return baseInput;

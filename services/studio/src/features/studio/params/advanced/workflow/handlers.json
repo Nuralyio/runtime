@@ -1,0 +1,21 @@
+{
+  "handlerPrefix": "studio_workflow_handler",
+  "events": [
+    {
+      "name": "onWorkflowStart",
+      "label": "On Start"
+    },
+    {
+      "name": "onWorkflowComplete",
+      "label": "On Complete"
+    },
+    {
+      "name": "onWorkflowError",
+      "label": "On Error"
+    },
+    {
+      "name": "onWorkflowProgress",
+      "label": "On Progress"
+    }
+  ]
+}

@@ -14,5 +14,5 @@ export const workflowListPanel = {
     height: "100%",
     "--nuraly-button-font-size": "12px"
   },
-  children_ids: ["workflow_list_header", "workflow_list_menu"]
+  children_ids: ["workflow_list_menu"]
 };

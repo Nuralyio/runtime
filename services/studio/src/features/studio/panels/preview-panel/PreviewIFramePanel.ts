@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { $currentApplication, $applicationComponents } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $applicationComponents, $components } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import Editor from '@nuraly/runtime/state/editor';
@@ -124,6 +124,10 @@ export class PreviewIFramePanel extends LitElement {
   private messageHandler: ((event: MessageEvent) => void) | null = null;
   private componentStoreUnsubscribe: (() => void) | null = null;
 
+  // Debouncing for iframe sync to prevent UI freezes during rapid input
+  private iframeSyncTimer: ReturnType<typeof setTimeout> | null = null;
+  private pendingUpdates: Set<string> = new Set();
+
   connectedCallback() {
     super.connectedCallback();
     this.setupMessageListener();
@@ -164,6 +168,12 @@ export class PreviewIFramePanel extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    // Clean up debounce timer to prevent memory leaks
+    if (this.iframeSyncTimer) {
+      clearTimeout(this.iframeSyncTimer);
+      this.iframeSyncTimer = null;
+    }
+    this.pendingUpdates.clear();
     this.cleanupMessageListener();
     this.cleanupComponentStoreSubscription();
   }
@@ -194,7 +204,7 @@ export class PreviewIFramePanel extends LitElement {
   private setupComponentStoreSubscription() {
     const appId = this.applicationId || $currentApplication.get()?.uuid;
     if (appId) {
-      // Listen for single component updates (efficient - only sends changed component)
+      // Listen for single component updates with debouncing to prevent UI freezes
       eventDispatcher.on('component:updated', (data: { uuid?: string; component?: any }) => {
         if (this.iframeReady && data?.uuid) {
           // Prevent loop: don't re-send if we just sent this
@@ -202,15 +212,17 @@ export class PreviewIFramePanel extends LitElement {
             this.sentToIframe.delete(data.uuid);
             return;
           }
-          const components = $applicationComponents(appId).get();
-          const updatedComponent = components.find(c => c.uuid === data.uuid);
-          if (updatedComponent) {
-            this.sentToIframe.add(data.uuid);
-            this.sendMessageToIframe({
-              type: 'COMPONENT_UPDATE_SINGLE',
-              payload: updatedComponent
-            });
+
+          // Collect pending updates for batching
+          this.pendingUpdates.add(data.uuid);
+
+          // Debounce iframe sync (100ms) to prevent freezes during rapid input
+          if (this.iframeSyncTimer) {
+            clearTimeout(this.iframeSyncTimer);
           }
+          this.iframeSyncTimer = setTimeout(() => {
+            this.flushPendingUpdates(appId);
+          }, 100);
         }
       });
 
@@ -228,6 +240,32 @@ export class PreviewIFramePanel extends LitElement {
         }
       });
     }
+  }
+
+  /**
+   * Flush pending component updates to iframe.
+   * Uses direct store access to avoid expensive computed store recalculation.
+   */
+  private flushPendingUpdates(appId: string) {
+    if (this.pendingUpdates.size === 0) return;
+
+    // Use direct store access instead of computed $applicationComponents to avoid
+    // expensive recalculation and object spreading on every component
+    const components = $components.get()[appId] || [];
+
+    for (const uuid of this.pendingUpdates) {
+      const updatedComponent = components.find(c => c.uuid === uuid);
+      if (updatedComponent) {
+        this.sentToIframe.add(uuid);
+        this.sendMessageToIframe({
+          type: 'COMPONENT_UPDATE_SINGLE',
+          payload: updatedComponent
+        });
+      }
+    }
+
+    this.pendingUpdates.clear();
+    this.iframeSyncTimer = null;
   }
 
   private cleanupComponentStoreSubscription() {
