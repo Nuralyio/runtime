@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install system dependencies for PaddleOCR and curl for healthcheck
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
@@ -24,11 +24,11 @@ COPY src/ ./src/
 COPY main.py .
 
 # Expose port
-EXPOSE 8000
+EXPOSE 7006
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:7006/health || exit 1
 
 # Run the API server
-CMD ["python", "-m", "uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "7006"]
