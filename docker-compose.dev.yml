@@ -264,6 +264,10 @@ services:
       - api
       - functions
       - workflows
+      - kv
+      - conduit
+      - journal
+      - textlens-api
       - keycloak
       - redis
     networks:
