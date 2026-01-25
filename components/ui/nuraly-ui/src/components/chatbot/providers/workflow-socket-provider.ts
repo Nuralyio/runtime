@@ -32,6 +32,8 @@ export interface WorkflowSocketProviderConfig extends ProviderConfig {
   buildInput?: (text: string, context: ChatbotContext) => any;
   /** Extract final response from execution completed data */
   extractResponse?: (data: any) => string;
+  /** Callback when execution starts with executionId */
+  onExecutionStart?: (executionId: string, workflowId: string) => void;
 }
 
 /**
@@ -119,9 +121,8 @@ export class WorkflowSocketProvider implements ChatbotProvider {
         this.connected = true;
         console.log('[WorkflowSocketProvider] Connected:', this.socket!.id);
 
-        // Subscribe to workflow events
-        this.subscribeToWorkflow(this.config!.workflowId);
-
+        // Don't subscribe to all workflow events - only subscribe to specific executions
+        // This prevents all tabs/instances from receiving all execution events
         resolve();
       });
 
@@ -296,6 +297,11 @@ export class WorkflowSocketProvider implements ChatbotProvider {
       }
 
       console.log('[WorkflowSocketProvider] Execution started:', executionId);
+
+      // Notify listener about execution start
+      if (this.config?.onExecutionStart) {
+        this.config.onExecutionStart(executionId, this.config.workflowId);
+      }
 
       // Subscribe to this specific execution
       this.subscribeToExecution(executionId);

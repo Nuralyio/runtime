@@ -12,6 +12,7 @@ import { ContextMenuState } from '../interfaces/index.js';
  */
 export interface ContextMenuTemplateData {
   contextMenu: ContextMenuState | null;
+  readonly?: boolean;
   onClose: () => void;
   onAddNode: () => void;
   onSelectAll: () => void;
@@ -34,10 +35,12 @@ export function renderContextMenuTemplate(data: ContextMenuTemplateData): Templa
       @click=${data.onClose}
     >
       ${data.contextMenu.type === 'canvas' ? html`
-        <div class="context-menu-item" @click=${data.onAddNode}>
-          <nr-icon name="plus" size="small"></nr-icon>
-          Add Node
-        </div>
+        ${!data.readonly ? html`
+          <div class="context-menu-item" @click=${data.onAddNode}>
+            <nr-icon name="plus" size="small"></nr-icon>
+            Add Node
+          </div>
+        ` : nothing}
         <div class="context-menu-item" @click=${data.onSelectAll}>
           <nr-icon name="check-square" size="small"></nr-icon>
           Select All
@@ -53,15 +56,17 @@ export function renderContextMenuTemplate(data: ContextMenuTemplateData): Templa
           <nr-icon name="settings" size="small"></nr-icon>
           Configure
         </div>
-        <div class="context-menu-item" @click=${data.onDuplicate}>
-          <nr-icon name="copy" size="small"></nr-icon>
-          Duplicate
-        </div>
-        <div class="context-menu-divider"></div>
-        <div class="context-menu-item danger" @click=${data.onDelete}>
-          <nr-icon name="trash-2" size="small"></nr-icon>
-          Delete
-        </div>
+        ${!data.readonly ? html`
+          <div class="context-menu-item" @click=${data.onDuplicate}>
+            <nr-icon name="copy" size="small"></nr-icon>
+            Duplicate
+          </div>
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item danger" @click=${data.onDelete}>
+            <nr-icon name="trash-2" size="small"></nr-icon>
+            Delete
+          </div>
+        ` : nothing}
       ` : nothing}
     </div>
   `;

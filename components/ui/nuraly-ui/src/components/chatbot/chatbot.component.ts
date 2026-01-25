@@ -236,12 +236,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   override updated(changedProperties: Map<string, any>): void {
     super.updated(changedProperties);
-    
+
     // If controller property changed after first render, (re)wire integration
     if (changedProperties.has('controller')) {
       // Clean up listeners from previous controller instance (if any)
       this.cleanupControllerIntegration();
-      
+
       if (this.controller) {
         this.setupControllerIntegration();
         // Sync current controller state into component immediately
@@ -253,7 +253,23 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         }
       }
     }
-    
+
+    // When controller is present, ignore externally-set messages/suggestions/threads
+    // and always use controller state (prevents parent re-renders from overwriting state)
+    if (this.controller && !changedProperties.has('controller')) {
+      const dataPropsChanged = changedProperties.has('messages') ||
+                               changedProperties.has('suggestions') ||
+                               changedProperties.has('threads');
+      if (dataPropsChanged) {
+        try {
+          const state = this.controller.getState();
+          this.handleControllerStateChange(state);
+        } catch {
+          // no-op if controller not ready
+        }
+      }
+    }
+
     // Auto-scroll when messages are added or updated
     if (changedProperties.has('messages') && this.autoScroll && this.messages.length > 0) {
       this.scrollToLatestMessage();

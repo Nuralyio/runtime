@@ -76,6 +76,9 @@ export class KeyboardController extends BaseCanvasController {
    * Handle keyboard events
    */
   private handleKeyDown(e: KeyboardEvent): void {
+    // Block keyboard events when canvas is disabled
+    if (this._host.disabled) return;
+
     // Don't handle key events if focus is in an input field
     const target = e.target as HTMLElement;
     const activeElement = document.activeElement;
@@ -88,7 +91,7 @@ export class KeyboardController extends BaseCanvasController {
     switch (e.key) {
       case 'Delete':
       case 'Backspace':
-        if (this.selectionController.hasSelection()) {
+        if (!this._host.readonly && this.selectionController.hasSelection()) {
           e.preventDefault();
           this.selectionController.deleteSelected();
         }

@@ -47,6 +47,9 @@ export class ViewportController extends BaseCanvasController {
 
     if (!wrapper) return;
 
+    // Block wheel events when canvas is disabled
+    if (this._host.disabled) return;
+
     // Check if event is within our canvas (using shadow DOM)
     const path = e.composedPath();
     const isInCanvas = path.some(el => el === wrapper || el === this._host);
@@ -163,6 +166,7 @@ export class ViewportController extends BaseCanvasController {
    * Handle panning via mouse drag
    */
   handlePanDrag(e: MouseEvent): void {
+    if (this._host.disabled) return;
     const { panStart } = this._host;
     this._host.viewport = {
       ...this._host.viewport,
@@ -176,6 +180,7 @@ export class ViewportController extends BaseCanvasController {
    * Start panning
    */
   startPan(e: MouseEvent): void {
+    if (this._host.disabled) return;
     this._host.isPanning = true;
     this._host.panStart = {
       x: e.clientX - this._host.viewport.panX,

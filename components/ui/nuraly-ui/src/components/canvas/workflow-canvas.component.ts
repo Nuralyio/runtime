@@ -90,18 +90,34 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     };
     this.requestUpdate('workflow', oldValue);
 
-    // Restore viewport from workflow if available and this is a new workflow
-    if (value.viewport && (!oldValue || oldValue.id !== value.id)) {
-      this.viewport = value.viewport;
-      // Update the CSS transform after the component renders
-      this.updateComplete.then(() => {
-        this.viewportController?.updateTransform();
-      });
+    // Restore viewport from workflow if available
+    // Apply when: new workflow, OR viewport values have changed
+    if (value.viewport) {
+      const viewportChanged = !oldValue ||
+        oldValue.id !== value.id ||
+        this.viewport.panX !== value.viewport.panX ||
+        this.viewport.panY !== value.viewport.panY ||
+        this.viewport.zoom !== value.viewport.zoom;
+
+      if (viewportChanged) {
+        this.viewport = value.viewport;
+        // Update the CSS transform after the component renders
+        this.updateComplete.then(() => {
+          this.viewportController?.updateTransform();
+        });
+      }
     }
   }
 
   @property({ type: Boolean })
   readonly = false;
+
+  /**
+   * When true, disables all mouse interactions and shows an overlay
+   * prompting user to double-click to enter preview mode
+   */
+  @property({ type: Boolean })
+  disabled = false;
 
   @property({ type: Boolean })
   showMinimap = true;
@@ -121,6 +137,14 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   @property({ type: Object })
   nodeStatuses: Record<string, 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'> = {};
+
+  /**
+   * When true, automatically subscribes to execution events for the current workflow.
+   * This allows the canvas to show real-time execution state when the workflow
+   * is triggered from external sources (e.g., a chatbot component).
+   */
+  @property({ type: Boolean })
+  listenToExecutionEvents = false;
 
   @state()
   private viewport: CanvasViewport = { zoom: 1, panX: 0, panY: 0 };
@@ -145,6 +169,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private isPanning = false;
+
+  @state()
+  private isHoveringDisabledOverlay = false;
 
   @state()
   private expandedCategories: Set<string> = new Set([
@@ -237,12 +264,14 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Note: Keyboard handling is now in KeyboardController
 
   private handleGlobalMouseUp = () => {
+    if (this.disabled) return;
     this.dragController.stopDrag();
     this.viewportController.stopPan();
     this.connectionController.cancelConnection();
   };
 
   private handleGlobalMouseMove = (e: MouseEvent) => {
+    if (this.disabled) return;
     if (this.dragState) {
       this.dragController.handleDrag(e);
     }
@@ -255,6 +284,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   };
 
   private handleCanvasMouseDown = (e: MouseEvent) => {
+    if (this.disabled) return;
     const target = e.target as HTMLElement;
     const isCanvasBackground = target.classList.contains('canvas-grid') || target.classList.contains('canvas-wrapper');
 
@@ -272,6 +302,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleCanvasContextMenu = (e: MouseEvent) => {
     e.preventDefault();
+    if (this.disabled) return;
 
     // Check if a node is selected - if so, show node context menu
     const menuType = this.selectedNodeIds.size > 0 ? 'node' : 'canvas';
@@ -286,6 +317,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Note: Wheel/pan/zoom handling is now in ViewportController
 
   private handleNodeMouseDown(e: CustomEvent) {
+    if (this.disabled) return;
     const { node, event } = e.detail;
 
     if (!event.shiftKey) {
@@ -301,8 +333,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       this.configuredNode = node;
     }
 
-    // Start dragging
-    this.dragController.startDrag(node, event);
+    // Start dragging (only if not readonly)
+    if (!this.readonly) {
+      this.dragController.startDrag(node, event);
+    }
 
     this.dispatchNodeSelected(node);
   }
@@ -310,6 +344,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Note: Node drag handling is now in DragController
 
   private handleNodeDblClick(e: CustomEvent) {
+    if (this.disabled) return;
     const { node } = e.detail;
     // Open configuration panel
     this.configuredNode = node;
@@ -513,6 +548,28 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
+   * Handle double-click on disabled overlay to enable canvas interaction
+   */
+  private handleDisabledOverlayDblClick = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.disabled = false;
+    this.isHoveringDisabledOverlay = false;
+    this.dispatchEvent(new CustomEvent('canvas-enabled', {
+      bubbles: true,
+      composed: true,
+    }));
+  };
+
+  private handleDisabledOverlayMouseEnter = () => {
+    this.isHoveringDisabledOverlay = true;
+  };
+
+  private handleDisabledOverlayMouseLeave = () => {
+    this.isHoveringDisabledOverlay = false;
+  };
+
+  /**
    * Get the current preview node from workflow (live position)
    */
   private getPreviewNode(): WorkflowNode | null {
@@ -537,11 +594,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handlePortMouseDown(e: CustomEvent) {
+    if (this.disabled || this.readonly) return;
     const { node, port, isInput, event } = e.detail;
     this.connectionController.startConnection(node, port, isInput, event);
   }
 
   private handlePortMouseUp(e: CustomEvent) {
+    if (this.disabled) return;
     const { node, port, isInput } = e.detail;
     this.connectionController.completeConnection(node, port, isInput);
   }
@@ -549,6 +608,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Note: Connection line update is now in ConnectionController
 
   private handleEdgeClick(e: MouseEvent, edge: WorkflowEdge) {
+    if (this.disabled) return;
     e.stopPropagation();
     this.selectionController.selectEdge(edge.id, e.shiftKey);
   }
@@ -579,6 +639,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleCanvasDrop = (e: DragEvent) => {
     e.preventDefault();
+    if (this.disabled) return;
     const type = e.dataTransfer?.getData('application/workflow-node-type') as NodeType;
     if (!type) return;
 
@@ -590,6 +651,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   };
 
   private handleCanvasDragOver = (e: DragEvent) => {
+    if (this.disabled) return;
     e.preventDefault();
     e.dataTransfer!.dropEffect = 'copy';
   };
@@ -697,6 +759,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       showPalette: this.showPalette,
       hasSelection: this.selectedNodeIds.size > 0 || this.selectedEdgeIds.size > 0,
       hasSingleSelection: this.selectedNodeIds.size === 1,
+      readonly: this.readonly,
       onModeChange: (mode) => { this.mode = mode; },
       onTogglePalette: () => this.togglePalette(),
       onZoomIn: () => this.viewportController.zoomIn(),
@@ -730,6 +793,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private renderContextMenu() {
     return renderContextMenuTemplate({
       contextMenu: this.contextMenu,
+      readonly: this.readonly,
       onClose: () => { this.contextMenu = null; },
       onAddNode: () => this.togglePalette(),
       onSelectAll: () => this.selectionController.selectAll(),
@@ -744,6 +808,24 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     return renderEmptyStateTemplate({
       hasNodes: this.workflow.nodes.length > 0,
     });
+  }
+
+  private renderDisabledOverlay() {
+    if (!this.disabled) return html``;
+
+    return html`
+      <div
+        class="disabled-overlay ${this.isHoveringDisabledOverlay ? 'hovering' : ''}"
+        @dblclick=${this.handleDisabledOverlayDblClick}
+        @mouseenter=${this.handleDisabledOverlayMouseEnter}
+        @mouseleave=${this.handleDisabledOverlayMouseLeave}
+      >
+        <div class="disabled-overlay-message">
+          <nr-icon name="mouse-pointer-click" size="medium"></nr-icon>
+          <span>Double click to enter preview mode</span>
+        </div>
+      </div>
+    `;
   }
 
   // Note: Config panel methods are now in ConfigController and config-panel.template.ts
@@ -934,6 +1016,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         </div>
 
         ${this.renderEmptyState()}
+        ${this.renderDisabledOverlay()}
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}

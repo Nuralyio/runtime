@@ -16,6 +16,7 @@ export interface ToolbarTemplateData {
   showPalette: boolean;
   hasSelection: boolean;
   hasSingleSelection: boolean;
+  readonly?: boolean;
   onModeChange: (mode: CanvasMode) => void;
   onTogglePalette: () => void;
   onZoomIn: () => void;
@@ -43,6 +44,7 @@ export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult
       <button
         class="toolbar-btn ${data.showPalette ? 'active' : ''}"
         @click=${data.onTogglePalette}
+        ?disabled=${data.readonly}
         title="Add Node (N)"
       >
         <nr-icon name="plus" size="small"></nr-icon>
@@ -81,7 +83,7 @@ export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult
       <button
         class="toolbar-btn"
         @click=${data.onDelete}
-        ?disabled=${!data.hasSelection}
+        ?disabled=${data.readonly || !data.hasSelection}
         title="Delete Selected (Del)"
       >
         <nr-icon name="trash-2" size="small"></nr-icon>
