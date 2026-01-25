@@ -1,6 +1,6 @@
 /**
  * Component Property Update Functions
- * 
+ *
  * Functions for updating component properties (name, input, style, events).
  */
 
