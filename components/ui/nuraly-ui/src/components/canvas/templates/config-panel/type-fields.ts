@@ -37,6 +37,7 @@ import {
   renderEmailFields,
   renderChatStartFields,
   renderChatOutputFields,
+  renderOcrFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -102,6 +103,9 @@ export function renderTypeFields(
 
     case WorkflowNodeType.CHAT_OUTPUT:
       return renderChatOutputFields(config, onUpdate);
+
+    case WorkflowNodeType.OCR:
+      return renderOcrFields(config, onUpdate);
 
     // Agent nodes
     case AgentNodeType.AGENT:

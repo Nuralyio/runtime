@@ -156,6 +156,10 @@ export class NrKvSecretSelect extends LitElement {
   @property({ type: String })
   placeholder: string = 'Select API key...';
 
+  /** Type of secret - affects labels */
+  @property({ type: String })
+  type: 'api-key' | 'url' = 'api-key';
+
   @state() private entries: KvEntry[] = [];
   @state() private loading = false;
   @state() private showCreateForm = false;
@@ -268,15 +272,25 @@ export class NrKvSecretSelect extends LitElement {
     this.creating = false;
   }
 
+  private getTypeLabel(): string {
+    return this.type === 'url' ? 'URL' : 'API Key';
+  }
+
+  private getValuePlaceholder(): string {
+    return this.type === 'url' ? 'http://localhost:11434' : 'sk-...';
+  }
+
   private renderCreateForm() {
+    const typeLabel = this.getTypeLabel();
+
     return html`
       <div class="create-form">
         <div class="create-form-header">
-          <span class="create-form-title">Add ${this.provider} API Key</span>
+          <span class="create-form-title">Add ${this.provider} ${typeLabel}</span>
         </div>
 
         <div class="form-field">
-          <label>Key Name</label>
+          <label>${this.type === 'url' ? 'Name' : 'Key Name'}</label>
           <nr-input
             .value=${this.newKeyName}
             placeholder="e.g., production, dev"
@@ -285,11 +299,11 @@ export class NrKvSecretSelect extends LitElement {
         </div>
 
         <div class="form-field">
-          <label>API Key Value</label>
+          <label>${typeLabel} Value</label>
           <nr-input
-            type="password"
+            type=${this.type === 'url' ? 'text' : 'password'}
             .value=${this.newKeyValue}
-            placeholder="sk-..."
+            placeholder=${this.getValuePlaceholder()}
             @nr-input=${(e: CustomEvent) => this.newKeyValue = e.detail?.value || ''}
           ></nr-input>
         </div>
@@ -316,11 +330,13 @@ export class NrKvSecretSelect extends LitElement {
   }
 
   private renderAddButton() {
+    const typeLabel = this.getTypeLabel().toLowerCase();
+
     return html`
       <div class="add-btn-container">
         <button class="add-btn" @click=${this.toggleCreateForm}>
           <nr-icon name="plus" size="small"></nr-icon>
-          Add new ${this.provider} API key
+          Add new ${this.provider} ${typeLabel}
         </button>
       </div>
     `;
@@ -330,15 +346,18 @@ export class NrKvSecretSelect extends LitElement {
     const options = this.entries.map(entry => ({
       label: entry.keyPath.replace(`${this.provider}/`, ''),
       value: entry.keyPath,
-      icon: 'key'
+      icon: this.type === 'url' ? 'link' : 'key'
     }));
+
+    const typeLabel = this.getTypeLabel().toLowerCase();
+    const noOptionsMessage = `No ${typeLabel}s for ${this.provider}`;
 
     return html`
       <nr-select
         .value=${this.value}
         .options=${options}
         placeholder=${this.placeholder}
-        .noOptionsMessage=${'No API keys for ${this.provider}'}
+        .noOptionsMessage=${noOptionsMessage}
         @nr-change=${this.handleSelectChange}
       >
         <div slot="after-options">
