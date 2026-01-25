@@ -6,12 +6,28 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.jboss.logging.Logger;
 
+/**
+ * Condition Node Executor with:
+ * - Cached JavaScript source compilation (avoids re-parsing expressions)
+ * - Metrics tracking (evaluation count, duration, errors)
+ * - Graceful error handling (defaults to false path on failure)
+ */
 @ApplicationScoped
 public class ConditionNodeExecutor implements NodeExecutor {
+
+    private static final Logger LOG = Logger.getLogger(ConditionNodeExecutor.class);
+
+    @Inject
+    MeterRegistry meterRegistry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -35,14 +51,20 @@ public class ConditionNodeExecutor implements NodeExecutor {
 
         boolean result;
         String errorMessage = null;
+        long startTime = System.currentTimeMillis();
 
         try {
             result = evaluateCondition(context, expression);
+            meterRegistry.counter("workflow.condition.evaluations.total", "status", "success").increment();
         } catch (Exception e) {
             // If expression evaluation fails, treat as false and continue to false path
             result = false;
             errorMessage = "Expression evaluation failed: " + e.getMessage();
-            System.out.println("[ConditionNode] " + errorMessage + " - continuing to 'false' path");
+            LOG.warnf("[ConditionNode] %s - continuing to 'false' path", errorMessage);
+            meterRegistry.counter("workflow.condition.evaluations.total", "status", "error").increment();
+        } finally {
+            long duration = System.currentTimeMillis() - startTime;
+            meterRegistry.timer("workflow.condition.evaluation.duration").record(java.time.Duration.ofMillis(duration));
         }
 
         // Return with the appropriate edge label
@@ -58,7 +80,14 @@ public class ConditionNodeExecutor implements NodeExecutor {
         return NodeExecutionResult.success(outputNode, nextLabel);
     }
 
+    /**
+     * Evaluate JavaScript expression with context variables.
+     * Uses cached Source objects for repeated expressions.
+     */
     private boolean evaluateCondition(ExecutionContext context, String expression) throws Exception {
+        // Get cached source or create new one
+        Source source = getCachedSource(expression);
+
         try (Context jsContext = Context.newBuilder("js")
                 .option("engine.WarnInterpreterOnly", "false")
                 .build()) {
@@ -74,10 +103,21 @@ public class ConditionNodeExecutor implements NodeExecutor {
             String inputJson = objectMapper.writeValueAsString(context.getInput());
             jsContext.eval("js", "var input = " + inputJson);
 
-            // Evaluate the expression
-            Value result = jsContext.eval("js", expression);
+            // Evaluate the cached expression source
+            Value result = jsContext.eval(source);
 
             return result.asBoolean();
         }
+    }
+
+    /**
+     * Cache compiled JavaScript source to avoid re-parsing.
+     * TTL: 5 minutes, max 1000 entries.
+     */
+    @CacheResult(cacheName = "js-expression-cache")
+    public Source getCachedSource(String expression) {
+        return Source.newBuilder("js", expression, "condition.js")
+                .cached(true)
+                .buildLiteral();
     }
 }

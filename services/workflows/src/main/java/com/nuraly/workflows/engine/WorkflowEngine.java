@@ -1,5 +1,6 @@
 package com.nuraly.workflows.engine;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.engine.executors.NodeExecutor;
@@ -7,19 +8,30 @@ import com.nuraly.workflows.entity.*;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.exception.WorkflowExecutionException;
+import com.nuraly.workflows.dto.revision.RevisionSnapshotDTO;
+import com.nuraly.workflows.exception.RevisionNotFoundException;
+import com.nuraly.workflows.monitoring.WorkflowMetricsService;
+import com.nuraly.workflows.redis.ExecutionCheckpointService;
+import com.nuraly.workflows.redis.ExecutionCheckpointService.ExecutionCheckpoint;
+import com.nuraly.workflows.redis.WorkflowCacheService;
 import com.nuraly.workflows.service.WorkflowEventService;
+import com.nuraly.workflows.service.WorkflowRevisionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+/**
+ * Workflow execution engine with Redis-backed checkpointing.
+ * Supports crash recovery by resuming from the last completed node.
+ */
 @ApplicationScoped
 public class WorkflowEngine {
+
+    private static final Logger LOG = Logger.getLogger(WorkflowEngine.class);
 
     @Inject
     NodeExecutorFactory nodeExecutorFactory;
@@ -30,24 +42,55 @@ public class WorkflowEngine {
     @Inject
     Configuration configuration;
 
+    @Inject
+    WorkflowCacheService workflowCacheService;
+
+    @Inject
+    ExecutionCheckpointService checkpointService;
+
+    @Inject
+    WorkflowMetricsService metricsService;
+
+    @Inject
+    WorkflowRevisionService revisionService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
     public void execute(WorkflowExecutionEntity execution) throws WorkflowExecutionException {
+        metricsService.recordExecutionStart();
+        long startTime = System.currentTimeMillis();
+
         ExecutionContext context = new ExecutionContext(execution);
+
+        // Load revision snapshot if executing a specific revision
+        if (execution.revision != null) {
+            try {
+                RevisionSnapshotDTO snapshot = revisionService.getRevisionSnapshot(
+                        execution.workflow.id, execution.revision);
+                context.setRevisionSnapshot(snapshot);
+                LOG.infof("Executing workflow %s with revision %d snapshot",
+                        execution.workflow.id, execution.revision);
+            } catch (RevisionNotFoundException e) {
+                throw new WorkflowExecutionException(
+                        "Revision " + execution.revision + " not found for workflow " + execution.workflow.id);
+            }
+        }
 
         execution.status = ExecutionStatus.RUNNING;
         execution.persist();
 
         try {
-            // Find start node based on trigger type
-            WorkflowNodeEntity startNode = findStartNode(execution.workflow, execution.triggerType);
-            if (startNode == null) {
-                throw new WorkflowExecutionException("No START node found in workflow for trigger type: " + execution.triggerType);
+            // Check for existing checkpoint (resume after crash)
+            Optional<ExecutionCheckpoint> checkpoint = checkpointService.getCheckpoint(execution.id);
+            if (checkpoint.isPresent()) {
+                LOG.infof("Resuming execution %s from checkpoint (last node: %s)",
+                        execution.id, checkpoint.get().lastCompletedNodeId);
+                resumeFromCheckpoint(context, checkpoint.get());
+            } else {
+                // Fresh execution - start from beginning with trigger type
+                executeFromStart(context);
             }
-
-            // Execute workflow
-            executeFromNode(context, startNode);
 
             // Mark as completed
             execution.status = ExecutionStatus.COMPLETED;
@@ -57,7 +100,15 @@ public class WorkflowEngine {
             execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
             execution.persist();
 
+            // Clean up checkpoint
+            checkpointService.deleteCheckpoint(execution.id);
+
+            // Cache workflow for future executions
+            workflowCacheService.cacheWorkflow(execution.workflow);
+
             eventService.logExecutionCompleted(execution);
+            metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
+                    System.currentTimeMillis() - startTime);
 
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
@@ -66,16 +117,82 @@ public class WorkflowEngine {
             execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
             execution.persist();
 
+            // Keep checkpoint for potential manual retry
+            // checkpointService.deleteCheckpoint(execution.id);
+
             eventService.logExecutionFailed(execution, e.getMessage());
+            metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
+                    System.currentTimeMillis() - startTime);
+
             throw new WorkflowExecutionException("Workflow execution failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Execute workflow from the start node.
+     */
+    private void executeFromStart(ExecutionContext context) throws Exception {
+        WorkflowExecutionEntity execution = context.getExecution();
+        WorkflowNodeEntity startNode = findStartNode(execution.workflow, execution.triggerType);
+        if (startNode == null) {
+            throw new WorkflowExecutionException("No START node found in workflow for trigger type: " + execution.triggerType);
+        }
+        executeFromNode(context, startNode);
+    }
+
+    /**
+     * Resume execution from a checkpoint (after worker crash).
+     */
+    private void resumeFromCheckpoint(ExecutionContext context, ExecutionCheckpoint checkpoint) throws Exception {
+        // Restore context from checkpoint
+        if (checkpoint.nodeOutputs != null) {
+            for (Map.Entry<UUID, JsonNode> entry : checkpoint.nodeOutputs.entrySet()) {
+                context.setNodeOutput(entry.getKey(), entry.getValue());
+            }
+        }
+
+        if (checkpoint.variables != null) {
+            context.restoreVariables(checkpoint.variables);
+        }
+
+        // Find the node to resume from (next node after last completed)
+        WorkflowNodeEntity lastCompletedNode = findNodeById(
+                context.getExecution().workflow, checkpoint.lastCompletedNodeId);
+
+        if (lastCompletedNode == null) {
+            LOG.warnf("Last completed node %s not found, restarting from beginning",
+                    checkpoint.lastCompletedNodeId);
+            executeFromStart(context);
+            return;
+        }
+
+        // If there was a node in progress when crash happened, re-execute it
+        if (checkpoint.currentNodeId != null) {
+            WorkflowNodeEntity currentNode = findNodeById(
+                    context.getExecution().workflow, checkpoint.currentNodeId);
+            if (currentNode != null) {
+                LOG.infof("Re-executing interrupted node: %s", currentNode.name);
+                executeFromNode(context, currentNode);
+                return;
+            }
+        }
+
+        // Find and execute next nodes after last completed
+        List<WorkflowNodeEntity> nextNodes = findNextNodes(context, lastCompletedNode, null);
+        for (WorkflowNodeEntity nextNode : nextNodes) {
+            executeFromNode(context, nextNode);
         }
     }
 
     @Transactional
     public void resume(WorkflowExecutionEntity execution) throws WorkflowExecutionException {
-        // For now, just restart from the beginning
-        // In production, you'd track the last completed node and resume from there
-        execute(execution);
+        // Check for checkpoint first
+        if (checkpointService.hasCheckpoint(execution.id)) {
+            execute(execution);
+        } else {
+            // No checkpoint, restart from beginning
+            execute(execution);
+        }
     }
 
     private void executeFromNode(ExecutionContext context, WorkflowNodeEntity node) throws Exception {
@@ -84,6 +201,21 @@ public class WorkflowEngine {
         }
 
         context.setCurrentNode(node);
+        long nodeStartTime = System.currentTimeMillis();
+
+        // Mark node as in-progress for crash detection
+        checkpointService.markNodeInProgress(context.getExecution().id, node.id);
+
+        // Override node configuration from snapshot if doing revision execution
+        // This allows executing with historical node configurations
+        String originalConfiguration = node.configuration;
+        if (context.isRevisionExecution()) {
+            String snapshotConfig = context.getNodeConfiguration(node.id, node.configuration);
+            if (snapshotConfig != null) {
+                node.configuration = snapshotConfig;
+                LOG.debugf("Using snapshot configuration for node %s (revision execution)", node.name);
+            }
+        }
 
         // Create node execution record
         NodeExecutionEntity nodeExecution = new NodeExecutionEntity();
@@ -104,8 +236,14 @@ public class WorkflowEngine {
         // Emit node started event for real-time tracking
         eventService.logNodeStarted(nodeExecution);
 
-        // Execute node with retry logic
-        NodeExecutionResult result = executeNodeWithRetry(context, node, nodeExecution);
+        // Execute node with retry logic - use try-finally to ensure config is restored
+        NodeExecutionResult result;
+        try {
+            result = executeNodeWithRetry(context, node, nodeExecution);
+        } finally {
+            // Restore original configuration to avoid JPA dirty checking issues
+            node.configuration = originalConfiguration;
+        }
 
         // Update node execution record
         nodeExecution.completedAt = Instant.now();
@@ -117,6 +255,16 @@ public class WorkflowEngine {
                 nodeExecution.outputData = objectMapper.writeValueAsString(result.getOutput());
                 context.setNodeOutput(node.id, result.getOutput());
             }
+
+            // Save checkpoint after successful node execution
+            checkpointService.saveCheckpoint(
+                    context.getExecution().id,
+                    node.id,
+                    context.getVariablesAsString(),
+                    context.getNodeOutputs()
+            );
+            checkpointService.clearCurrentNode(context.getExecution().id);
+
         } else {
             nodeExecution.status = ExecutionStatus.FAILED;
             nodeExecution.errorMessage = result.getErrorMessage();
@@ -124,6 +272,13 @@ public class WorkflowEngine {
 
         nodeExecution.persist();
         eventService.logNodeExecuted(nodeExecution);
+
+        // Record node metrics
+        metricsService.recordNodeExecution(
+                node.type.name(),
+                result.isSuccess(),
+                System.currentTimeMillis() - nodeStartTime
+        );
 
         if (!result.isSuccess()) {
             throw new WorkflowExecutionException("Node '" + node.name + "' failed: " + result.getErrorMessage());
@@ -176,7 +331,7 @@ public class WorkflowEngine {
 
                 // Retry
                 if (attempt <= maxRetries) {
-                    System.out.println("Node '" + node.name + "' failed (" + lastError + "), retrying (attempt " + (attempt + 1) + ")...");
+                    LOG.infof("Node '%s' failed (%s), retrying (attempt %d)...", node.name, lastError, attempt + 1);
                     Thread.sleep(retryDelay);
                 }
 
@@ -186,7 +341,8 @@ public class WorkflowEngine {
                     return NodeExecutionResult.failure(lastError);
                 }
 
-                System.out.println("Node '" + node.name + "' threw exception, retrying (attempt " + (attempt + 1) + "): " + e.getMessage());
+                LOG.infof("Node '%s' threw exception, retrying (attempt %d): %s",
+                        node.name, attempt + 1, e.getMessage());
                 try {
                     Thread.sleep(retryDelay);
                 } catch (InterruptedException ie) {
@@ -233,6 +389,14 @@ public class WorkflowEngine {
                 .filter(n -> n.type == NodeType.START ||
                             n.type == NodeType.HTTP_START ||
                             n.type == NodeType.CHAT_START)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private WorkflowNodeEntity findNodeById(WorkflowEntity workflow, UUID nodeId) {
+        if (nodeId == null) return null;
+        return workflow.nodes.stream()
+                .filter(n -> n.id.equals(nodeId))
                 .findFirst()
                 .orElse(null);
     }

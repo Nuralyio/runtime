@@ -1,31 +1,38 @@
-package com.nuraly.workflows.entity;
+package com.nuraly.workflows.entity.revision;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nuraly.workflows.entity.enums.NodeType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "workflow_nodes")
+@Table(name = "workflow_node_versions", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"node_id", "version"})
+})
 @Getter
 @Setter
-public class WorkflowNodeEntity extends PanacheEntityBase {
+public class WorkflowNodeVersionEntity extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     public UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workflow_id", nullable = false)
-    @JsonIgnore
-    public WorkflowEntity workflow;
+    @Column(name = "node_id", nullable = false)
+    public UUID nodeId;
+
+    @Column(name = "workflow_id", nullable = false)
+    public UUID workflowId;
+
+    @Column(nullable = false)
+    public Integer version;
 
     @Column(nullable = false)
     public String name;
@@ -34,46 +41,37 @@ public class WorkflowNodeEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public NodeType type;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(columnDefinition = "TEXT")
-    public String configuration; // JSON: node-specific configuration
+    public String configuration;
 
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(columnDefinition = "TEXT")
-    public String ports; // JSON: { inputs: NodePort[], outputs: NodePort[] }
+    public String ports;
 
-    // Visual position for UI
     @Column(name = "position_x")
-    public Integer positionX = 0;
+    public Integer positionX;
 
     @Column(name = "position_y")
-    public Integer positionY = 0;
+    public Integer positionY;
 
-    // Retry configuration
     @Column(name = "max_retries")
-    public Integer maxRetries = 3;
+    public Integer maxRetries;
 
     @Column(name = "retry_delay_ms")
-    public Integer retryDelayMs = 1000;
+    public Integer retryDelayMs;
 
-    // Timeout configuration
     @Column(name = "timeout_ms")
-    public Integer timeoutMs = 30000;
+    public Integer timeoutMs;
+
+    @Column(name = "created_by", nullable = false)
+    public String createdBy;
 
     @Column(name = "created_at")
     public Instant createdAt;
 
-    @Column(name = "updated_at")
-    public Instant updatedAt;
-
     @PrePersist
     public void prePersist() {
         createdAt = Instant.now();
-        updatedAt = Instant.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = Instant.now();
     }
 }

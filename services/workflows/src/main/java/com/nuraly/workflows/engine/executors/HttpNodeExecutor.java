@@ -7,16 +7,40 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.http.HttpClientManager;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.hc.client5.http.classic.methods.*;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Timeout;
+import org.jboss.logging.Logger;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.time.temporal.ChronoUnit;
+
+/**
+ * HTTP Node Executor with:
+ * - Connection pooling (via HttpClientManager)
+ * - Circuit breaker (prevents cascading failures)
+ * - Timeout protection (prevents hung requests)
+ * - Metrics tracking (request count, duration, errors)
+ */
 @ApplicationScoped
 public class HttpNodeExecutor implements NodeExecutor {
+
+    private static final Logger LOG = Logger.getLogger(HttpNodeExecutor.class);
+
+    @Inject
+    HttpClientManager httpClientManager;
+
+    @Inject
+    MeterRegistry meterRegistry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,7 +64,35 @@ public class HttpNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("url is required in configuration");
         }
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        // Execute with circuit breaker and timeout protection
+        return executeWithResilience(context, node, config, method, url);
+    }
+
+    /**
+     * Execute HTTP request with circuit breaker and timeout.
+     * Circuit breaker will open after 5 failures in 10 requests (50% threshold).
+     * Timeout set to 30 seconds to prevent hung requests.
+     */
+    @CircuitBreaker(
+            requestVolumeThreshold = 10,
+            failureRatio = 0.5,
+            delay = 60000,
+            successThreshold = 3,
+            failOn = {IOException.class, SocketTimeoutException.class}
+    )
+    @Timeout(value = 30, unit = ChronoUnit.SECONDS)
+    public NodeExecutionResult executeWithResilience(
+            ExecutionContext context,
+            WorkflowNodeEntity node,
+            JsonNode config,
+            String method,
+            String url) throws Exception {
+
+        Timer.Sample timerSample = Timer.start(meterRegistry);
+        String status = "success";
+
+        try {
+            var httpClient = httpClientManager.getClient();
             HttpUriRequestBase request = createRequest(method, url);
 
             // Add headers
@@ -58,7 +110,6 @@ public class HttpNodeExecutor implements NodeExecutor {
                 if (bodyConfig.isTextual()) {
                     body = context.resolveExpression(bodyConfig.asText());
                 } else {
-                    // Resolve expressions in body object
                     ObjectNode resolvedBody = objectMapper.createObjectNode();
                     bodyConfig.fields().forEachRemaining(entry -> {
                         if (entry.getValue().isTextual()) {
@@ -102,10 +153,27 @@ public class HttpNodeExecutor implements NodeExecutor {
             if (statusCode >= 200 && statusCode < 300) {
                 return NodeExecutionResult.success(output);
             } else if (statusCode >= 500) {
+                status = "error_5xx";
                 return NodeExecutionResult.failure("HTTP request failed with status " + statusCode, true);
             } else {
+                status = "error_4xx";
                 return NodeExecutionResult.failure("HTTP request failed with status " + statusCode);
             }
+
+        } catch (Exception e) {
+            status = "error_exception";
+            LOG.errorf(e, "HTTP request failed for URL: %s", url);
+            throw e;
+        } finally {
+            // Record metrics
+            timerSample.stop(Timer.builder("workflow.http.request")
+                    .tag("method", method)
+                    .tag("status", status)
+                    .register(meterRegistry));
+
+            meterRegistry.counter("workflow.http.requests.total",
+                    "method", method,
+                    "status", status).increment();
         }
     }
 
