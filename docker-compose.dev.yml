@@ -95,11 +95,13 @@ services:
       - PERMISSION_API_BASE_URL=http://api:8000/api
       - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
       - WORKFLOWS_WEBHOOK_BASE_URL=http://localhost:7002
+      - QUARKUS_REDIS_HOSTS=redis://redis:6379
     env_file:
       - config/dev.env
     depends_on:
       - postgres
       - rabbitmq
+      - redis
       - api
       - functions
     networks:
