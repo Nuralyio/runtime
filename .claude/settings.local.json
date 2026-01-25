@@ -34,7 +34,8 @@
       "Bash(kubectl rollout:*)",
       "Bash(kubectl wait:*)",
       "Bash(kubectl delete:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []
