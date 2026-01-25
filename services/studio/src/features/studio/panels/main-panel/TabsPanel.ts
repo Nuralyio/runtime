@@ -80,6 +80,7 @@ export class TabsPanel extends LitElement {
               this.editableTabs.push({
                 id: tab.id,
                 label: tab.label,
+                type: "function",
                 content: html`
                                 <!-- <editor-interactive-panel> -->
                                     <function-page .detail=${tab.detail}></function-page>
@@ -91,6 +92,7 @@ export class TabsPanel extends LitElement {
               this.editableTabs.push({
                 id: tab.id,
                 label: tab.label,
+                type: "files",
                 content: html`
                                   <editor-interactive-panel>
                                     <files-page .detail=${tab.detail}></files-page>
@@ -101,18 +103,17 @@ export class TabsPanel extends LitElement {
               this.editableTabs.push({
                 id: tab.id,
                 label: tab.label,
+                type: "flow",
                 content: html`<div style="width: 100%; height: calc(100vh - 130px);"><flow-page .detail=${tab.detail}></flow-page></div>`
               });
               break;
-                   case "database":
-                    this.editableTabs.push({
-                      id: tab.id,
-                      label: tab.label,
-                      content: html`
-                                        <editor-interactive-panel>
-                                          <databse-page .detail=${tab.detail}></databse-page>
-                                      </editor-interactive-panel>`
-                    });
+            case "database":
+              this.editableTabs.push({
+                id: tab.id,
+                label: tab.label,
+                type: "database",
+                content: html`<div style="width: 100%; height: calc(100vh - 130px);"><database-page .detail=${tab.detail}></database-page></div>`
+              });
               break;
           }
         }

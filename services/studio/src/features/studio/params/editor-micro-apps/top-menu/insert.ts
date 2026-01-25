@@ -199,7 +199,96 @@ export const Insert = /* js */`
             },
             icon: "asterisk",
           },
-       
+          {
+            id: "workflow",
+            label: "Workflow",
+            value: {
+              value: "workflow_wrapper",
+              additionalData: {
+              action: "add",
+              input: {
+                "workflowId": {
+                  "type": "static",
+                  "value": ""
+                },
+                "triggerType": {
+                  "type": "static",
+                  "value": "manual"
+                },
+                "autoExecute": {
+                  "type": "static",
+                  "value": false
+                },
+                "showStatus": {
+                  "type": "static",
+                  "value": true
+                },
+                "timeout": {
+                  "type": "static",
+                  "value": 30000
+                }
+              },
+              style:{
+                  width: "300px",
+              }
+              },
+            },
+            icon: "workflow",
+          },
+          {
+            id: "chatbot",
+            label: "Chatbot",
+            value: {
+              value: "chatbot_wrapper",
+              additionalData: {
+              action: "add",
+              input: {
+                "floating": {
+                  "type": "static",
+                  "value": false
+                },
+                "draggable": {
+                  "type": "static",
+                  "value": false
+                },
+                "position": {
+                  "type": "static",
+                  "value": "center-bottom"
+                },
+                "title": {
+                  "type": "static",
+                  "value": "Chat"
+                },
+                "showMessages": {
+                  "type": "static",
+                  "value": true
+                },
+                "showCloseButton": {
+                  "type": "static",
+                  "value": false
+                },
+                "placeholder": {
+                  "type": "static",
+                  "value": "Type your message..."
+                },
+                "size": {
+                  "type": "static",
+                  "value": "medium"
+                },
+                "variant": {
+                  "type": "static",
+                  "value": "default"
+                }
+              },
+              style:{
+                  width: "400px",
+                  height: "500px",
+              }
+              },
+            },
+            icon: "message-circle",
+          },
+
         ];
         const inputOptions = [
           
@@ -265,39 +354,22 @@ export const Insert = /* js */`
                       "uuid": "cb0376de-7571-4b9f-854b-a24896219390",
                       "input": {
                         "label": {
-                          "type": "handler",
-                          "value": "return $currentValue"
+                          "type": "value",
+                          "value": "Dropdown"
+                        },
+                        "mode": {
+                          "type": "value",
+                          "value": "options"
                         },
                         "options": {
                           "type": "handler",
                           "value": "return [ {label: 'option1', value: 'value1', icon: 'bomb'}, { label: 'option2', value: 'value2', children: [ {label: 'option3', value: 'value3', icon: 'car'}, {label: 'option13', value: 'value13', icon: 'car'}, ], }, ]"
-                        },
-                        "placeholder": {
-                          "type": "string",
-                          "value": "Select item"
                         }
                       },
                       "pageId": "35bd7304-b77b-4b54-b222-ee6f2f8bece3",
-                      "children_ids": [
-                        "89dbb4d0-a780-4ecf-9f5d-c01afacd2d21",
-                        "f7b65c66-8a7a-4443-80d3-ba3035f62929"
-                      ],
+                      "children_ids": [],
                       "application_id": "9c144432-215e-4436-b317-96559dcf1e71",
                       "type": "dropdown"
-                    },
-                    {
-                      "name": "text_label_423",
-                      "type": "text_label",
-                      "uuid": "f7b65c66-8a7a-4443-80d3-ba3035f62929",
-                      "pageId": "35bd7304-b77b-4b54-b222-ee6f2f8bece3",
-                      "application_id": "9c144432-215e-4436-b317-96559dcf1e71",
-                      "children_ids": [],
-                      "input": {
-                        "value": {
-                          "type": "string",
-                          "value": "Dropdown"
-                        }
-                      },
                     }
                   ]
                 }

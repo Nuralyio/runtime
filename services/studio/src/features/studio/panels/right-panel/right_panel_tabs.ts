@@ -217,6 +217,16 @@ export default [
                             parameters: ["modal_blocks"],
                             handlers: ["studio_modal_handler"],
                             themes: ["studio_modal_theme_container", "border_manager_collapse", "box_model_collapse"]
+                        },
+                        "workflow_wrapper": {
+                            parameters: ["workflow_blocks"],
+                            handlers: ["studio_workflow_handler"],
+                            themes: ["studio_workflow_theme_container", "border_manager_collapse", "box_model_collapse"]
+                        },
+                        "chatbot_wrapper": {
+                            parameters: ["chatbot_blocks"],
+                            handlers: ["studio_chatbot_handler"],
+                            themes: ["studio_chatbot_theme_container", "border_manager_collapse", "box_model_collapse"]
                         }
                     };
                     // prepare select_component_text into themes
@@ -228,6 +238,14 @@ export default [
                         parameters = [...(config.parameters || []), "translations_panel_block", "access_control_panel_block"];
                         handlers = [...(config.handlers || [])];
                         themes = ["select_component_styles_state_container", ...(config.themes || [])];
+                    }
+
+                    // Load workflows when workflow_wrapper is selected
+                    if (selectedComponent?.type === 'workflow_wrapper') {
+                        const appId = applications[0]?.uuid;
+                        if (appId && (!Vars.workflows || Vars.workflows.length === 0)) {
+                            refreshWorkflows(appId);
+                        }
                     }
                 } else if(currentPageId) {
                     parameters = ["page_info_container_block", "access_control_panel_block"];

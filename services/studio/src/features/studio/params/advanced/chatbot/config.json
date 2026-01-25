@@ -1,0 +1,555 @@
+{
+  "chatbotFields": {
+    "container": {
+      "uuid": "chatbot_collapse_container",
+      "name": "Chatbot Fields Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "chatbot_collapse",
+      "title": "Chatbot Properties",
+      "style": {}
+    },
+    "properties": [
+      {
+        "name": "chatbot_workflow_id",
+        "label": "Workflow",
+        "type": "select",
+        "inputProperty": "workflowId",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Select workflow",
+        "optionsHandler": "return (Vars.workflows || []).map(w => ({ label: w.name || w.id, value: w.id }));",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "workflowId",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["workflowId", ""]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["workflowId"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["workflowId", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_socket_url",
+        "label": "Socket URL",
+        "type": "text",
+        "inputProperty": "socketUrl",
+        "default": "",
+        "width": "180px",
+        "placeholder": "Auto (current origin)",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "socketUrl",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["socketUrl", ""]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["socketUrl"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["socketUrl", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_title",
+        "label": "Title",
+        "type": "text",
+        "inputProperty": "title",
+        "default": "Chat",
+        "width": "180px",
+        "placeholder": "Chat title",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "title",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["title", "Chat"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["title"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["title", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_placeholder",
+        "label": "Placeholder",
+        "type": "text",
+        "inputProperty": "placeholder",
+        "default": "Type your message...",
+        "width": "180px",
+        "placeholder": "Input placeholder",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "placeholder",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["placeholder", "Type your message..."]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["placeholder"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["placeholder", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_floating",
+        "label": "Floating",
+        "type": "boolean",
+        "inputProperty": "floating",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "floating",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["floating", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["floating"]
+        }
+      },
+      {
+        "name": "chatbot_draggable",
+        "label": "Draggable",
+        "type": "boolean",
+        "inputProperty": "draggable",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "draggable",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["draggable", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["draggable"]
+        }
+      },
+      {
+        "name": "chatbot_position",
+        "label": "Position",
+        "type": "select",
+        "inputProperty": "position",
+        "default": "center-bottom",
+        "width": "180px",
+        "placeholder": "Select position",
+        "options": [
+          { "label": "Center Bottom", "value": "center-bottom" },
+          { "label": "Bottom Right", "value": "bottom-right" },
+          { "label": "Bottom Left", "value": "bottom-left" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "position",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["position", "center-bottom"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["position"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["position", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_size",
+        "label": "Size",
+        "type": "select",
+        "inputProperty": "size",
+        "default": "medium",
+        "width": "180px",
+        "placeholder": "Select size",
+        "options": [
+          { "label": "Small", "value": "small" },
+          { "label": "Medium", "value": "medium" },
+          { "label": "Large", "value": "large" },
+          { "label": "Full", "value": "full" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "size",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["size", "medium"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["size"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["size", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_variant",
+        "label": "Variant",
+        "type": "select",
+        "inputProperty": "variant",
+        "default": "default",
+        "width": "180px",
+        "placeholder": "Select variant",
+        "options": [
+          { "label": "Default", "value": "default" },
+          { "label": "Minimal", "value": "minimal" },
+          { "label": "Rounded", "value": "rounded" },
+          { "label": "ChatGPT", "value": "chatgpt" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "variant",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["variant", "default"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["variant"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["variant", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_messages_display",
+        "label": "Messages Display",
+        "type": "select",
+        "inputProperty": "messagesDisplay",
+        "default": "always",
+        "width": "180px",
+        "placeholder": "Select display mode",
+        "options": [
+          { "label": "Always", "value": "always" },
+          { "label": "Never (Input Only)", "value": "never" },
+          { "label": "Auto (When Messages)", "value": "auto" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "messagesDisplay",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["messagesDisplay", "always"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["messagesDisplay"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["messagesDisplay", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_show_close_button",
+        "label": "Show Close Button",
+        "type": "boolean",
+        "inputProperty": "showCloseButton",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "showCloseButton",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["showCloseButton", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["showCloseButton"]
+        }
+      },
+      {
+        "name": "chatbot_show_send_button",
+        "label": "Show Send Button",
+        "type": "boolean",
+        "inputProperty": "showSendButton",
+        "default": true,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "showSendButton",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["showSendButton", true]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["showSendButton"]
+        }
+      },
+      {
+        "name": "chatbot_boxed",
+        "label": "Boxed Layout",
+        "type": "boolean",
+        "inputProperty": "boxed",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "boxed",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["boxed", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["boxed"]
+        }
+      },
+      {
+        "name": "chatbot_auto_scroll",
+        "label": "Auto Scroll",
+        "type": "boolean",
+        "inputProperty": "autoScroll",
+        "default": true,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "autoScroll",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["autoScroll", true]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["autoScroll"]
+        }
+      },
+      {
+        "name": "chatbot_disabled",
+        "label": "Disabled",
+        "type": "boolean",
+        "inputProperty": "disabled",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "disabled",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["disabled", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["disabled"]
+        }
+      },
+      {
+        "name": "chatbot_rtl",
+        "label": "RTL",
+        "type": "boolean",
+        "inputProperty": "isRTL",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "isRTL",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["isRTL", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["isRTL"]
+        }
+      },
+      {
+        "name": "chatbot_enable_file_upload",
+        "label": "Enable File Upload",
+        "type": "boolean",
+        "inputProperty": "enableFileUpload",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "enableFileUpload",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["enableFileUpload", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["enableFileUpload"]
+        }
+      },
+      {
+        "name": "chatbot_show_threads",
+        "label": "Show Threads",
+        "type": "boolean",
+        "inputProperty": "showThreads",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "showThreads",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["showThreads", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["showThreads"]
+        }
+      },
+      {
+        "name": "chatbot_enable_thread_creation",
+        "label": "Enable Thread Creation",
+        "type": "boolean",
+        "inputProperty": "enableThreadCreation",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "enableThreadCreation",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["enableThreadCreation", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["enableThreadCreation"]
+        }
+      },
+      {
+        "name": "chatbot_loading_indicator",
+        "label": "Loading Indicator",
+        "type": "select",
+        "inputProperty": "loadingIndicator",
+        "default": "dots",
+        "width": "180px",
+        "placeholder": "Select type",
+        "options": [
+          { "label": "Dots", "value": "dots" },
+          { "label": "Spinner", "value": "spinner" },
+          { "label": "Wave", "value": "wave" },
+          { "label": "Typing", "value": "typing" }
+        ],
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "loadingIndicator",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["loadingIndicator", "dots"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["loadingIndicator"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["loadingIndicator", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_loading_text",
+        "label": "Loading Text",
+        "type": "text",
+        "inputProperty": "loadingText",
+        "default": "Bot is typing...",
+        "width": "180px",
+        "placeholder": "Loading text",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "loadingText",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["loadingText", "Bot is typing..."]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["loadingText"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["loadingText", "value"]
+          }
+        }
+      },
+      {
+        "name": "chatbot_debug",
+        "label": "Debug Mode",
+        "type": "boolean",
+        "inputProperty": "debug",
+        "default": false,
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "debug",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["debug", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["debug"]
+        }
+      },
+      {
+        "name": "chatbot_execution_id_variable",
+        "label": "Execution ID Variable",
+        "type": "text",
+        "inputProperty": "executionIdVariable",
+        "default": "chatbot_execution_id",
+        "width": "180px",
+        "placeholder": "Variable name for execution ID",
+        "hasHandler": true,
+        "handlerType": "input",
+        "handlerProperty": "executionIdVariable",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["executionIdVariable", "chatbot_execution_id"]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["executionIdVariable"]
+        },
+        "eventHandlers": {
+          "onChange": {
+            "ref": "updateInput",
+            "params": ["executionIdVariable", "value"]
+          }
+        }
+      }
+    ],
+    "includeCommonProperties": [
+      "component_value_text_block",
+      "component_id_text_block",
+      "display_block",
+      "access_block",
+      "component_hash_text_block"
+    ],
+    "includeContainers": []
+  }
+}

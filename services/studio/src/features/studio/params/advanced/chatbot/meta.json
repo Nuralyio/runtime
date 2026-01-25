@@ -1,0 +1,9 @@
+{
+  "uuid": "chatbot_blocks",
+  "name": "Chatbot",
+  "themeContainerId": "studio_chatbot_theme_container",
+  "configKey": "chatbotFields",
+  "children_ids": [
+    "chatbot_collapse_container"
+  ]
+}

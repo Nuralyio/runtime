@@ -16,6 +16,7 @@ export interface PropertyConfig {
   helperText?: string;
   format?: string;  // Date format for date inputs
   options?: Array<{ value: string; label: string }>;
+  optionsHandler?: string;  // Dynamic options handler for select inputs
   autoCheckbox?: boolean;
   // Input property mapping
   inputProperty?: string;  // The actual component input property name (if different from 'name')

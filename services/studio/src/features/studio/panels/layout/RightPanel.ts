@@ -43,8 +43,8 @@ export class RightPanel extends LitElement {
 
 
   render() {
-    // Hide right panel for flow tabs
-    const shouldShow = this.mode === ViewMode.Edit && this.currentTabType !== "flow";
+    // Hide right panel for flow and database tabs
+    const shouldShow = this.mode === ViewMode.Edit && this.currentTabType !== "flow" && this.currentTabType !== "database";
 
     return html`
 
