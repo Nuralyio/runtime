@@ -35,3 +35,7 @@
 	path = services/textlens
 	url = https://github.com/Nuralyio/textlens.git
 	branch = main
+[submodule "services/journal"]
+	path = services/journal
+	url = https://github.com/Nuralyio/journal.git
+	branch = main
