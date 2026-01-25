@@ -184,10 +184,21 @@ export class NrKvSecretSelect extends LitElement {
     const appId = this.getAppId();
     if (!appId || !this.provider) return;
 
+    const savedValue = this.value;
     this.loading = true;
     try {
       const entries = await getKvEntries(appId, { scope: this.provider });
       this.entries = (entries || []).filter(e => e.isSecret);
+
+      // If we have a saved value and entries loaded, force nr-select to reinitialize
+      // by temporarily clearing and restoring the value
+      if (savedValue && this.entries.length > 0) {
+        await this.updateComplete;
+        // This triggers nr-select to see value as changed and reinitialize
+        this.value = '';
+        await this.updateComplete;
+        this.value = savedValue;
+      }
     } catch (err) {
       console.error('Failed to load KV entries:', err);
       this.entries = [];

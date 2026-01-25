@@ -128,7 +128,7 @@ export class SelectSelectionController extends BaseSelectController implements S
     try {
       // Prevent re-initialization
       if (this._initialized) return;
-      
+
       const value = this.host.value;
       if (!value || (Array.isArray(value) && value.length === 0)) return;
 
@@ -143,7 +143,7 @@ export class SelectSelectionController extends BaseSelectController implements S
         // The host already has the value, no need to update it
         this.requestUpdate();
       }
-      
+
       this._initialized = true;
     } catch (error) {
       this.handleError(error as Error, 'initializeFromValue');
