@@ -197,8 +197,9 @@ export interface NodeConfiguration {
   maxTokens?: number;
   tools?: string[];
   // LLM node
-  provider?: 'openai' | 'anthropic' | 'local';
+  provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local';
   modelName?: string;
+  apiUrlPath?: string;  // KV path for custom API URL (for Ollama)
   // Memory node
   memoryType?: 'buffer' | 'summary' | 'vector';
   maxMessages?: number;
