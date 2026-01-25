@@ -55,6 +55,7 @@ export interface CanvasHost extends EventTarget {
   // Properties
   workflow: Workflow;
   readonly: boolean;
+  disabled: boolean;
   showMinimap: boolean;
   showToolbar: boolean;
   showPalette: boolean;

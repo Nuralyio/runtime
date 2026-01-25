@@ -1475,6 +1475,72 @@ export const workflowCanvasStyles = css`
   .canvas-wrapper[data-theme="default"] .http-preview-url {
     background: var(--nuraly-color-layer-02, #f4f4f4);
   }
+
+  /* Disabled overlay styles */
+  .disabled-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: background var(--nuraly-transition-fast, 0.15s) ease;
+  }
+
+  .disabled-overlay.hovering {
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .disabled-overlay-message {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-3, 12px) var(--nuraly-spacing-4, 16px);
+    background: var(--nuraly-color-layer-02, rgba(0, 0, 0, 0.9));
+    border: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
+    border-radius: var(--nuraly-border-radius-medium, 8px);
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    font-size: var(--nuraly-font-size-sm, 13px);
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--nuraly-transition-fast, 0.15s) ease,
+                transform var(--nuraly-transition-fast, 0.15s) ease;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .disabled-overlay.hovering .disabled-overlay-message {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .disabled-overlay-message nr-icon {
+    color: var(--nuraly-color-interactive, #3b82f6);
+  }
+
+  /* Light theme for disabled overlay */
+  .canvas-wrapper[data-theme="light"] .disabled-overlay.hovering,
+  .canvas-wrapper[data-theme="carbon-light"] .disabled-overlay.hovering,
+  .canvas-wrapper[data-theme="default-light"] .disabled-overlay.hovering,
+  .canvas-wrapper[data-theme="default"] .disabled-overlay.hovering {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .canvas-wrapper[data-theme="light"] .disabled-overlay-message,
+  .canvas-wrapper[data-theme="carbon-light"] .disabled-overlay-message,
+  .canvas-wrapper[data-theme="default-light"] .disabled-overlay-message,
+  .canvas-wrapper[data-theme="default"] .disabled-overlay-message {
+    background: var(--nuraly-color-layer-02, #ffffff);
+    border-color: var(--nuraly-color-border-subtle, #e0e0e0);
+    color: var(--nuraly-color-text-primary, #161616);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
 `;
 
 export const styles = workflowCanvasStyles;
