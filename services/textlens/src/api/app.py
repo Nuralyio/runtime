@@ -75,10 +75,13 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Include routers
+    # Include routers with /api/v1/ocr prefix for gateway compatibility
+    app.include_router(health.router, prefix="/api/v1/ocr")
+    app.include_router(ocr.router, prefix="/api/v1")
+    app.include_router(tasks.router, prefix="/api/v1")
+
+    # Also keep root health endpoint for docker healthcheck
     app.include_router(health.router)
-    app.include_router(ocr.router)
-    app.include_router(tasks.router)
 
     return app
 
