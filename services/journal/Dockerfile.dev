@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . .
 
 # Expose ports
-EXPOSE 7004 5005
+EXPOSE 7005 5005
 
 # Run Quarkus in dev mode with hot reload
-CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=7004", "-DskipTests", "-U"]
+CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=7005", "-DskipTests", "-U"]
