@@ -31,3 +31,7 @@
 [submodule "services/conduit"]
 	path = services/conduit
 	url = https://github.com/Nuralyio/conduit.git
+[submodule "services/textlens"]
+	path = services/textlens
+	url = https://github.com/Nuralyio/textlens.git
+	branch = main
