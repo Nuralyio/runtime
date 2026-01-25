@@ -28,3 +28,4 @@ export { renderTransformFields } from './transform-fields.js';
 export { renderVariableFields } from './variable-fields.js';
 export { renderEmailFields } from './email-fields.js';
 export { renderChatStartFields, renderChatOutputFields } from './chat-fields.js';
+export { renderOcrFields } from './ocr-fields.js';

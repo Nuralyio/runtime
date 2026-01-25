@@ -33,6 +33,7 @@ export enum WorkflowNodeType {
   CHATBOT = 'CHATBOT',
   DEBUG = 'DEBUG',
   LLM = 'LLM',
+  OCR = 'OCR',
 }
 
 /**
@@ -258,6 +259,12 @@ export interface NodeConfiguration {
     type: string;
     defaultValue?: unknown;
   }>;
+  // OCR node
+  imageSource?: 'base64' | 'url' | 'file' | 'variable';
+  imageVariable?: string;
+  ocrLanguage?: string;
+  detectLayout?: boolean;
+  asyncMode?: boolean;
 }
 
 /**
@@ -414,6 +421,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.CHATBOT]: '#0ea5e9',
   [WorkflowNodeType.DEBUG]: '#f97316',
   [WorkflowNodeType.LLM]: '#22d3ee',
+  [WorkflowNodeType.OCR]: '#0d9488',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -460,6 +468,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.CHATBOT]: 'message-circle',
   [WorkflowNodeType.DEBUG]: 'bug',
   [WorkflowNodeType.LLM]: 'brain',
+  [WorkflowNodeType.OCR]: 'scan',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -606,6 +615,27 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.OCR,
+    name: 'OCR',
+    description: 'Extract text from images using OCR',
+    icon: NODE_ICONS[WorkflowNodeType.OCR],
+    color: NODE_COLORS[WorkflowNodeType.OCR],
+    category: 'action',
+    defaultConfig: {
+      imageSource: 'base64',
+      ocrLanguage: 'fra',
+      detectLayout: false,
+      asyncMode: false,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Image' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Text' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
     },
@@ -1135,6 +1165,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.FUNCTION,
       WorkflowNodeType.HTTP,
       WorkflowNodeType.LLM,
+      WorkflowNodeType.OCR,
       WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
