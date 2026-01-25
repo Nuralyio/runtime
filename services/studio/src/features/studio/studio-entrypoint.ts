@@ -13,7 +13,8 @@ import {
   StudioCheckbox, StudioCode, StudioCollection, StudioContainer, StudioCard, StudioDocument,
   StudioDropdown, StudioEmbed, StudioFileUpload, StudioIcon, StudioImage, StudioLink,
   StudioRefComponent, StudioRichText, StudioRichTextEditor, StudioTable, StudioVideo,
-  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol, StudioForm, StudioModal
+  StudioMenu, StudioBadge, StudioTag, StudioGridRow, StudioGridCol, StudioForm, StudioModal,
+  StudioWorkflow, StudioChatbot
 } from "./params/index.ts";
 
 import {
@@ -447,6 +448,8 @@ export default [
     ...StudioGridCol,
     ...StudioForm,
     ...StudioModal,
+    ...StudioWorkflow,
+    ...StudioChatbot,
     ...studioValidationRulesBlock,
     ...studioBorderManagerBlock,
     // Revision Panel - uses Lit component

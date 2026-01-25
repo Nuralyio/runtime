@@ -1,5 +1,5 @@
 import { customElement, state } from "lit/decorators.js";
-import { html, LitElement, css, type PropertyValues } from "lit";
+import { html, LitElement, css } from "lit";
 import "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component";
 import type { Workflow } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { $currentApplication } from "../../../runtime/redux/store/apps";
@@ -8,14 +8,11 @@ import {
   $workflowSaveStatus,
   $workflows,
   getOrCreateWorkflow,
-  getWorkflows,
-  updateCurrentWorkflow,
-  saveCurrentWorkflowDebounced,
-  setLastSavedWorkflow,
+  getWorkflows, setLastSavedWorkflow,
   getWorkflowViewport,
   saveWorkflowViewport,
   migrateWorkflowViewportToKv,
-  getDefaultWorkflowViewport,
+  getDefaultWorkflowViewport
 } from "../../../runtime/redux/store/workflow";
 import type { CanvasViewport } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { $context } from "../../../runtime/redux/store/context";
@@ -397,7 +394,13 @@ export class FlowPage extends LitElement {
       if (workflow && workflow.id !== this.workflow?.id) {
         this.subscribeToWorkflow(workflow.id);
       }
-      this.workflow = workflow;
+      // Preserve current viewport when updating workflow from store
+      // This prevents viewport reset during execution events
+      if (workflow) {
+        this.workflow = { ...workflow, viewport: this.currentViewport };
+      } else {
+        this.workflow = workflow;
+      }
     });
 
     // Subscribe to save status
@@ -412,7 +415,8 @@ export class FlowPage extends LitElement {
         // Convert DTO format to canvas format
         const wf = convertDtoToWorkflow(rawWf);
         if (wf) {
-          this.workflow = wf;
+          // Preserve current viewport when switching workflows via context
+          this.workflow = { ...wf, viewport: this.currentViewport };
           // Also update the global store so execute uses the right workflow
           $currentWorkflow.set(wf);
           // Track loaded state for diffing on save

@@ -6,6 +6,7 @@ import { $environment, type Environment, ViewMode } from '../../../../features/r
 import { $editorState } from '../../../../features/runtime/redux/store/apps';
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { keyed } from "lit/directives/keyed.js";
 
 @customElement("left-panel")
 export class LeftPanel extends LitElement {
@@ -19,19 +20,52 @@ export class LeftPanel extends LitElement {
   @state()
   currentTabType: string = "page";
 
-  constructor() {
-    super();
-    $environment.subscribe((environment: Environment) => {
-      this.mode = environment.mode;
-    });
-    $editorState.subscribe((editorState) => {
-      this.currentTabType = editorState.currentTab?.type || "page";
-    });
-  }
+  private unsubscribeEnvironment?: () => void;
+  private unsubscribeEditorState?: () => void;
+  private initialized = false;
 
   override connectedCallback() {
     super.connectedCallback();
 
+    this.unsubscribeEnvironment = $environment.subscribe((environment: Environment) => {
+      this.mode = environment.mode;
+    });
+
+    this.unsubscribeEditorState = $editorState.subscribe((editorState) => {
+      // Don't update until we've initialized from URL
+      if (!this.initialized) return;
+
+      const stateTabType = editorState.currentTab?.type;
+      if (stateTabType && stateTabType !== this.currentTabType) {
+        this.currentTabType = stateTabType;
+      }
+    });
+  }
+
+  override firstUpdated() {
+    // Set initial tab from URL after first render
+    if (typeof window !== "undefined") {
+      const urlTabType = (window as any).__TAB_TYPE__;
+      if (urlTabType) {
+        this.currentTabType = urlTabType;
+      }
+    }
+    this.initialized = true;
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unsubscribeEnvironment?.();
+    this.unsubscribeEditorState?.();
+  }
+
+  private getComponentUUID(): string {
+    if (this.currentTabType === "flow") {
+      return "workflow_left_panel_container";
+    } else if (this.currentTabType === "database") {
+      return "database_left_panel_container";
+    }
+    return "331"; // Default pages left panel
   }
 
   render() {
@@ -39,21 +73,16 @@ export class LeftPanel extends LitElement {
       return html``;
     }
 
-    // Use different micro-app based on tab type
-    let componentUUID = "331"; // Default left panel
-    if (this.currentTabType === "flow") {
-      componentUUID = "workflow_left_panel_container";
-    } else if (this.currentTabType === "database") {
-      componentUUID = "database_left_panel_container";
-    }
+    const componentUUID = this.getComponentUUID();
 
     return html`
       <div
         class="flex flex-col visible"
         style="height: 100%;width : 300px;"
       >
-
-        <micro-app uuid="1" componentToRenderUUID="${componentUUID}" style="height: 100%;" class="flex-grow"></micro-app>
+        ${keyed(componentUUID, html`
+          <micro-app uuid="1" componentToRenderUUID="${componentUUID}" style="height: 100%;" class="flex-grow"></micro-app>
+        `)}
       </div>
     `;
   }
