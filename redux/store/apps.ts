@@ -101,9 +101,9 @@ export const $showShareApplicationModal = atom(false);
  */
 export const $editorState = atom({
   currentTab: {
-    id: "flow",
-    label: "Workflows",
-    type: "flow"
+    id: "0",
+    label: "Page editor",
+    type: "page"
   },
   tabs: [
     {
@@ -116,11 +116,11 @@ export const $editorState = atom({
       label: "Workflows",
       type: "flow"
     },
-    // {
-    //   id: "3",
-    //   label: "Database manager",
-    //   type: "database"
-    // }
+    {
+      id: "database",
+      label: "Database",
+      type: "database"
+    }
   ]
 });
 

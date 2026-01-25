@@ -57,6 +57,17 @@ export class StyleHandlerController implements ReactiveController, Disposable {
   }
 
   /**
+   * Process styles SYNCHRONOUSLY - skips style_handlers execution
+   * Used for rapid updates during typing to prevent UI lag
+   */
+  processStylesSync(): void {
+    if (isServer || !this.isConnected) return;
+    // Skip style_handlers (they require async execution)
+    // Just recalculate static styles
+    this.calculateStyles();
+  }
+
+  /**
    * Process all style handlers for the component
    * Matches original traitStylesHandlers behavior exactly
    */

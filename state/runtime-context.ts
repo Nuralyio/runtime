@@ -411,6 +411,20 @@ class RuntimeContext implements IRuntimeContext {
    * Private constructor to enforce singleton pattern.
    * Initializes the executor system and sets up event listeners.
    */
+  /** Debounce timer for registerApplications */
+  private registerDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Debounced version of registerApplications to prevent excessive calls during rapid updates */
+  private debouncedRegisterApplications = () => {
+    if (this.registerDebounceTimer) {
+      clearTimeout(this.registerDebounceTimer);
+    }
+    this.registerDebounceTimer = setTimeout(() => {
+      this.registerApplications();
+      this.registerDebounceTimer = null;
+    }, 16); // ~1 frame at 60fps
+  };
+
   private constructor() {
     if(isServer){
       return;
@@ -418,10 +432,11 @@ class RuntimeContext implements IRuntimeContext {
     this.PropertiesProxy = this.createProxy(this.Properties);
     this.VarsProxy = this.createProxy(this.Vars, 'Vars');
     this.registerContext();
-    $applications.subscribe(() => this.registerApplications());
-    $components.subscribe(() => this.registerApplications());
-    eventDispatcher.on("component:refresh", () => this.registerApplications())
-    eventDispatcher.on("component:updated", () => this.registerApplications())
+    $applications.subscribe(() => this.debouncedRegisterApplications());
+    // REMOVED: $components.subscribe() - was causing 154ms lag on every keystroke!
+    // registerApplications() should only run for structural changes (add/remove/reorder),
+    // not for attribute updates (text, style changes). Use component:refresh event instead.
+    eventDispatcher.on("component:refresh", () => this.registerApplications()) // For structural changes only
 
     // Expose locale in VarsProxy for handler access
     // Allows handlers to use: Vars.locale to get, Vars.locale = 'fr' to set

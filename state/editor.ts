@@ -201,7 +201,12 @@ class Editor {
   setEditorMode(isEditorMode: boolean) {
     this.isEditorMode = isEditorMode;
     if (this.isEditorMode) {
-      this.updatePlatform();
+      // Always start with desktop platform in editor mode
+      const desktopPlatform = createPlatform("desktop", "1366px", undefined, false);
+      this.currentPlatform = { ...desktopPlatform };
+      if (this.ExecuteInstance?.VarsProxy) {
+        this.ExecuteInstance.VarsProxy.currentPlatform = { ...this.currentPlatform };
+      }
     }
   }
 

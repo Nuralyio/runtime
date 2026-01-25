@@ -9,6 +9,50 @@ import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comp
 import { ExecuteInstance } from '../../../state/runtime-context';
 import { validateComponentHandlers } from '../../../../runtime/utils/handler-validator.ts';
 import { formatValidationErrors } from '../../../../runtime/utils/validation-error-formatter.ts';
+
+// Debounce timers for component update events (prevents rapid re-renders during typing)
+const componentUpdateTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
+// Debounce timers for HTTP save operations
+const componentSaveTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
+// Debounce timer for store setKey (batches rapid updates)
+let storeUpdateTimer: ReturnType<typeof setTimeout> | null = null;
+const pendingStoreUpdates: Set<string> = new Set();
+
+/**
+ * Emit component update events with debouncing to prevent UI freezes during rapid input
+ */
+function emitComponentUpdatedDebounced(componentId: string) {
+  const existingTimer = componentUpdateTimers.get(componentId);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  const timer = setTimeout(() => {
+    eventDispatcher.emit("component:updated", { uuid: componentId });
+    eventDispatcher.emit(`component-updated:${String(componentId)}`);
+    componentUpdateTimers.delete(componentId);
+  }, 16); // ~1 frame at 60fps
+
+  componentUpdateTimers.set(componentId, timer);
+}
+
+/**
+ * Save component to server with debouncing to prevent excessive HTTP requests during typing
+ */
+function saveComponentDebounced(component: any, applicationId: string) {
+  const existingTimer = componentSaveTimers.get(component.uuid);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+  }
+
+  const timer = setTimeout(() => {
+    updateComponentHandler(component, applicationId);
+    componentSaveTimers.delete(component.uuid);
+  }, 300); // 300ms debounce for HTTP saves
+
+  componentSaveTimers.set(component.uuid, timer);
+}
+
 export function updateComponentAttributes(
   application_id: string,
   componentId: string,
@@ -16,7 +60,6 @@ export function updateComponentAttributes(
   updatedAttributes: Record<string, any>, // Define a more specific type
   save = true,
 ) {
-  
   // Retrieve the currentPlatform from global context
   const currentPlatform = ExecuteInstance.Vars.currentPlatform ?? {
     platform: "desktop",
@@ -169,17 +212,31 @@ export function updateComponentAttributes(
         return;
       }
 
-      // FOURTH: Save the validated component to the store
-      // Note: deepMap.setKey doesn't support array index notation, so we update the entire array
-      const updatedComponents = [...applicationComponents];
-      updatedComponents[componentIndex] = componentToUpdate;
-      $components.setKey(application_id, updatedComponents);
+      // FOURTH: Component is already mutated in place
+      // OPTIMIZATION: Debounce setKey() to batch rapid updates and avoid blocking UI
+      // The component object is a reference in applicationComponents array, so mutations are immediate
+      // But we still need to call setKey() eventually to update computed stores
+      pendingStoreUpdates.add(application_id);
+      if (storeUpdateTimer) {
+        clearTimeout(storeUpdateTimer);
+      }
+      storeUpdateTimer = setTimeout(() => {
+        // Batch update all pending applications
+        for (const appId of pendingStoreUpdates) {
+          const store = $components.get();
+          const components = store[appId];
+          if (components) {
+            $components.setKey(appId, [...components]);
+          }
+        }
+        pendingStoreUpdates.clear();
+        storeUpdateTimer = null;
+      }, 100); // Debounce by 100ms to batch multiple updates
 
       // Optionally save the update to persistent store / DB
+      // Uses debouncing to prevent excessive HTTP requests during rapid input
       if (save) {
-        setTimeout(() => {
-          updateComponentHandler(componentToUpdate, application_id);
-        }, 0);
+        saveComponentDebounced(componentToUpdate, application_id);
       }
 
       // Update selected components if needed
@@ -194,11 +251,8 @@ export function updateComponentAttributes(
       }
 
       // Trigger a refresh event for any listeners - ONLY when actual update occurred
-      eventDispatcher.emit("component:updated", { uuid: componentId });
-      eventDispatcher.emit(`component-updated:${String(componentId)}`);
-    } else {
-      // No update needed
-      // console.log('Attributes are the same, no update needed:', updatedAttributes);
+      // Uses debouncing to prevent UI freezes during rapid input (e.g., typing)
+      emitComponentUpdatedDebounced(componentId);
     }
   }
 }
