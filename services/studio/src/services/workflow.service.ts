@@ -112,6 +112,7 @@ function dtoToEdge(dto: WorkflowEdgeDTO): WorkflowEdge {
 }
 
 // Convert from canvas Workflow to backend DTO format
+// Note: viewport is no longer saved with workflow - it's stored in KV per user
 function workflowToDTO(workflow: Workflow, applicationId: string): Partial<WorkflowDTO> {
   return {
     id: workflow.id,
@@ -119,7 +120,7 @@ function workflowToDTO(workflow: Workflow, applicationId: string): Partial<Workf
     description: workflow.description,
     applicationId,
     variables: workflow.variables ? JSON.stringify(workflow.variables) : undefined,
-    viewport: workflow.viewport ? JSON.stringify(workflow.viewport) : undefined,
+    // viewport removed - now stored in KV per user
   };
 }
 

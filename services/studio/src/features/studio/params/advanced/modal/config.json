@@ -11,6 +11,24 @@
     },
     "properties": [
       {
+        "name": "modal_editor_open",
+        "label": "Editor Open",
+        "type": "boolean",
+        "inputProperty": "editorOpen",
+        "default": false,
+        "hasHandler": false,
+        "handlerType": "input",
+        "handlerProperty": "editorOpen",
+        "valueHandler": {
+          "ref": "componentInput",
+          "params": ["editorOpen", false]
+        },
+        "stateHandler": {
+          "ref": "inputHandler",
+          "params": ["editorOpen"]
+        }
+      },
+      {
         "name": "modal_open",
         "label": "Open",
         "type": "boolean",

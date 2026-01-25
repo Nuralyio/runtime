@@ -163,11 +163,19 @@ export class PageContent extends LitElement {
     eventDispatcher.on('component:deleted', deletedHandler);
     this.cleanupFunctions.push(() => eventDispatcher.off('component:deleted', deletedHandler));
 
-    const updatedHandler = () => {
+    // Debounce component updates to prevent UI freezes during rapid input (e.g., typing)
+    // This avoids expensive $applicationComponents recalculation on every keystroke
+    const debouncedRefresh = debounce(() => {
       this.refreshComponent();
+    }, 150);
+    const updatedHandler = () => {
+      debouncedRefresh();
     };
     eventDispatcher.on('component:updated', updatedHandler);
-    this.cleanupFunctions.push(() => eventDispatcher.off('component:updated', updatedHandler));
+    this.cleanupFunctions.push(() => {
+      eventDispatcher.off('component:updated', updatedHandler);
+      debouncedRefresh.cancel();
+    });
 
     $currentPageViewPort.subscribe(() => {
       requestAnimationFrame(() => {

@@ -438,6 +438,32 @@ export const StudioModal = loadComponentProperties(
   modalMeta
 );
 
+// Workflow
+import workflowConfig from "./advanced/workflow/config.json";
+import workflowHandlers from "./advanced/workflow/handlers.json";
+import workflowTheme from "./advanced/workflow/theme.json";
+import workflowMeta from "./advanced/workflow/meta.json";
+
+export const StudioWorkflow = loadComponentProperties(
+  workflowConfig,
+  workflowHandlers,
+  workflowTheme,
+  workflowMeta
+);
+
+// Chatbot
+import chatbotConfig from "./advanced/chatbot/config.json";
+import chatbotHandlers from "./advanced/chatbot/handlers.json";
+import chatbotTheme from "./advanced/chatbot/theme.json";
+import chatbotMeta from "./advanced/chatbot/meta.json";
+
+export const StudioChatbot = loadComponentProperties(
+  chatbotConfig,
+  chatbotHandlers,
+  chatbotTheme,
+  chatbotMeta
+);
+
 // ========================================
 // COMPONENT REGISTRY
 // ========================================
@@ -489,4 +515,6 @@ export const StudioComponents = {
   StudioEmbed,
   StudioRefComponent,
   StudioModal,
+  StudioWorkflow,
+  StudioChatbot,
 };

@@ -4,9 +4,6 @@
   "themeContainerId": "studio_dropdown_theme_container",
   "configKey": "dropdownFields",
   "children_ids": [
-    "dropdown_collapse_container",
-    "typography_collapse_container",
-    "size_collapse_container",
-    "border_collapse_container"
+    "dropdown_collapse_container"
   ]
 }

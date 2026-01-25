@@ -4,8 +4,9 @@
  */
 
 import { $components } from '../runtime/redux/store/component/store';
-import { $currentApplication } from '../runtime/redux/store/apps';
+import { $currentApplication, $editorState } from '../runtime/redux/store/apps';
 import { getAppMembersData } from '../runtime/redux/store/app-members';
+import { refreshWorkflows } from '../runtime/redux/store/workflow';
 import { eventDispatcher } from '../runtime/utils/change-detection';
 import { registerStudioComponents } from './register-studio-components';
 import { presenceClient, PresenceIndicator } from '../runtime/presence';
@@ -40,7 +41,13 @@ export function initializeStudio(): void {
 
         // Initialize presence for collaborative editing
         initializePresence(currentApp.uuid);
+
+        // Preload workflows for the application (for workflow dropdown in properties panel)
+        refreshWorkflows(currentApp.uuid);
       }
+
+      // Set initial tab based on URL routing
+      initializeTabFromUrl();
 
       import("./studio-entrypoint").then(studioModule => {
         $components.setKey("1", studioModule.default as any);
@@ -48,6 +55,40 @@ export function initializeStudio(): void {
       });
     }
   }
+}
+
+/**
+ * Initialize the editor tab based on URL routing
+ * Reads window.__TAB_TYPE__ set by the Astro page
+ */
+function initializeTabFromUrl(): void {
+  const tabType = (window as any).__TAB_TYPE__ as string | undefined;
+
+  if (!tabType) return;
+
+  const tabConfigs: Record<string, { id: string; label: string; type: string }> = {
+    page: { id: "0", label: "Page editor", type: "page" },
+    flow: { id: "flow", label: "Workflows", type: "flow" },
+    database: { id: "database", label: "Database", type: "database" },
+  };
+
+  const tabConfig = tabConfigs[tabType];
+  if (!tabConfig) return;
+
+  const currentState = $editorState.get();
+
+  // Ensure the tab exists in the tabs list
+  const tabExists = currentState.tabs.some(t => t.id === tabConfig.id);
+  const updatedTabs = tabExists
+    ? currentState.tabs
+    : [...currentState.tabs, tabConfig];
+
+  // Set the current tab and update tabs list
+  $editorState.set({
+    ...currentState,
+    tabs: updatedTabs,
+    currentTab: tabConfig,
+  });
 }
 
 /**
