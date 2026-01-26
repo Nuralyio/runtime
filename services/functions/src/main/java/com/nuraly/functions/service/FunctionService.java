@@ -11,6 +11,7 @@ import com.nuraly.library.permission.PermissionDeniedException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,9 @@ import java.util.UUID;
 @ApplicationScoped
 @Transactional
 public class FunctionService {
+
+    @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
+    boolean permissionsEnabled;
 
     @Inject
     FunctionDTOMapper functionDTOMapper;
@@ -29,7 +33,7 @@ public class FunctionService {
     FunctionInvoker functionInvoker;
 
     @Inject
-    Deployment deployment;
+    WasmRuntimeService wasmRuntime;
 
     @Inject
     PermissionClient permissionClient;
@@ -40,6 +44,11 @@ public class FunctionService {
             entities = FunctionEntity.list("applicationId", applicationId);
         } else {
             entities = FunctionEntity.listAll();
+        }
+
+        // Skip permission filtering if permissions are disabled
+        if (!permissionsEnabled) {
+            return functionDTOMapper.toFunctionDTO(entities);
         }
 
         // Filter by user permission
@@ -71,9 +80,9 @@ public class FunctionService {
     }
 
     public FunctionDTO createFunction(FunctionDTO functionDTO, String userUuid) {
-        // Check if user has write permission on the application
+        // Check if user has write permission on the application (only if permissions enabled)
         String applicationId = functionDTO.getApplicationId();
-        if (applicationId != null && !applicationId.isEmpty() && userUuid != null && !userUuid.isEmpty()) {
+        if (permissionsEnabled && applicationId != null && !applicationId.isEmpty() && userUuid != null && !userUuid.isEmpty()) {
             PermissionCheckRequest checkRequest = PermissionCheckRequest.builder()
                     .userId(userUuid)
                     .permissionType("application:write")
@@ -91,8 +100,8 @@ public class FunctionService {
         FunctionEntity entity = functionDTOMapper.toEntity(functionDTO);
         entity.persist();
 
-        // Grant creator full permissions on the new function
-        if (functionDTO.getCreatedBy() != null && !functionDTO.getCreatedBy().isEmpty()) {
+        // Grant creator full permissions on the new function (only if permissions enabled)
+        if (permissionsEnabled && functionDTO.getCreatedBy() != null && !functionDTO.getCreatedBy().isEmpty()) {
             permissionClient.initOwnerPermissions(
                 "function",
                 String.valueOf(entity.id),
@@ -142,6 +151,11 @@ public class FunctionService {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
+        }
+
+        // Skip permission checks if permissions are disabled
+        if (!permissionsEnabled) {
+            return;
         }
 
         // Check if user is anonymous
@@ -216,7 +230,7 @@ public class FunctionService {
     }
 
     /**
-     * Deploy a function.
+     * Deploy a function to the V8 runtime.
      * Permission is verified by the gateway.
      *
      * @param functionId The ID of the function to deploy.
@@ -228,7 +242,13 @@ public class FunctionService {
             throws FunctionNotFoundException, PermissionDeniedException, Exception {
         checkFunctionPermission(functionId, userUuid);
 
-        deployment.deploy(functionId);
+        FunctionEntity functionEntity = FunctionEntity.findById(functionId);
+        if (functionEntity == null) {
+            throw new FunctionNotFoundException("Function not found with id: " + functionId);
+        }
+
+        // Deploy handler directly to V8 runtime
+        wasmRuntime.deploy(functionId.toString(), functionEntity.getHandler());
     }
     public String invokeFunction(UUID functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
