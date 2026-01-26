@@ -174,6 +174,13 @@ function createSocketInstance(): SocketInstance {
         'execution:node-started',
         'execution:node-completed',
         'execution:node-failed',
+        // Agent activity events (LLM calls, tool calls)
+        'execution:llm-call-started',
+        'execution:llm-call-completed',
+        'execution:tool-call-started',
+        'execution:tool-call-completed',
+        // Chat events
+        'chat:message',
         // Presence events (if using same connection)
         'user:joined',
         'user:left',
