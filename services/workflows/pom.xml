@@ -121,12 +121,6 @@
             <version>5.16.0</version>
         </dependency>
 
-        <!-- Redis (for distributed context memory) -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-redis-client</artifactId>
-        </dependency>
-
         <!-- Code Generation -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -160,8 +154,14 @@
         </dependency>
         <dependency>
             <groupId>com.caoccao.javet</groupId>
-            <artifactId>javet-linux-x86_64</artifactId>
-            <version>4.1.0</version>
+            <artifactId>javet</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- Native library for Linux ARM64 (Docker on Apple Silicon) -->
+        <dependency>
+            <groupId>com.caoccao.javet</groupId>
+            <artifactId>javet-linux-arm64</artifactId>
+            <version>4.0.0</version>
         </dependency>
 
         <!-- Testing -->
