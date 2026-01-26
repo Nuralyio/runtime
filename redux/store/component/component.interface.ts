@@ -62,6 +62,7 @@ export const enum ComponentType {
   LanguageSwitcher = "language_switcher",
   TranslationsEditor = "translations_editor",
   PropertyTranslationCollapse = "property_translation_collapse",
+  TranslationToggle = "translation_toggle",
   WorkflowWrapper = "workflow_wrapper",
   ChatbotWrapper = "chatbot_wrapper",
 }

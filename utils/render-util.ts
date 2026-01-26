@@ -45,6 +45,7 @@ const modalTemplate = (props: any, isViewMode: boolean)  => html`<modal-block .i
 const languageSwitcherTemplate = (props: any, isViewMode: boolean)  => html`<language-switcher-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></language-switcher-block>`;
 const workflowWrapperTemplate = (props: any, isViewMode: boolean)  => html`<workflow-wrapper-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></workflow-wrapper-block>`;
 const chatbotWrapperTemplate = (props: any, isViewMode: boolean)  => html`<chatbot-wrapper-block .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></chatbot-wrapper-block>`;
+const propertyTranslationCollapseTemplate = (props: any, isViewMode: boolean) => html`<property-translation-collapse .isViewMode=${isViewMode} .parentcomponent=${props.parent} .item=${props.item} .component=${props.component}></property-translation-collapse>`;
 
 function renderComponentElement(component: ComponentElement, commonProps: any, isViewMode?: boolean): TemplateResult {
   const template = getComponentTemplate(component, commonProps, isViewMode);
@@ -139,6 +140,8 @@ function getComponentTemplate(component: ComponentElement, commonProps: any, isV
       return workflowWrapperTemplate(commonProps, isViewMode);
     case ComponentType.ChatbotWrapper:
       return chatbotWrapperTemplate(commonProps, isViewMode);
+    case ComponentType.PropertyTranslationCollapse:
+      return propertyTranslationCollapseTemplate(commonProps, isViewMode);
     default:
       const registeredTemplate = ComponentRegistry.getTemplate(component?.type as string);
       if (registeredTemplate) {

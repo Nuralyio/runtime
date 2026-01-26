@@ -26,11 +26,12 @@ export class IconButtonBlock extends BaseElementBlock {
     const buttonStyles = this.getStyles();
     const icon = this.resolvedInputs?.icon;
     const iconArray = icon ? [icon] : [];
-    const type = this.resolvedInputs.value || buttonStyles?.type || 'default';
+    const type = this.resolvedInputs.value || this.resolvedInputs.color || buttonStyles?.type || 'default';
     const size = buttonStyles?.size || 'small';
+    const title = this.resolvedInputs?.title || '';
 
     return html`
-      <nr-button 
+      <nr-button
         ${ref(this.inputRef)}
         .size=${size}
         .type=${type}
@@ -40,8 +41,9 @@ export class IconButtonBlock extends BaseElementBlock {
         .dashed=${this.resolvedInputs.dashed || false}
         .icon=${iconArray}
         .iconPosition=${this.resolvedInputs.iconPosition || 'left'}
+        title=${title}
         @mousedown=${this.handleClick}
-        style=${styleMap({ 
+        style=${styleMap({
           ...this.getStyles(),
           width: buttonStyles?.width,
           height: buttonStyles?.height,
