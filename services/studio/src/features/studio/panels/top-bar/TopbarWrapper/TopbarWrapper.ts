@@ -2,6 +2,8 @@ import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import styles from "./TopbarWrapper.style.ts";
 
+// Import native topbar component
+import "../StudioTopBar.ts";
 
 @customElement("topbar-panel-wrapper")
 export class TopbarPanelWrapper extends LitElement {
@@ -10,7 +12,7 @@ export class TopbarPanelWrapper extends LitElement {
   render() {
     return html`
     <div class="topbar-wrapper">
-     <micro-app uuid="1" componentToRenderUUID="top-bar"></micro-app>
+      <studio-topbar></studio-topbar>
     </div>`;
   }
 }
