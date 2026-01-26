@@ -294,6 +294,36 @@ export const workflowCanvasStyles = css`
     background: var(--nuraly-color-layer-hover-01, rgba(255, 255, 255, 0.1));
   }
 
+  .palette-search {
+    padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
+    border-bottom: 1px solid var(--nuraly-color-border-subtle, #3a3a3a);
+  }
+
+  .palette-search nr-input {
+    width: 100%;
+  }
+
+  .palette-search nr-icon {
+    color: var(--nuraly-color-text-placeholder, #666);
+  }
+
+  .palette-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-6, 24px);
+    color: var(--nuraly-color-text-placeholder, #666);
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-sm, 12px);
+  }
+
+  .palette-empty nr-icon {
+    color: inherit;
+    opacity: 0.7;
+  }
+
   .palette-content {
     flex: 1;
     overflow-y: auto;
