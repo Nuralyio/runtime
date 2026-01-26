@@ -4,20 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.engine.script.WasmJavaScriptEngine;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
 import org.jboss.logging.Logger;
 
 /**
  * Condition Node Executor with:
- * - Cached JavaScript source compilation (avoids re-parsing expressions)
+ * - WASM-based JavaScript evaluation (secure sandboxed execution)
  * - Metrics tracking (evaluation count, duration, errors)
  * - Graceful error handling (defaults to false path on failure)
  */
@@ -30,6 +27,9 @@ public class ConditionNodeExecutor implements NodeExecutor {
     MeterRegistry meterRegistry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    WasmJavaScriptEngine jsEngine;
 
     @Override
     public NodeType getType() {
@@ -81,43 +81,13 @@ public class ConditionNodeExecutor implements NodeExecutor {
     }
 
     /**
-     * Evaluate JavaScript expression with context variables.
-     * Uses cached Source objects for repeated expressions.
+     * Evaluate JavaScript expression using WASM-based engine.
+     * Provides secure sandboxed execution for user-provided expressions.
      */
     private boolean evaluateCondition(ExecutionContext context, String expression) throws Exception {
-        // Get cached source or create new one
-        Source source = getCachedSource(expression);
+        String variablesJson = context.getVariablesAsString();
+        String inputJson = objectMapper.writeValueAsString(context.getInput());
 
-        try (Context jsContext = Context.newBuilder("js")
-                .option("engine.WarnInterpreterOnly", "false")
-                .build()) {
-
-            // Inject variables into JavaScript context
-            Value bindings = jsContext.getBindings("js");
-
-            // Add variables object
-            String variablesJson = context.getVariablesAsString();
-            jsContext.eval("js", "var variables = " + variablesJson);
-
-            // Add input object
-            String inputJson = objectMapper.writeValueAsString(context.getInput());
-            jsContext.eval("js", "var input = " + inputJson);
-
-            // Evaluate the cached expression source
-            Value result = jsContext.eval(source);
-
-            return result.asBoolean();
-        }
-    }
-
-    /**
-     * Cache compiled JavaScript source to avoid re-parsing.
-     * TTL: 5 minutes, max 1000 entries.
-     */
-    @CacheResult(cacheName = "js-expression-cache")
-    public Source getCachedSource(String expression) {
-        return Source.newBuilder("js", expression, "condition.js")
-                .cached(true)
-                .buildLiteral();
+        return jsEngine.evaluateCondition(expression, variablesJson, inputJson);
     }
 }
