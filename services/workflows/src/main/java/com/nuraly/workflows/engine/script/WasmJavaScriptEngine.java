@@ -55,13 +55,8 @@ public class WasmJavaScriptEngine {
 
     @PreDestroy
     void shutdown() {
-        if (v8Host != null) {
-            try {
-                v8Host.close();
-            } catch (Exception e) {
-                LOG.warn("Error closing V8 host", e);
-            }
-        }
+        // V8Host is a singleton managed by Javet, no need to close it explicitly
+        v8Host = null;
     }
 
     /**
@@ -69,6 +64,7 @@ public class WasmJavaScriptEngine {
      * Used for condition evaluation.
      */
     public boolean evaluateCondition(String expression, String variablesJson, String inputJson) throws Exception {
+        long startTime = System.nanoTime();
         try (V8Runtime runtime = v8Host.createV8Runtime()) {
             // Inject variables and input
             runtime.getExecutor("var variables = " + variablesJson + ";").executeVoid();
@@ -76,7 +72,10 @@ public class WasmJavaScriptEngine {
 
             // Evaluate expression
             V8Value result = runtime.getExecutor(expression).execute();
-            return toBoolean(result);
+            boolean boolResult = toBoolean(result);
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.debugf("evaluateCondition completed in %d ms", durationMs);
+            return boolResult;
         }
     }
 
@@ -85,6 +84,7 @@ public class WasmJavaScriptEngine {
      * Used for function execution and transformations.
      */
     public JsonNode executeScript(String code, String variablesJson, String inputJson, String argsJson) throws Exception {
+        long startTime = System.nanoTime();
         try (V8Runtime runtime = v8Host.createV8Runtime()) {
             // Inject variables
             runtime.getExecutor("var variables = " + variablesJson + ";").executeVoid();
@@ -102,7 +102,10 @@ public class WasmJavaScriptEngine {
 
             // Execute and convert result
             V8Value result = runtime.getExecutor(wrappedCode).execute();
-            return convertV8ValueToJson(result, runtime);
+            JsonNode jsonResult = convertV8ValueToJson(result, runtime);
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.infof("executeScript completed in %d ms", durationMs);
+            return jsonResult;
         }
     }
 
@@ -111,6 +114,7 @@ public class WasmJavaScriptEngine {
      * Used for variable expression evaluation.
      */
     public Object evaluateExpression(String expression, String variablesJson, String inputJson) throws Exception {
+        long startTime = System.nanoTime();
         try (V8Runtime runtime = v8Host.createV8Runtime()) {
             // Inject variables and input
             runtime.getExecutor("var variables = " + variablesJson + ";").executeVoid();
@@ -118,7 +122,10 @@ public class WasmJavaScriptEngine {
 
             // Evaluate expression
             V8Value result = runtime.getExecutor(expression).execute();
-            return convertV8ValueToObject(result, runtime);
+            Object objResult = convertV8ValueToObject(result, runtime);
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.debugf("evaluateExpression completed in %d ms", durationMs);
+            return objResult;
         }
     }
 
@@ -205,15 +212,14 @@ public class WasmJavaScriptEngine {
             return objectNode;
         }
 
-        // Fallback: use JSON.stringify
+        // Fallback: use JSON.stringify via global execution
         try {
-            V8Value jsonValue = runtime.getExecutor("JSON.stringify").execute();
-            if (jsonValue instanceof V8ValueObject) {
-                V8ValueObject jsonObj = (V8ValueObject) jsonValue;
-                V8Value stringified = jsonObj.call(null, value);
-                if (stringified instanceof V8ValueString) {
-                    return objectMapper.readTree(((V8ValueString) stringified).getValue());
-                }
+            // Store value in a temp variable and stringify it
+            runtime.getGlobalObject().set("__tempValue__", value);
+            V8Value stringified = runtime.getExecutor("JSON.stringify(__tempValue__)").execute();
+            runtime.getGlobalObject().delete("__tempValue__");
+            if (stringified instanceof V8ValueString) {
+                return objectMapper.readTree(((V8ValueString) stringified).getValue());
             }
         } catch (Exception e) {
             LOG.warnf("Failed to JSON.stringify value: %s", e.getMessage());
