@@ -7,7 +7,11 @@ export type WorkflowEventType =
   | 'EXECUTION_COMPLETED'
   | 'EXECUTION_FAILED'
   | 'EXECUTION_CANCELLED'
-  | 'CHAT_MESSAGE';
+  | 'CHAT_MESSAGE'
+  | 'LLM_CALL_STARTED'
+  | 'LLM_CALL_COMPLETED'
+  | 'TOOL_CALL_STARTED'
+  | 'TOOL_CALL_COMPLETED';
 
 export interface WorkflowEvent {
   type: WorkflowEventType;
@@ -35,6 +39,11 @@ export interface ServerToClientEvents {
   'execution:node-completed': (event: WorkflowEvent) => void;
   'execution:node-failed': (event: WorkflowEvent) => void;
   'chat:message': (event: WorkflowEvent) => void;
+  // Agent activity events
+  'execution:llm-call-started': (event: WorkflowEvent) => void;
+  'execution:llm-call-completed': (event: WorkflowEvent) => void;
+  'execution:tool-call-started': (event: WorkflowEvent) => void;
+  'execution:tool-call-completed': (event: WorkflowEvent) => void;
 }
 
 export interface SocketData {
