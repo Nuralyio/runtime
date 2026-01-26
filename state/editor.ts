@@ -323,11 +323,11 @@ class Editor {
   getComponentBreakpointInputs(component: any) {
     const baseInput = component?.input;
     const breakpointInput = component?.breakpoints?.[this.currentPlatform.width]?.input;
-  
+
     if (baseInput?.type === "handler") {
       return baseInput;
     }
-  
+
     return { ...baseInput, ...breakpointInput };
   }
 

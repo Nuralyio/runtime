@@ -17,6 +17,8 @@ export {
   $applicationComponents,
   $componentWithChildren,
   $selectedComponent,
+  $selectedComponents,
+  setSelectedComponents,
   $componentsByUUIDs,
   $runtimeStyles,
   setcomponentRuntimeStyleAttribute,

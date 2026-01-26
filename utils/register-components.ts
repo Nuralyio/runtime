@@ -43,5 +43,7 @@ import "../components/ui/components/runtime/MicroComponent/MicroComponent";
 import "../components/ui/components/utility/Document/Document";
 import "../components/ui/components/ToastContainer/ToastContainer";
 import "../components/ui/components/PopconfirmContainer/PopconfirmContainer";
+// i18n components
+import "../../studio/components/i18n/PropertyTranslationCollapse";
 // Canvas components
 import "../components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component";
