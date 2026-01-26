@@ -180,6 +180,25 @@ export {
 } from './event-handlers';
 
 // ============================================================================
+// Custom Handler Exports (reusable patterns)
+// ============================================================================
+
+export {
+  createDisabledAwareRadioHandler,
+  createIconRadioHandler,
+  // Pre-defined option sets
+  typeRadioOptions,
+  sizeRadioOptions,
+  statusRadioOptions,
+  stateRadioOptions,
+  inputVariantOptions,
+  textareaVariantOptions,
+  resizeRadioOptions,
+  buttonTypeOptions,
+  buttonShapeOptions,
+} from './custom-handlers';
+
+// ============================================================================
 // Factory Functions (for convenience)
 // ============================================================================
 
