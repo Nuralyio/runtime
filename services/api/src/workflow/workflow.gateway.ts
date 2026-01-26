@@ -191,6 +191,11 @@ export class WorkflowGateway {
       NODE_EXECUTED: 'execution:node-completed',
       NODE_FAILED: 'execution:node-failed',
       CHAT_MESSAGE: 'chat:message',
+      // Agent activity events
+      LLM_CALL_STARTED: 'execution:llm-call-started',
+      LLM_CALL_COMPLETED: 'execution:llm-call-completed',
+      TOOL_CALL_STARTED: 'execution:tool-call-started',
+      TOOL_CALL_COMPLETED: 'execution:tool-call-completed',
     };
 
     const result = eventMap[eventType] || null;
