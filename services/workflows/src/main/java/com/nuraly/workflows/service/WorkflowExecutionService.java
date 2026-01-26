@@ -325,4 +325,110 @@ public class WorkflowExecutionService {
 
         return executionDTOMapper.toDTO(execution);
     }
+
+    /**
+     * Retry a specific node within an execution.
+     * This restores the execution context and re-runs the node from its current state.
+     */
+    public WorkflowExecutionDTO retryNode(UUID executionId, UUID nodeId) throws ExecutionNotFoundException, InvalidWorkflowException {
+        WorkflowExecutionEntity execution = WorkflowExecutionEntity.findById(executionId);
+        if (execution == null) {
+            throw new ExecutionNotFoundException("Execution not found with id: " + executionId);
+        }
+
+        // Allow retry for failed, completed, or queued (previous retry) executions
+        if (execution.status != ExecutionStatus.FAILED &&
+            execution.status != ExecutionStatus.COMPLETED &&
+            execution.status != ExecutionStatus.QUEUED) {
+            throw new InvalidWorkflowException("Can only retry nodes in failed, completed, or queued executions. Current status: " + execution.status);
+        }
+
+        // Queue for async execution with node retry info
+        try {
+            WorkflowExecutionMessage message = new WorkflowExecutionMessage(
+                    execution.id,
+                    execution.workflow.id,
+                    execution.triggeredBy,
+                    "node_retry",
+                    execution.inputData,
+                    execution.variables
+            );
+            message.setRetryNodeId(nodeId);
+            executionProducer.publishExecution(message);
+
+            execution.status = ExecutionStatus.QUEUED;
+            execution.persist();
+
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = "Failed to queue node retry: " + e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+        }
+
+        return executionDTOMapper.toDTO(execution);
+    }
+
+    /**
+     * Get the latest execution for a workflow (completed or failed).
+     * Returns execution with node executions included.
+     */
+    public WorkflowExecutionDTO getLatestExecution(UUID workflowId) throws WorkflowNotFoundException {
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        if (workflow == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+
+        // Find the latest completed or failed execution
+        WorkflowExecutionEntity latestExecution = WorkflowExecutionEntity
+                .find("workflow.id = ?1 AND status IN (?2, ?3) ORDER BY completedAt DESC",
+                        workflowId, ExecutionStatus.COMPLETED, ExecutionStatus.FAILED)
+                .firstResult();
+
+        if (latestExecution == null) {
+            return null;
+        }
+
+        return executionDTOMapper.toDTO(latestExecution);
+    }
+
+    /**
+     * Get the latest successful execution's node outputs for a workflow.
+     * Returns a map of nodeId -> parsed outputData for variable discovery.
+     */
+    public java.util.Map<String, JsonNode> getLatestNodeOutputs(UUID workflowId) throws WorkflowNotFoundException {
+        WorkflowEntity workflow = WorkflowEntity.findById(workflowId);
+        if (workflow == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+
+        // Find the latest completed or failed execution (we want real output data)
+        WorkflowExecutionEntity latestExecution = WorkflowExecutionEntity
+                .find("workflow.id = ?1 AND status IN (?2, ?3) ORDER BY completedAt DESC",
+                        workflowId, ExecutionStatus.COMPLETED, ExecutionStatus.FAILED)
+                .firstResult();
+
+        java.util.Map<String, JsonNode> nodeOutputs = new java.util.HashMap<>();
+
+        if (latestExecution == null) {
+            return nodeOutputs; // No executions yet
+        }
+
+        // Get all node executions for this execution
+        for (var nodeExecution : latestExecution.nodeExecutions) {
+            if (nodeExecution.outputData != null && !nodeExecution.outputData.isEmpty()) {
+                try {
+                    JsonNode output = objectMapper.readTree(nodeExecution.outputData);
+                    nodeOutputs.put(nodeExecution.node.id.toString(), output);
+                } catch (Exception e) {
+                    // Skip invalid JSON
+                }
+            }
+        }
+
+        return nodeOutputs;
+    }
 }

@@ -53,12 +53,14 @@ public class ChatOutputNodeExecutor implements NodeExecutor {
 
         // Get message - can be static or expression
         String messageTemplate = config.has("message") ? config.get("message").asText() : "";
+        LOG.infof("Chat Output message template: %s", messageTemplate);
         if (messageTemplate.isEmpty()) {
             return NodeExecutionResult.failure("Message is required for chat output node");
         }
 
         // Resolve expressions in the message (e.g., ${variables.response})
         String message = context.resolveExpression(messageTemplate);
+        LOG.infof("Chat Output resolved message: %s", message);
 
         // Get message type
         String messageType = config.has("messageType") ? config.get("messageType").asText() : "text";

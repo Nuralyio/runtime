@@ -187,6 +187,71 @@ public class WorkflowEventService {
     }
 
     /**
+     * Log LLM call started - for agent UX feedback
+     */
+    public void logLlmCallStarted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String provider, String model) {
+        LOG.infof(">>> EMITTING LLM_CALL_STARTED: nodeId=%s, nodeName=%s, provider=%s, model=%s", nodeId, nodeName, provider, model);
+        sendEvent("LLM_CALL_STARTED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "nodeName", nodeName,
+                "provider", provider,
+                "model", model
+        ));
+    }
+
+    /**
+     * Log LLM call completed - for agent UX feedback
+     */
+    public void logLlmCallCompleted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String provider, String model, int iteration) {
+        LOG.infof(">>> EMITTING LLM_CALL_COMPLETED: nodeId=%s, iteration=%d", nodeId, iteration);
+        sendEvent("LLM_CALL_COMPLETED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "nodeName", nodeName,
+                "provider", provider,
+                "model", model,
+                "iteration", iteration
+        ));
+    }
+
+    /**
+     * Log tool call started - for agent UX feedback
+     */
+    public void logToolCallStarted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String toolName, String toolNodeId) {
+        LOG.infof(">>> EMITTING TOOL_CALL_STARTED: nodeId=%s, toolName=%s, toolNodeId=%s", nodeId, toolName, toolNodeId);
+        sendEvent("TOOL_CALL_STARTED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "nodeName", nodeName,
+                "toolName", toolName,
+                "toolNodeId", toolNodeId != null ? toolNodeId : ""
+        ));
+    }
+
+    /**
+     * Log tool call completed - for agent UX feedback
+     */
+    public void logToolCallCompleted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String toolName, String toolNodeId, boolean success) {
+        sendEvent("TOOL_CALL_COMPLETED", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "nodeName", nodeName,
+                "toolName", toolName,
+                "toolNodeId", toolNodeId != null ? toolNodeId : "",
+                "success", success
+        ));
+    }
+
+    /**
      * Send a chat message event - used by CHAT_OUTPUT nodes to send messages to chatbot in real-time
      */
     public void sendChatMessage(WorkflowExecutionEntity execution, String nodeId, String nodeName, String message, Map<String, Object> metadata) {

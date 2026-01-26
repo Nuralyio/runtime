@@ -9,6 +9,7 @@ import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowEdgeEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.service.WorkflowEventService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -47,6 +48,9 @@ public class AgentNodeExecutor implements NodeExecutor {
 
     @Inject
     ToolNodeExecutor toolExecutor;
+
+    @Inject
+    WorkflowEventService eventService;
 
     @Override
     public NodeType getType() {
@@ -90,10 +94,10 @@ public class AgentNodeExecutor implements NodeExecutor {
         // Build merged configuration for LLM call
         ObjectNode mergedConfig = objectMapper.createObjectNode();
 
-        // Copy LLM config (provider, apiKeyPath, model, temperature, maxTokens)
+        // Copy LLM config (provider, apiKeyPath, apiUrlPath, model, temperature, maxTokens)
         if (llmConfig.has("provider")) mergedConfig.put("provider", llmConfig.get("provider").asText());
         if (llmConfig.has("apiKeyPath")) mergedConfig.put("apiKeyPath", llmConfig.get("apiKeyPath").asText());
-        if (llmConfig.has("modelName")) mergedConfig.put("model", llmConfig.get("modelName").asText());
+        if (llmConfig.has("apiUrlPath")) mergedConfig.put("apiUrlPath", llmConfig.get("apiUrlPath").asText());
         if (llmConfig.has("model")) mergedConfig.put("model", llmConfig.get("model").asText());
         if (llmConfig.has("temperature")) mergedConfig.put("temperature", llmConfig.get("temperature").asDouble());
         if (llmConfig.has("maxTokens")) mergedConfig.put("maxTokens", llmConfig.get("maxTokens").asInt());
@@ -150,9 +154,34 @@ public class AgentNodeExecutor implements NodeExecutor {
             }
 
             try {
+                // Emit tool processing event
+                if (context.getExecution() != null) {
+                    eventService.logToolCallStarted(
+                        context.getExecution(),
+                        node.id.toString(),
+                        node.name,
+                        toolNode.name,
+                        toolNode.id.toString()
+                    );
+                }
+
                 // Execute the Tool node to get its definition
                 NodeExecutionResult toolResult = toolExecutor.execute(context, toolNode);
-                if (toolResult.isSuccess() && toolResult.getOutput() != null) {
+                boolean success = toolResult.isSuccess() && toolResult.getOutput() != null;
+
+                // Emit tool completed event
+                if (context.getExecution() != null) {
+                    eventService.logToolCallCompleted(
+                        context.getExecution(),
+                        node.id.toString(),
+                        node.name,
+                        toolNode.name,
+                        toolNode.id.toString(),
+                        success
+                    );
+                }
+
+                if (success) {
                     // The ToolNodeExecutor returns the tool definition in OpenAI format
                     toolsArray.add(toolResult.getOutput());
                     LOG.debugf("Added tool from connected node: %s", toolNode.name);
@@ -182,8 +211,35 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         LOG.debugf("Agent using LLM config: %s", tempLlmNode.configuration);
 
+        // Get provider and model for event logging
+        String provider = llmConfig.has("provider") ? llmConfig.get("provider").asText() : "unknown";
+        String model = llmConfig.has("model") ? llmConfig.get("model").asText() : "unknown";
+
+        // Emit LLM call started event for the AGENT node (not the LLM node)
+        if (context.getExecution() != null) {
+            eventService.logLlmCallStarted(
+                context.getExecution(),
+                node.id.toString(),
+                node.name,
+                provider,
+                model
+            );
+        }
+
         // Execute using the LLM executor
         NodeExecutionResult llmResult = llmExecutor.execute(context, tempLlmNode);
+
+        // Emit LLM call completed event
+        if (context.getExecution() != null) {
+            eventService.logLlmCallCompleted(
+                context.getExecution(),
+                node.id.toString(),
+                node.name,
+                provider,
+                model,
+                1  // iteration count
+            );
+        }
 
         if (!llmResult.isSuccess()) {
             return llmResult;

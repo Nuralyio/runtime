@@ -133,16 +133,17 @@ public class ExecutionContext {
 
         String result = expression;
 
-        // Replace ${variables.xxx} with actual values
+        // Replace ${variables.xxx} with actual values (supports nested paths like ${variables.ocrResult.text})
         while (result.contains("${variables.")) {
             int start = result.indexOf("${variables.");
             int end = result.indexOf("}", start);
             if (end == -1) break;
 
             String fullMatch = result.substring(start, end + 1);
-            String varName = result.substring(start + 12, end);
+            String path = result.substring(start + 12, end);
 
-            JsonNode value = getVariable(varName);
+            // Use getJsonPath to support nested paths like "ocrResult.text"
+            JsonNode value = getJsonPath(variables, path);
             String replacement = "";
             if (value != null) {
                 // Use toString() for arrays/objects to get JSON, asText() for primitives
@@ -156,7 +157,34 @@ public class ExecutionContext {
             result = result.replace(fullMatch, replacement);
         }
 
-        // Replace ${input.xxx} with actual values
+        // Replace ${inputs.xxx} with actual values (alias for ${variables.xxx} for node inputs)
+        while (result.contains("${inputs.")) {
+            int start = result.indexOf("${inputs.");
+            int end = result.indexOf("}", start);
+            if (end == -1) break;
+
+            String fullMatch = result.substring(start, end + 1);
+            String path = result.substring(start + 9, end);
+
+            System.out.println("[RESOLVE] Resolving ${inputs." + path + "} from variables: " + variables.toString());
+
+            // Use getJsonPath to support nested paths like "ocrResult.text"
+            JsonNode value = getJsonPath(variables, path);
+            System.out.println("[RESOLVE] Value for path '" + path + "': " + (value != null ? value.toString() : "null"));
+            String replacement = "";
+            if (value != null) {
+                // Use toString() for arrays/objects to get JSON, asText() for primitives
+                if (value.isArray() || value.isObject()) {
+                    replacement = value.toString();
+                } else {
+                    replacement = value.asText();
+                }
+            }
+
+            result = result.replace(fullMatch, replacement);
+        }
+
+        // Replace ${input.xxx} with actual values (initial workflow input)
         while (result.contains("${input.")) {
             int start = result.indexOf("${input.");
             int end = result.indexOf("}", start);
@@ -194,7 +222,30 @@ public class ExecutionContext {
             if (current == null) {
                 return null;
             }
-            current = current.get(part);
+
+            // Handle array access like "files[0]" or "items[2]"
+            if (part.contains("[") && part.contains("]")) {
+                int bracketStart = part.indexOf('[');
+                int bracketEnd = part.indexOf(']');
+                String fieldName = part.substring(0, bracketStart);
+                String indexStr = part.substring(bracketStart + 1, bracketEnd);
+
+                // First get the array field
+                current = current.get(fieldName);
+                if (current == null || !current.isArray()) {
+                    return null;
+                }
+
+                // Then get the array element
+                try {
+                    int index = Integer.parseInt(indexStr);
+                    current = current.get(index);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            } else {
+                current = current.get(part);
+            }
         }
 
         return current;
