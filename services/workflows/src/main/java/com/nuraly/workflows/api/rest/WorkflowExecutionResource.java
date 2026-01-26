@@ -19,6 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.RestResponse;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +78,28 @@ public class WorkflowExecutionResource {
             @PathParam("workflowId") UUID workflowId) {
         List<WorkflowExecutionDTO> executions = executionService.getExecutions(workflowId);
         return RestResponse.ok(executions);
+    }
+
+    @GET
+    @Path("/workflows/{workflowId}/latest-node-outputs")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{workflowId}"
+    )
+    @Operation(summary = "Get node outputs from the latest execution for variable discovery")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Node outputs retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<Map<String, JsonNode>> getLatestNodeOutputs(
+            @PathParam("workflowId") UUID workflowId) {
+        try {
+            Map<String, JsonNode> nodeOutputs = executionService.getLatestNodeOutputs(workflowId);
+            return RestResponse.ok(nodeOutputs);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
     }
 
     @GET
@@ -162,6 +185,27 @@ public class WorkflowExecutionResource {
             @PathParam("executionId") UUID executionId) {
         try {
             WorkflowExecutionDTO execution = executionService.resumeExecution(executionId);
+            return RestResponse.ok(execution);
+        } catch (ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (InvalidWorkflowException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+    }
+
+    @POST
+    @Path("/executions/{executionId}/nodes/{nodeId}/retry")
+    @Operation(summary = "Retry a specific node within an execution")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Node retry started"),
+            @APIResponse(responseCode = "400", description = "Cannot retry node in current state"),
+            @APIResponse(responseCode = "404", description = "Execution or node not found")
+    })
+    public RestResponse<WorkflowExecutionDTO> retryNode(
+            @PathParam("executionId") UUID executionId,
+            @PathParam("nodeId") UUID nodeId) {
+        try {
+            WorkflowExecutionDTO execution = executionService.retryNode(executionId, nodeId);
             return RestResponse.ok(execution);
         } catch (ExecutionNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);

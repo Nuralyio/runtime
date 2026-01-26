@@ -20,6 +20,9 @@ public class WorkflowExecutionMessage implements Serializable {
     private String correlationId;  // Correlation ID for matching request/response
     private boolean syncExecution; // Whether this is a synchronous execution
 
+    // Field for node retry
+    private UUID retryNodeId;      // Node ID to retry (null = full execution)
+
     public WorkflowExecutionMessage() {
     }
 
@@ -145,6 +148,14 @@ public class WorkflowExecutionMessage implements Serializable {
 
     public void setSyncExecution(boolean syncExecution) {
         this.syncExecution = syncExecution;
+    }
+
+    public UUID getRetryNodeId() {
+        return retryNodeId;
+    }
+
+    public void setRetryNodeId(UUID retryNodeId) {
+        this.retryNodeId = retryNodeId;
     }
 
     @Override

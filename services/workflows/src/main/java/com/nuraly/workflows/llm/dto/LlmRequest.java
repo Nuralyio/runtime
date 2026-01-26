@@ -52,4 +52,10 @@ public class LlmRequest {
      */
     @Builder.Default
     private Boolean forceToolUse = false;
+
+    /**
+     * Optional base URL override for the provider API.
+     * Used primarily for self-hosted providers like Ollama.
+     */
+    private String baseUrl;
 }

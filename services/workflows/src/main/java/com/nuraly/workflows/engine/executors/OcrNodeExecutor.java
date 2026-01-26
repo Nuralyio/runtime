@@ -67,17 +67,42 @@ public class OcrNodeExecutor implements NodeExecutor {
         String imageBase64 = null;
         String imageUrl = null;
 
+        // Check imageBase64 config - but only use if it's a valid, non-empty value
         if (config.has("imageBase64")) {
-            imageBase64 = context.resolveExpression(config.get("imageBase64").asText());
-        } else if (config.has("imageField")) {
-            String fieldExpression = config.get("imageField").asText();
-            imageBase64 = context.resolveExpression(fieldExpression);
-        } else if (config.has("imageUrl")) {
-            imageUrl = context.resolveExpression(config.get("imageUrl").asText());
+            String base64Value = config.get("imageBase64").asText();
+            if (base64Value != null && !base64Value.isEmpty() && !base64Value.equals("null")) {
+                imageBase64 = context.resolveExpression(base64Value);
+                // Only use if resolved to a meaningful value (base64 images are > 100 chars typically)
+                if (imageBase64 == null || imageBase64.length() < 100) {
+                    System.out.println("[OCR] imageBase64 config resolved to invalid value, trying imageField");
+                    imageBase64 = null;
+                } else {
+                    System.out.println("[OCR] Using imageBase64 config, length: " + imageBase64.length());
+                }
+            }
         }
 
-        if (imageBase64 == null && imageUrl == null) {
-            return NodeExecutionResult.failure("Either imageUrl, imageBase64, or imageField is required");
+        // Check imageField config if imageBase64 didn't work
+        if (imageBase64 == null && config.has("imageField")) {
+            String fieldExpression = config.get("imageField").asText();
+            if (fieldExpression != null && !fieldExpression.isEmpty() && !fieldExpression.equals("null")) {
+                System.out.println("[OCR] Resolving imageField expression: " + fieldExpression);
+                imageBase64 = context.resolveExpression(fieldExpression);
+                System.out.println("[OCR] Resolved imageBase64 length: " + (imageBase64 != null ? imageBase64.length() : "null"));
+            }
+        }
+
+        // Check imageUrl config as last resort
+        if (imageBase64 == null && config.has("imageUrl")) {
+            String urlValue = config.get("imageUrl").asText();
+            if (urlValue != null && !urlValue.isEmpty() && !urlValue.equals("null")) {
+                imageUrl = context.resolveExpression(urlValue);
+                System.out.println("[OCR] Using imageUrl: " + imageUrl);
+            }
+        }
+
+        if ((imageBase64 == null || imageBase64.length() < 100) && imageUrl == null) {
+            return NodeExecutionResult.failure("Either imageUrl, imageBase64, or imageField is required (imageBase64 must be > 100 chars)");
         }
 
         // Get language configuration
@@ -112,6 +137,9 @@ public class OcrNodeExecutor implements NodeExecutor {
             int statusCode = response.getCode();
             String responseBody = response.getEntity() != null ? EntityUtils.toString(response.getEntity()) : "";
 
+            System.out.println("[OCR] Response status: " + statusCode);
+            System.out.println("[OCR] Response body length: " + responseBody.length());
+
             if (statusCode >= 200 && statusCode < 300) {
                 JsonNode ocrResult = objectMapper.readTree(responseBody);
 
@@ -119,7 +147,12 @@ public class OcrNodeExecutor implements NodeExecutor {
 
                 // Extract full text
                 if (ocrResult.has("text")) {
-                    output.put("text", ocrResult.get("text").asText());
+                    String extractedText = ocrResult.get("text").asText();
+                    System.out.println("[OCR] Extracted text length: " + extractedText.length());
+                    System.out.println("[OCR] Extracted text preview: " + (extractedText.length() > 100 ? extractedText.substring(0, 100) + "..." : extractedText));
+                    output.put("text", extractedText);
+                } else {
+                    System.out.println("[OCR] No 'text' field in response");
                 }
 
                 // Extract lines with confidence
@@ -136,11 +169,13 @@ public class OcrNodeExecutor implements NodeExecutor {
                     output.set("boxes", ocrResult.get("boxes"));
                 }
 
-                // Map output to variable if specified
-                if (config.has("outputVariable")) {
-                    String varName = config.get("outputVariable").asText();
-                    context.setVariable(varName, output);
-                }
+                // Map output to variable - use specified name or default to 'ocrResult'
+                String varName = config.has("outputVariable") && !config.get("outputVariable").asText().isEmpty()
+                    ? config.get("outputVariable").asText()
+                    : "ocrResult";
+                System.out.println("[OCR] Storing result in variable: " + varName);
+                context.setVariable(varName, output);
+                System.out.println("[OCR] Variables after storing: " + context.getVariablesAsString().substring(0, Math.min(500, context.getVariablesAsString().length())) + "...");
 
                 // Also support outputMapping for consistency with other nodes
                 if (config.has("outputMapping")) {
@@ -148,8 +183,8 @@ public class OcrNodeExecutor implements NodeExecutor {
                     outputMapping.fields().forEachRemaining(entry -> {
                         String variablePath = entry.getKey();
                         if (variablePath.startsWith("$.variables.")) {
-                            String varName = variablePath.substring(12);
-                            context.setVariable(varName, output);
+                            String mappedVarName = variablePath.substring(12);
+                            context.setVariable(mappedVarName, output);
                         }
                     });
                 }

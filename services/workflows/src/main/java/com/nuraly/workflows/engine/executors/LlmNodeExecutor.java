@@ -2,7 +2,6 @@ package com.nuraly.workflows.engine.executors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.engine.ExecutionContext;
@@ -14,6 +13,7 @@ import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.LlmProviderFactory;
 import com.nuraly.workflows.llm.dto.*;
+import com.nuraly.workflows.service.WorkflowEventService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -35,9 +35,10 @@ import java.util.*;
  *
  * Node Configuration:
  * {
- *   "provider": "openai" | "anthropic" | "gemini",
+ *   "provider": "openai" | "anthropic" | "gemini" | "ollama",
  *   "model": "gpt-4o",
- *   "apiKeyPath": "openai/my-key", // KV store path for API key
+ *   "apiKeyPath": "openai/my-key", // KV store path for API key (optional for Ollama)
+ *   "apiUrlPath": "ollama/server-url", // KV store path for API URL (optional, for Ollama)
  *   "systemPrompt": "You are a helpful assistant...",
  *   "temperature": 0.7,
  *   "maxTokens": 4096,
@@ -67,6 +68,9 @@ public class LlmNodeExecutor implements NodeExecutor {
     @Inject
     Configuration configuration;
 
+    @Inject
+    WorkflowEventService eventService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -89,25 +93,54 @@ public class LlmNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("Unknown LLM provider: " + providerName);
         }
 
-        // Get API key from KV store
+        // Get API key from KV store (optional for Ollama)
         String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
-        if (apiKeyPath == null || apiKeyPath.isEmpty()) {
+        String apiKey = null;
+
+        boolean isOllama = "ollama".equalsIgnoreCase(providerName);
+
+        if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
+            apiKey = fetchFromKvStore(apiKeyPath, context);
+            if (apiKey == null || apiKey.isEmpty()) {
+                if (!isOllama) {
+                    // API key is required for non-Ollama providers
+                    LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
+                    return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
+                }
+                LOG.debugf("No API key found for Ollama provider (this is typically fine)");
+            }
+        } else if (!isOllama) {
+            // API key path is required for non-Ollama providers
             LOG.error("LLM node error: API key path is required");
             return NodeExecutionResult.failure("API key path is required");
         }
 
-        String apiKey = fetchApiKey(apiKeyPath, context);
-        if (apiKey == null || apiKey.isEmpty()) {
-            LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
-            return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
+        // Get API URL from KV store (required for Ollama and local providers)
+        String apiUrlPath = config.has("apiUrlPath") ? config.get("apiUrlPath").asText() : null;
+        String baseUrl = null;
+        if (apiUrlPath != null && !apiUrlPath.isEmpty()) {
+            baseUrl = fetchFromKvStore(apiUrlPath, context);
+            if (baseUrl != null) {
+                LOG.debugf("Using API URL from KV store: %s", baseUrl);
+            }
+        }
+
+        // Ollama and local providers require an API URL
+        if (isOllama || "local".equalsIgnoreCase(providerName)) {
+            if (baseUrl == null || baseUrl.isEmpty()) {
+                LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", providerName);
+                return NodeExecutionResult.failure("API URL is required for " + providerName + " provider. Please configure a server URL in the node settings.");
+            }
         }
 
         // Build tool definitions from config and connected nodes
         List<ToolDefinition> tools = buildToolDefinitions(config, node);
         Map<String, ToolContext> toolContextMap = buildToolContextMap(tools, node);
 
-        // Get model and other settings
-        String model = config.has("model") ? config.get("model").asText() : provider.getDefaultModel();
+        // Get model
+        String model = config.has("model") && !config.get("model").asText().isEmpty()
+                ? config.get("model").asText()
+                : provider.getDefaultModel();
         String systemPrompt = config.has("systemPrompt") ?
                 context.resolveExpression(config.get("systemPrompt").asText()) : null;
         Double temperature = config.has("temperature") ? config.get("temperature").asDouble() : null;
@@ -143,11 +176,35 @@ public class LlmNodeExecutor implements NodeExecutor {
                     .tools(tools.isEmpty() ? null : tools)
                     .temperature(temperature)
                     .maxTokens(maxTokens)
+                    .baseUrl(baseUrl)
                     .build();
+
+            // Emit LLM call started event
+            if (context.getExecution() != null) {
+                eventService.logLlmCallStarted(
+                    context.getExecution(),
+                    node.id.toString(),
+                    node.name,
+                    providerName,
+                    model
+                );
+            }
 
             // Call LLM
             LOG.debugf("Calling LLM provider: %s, model: %s", providerName, model);
             LlmResponse response = provider.chat(request, apiKey);
+
+            // Emit LLM call completed event
+            if (context.getExecution() != null) {
+                eventService.logLlmCallCompleted(
+                    context.getExecution(),
+                    node.id.toString(),
+                    node.name,
+                    providerName,
+                    model,
+                    iterations
+                );
+            }
 
             if (!response.isSuccess()) {
                 LOG.errorf("LLM API error (provider=%s, model=%s): %s", providerName, model, response.getError());
@@ -166,7 +223,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             // Execute each tool call
             for (ToolCall toolCall : response.getToolCalls()) {
-                String toolResult = executeToolCall(toolCall, toolContextMap, context);
+                String toolResult = executeToolCall(toolCall, toolContextMap, context, node);
 
                 // Add tool result to messages
                 messages.add(LlmMessage.toolResult(
@@ -248,7 +305,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         return null;
     }
 
-    private String fetchApiKey(String keyPath, ExecutionContext context) {
+    private String fetchFromKvStore(String keyPath, ExecutionContext context) {
         try {
             String appId = null;
             // Try to get app ID from context
@@ -264,7 +321,7 @@ public class LlmNodeExecutor implements NodeExecutor {
                 return null;
             }
 
-            // Call KV service to get the secret
+            // Call KV service to get the value
             String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
                     java.net.URLEncoder.encode(keyPath, "UTF-8") +
                     "?applicationId=" + appId;
@@ -287,7 +344,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             return null;
         } catch (Exception e) {
-            System.err.println("Failed to fetch API key: " + e.getMessage());
+            LOG.warnf("Failed to fetch value from KV store (%s): %s", keyPath, e.getMessage());
             return null;
         }
     }
@@ -474,7 +531,7 @@ public class LlmNodeExecutor implements NodeExecutor {
     }
 
     private String executeToolCall(ToolCall toolCall, Map<String, ToolContext> toolContextMap,
-                                   ExecutionContext context) {
+                                   ExecutionContext context, WorkflowNodeEntity parentNode) {
         LOG.debugf("Executing tool call: %s with arguments: %s", toolCall.getName(), toolCall.getArguments());
 
         try {
@@ -491,9 +548,31 @@ public class LlmNodeExecutor implements NodeExecutor {
             LOG.debugf("Found target node for tool: %s (type: %s, id: %s)",
                 targetNode.name, targetNode.type, targetNode.id);
 
+            // Emit tool call started event
+            if (context.getExecution() != null) {
+                eventService.logToolCallStarted(
+                    context.getExecution(),
+                    parentNode.id.toString(),
+                    parentNode.name,
+                    toolCall.getName(),
+                    targetNode.id.toString()
+                );
+            }
+
             // Get executor for the target node type
             if (!nodeExecutorFactory.hasExecutor(targetNode.type)) {
                 LOG.errorf("No executor for node type: %s", targetNode.type);
+                // Emit tool call failed event
+                if (context.getExecution() != null) {
+                    eventService.logToolCallCompleted(
+                        context.getExecution(),
+                        parentNode.id.toString(),
+                        parentNode.name,
+                        toolCall.getName(),
+                        targetNode.id.toString(),
+                        false
+                    );
+                }
                 return objectMapper.writeValueAsString(
                         Map.of("error", "No executor for node type: " + targetNode.type)
                 );
@@ -506,6 +585,18 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             // Execute the tool node
             NodeExecutionResult result = executor.execute(subContext, targetNode);
+
+            // Emit tool call completed event
+            if (context.getExecution() != null) {
+                eventService.logToolCallCompleted(
+                    context.getExecution(),
+                    parentNode.id.toString(),
+                    parentNode.name,
+                    toolCall.getName(),
+                    targetNode.id.toString(),
+                    result.isSuccess()
+                );
+            }
 
             if (result.isSuccess()) {
                 String toolResult;
