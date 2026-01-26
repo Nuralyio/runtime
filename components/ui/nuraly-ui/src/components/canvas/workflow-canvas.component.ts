@@ -205,6 +205,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   ]);
 
   @state()
+  private paletteSearchTerm: string = '';
+
+  @state()
   private configuredNode: WorkflowNode | null = null;
 
   @state()
@@ -929,10 +932,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       showPalette: this.showPalette,
       expandedCategories: this.expandedCategories,
       canvasType: this.canvasType,
-      onClose: () => { this.showPalette = false; },
+      searchTerm: this.paletteSearchTerm,
+      onClose: () => {
+        this.showPalette = false;
+        this.paletteSearchTerm = '';
+      },
       onToggleCategory: (categoryId) => this.toggleCategory(categoryId),
       onNodeDragStart: (e, type) => this.handlePaletteItemDrag(e, type),
       onNodeDoubleClick: (type) => this.addNode(type),
+      onSearchChange: (term) => { this.paletteSearchTerm = term; },
     });
   }
 
