@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,15 +28,16 @@ import org.jboss.logging.Logger;
  *
  * Uses V8 (via Javet) with strong sandboxing for JavaScript execution.
  * This provides:
- * - Memory-isolated execution contexts
+ * - Memory-isolated execution contexts (each call gets a fresh V8Runtime)
  * - No access to host filesystem, network, or system APIs
- * - Fast startup and execution (pooled runtimes)
+ * - Fast startup and execution (V8Host is shared, V8Runtime is per-execution)
  * - Full JavaScript ES6+ compatibility
  *
  * Architecture allows future migration to pure WASM (Chicory + QuickJS)
  * while maintaining the same API.
  */
 @ApplicationScoped
+@Startup
 public class WasmJavaScriptEngine {
 
     private static final Logger LOG = Logger.getLogger(WasmJavaScriptEngine.class);
@@ -44,9 +46,15 @@ public class WasmJavaScriptEngine {
 
     @PostConstruct
     void init() {
+        long startTime = System.nanoTime();
         try {
             v8Host = V8Host.getV8Instance();
-            LOG.info("WasmJavaScriptEngine initialized with V8 runtime");
+            // Warm up the V8 runtime with a simple execution
+            try (V8Runtime runtime = v8Host.createV8Runtime()) {
+                runtime.getExecutor("1 + 1").execute();
+            }
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.infof("WasmJavaScriptEngine initialized and warmed up in %d ms", durationMs);
         } catch (Exception e) {
             LOG.error("Failed to initialize V8 runtime", e);
             throw new RuntimeException("Failed to initialize JavaScript engine", e);
