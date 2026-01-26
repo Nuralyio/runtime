@@ -36,6 +36,8 @@ export interface WorkflowSocketProviderConfig extends ProviderConfig {
   extractResponse?: (data: any) => string;
   /** Callback when execution starts with executionId */
   onExecutionStart?: (executionId: string, workflowId: string) => void;
+  /** Callback when a chat message is received (for real-time display, including retries) */
+  onMessage?: (message: string) => void;
 }
 
 /**
@@ -168,9 +170,21 @@ export class WorkflowSocketProvider implements ChatbotProvider {
       const message = event.data?.message || event.message;
 
       if (executionId && message) {
-        const execution = this.activeExecutions.get(executionId);
-        if (execution && !execution.completed) {
+        let execution = this.activeExecutions.get(executionId);
+
+        // If execution doesn't exist (e.g., from a retry), create a new entry
+        // and notify via callback so the chatbot can display the message
+        if (!execution) {
+          // For retry scenarios, we may not have an active execution entry
+          // Just emit the message directly to the UI
+          this.config?.onMessage?.(message);
+          return;
+        }
+
+        if (!execution.completed) {
           execution.messages.push(message);
+          // Note: Don't call onMessage here - streaming will handle it
+          // onMessage is only for retry scenarios where there's no active execution
         }
       }
     });

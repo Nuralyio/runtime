@@ -148,6 +148,29 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: Boolean })
   listenToExecutionEvents = false;
 
+  /**
+   * Current execution ID to display in config panel.
+   * Set this from the parent component when an execution is active.
+   * When set, the canvas will fetch node execution data for this execution.
+   */
+  @property({ type: String })
+  get executionId(): string | null {
+    return this.currentExecutionId;
+  }
+
+  set executionId(value: string | null) {
+    const oldValue = this.currentExecutionId;
+    this.currentExecutionId = value;
+    this.requestUpdate('executionId', oldValue);
+
+    // Fetch execution data when execution ID is set
+    if (value && value !== oldValue) {
+      this.fetchExecutionData(value);
+    } else if (!value) {
+      this.nodeExecutionData.clear();
+    }
+  }
+
   @state()
   private viewport: CanvasViewport = { zoom: 1, panX: 0, panY: 0 };
 
@@ -366,7 +389,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     // Open configuration panel
     this.configuredNode = node;
 
-    // Fetch dynamic variables from last execution
+    // Fetch dynamic variables from last execution (for variable suggestions only)
     this.loadingVariables = true;
     this.dynamicVariables = [];
 
@@ -380,6 +403,26 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         this.dynamicVariables = vars;
       } catch (error) {
         console.warn('[WorkflowCanvas] Failed to fetch dynamic variables:', error);
+      }
+
+      // If nodes have status but we don't have execution data, fetch latest execution
+      // This handles the case where execution happened before socket listeners were set up
+      const hasNodeStatus = Object.keys(this.nodeStatuses).length > 0;
+      const hasExecutionData = this.nodeExecutionData.size > 0;
+      if (hasNodeStatus && !hasExecutionData && !this.currentExecutionId) {
+        try {
+          const response = await fetch(`/api/v1/workflows/${this.workflow.id}/latest-execution`);
+          if (response.ok) {
+            const execution = await response.json();
+            if (execution?.id) {
+              this.currentExecutionId = execution.id;
+              // Fetch node executions
+              await this.fetchExecutionData(execution.id);
+            }
+          }
+        } catch (error) {
+          console.warn('[WorkflowCanvas] Failed to fetch latest execution:', error);
+        }
       }
     }
     this.loadingVariables = false;
@@ -426,35 +469,84 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         socketPath: '/socket.io/workflow',
         triggerEndpoint: '/api/v1/workflows/{workflowId}/trigger/chat',
         responseTimeout: 60000,
+        // Handle messages from CHAT_OUTPUT nodes (including retries)
+        onMessage: (message: string) => {
+          if (this.chatPreviewController) {
+            // Add bot message to the chat
+            this.chatPreviewController.addMessage({
+              id: `bot-${Date.now()}`,
+              sender: 'bot',
+              text: message,
+              timestamp: new Date().toISOString(),
+            });
+          }
+        },
       });
 
       // Listen for execution events to update node statuses on canvas
       const socket = this.chatPreviewProvider.getSocket();
       if (socket) {
+        socket.on('execution:started', (event: any) => {
+          // Capture execution ID and reset states
+          const executionId = event.data?.executionId || event.executionId;
+          if (executionId) {
+            this.currentExecutionId = executionId;
+            this.nodeExecutionData.clear();
+          }
+          this.nodeStatuses = {};
+        });
+
         socket.on('execution:node-started', (event: any) => {
           const nodeId = event.data?.nodeId || event.nodeId;
+          const data = event.data || event;
           if (nodeId) {
             this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'RUNNING' };
+            // Store node execution data
+            this.nodeExecutionData.set(nodeId, {
+              id: data.nodeExecutionId || nodeId,
+              nodeId,
+              status: 'running',
+              inputData: data.inputData,
+              startedAt: data.startedAt || new Date().toISOString(),
+            });
+            this.requestUpdate();
           }
         });
 
         socket.on('execution:node-completed', (event: any) => {
           const nodeId = event.data?.nodeId || event.nodeId;
+          const data = event.data || event;
           if (nodeId) {
             this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'COMPLETED' };
+            // Update node execution data with output
+            const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'completed' };
+            this.nodeExecutionData.set(nodeId, {
+              ...existing,
+              status: 'completed',
+              outputData: data.outputData,
+              completedAt: data.completedAt || new Date().toISOString(),
+              durationMs: data.durationMs,
+            });
+            this.requestUpdate();
           }
         });
 
         socket.on('execution:node-failed', (event: any) => {
           const nodeId = event.data?.nodeId || event.nodeId;
+          const data = event.data || event;
           if (nodeId) {
             this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'FAILED' };
+            // Update node execution data with error
+            const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'failed' };
+            this.nodeExecutionData.set(nodeId, {
+              ...existing,
+              status: 'failed',
+              errorMessage: data.errorMessage || data.error,
+              completedAt: data.completedAt || new Date().toISOString(),
+              durationMs: data.durationMs,
+            });
+            this.requestUpdate();
           }
-        });
-
-        socket.on('execution:started', (_event: any) => {
-          // Reset all node statuses when a new execution starts
-          this.nodeStatuses = {};
         });
       }
 
@@ -551,6 +643,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         executionId,
         data: responseData,
       }, null, 2);
+
+      // Store execution ID for config panel display
+      if (executionId) {
+        this.currentExecutionId = executionId;
+        // Fetch node execution data
+        this.fetchExecutionData(executionId);
+      }
 
     } catch (error) {
       console.error('[Canvas] HTTP preview error:', error);
@@ -916,7 +1015,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (!this.currentExecutionId || !this.workflow?.id) return;
 
     try {
-      const response = await fetch(`/api/v1/executions/${this.currentExecutionId}/nodes/${nodeId}/retry`, {
+      const response = await fetch(`/api/v1/workflows/${this.workflow.id}/executions/${this.currentExecutionId}/nodes/${nodeId}/retry`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -964,6 +1063,74 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   clearExecutionData(): void {
     this.currentExecutionId = null;
     this.nodeExecutionData.clear();
+    this.requestUpdate();
+  }
+
+  /**
+   * Fetch execution data for a specific execution ID
+   */
+  private async fetchExecutionData(executionId: string): Promise<void> {
+    if (!executionId) return;
+
+    try {
+      // Fetch node executions for this execution
+      const response = await fetch(`/api/v1/workflows/${this.workflow?.id}/executions/${executionId}/nodes`);
+      if (!response.ok) {
+        // Try alternative endpoint
+        const altResponse = await fetch(`/api/v1/executions/${executionId}/nodes`);
+        if (!altResponse.ok) {
+          console.warn('[WorkflowCanvas] Failed to fetch node executions');
+          return;
+        }
+        const nodeExecutions = await altResponse.json();
+        this.processNodeExecutions(nodeExecutions);
+        return;
+      }
+      const nodeExecutions = await response.json();
+      this.processNodeExecutions(nodeExecutions);
+    } catch (error) {
+      console.warn('[WorkflowCanvas] Failed to fetch execution data:', error);
+    }
+  }
+
+  /**
+   * Process and store node execution data
+   */
+  private processNodeExecutions(nodeExecutions: Array<{
+    id: string;
+    nodeId: string;
+    status: string;
+    inputData?: string;
+    outputData?: string;
+    errorMessage?: string;
+    startedAt?: string;
+    completedAt?: string;
+    durationMs?: number;
+  }>): void {
+    this.nodeExecutionData.clear();
+    for (const nodeExec of nodeExecutions) {
+      // Parse JSON strings if needed
+      let inputData = nodeExec.inputData;
+      let outputData = nodeExec.outputData;
+      try {
+        if (typeof inputData === 'string') inputData = JSON.parse(inputData);
+      } catch { /* keep as string */ }
+      try {
+        if (typeof outputData === 'string') outputData = JSON.parse(outputData);
+      } catch { /* keep as string */ }
+
+      this.nodeExecutionData.set(nodeExec.nodeId, {
+        id: nodeExec.id,
+        nodeId: nodeExec.nodeId,
+        status: nodeExec.status?.toLowerCase() as 'pending' | 'running' | 'completed' | 'failed',
+        inputData,
+        outputData,
+        errorMessage: nodeExec.errorMessage,
+        startedAt: nodeExec.startedAt,
+        completedAt: nodeExec.completedAt,
+        durationMs: nodeExec.durationMs,
+      });
+    }
     this.requestUpdate();
   }
 
