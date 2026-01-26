@@ -326,6 +326,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     this.isBotTyping = state.isTyping || false;
     // Keep Stop button in sync with provider processing lifecycle
     this.isQueryRunning = state.isProcessing || false;
+    // Sync uploaded files for display
+    if (state.uploadedFiles) this.uploadedFiles = state.uploadedFiles;
   }
 
   private handleControllerMessageSent(_data: any): void {

@@ -11,6 +11,8 @@ import type {
   ProviderConfig,
   ChatbotContext
 } from '../core/types.js';
+import type { ChatbotFile } from '../chatbot.types.js';
+import { ChatbotFileType } from '../chatbot.types.js';
 
 /**
  * Workflow socket provider configuration
@@ -378,8 +380,11 @@ export class WorkflowSocketProvider implements ChatbotProvider {
       return this.config.buildInput(text, context);
     }
 
+    // Debug: log context to see if files are being passed
+    console.log('[WorkflowSocketProvider] buildInput context.uploadedFiles:', context.uploadedFiles);
+
     // Default input structure for chat workflows
-    return {
+    const input = {
       message: text,
       threadId: context.currentThread?.id,
       modules: context.selectedModules,
@@ -388,9 +393,14 @@ export class WorkflowSocketProvider implements ChatbotProvider {
         id: f.id,
         name: f.name,
         type: f.type,
-        url: f.url
-      }))
+        mimeType: f.mimeType,
+        url: f.url,
+        base64: f.metadata?.base64 // Include base64 for backend processing (OCR, etc.)
+      })) || []
     };
+
+    console.log('[WorkflowSocketProvider] buildInput result files count:', input.files.length);
+    return input;
   }
 
   /**
@@ -417,6 +427,79 @@ export class WorkflowSocketProvider implements ChatbotProvider {
    */
   getSocket(): Socket | null {
     return this.socket;
+  }
+
+  /**
+   * Upload file - for workflow provider, files are sent with the message payload
+   * Converts file to base64 for backend processing (e.g., OCR)
+   */
+  async uploadFile(file: File): Promise<ChatbotFile> {
+    // Generate a local ID for the file
+    const id = `file-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+    // Create a local blob URL for preview purposes
+    const previewUrl = URL.createObjectURL(file);
+
+    // Convert file to base64 for backend processing
+    const base64 = await this.fileToBase64(file);
+
+    // Determine file type from mime type
+    const mimeType = file.type || 'application/octet-stream';
+    const fileType = this.determineFileType(mimeType);
+
+    console.log(`[WorkflowSocketProvider] File prepared: ${file.name} (${file.size} bytes)`);
+
+    return {
+      id,
+      name: file.name,
+      size: file.size,
+      type: fileType,
+      mimeType,
+      url: previewUrl, // For UI preview
+      previewUrl: fileType === ChatbotFileType.Image ? previewUrl : undefined,
+      uploadProgress: 100,
+      metadata: {
+        provider: 'workflow-socket',
+        uploadedAt: new Date().toISOString(),
+        base64, // Include base64 data for backend processing
+      },
+    };
+  }
+
+  /**
+   * Convert a File to base64 string
+   */
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        // Remove data URL prefix (e.g., "data:image/png;base64,")
+        const base64 = result.split(',')[1] || result;
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * Determine ChatbotFileType from mime type
+   */
+  private determineFileType(mimeType: string): ChatbotFileType {
+    if (mimeType.startsWith('image/')) return ChatbotFileType.Image;
+    if (mimeType.startsWith('video/')) return ChatbotFileType.Video;
+    if (mimeType.startsWith('audio/')) return ChatbotFileType.Audio;
+    if (mimeType.startsWith('application/pdf') ||
+        mimeType.includes('document') ||
+        mimeType.startsWith('text/')) return ChatbotFileType.Document;
+    if (mimeType.includes('zip') ||
+        mimeType.includes('rar') ||
+        mimeType.includes('tar')) return ChatbotFileType.Archive;
+    if (mimeType.includes('javascript') ||
+        mimeType.includes('json') ||
+        mimeType.includes('xml')) return ChatbotFileType.Code;
+    return ChatbotFileType.Unknown;
   }
 
   protected formatError(title: string, description: string): string {

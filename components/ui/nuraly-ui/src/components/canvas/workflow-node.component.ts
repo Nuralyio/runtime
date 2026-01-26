@@ -409,7 +409,12 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
           ` : nothing}
         </div>
 
-        ${status !== ExecutionStatus.IDLE ? html`
+        ${this.node.agentActivity?.active ? html`
+          <div class="node-status">
+            <span class="status-dot ${this.node.agentActivity.type === 'llm' ? 'thinking' : 'tool'}"></span>
+            <span class="status-text">${this.node.agentActivity.type === 'llm' ? 'Thinking' : this.node.agentActivity.name || 'Tool'}</span>
+          </div>
+        ` : status !== ExecutionStatus.IDLE ? html`
           <div class="node-status">
             <span class="status-dot ${status.toLowerCase()}"></span>
             <span class="status-text">${this.getStatusText()}</span>

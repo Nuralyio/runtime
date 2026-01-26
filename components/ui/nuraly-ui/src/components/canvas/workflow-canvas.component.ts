@@ -17,6 +17,7 @@ import {
   CanvasType,
   ExecutionStatus,
   WorkflowNodeType,
+  NodeConfiguration,
   createNodeFromTemplate,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-canvas.style.js';
@@ -51,6 +52,9 @@ import {
 
 // Interfaces
 import type { ConnectionState, DragState, CanvasHost, CanvasViewport } from './interfaces/index.js';
+
+// Utils
+import { getAllAvailableVariablesWithDynamic } from './utils/variable-resolver.js';
 
 /**
  * Workflow canvas component for visual workflow editing
@@ -90,22 +94,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     };
     this.requestUpdate('workflow', oldValue);
 
-    // Restore viewport from workflow if available
-    // Apply when: new workflow, OR viewport values have changed
-    if (value.viewport) {
-      const viewportChanged = !oldValue ||
-        oldValue.id !== value.id ||
-        this.viewport.panX !== value.viewport.panX ||
-        this.viewport.panY !== value.viewport.panY ||
-        this.viewport.zoom !== value.viewport.zoom;
-
-      if (viewportChanged) {
-        this.viewport = value.viewport;
-        // Update the CSS transform after the component renders
-        this.updateComplete.then(() => {
-          this.viewportController?.updateTransform();
-        });
-      }
+    // Restore viewport from workflow ONLY when loading a different workflow
+    // Don't reset viewport on same-workflow updates (e.g., node moves)
+    if (value.viewport && (!oldValue || oldValue.id !== value.id)) {
+      this.viewport = value.viewport;
+      this.updateComplete.then(() => {
+        this.viewportController?.updateTransform();
+      });
     }
   }
 
@@ -137,6 +132,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   @property({ type: Object })
   nodeStatuses: Record<string, 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'> = {};
+
+  /**
+   * Map of node IDs to their current agent activity (LLM calls, tool calls)
+   * Used to show visual feedback during agent execution
+   */
+  @property({ type: Object })
+  agentActivity: Record<string, { type: 'llm' | 'tool'; name?: string; active: boolean }> = {};
 
   /**
    * When true, automatically subscribes to execution events for the current workflow.
@@ -204,6 +206,21 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private httpPreviewError: string = '';
+
+  // Dynamic variables from last execution
+  @state()
+  private dynamicVariables: import('./templates/config-panel/types.js').DynamicVariable[] = [];
+
+  @state()
+  private loadingVariables: boolean = false;
+
+  // Node execution data for display in config panel
+  @state()
+  private nodeExecutionData: Map<string, import('./templates/config-panel/types.js').NodeExecutionData> = new Map();
+
+  // Current execution ID for retry functionality
+  @state()
+  private currentExecutionId: string | null = null;
 
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
@@ -343,11 +360,30 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   // Note: Node drag handling is now in DragController
 
-  private handleNodeDblClick(e: CustomEvent) {
+  private async handleNodeDblClick(e: CustomEvent) {
     if (this.disabled) return;
     const { node } = e.detail;
     // Open configuration panel
     this.configuredNode = node;
+
+    // Fetch dynamic variables from last execution
+    this.loadingVariables = true;
+    this.dynamicVariables = [];
+
+    if (this.workflow?.id) {
+      try {
+        const vars = await getAllAvailableVariablesWithDynamic(
+          this.workflow,
+          node.id,
+          '' // Uses relative URL
+        );
+        this.dynamicVariables = vars;
+      } catch (error) {
+        console.warn('[WorkflowCanvas] Failed to fetch dynamic variables:', error);
+      }
+    }
+    this.loadingVariables = false;
+
     this.dispatchEvent(new CustomEvent('node-configured', {
       detail: { node },
       bubbles: true,
@@ -368,7 +404,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
       // If it's a CHAT_START node, initialize the workflow socket provider
       if (node.type === WorkflowNodeType.CHAT_START && this.workflow?.id) {
-        await this.initializeChatPreview(this.workflow.id);
+        await this.initializeChatPreview(this.workflow.id, node.configuration);
       }
     }
   }
@@ -376,7 +412,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   /**
    * Initialize chat preview with WorkflowSocketProvider
    */
-  private async initializeChatPreview(workflowId: string): Promise<void> {
+  private async initializeChatPreview(workflowId: string, nodeConfig?: NodeConfiguration): Promise<void> {
     try {
       // Create provider with workflow ID
       this.chatPreviewProvider = new WorkflowSocketProvider();
@@ -423,8 +459,12 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       }
 
       // Create controller with the provider
+      const enableFileUpload = nodeConfig?.enableFileUpload === true;
+      console.log('[Canvas] Creating chat controller with config:', { enableFileUpload, nodeConfig });
+
       this.chatPreviewController = new ChatbotCoreController({
         provider: this.chatPreviewProvider,
+        enableFileUpload,
         ui: {
           onStateChange: () => {
             // Force re-render when state changes
@@ -721,16 +761,23 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     const hasActiveExecution = Object.keys(this.nodeStatuses).length > 0;
 
     return this.workflow.nodes.map(node => {
+      const activity = this.agentActivity[node.id];
+      const baseNode = {
+        ...node,
+        // Add agent activity if present
+        agentActivity: activity?.active ? activity : undefined,
+      };
+
       if (this.nodeStatuses[node.id]) {
         // Node has real-time status from current execution
-        return { ...node, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus };
+        return { ...baseNode, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus };
       } else if (hasActiveExecution) {
         // During active execution, nodes not in nodeStatuses have no status
         // This prevents edges from other triggers from being colored
-        return { ...node, status: undefined };
+        return { ...baseNode, status: undefined };
       } else {
         // No active execution - use saved workflow status (for history view)
-        return node;
+        return baseNode;
       }
     });
   }
@@ -830,6 +877,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   // Note: Config panel methods are now in ConfigController and config-panel.template.ts
   private renderConfigPanel() {
+    const nodeId = this.configuredNode?.id;
+    const nodeExecution = nodeId ? this.nodeExecutionData.get(nodeId) : undefined;
+
     return renderConfigPanelTemplate({
       node: this.configuredNode,
       position: this.configController.getPanelPosition(),
@@ -837,10 +887,84 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         onClose: () => this.configController.closeConfig(),
         onUpdateName: (name) => this.configController.updateName(name),
         onUpdateDescription: (desc) => this.configController.updateDescription(desc),
-        onUpdateConfig: (key, value) => this.configController.updateConfig(key, value),
+        onUpdateConfig: (key, value) => {
+          this.configController.updateConfig(key, value);
+          // Update chatPreviewController config if it's the same node being previewed
+          if (this.chatPreviewController &&
+              this.configuredNode?.id === this.previewNodeId &&
+              this.configuredNode?.type === WorkflowNodeType.CHAT_START) {
+            if (key === 'enableFileUpload') {
+              this.chatPreviewController.updateConfig({ enableFileUpload: value === true });
+            }
+          }
+        },
+        onRetryNode: this.currentExecutionId ? (nodeId) => this.handleRetryNode(nodeId) : undefined,
       },
       workflowId: this.workflow?.id,
+      workflow: this.workflow,
+      dynamicVariables: this.dynamicVariables,
+      loadingVariables: this.loadingVariables,
+      nodeExecution,
+      executionId: this.currentExecutionId ?? undefined,
     });
+  }
+
+  /**
+   * Handle retry node request from config panel
+   */
+  private async handleRetryNode(nodeId: string): Promise<void> {
+    if (!this.currentExecutionId || !this.workflow?.id) return;
+
+    try {
+      const response = await fetch(`/api/v1/executions/${this.currentExecutionId}/nodes/${nodeId}/retry`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Retry failed: ${response.statusText}`);
+      }
+
+      // Dispatch event to notify parent
+      this.dispatchEvent(new CustomEvent('node-retry', {
+        detail: { executionId: this.currentExecutionId, nodeId },
+        bubbles: true,
+        composed: true,
+      }));
+    } catch (error) {
+      console.error('[WorkflowCanvas] Failed to retry node:', error);
+    }
+  }
+
+  /**
+   * Set the current execution ID (for retry functionality)
+   */
+  setExecutionId(executionId: string | null): void {
+    this.currentExecutionId = executionId;
+    if (!executionId) {
+      // Clear node execution data when execution is cleared
+      this.nodeExecutionData.clear();
+      this.requestUpdate();
+    }
+  }
+
+  /**
+   * Update node execution data (called from socket events or API responses)
+   */
+  updateNodeExecution(nodeExecution: import('./templates/config-panel/types.js').NodeExecutionData): void {
+    this.nodeExecutionData.set(nodeExecution.nodeId, nodeExecution);
+    this.requestUpdate();
+  }
+
+  /**
+   * Clear all node execution data
+   */
+  clearExecutionData(): void {
+    this.currentExecutionId = null;
+    this.nodeExecutionData.clear();
+    this.requestUpdate();
   }
 
   private renderPreviewPanel() {
@@ -954,6 +1078,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
               botName="Workflow"
               ?showHeader=${false}
               ?showSuggestions=${suggestions.length > 0}
+              ?enableFileUpload=${config.enableFileUpload === true}
               loadingType="dots"
             ></nr-chatbot>
           ` : isChatStartNode ? html`
@@ -970,6 +1095,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
               botName=${(config.title as string) || 'Chat Assistant'}
               ?showHeader=${true}
               ?showSuggestions=${config.enableSuggestions !== false}
+              ?enableFileUpload=${config.enableFileUpload === true}
               loadingType=${(config.loadingType as string) || 'dots'}
             ></nr-chatbot>
           `}

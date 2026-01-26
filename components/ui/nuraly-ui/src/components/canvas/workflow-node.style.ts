@@ -202,6 +202,14 @@ export const workflowNodeStyles = css`
   .status-dot.failed { background: var(--nuraly-color-support-error, #ef4444); }
   .status-dot.paused { background: #8b5cf6; }
   .status-dot.waiting { background: var(--nuraly-color-support-warning, #f59e0b); }
+  .status-dot.thinking {
+    background: var(--nuraly-color-interactive, #3b82f6);
+    animation: blink 0.8s infinite;
+  }
+  .status-dot.tool {
+    background: var(--nuraly-color-support-warning, #f59e0b);
+    animation: blink 0.8s infinite;
+  }
 
   @keyframes blink {
     0%, 100% { opacity: 1; }
@@ -212,6 +220,7 @@ export const workflowNodeStyles = css`
     color: var(--nuraly-color-text-secondary, #888);
     text-transform: capitalize;
   }
+
 
   /* Ports */
   .ports-container {

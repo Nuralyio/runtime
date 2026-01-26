@@ -127,6 +127,31 @@ export class ConnectionController extends BaseCanvasController {
    * Get port position for a node
    */
   getPortPosition(node: WorkflowNode, portId: string, isInput: boolean): Position {
+    const nodeWidth = 180;
+
+    // Check if this is a config port (bottom ports)
+    const configPorts = node.ports.configs || [];
+    const configIndex = configPorts.findIndex(p => p.id === portId);
+
+    if (configIndex !== -1) {
+      // Config ports use: left: calc(50% + offset - 5px)
+      // where offset = (index - (total - 1) / 2) * 45
+      const totalConfigs = configPorts.length;
+      const portSpacing = 45;
+      const offsetFromCenter = (configIndex - (totalConfigs - 1) / 2) * portSpacing;
+
+      // Estimate node height - base height + status/content
+      // When there's status shown, node is taller
+      const hasStatus = node.status && node.status !== 'IDLE';
+      const nodeHeight = hasStatus ? 110 : 85;
+
+      return {
+        x: node.position.x + (nodeWidth / 2) + offsetFromCenter,
+        y: node.position.y + nodeHeight, // Bottom of node (port is at bottom: -4px)
+      };
+    }
+
+    // Regular input/output ports
     const portIndex = isInput
       ? node.ports.inputs.findIndex(p => p.id === portId)
       : node.ports.outputs.findIndex(p => p.id === portId);
@@ -141,8 +166,6 @@ export class ConnectionController extends BaseCanvasController {
     const totalPortsHeight = (totalPorts - 1) * portSpacing;
     const startY = (nodeHeight - totalPortsHeight) / 2;
     const topOffset = startY + portIndex * portSpacing;
-
-    const nodeWidth = 180;
 
     return {
       x: node.position.x + (isInput ? 2 : nodeWidth - 2),
