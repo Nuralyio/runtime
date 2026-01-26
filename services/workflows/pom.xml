@@ -121,12 +121,6 @@
             <version>5.16.0</version>
         </dependency>
 
-        <!-- Redis (for distributed context memory) -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-redis-client</artifactId>
-        </dependency>
-
         <!-- Code Generation -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -147,17 +141,27 @@
             <version>10fc7fc</version>
         </dependency>
 
-        <!-- Expression Language (for condition evaluation) -->
+        <!-- WASM Runtime (for secure script execution) -->
         <dependency>
-            <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>polyglot</artifactId>
-            <version>24.1.1</version>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>runtime</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.polyglot</groupId>
-            <artifactId>js</artifactId>
-            <version>24.1.1</version>
-            <type>pom</type>
+            <groupId>com.dylibso.chicory</groupId>
+            <artifactId>wasi</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.caoccao.javet</groupId>
+            <artifactId>javet</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- Native library for Linux ARM64 (Docker on Apple Silicon) -->
+        <dependency>
+            <groupId>com.caoccao.javet</groupId>
+            <artifactId>javet-linux-arm64</artifactId>
+            <version>4.0.0</version>
         </dependency>
 
         <!-- Testing -->

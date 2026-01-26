@@ -2,21 +2,19 @@ package com.nuraly.workflows.engine.executors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.engine.script.WasmJavaScriptEngine;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
 import org.jboss.logging.Logger;
 
 /**
- * Function Node Executor - Executes JavaScript code in GraalVM.
+ * Function Node Executor - Executes JavaScript code in sandboxed WASM environment.
  *
  * This allows running custom JavaScript functions within workflows.
  * The code has access to:
@@ -44,6 +42,9 @@ public class FunctionNodeExecutor implements NodeExecutor {
     MeterRegistry meterRegistry;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Inject
+    WasmJavaScriptEngine jsEngine;
 
     @Override
     public NodeType getType() {
@@ -73,46 +74,19 @@ public class FunctionNodeExecutor implements NodeExecutor {
         Timer.Sample timerSample = Timer.start(meterRegistry);
         String status = "success";
 
-        try (Context jsContext = Context.newBuilder("js")
-                .option("engine.WarnInterpreterOnly", "false")
-                .build()) {
-
-            // Inject input data
+        try {
+            // Prepare JSON inputs
             String inputJson = objectMapper.writeValueAsString(context.getInput());
-            jsContext.eval("js", "var input = " + inputJson + ";");
-
-            // Inject variables
             String variablesJson = context.getVariablesAsString();
-            jsContext.eval("js", "var variables = " + variablesJson + ";");
+            String argsJson = config.has("args")
+                ? objectMapper.writeValueAsString(config.get("args"))
+                : null;
 
-            // Inject args from config if provided
-            if (config.has("args")) {
-                String argsJson = objectMapper.writeValueAsString(config.get("args"));
-                jsContext.eval("js", "var args = " + argsJson + ";");
-            } else {
-                jsContext.eval("js", "var args = {};");
-            }
+            // Execute using WASM JavaScript engine
+            JsonNode output = jsEngine.executeScript(code, variablesJson, inputJson, argsJson);
 
-            // Wrap the code in a function if it doesn't start with function or return
-            String wrappedCode = code.trim();
-            if (!wrappedCode.startsWith("function") && !wrappedCode.startsWith("(")) {
-                // If the code doesn't have a return statement, wrap it
-                if (!wrappedCode.contains("return ")) {
-                    wrappedCode = "return " + wrappedCode;
-                }
-                wrappedCode = "(function() { " + wrappedCode + " })()";
-            }
-
-            // Execute the code
-            Value result = jsContext.eval("js", wrappedCode);
-
-            // Convert result to JSON
-            JsonNode output;
-            if (result.isNull()) {
+            if (output == null) {
                 output = objectMapper.createObjectNode();
-            } else {
-                // Convert GraalVM Value to JSON properly
-                output = convertValueToJson(result, jsContext);
             }
 
             // Store in output variable if specified
@@ -138,66 +112,5 @@ public class FunctionNodeExecutor implements NodeExecutor {
             meterRegistry.counter("workflow.function.executions.total",
                     "status", status).increment();
         }
-    }
-
-    /**
-     * Convert GraalVM Value to Jackson JsonNode properly.
-     */
-    private JsonNode convertValueToJson(Value value, Context jsContext) {
-        if (value == null || value.isNull()) {
-            return objectMapper.nullNode();
-        }
-
-        if (value.isBoolean()) {
-            return objectMapper.getNodeFactory().booleanNode(value.asBoolean());
-        }
-
-        if (value.isNumber()) {
-            if (value.fitsInInt()) {
-                return objectMapper.getNodeFactory().numberNode(value.asInt());
-            } else if (value.fitsInLong()) {
-                return objectMapper.getNodeFactory().numberNode(value.asLong());
-            } else {
-                return objectMapper.getNodeFactory().numberNode(value.asDouble());
-            }
-        }
-
-        if (value.isString()) {
-            return objectMapper.getNodeFactory().textNode(value.asString());
-        }
-
-        if (value.hasArrayElements()) {
-            com.fasterxml.jackson.databind.node.ArrayNode arrayNode = objectMapper.createArrayNode();
-            long size = value.getArraySize();
-            for (long i = 0; i < size; i++) {
-                arrayNode.add(convertValueToJson(value.getArrayElement(i), jsContext));
-            }
-            return arrayNode;
-        }
-
-        if (value.hasMembers()) {
-            ObjectNode objectNode = objectMapper.createObjectNode();
-            for (String key : value.getMemberKeys()) {
-                Value memberValue = value.getMember(key);
-                objectNode.set(key, convertValueToJson(memberValue, jsContext));
-            }
-            return objectNode;
-        }
-
-        // Fallback: use JSON.stringify from JavaScript
-        try {
-            Value jsonStringify = jsContext.eval("js", "JSON.stringify");
-            Value jsonString = jsonStringify.execute(value);
-            if (jsonString.isString()) {
-                return objectMapper.readTree(jsonString.asString());
-            }
-        } catch (Exception e) {
-            LOG.warnf("Failed to JSON.stringify value: %s", e.getMessage());
-        }
-
-        // Last resort: wrap the string representation
-        ObjectNode wrapper = objectMapper.createObjectNode();
-        wrapper.put("result", value.toString());
-        return wrapper;
     }
 }
