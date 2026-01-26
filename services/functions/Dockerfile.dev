@@ -2,6 +2,28 @@ FROM maven:3.9-eclipse-temurin-21
 
 WORKDIR /app
 
+# Install Node.js (for esbuild)
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install esbuild globally
+RUN npm install -g esbuild
+
+# Install Javy (JavaScript to WASM compiler)
+# Using version 1.4.0 for better compatibility with Chicory (no SIMD)
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+        curl -L https://github.com/nicholasjackson/javy/releases/download/v0.6.1-nicj2/javy-arm-linux-0.6.1.gz | gunzip > /usr/local/bin/javy; \
+    else \
+        curl -L https://github.com/bytecodealliance/javy/releases/download/v1.4.0/javy-x86_64-linux-v1.4.0.gz | gunzip > /usr/local/bin/javy; \
+    fi && \
+    chmod +x /usr/local/bin/javy
+
+# Create WASM directories
+RUN mkdir -p /app/wasm/modules /app/wasm/temp
+
 # Copy entire project
 COPY . .
 
@@ -10,5 +32,4 @@ EXPOSE 9000
 EXPOSE 5005
 
 # Run Quarkus in development mode with hot reload
-# Skip the offline dependency download as it may fail with custom libraries
 CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=9000", "-DskipTests", "-U"]

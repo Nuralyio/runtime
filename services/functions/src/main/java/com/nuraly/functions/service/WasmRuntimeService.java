@@ -1,44 +1,57 @@
 package com.nuraly.functions.service;
 
-import com.dylibso.chicory.runtime.Instance;
-import com.dylibso.chicory.runtime.Module;
-import com.dylibso.chicory.wasm.Parser;
+import com.caoccao.javet.interop.V8Host;
+import com.caoccao.javet.interop.V8Runtime;
+import com.caoccao.javet.values.V8Value;
+import com.caoccao.javet.values.reference.V8ValuePromise;
 import com.nuraly.functions.configuration.Configuration;
+import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.concurrent.*;
 
 /**
- * WASM Runtime Service - executes WebAssembly modules.
- * Manages module caching and instance pooling.
+ * JavaScript Runtime Service - executes JavaScript functions using V8 (Javet).
+ *
+ * Each execution is isolated in its own V8Runtime context.
  */
 @ApplicationScoped
+@Startup
 public class WasmRuntimeService {
+
+    private static final Logger LOG = Logger.getLogger(WasmRuntimeService.class);
 
     @Inject
     Configuration configuration;
 
-    // Compiled modules cache (immutable, shareable)
-    private final ConcurrentHashMap<String, Module> moduleCache = new ConcurrentHashMap<>();
-
-    // Instance pools per function
-    private final ConcurrentHashMap<String, BlockingQueue<Instance>> instancePools = new ConcurrentHashMap<>();
-
-    // Executor for async invocations
+    private V8Host v8Host;
     private ExecutorService executor;
+
+    // Store deployed function handlers
+    private final ConcurrentHashMap<String, String> functionHandlers = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
-        executor = Executors.newVirtualThreadPerTaskExecutor();
-        createDirectories();
-        loadExistingModules();
+        long startTime = System.nanoTime();
+        try {
+            v8Host = V8Host.getV8Instance();
+            executor = Executors.newVirtualThreadPerTaskExecutor();
+
+            // Warm up V8
+            try (V8Runtime runtime = v8Host.createV8Runtime()) {
+                runtime.getExecutor("1 + 1").execute();
+            }
+
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.infof("WasmRuntimeService (V8/Javet) initialized and warmed up in %d ms", durationMs);
+        } catch (Exception e) {
+            LOG.error("Failed to initialize V8 runtime", e);
+            throw new RuntimeException("Failed to initialize JavaScript engine", e);
+        }
     }
 
     @PreDestroy
@@ -46,82 +59,48 @@ public class WasmRuntimeService {
         if (executor != null) {
             executor.shutdown();
         }
+        v8Host = null;
     }
 
-    private void createDirectories() {
-        try {
-            Files.createDirectories(Path.of(configuration.WasmModulesDir));
-            Files.createDirectories(Path.of(configuration.WasmTempDir));
-        } catch (IOException e) {
-            System.err.println("Failed to create WASM directories: " + e.getMessage());
-        }
-    }
+    /**
+     * Deploy a JavaScript function handler
+     */
+    public void deploy(String functionId, String handler) {
+        long startTime = System.nanoTime();
 
-    private void loadExistingModules() {
-        try {
-            Path modulesDir = Path.of(configuration.WasmModulesDir);
-            if (Files.exists(modulesDir)) {
-                Files.list(modulesDir)
-                    .filter(p -> p.toString().endsWith(".wasm"))
-                    .forEach(this::loadModule);
+        // Validate the handler compiles
+        try (V8Runtime runtime = v8Host.createV8Runtime()) {
+            runtime.getExecutor(handler).executeVoid();
+            // Check handler function exists
+            V8Value handlerFunc = runtime.getExecutor("typeof handler").execute();
+            if (!"function".equals(handlerFunc.toString())) {
+                throw new RuntimeException("Handler must define a 'handler' function");
             }
-        } catch (IOException e) {
-            System.err.println("Failed to load existing modules: " + e.getMessage());
-        }
-    }
-
-    private void loadModule(Path wasmPath) {
-        try {
-            String functionId = wasmPath.getFileName().toString().replace(".wasm", "");
-            byte[] wasmBytes = Files.readAllBytes(wasmPath);
-            Module module = Parser.parse(wasmBytes);
-            moduleCache.put(functionId, module);
-            warmPool(functionId, module);
-            System.out.println("Loaded WASM module: " + functionId);
         } catch (Exception e) {
-            System.err.println("Failed to load module " + wasmPath + ": " + e.getMessage());
+            throw new RuntimeException("Invalid handler: " + e.getMessage(), e);
         }
+
+        functionHandlers.put(functionId, handler);
+
+        long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+        LOG.infof("Deployed function: %s in %d ms", functionId, durationMs);
     }
 
     /**
-     * Deploy WASM module (save to disk and cache)
+     * Deploy from WASM bytes (for compatibility - just stores the handler directly)
      */
-    public void deploy(String functionId, byte[] wasmBytes) throws IOException {
-        // Save to disk
-        Path modulePath = Path.of(configuration.WasmModulesDir, functionId + ".wasm");
-        Files.createDirectories(modulePath.getParent());
-        Files.write(modulePath, wasmBytes);
-
-        // Parse and cache
-        Module module = Parser.parse(wasmBytes);
-        moduleCache.put(functionId, module);
-
-        // Pre-warm instance pool
-        warmPool(functionId, module);
-
-        System.out.println("Deployed WASM module: " + functionId);
+    public void deploy(String functionId, byte[] wasmBytes) {
+        // For compatibility with old API - wasmBytes would be the handler string
+        String handler = new String(wasmBytes);
+        deploy(functionId, handler);
     }
 
     /**
-     * Undeploy WASM module
+     * Undeploy a function
      */
-    public void undeploy(String functionId) throws IOException {
-        moduleCache.remove(functionId);
-        instancePools.remove(functionId);
-        Files.deleteIfExists(Path.of(configuration.WasmModulesDir, functionId + ".wasm"));
-        System.out.println("Undeployed WASM module: " + functionId);
-    }
-
-    private void warmPool(String functionId, Module module) {
-        BlockingQueue<Instance> pool = new LinkedBlockingQueue<>(configuration.WasmPoolMaxSize);
-        for (int i = 0; i < configuration.WasmPoolInitialSize; i++) {
-            try {
-                pool.offer(module.instantiate());
-            } catch (Exception e) {
-                System.err.println("Failed to pre-warm instance: " + e.getMessage());
-            }
-        }
-        instancePools.put(functionId, pool);
+    public void undeploy(String functionId) {
+        functionHandlers.remove(functionId);
+        LOG.infof("Undeployed function: %s", functionId);
     }
 
     /**
@@ -129,17 +108,11 @@ public class WasmRuntimeService {
      */
     public CompletableFuture<String> invoke(String functionId, String inputJson) {
         return CompletableFuture.supplyAsync(() -> {
-            Module module = moduleCache.get(functionId);
-            if (module == null) {
+            String handler = functionHandlers.get(functionId);
+            if (handler == null) {
                 throw new RuntimeException("Function not deployed: " + functionId);
             }
-
-            Instance instance = acquireInstance(functionId, module);
-            try {
-                return executeFunction(instance, inputJson);
-            } finally {
-                releaseInstance(functionId, instance);
-            }
+            return executeFunction(handler, inputJson);
         }, executor);
     }
 
@@ -147,48 +120,65 @@ public class WasmRuntimeService {
      * Invoke function synchronously
      */
     public String invokeSync(String functionId, String inputJson) throws Exception {
-        return invoke(functionId, inputJson)
-            .get(configuration.WasmExecutionTimeoutMs, TimeUnit.MILLISECONDS);
-    }
-
-    private Instance acquireInstance(String functionId, Module module) {
-        BlockingQueue<Instance> pool = instancePools.get(functionId);
-        if (pool != null) {
-            Instance instance = pool.poll();
-            if (instance != null) {
-                return instance;
-            }
-        }
-        // Create new instance if pool is empty
-        return module.instantiate();
-    }
-
-    private void releaseInstance(String functionId, Instance instance) {
-        BlockingQueue<Instance> pool = instancePools.get(functionId);
-        if (pool != null) {
-            pool.offer(instance);
-        }
-    }
-
-    private String executeFunction(Instance instance, String inputJson) {
+        long startTime = System.nanoTime();
         try {
-            // Get the _start function (Javy entry point)
-            var startFunc = instance.export("_start");
+            String result = invoke(functionId, inputJson)
+                .get(configuration.WasmExecutionTimeoutMs, TimeUnit.MILLISECONDS);
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.infof("Function %s executed in %d ms", functionId, durationMs);
+            return result;
+        } catch (TimeoutException e) {
+            long durationMs = (System.nanoTime() - startTime) / 1_000_000;
+            LOG.errorf("Function %s timed out after %d ms", functionId, durationMs);
+            throw e;
+        }
+    }
 
-            // Write input to stdin (memory position 0)
-            byte[] inputBytes = inputJson.getBytes(StandardCharsets.UTF_8);
-            var memory = instance.memory();
-            memory.write(0, inputBytes);
+    private String executeFunction(String handler, String inputJson) {
+        try (V8Runtime runtime = v8Host.createV8Runtime()) {
+            // Load the handler
+            runtime.getExecutor(handler).executeVoid();
 
-            // Call the function
-            startFunc.apply();
+            // Parse input and call handler
+            runtime.getExecutor("var __input = " + inputJson + ";").executeVoid();
 
-            // Read output from stdout (simplified - actual implementation needs proper WASI)
-            // For now, return a placeholder
-            return "{}";
+            // Call the handler function - may return a value or a Promise
+            V8Value result = runtime.getExecutor(
+                "handler(__input.body || __input, __input.context || {})"
+            ).execute();
 
+            // If result is a Promise, await it with polling
+            if (result instanceof V8ValuePromise promise) {
+                long startTime = System.currentTimeMillis();
+                long timeout = configuration.WasmExecutionTimeoutMs;
+
+                // Poll until promise is settled or timeout
+                while (promise.getState() == V8ValuePromise.STATE_PENDING) {
+                    runtime.await();
+
+                    if (System.currentTimeMillis() - startTime > timeout) {
+                        throw new RuntimeException("Promise timeout after " + timeout + "ms");
+                    }
+
+                    // Small sleep to prevent busy waiting
+                    Thread.sleep(1);
+                }
+
+                if (promise.getState() == V8ValuePromise.STATE_REJECTED) {
+                    V8Value reason = promise.getResult();
+                    throw new RuntimeException("Promise rejected: " + reason.toString());
+                }
+
+                result = promise.getResult();
+            }
+
+            // Stringify the result
+            runtime.getGlobalObject().set("__result", result);
+            V8Value jsonResult = runtime.getExecutor("JSON.stringify(__result)").execute();
+
+            return jsonResult.toString();
         } catch (Exception e) {
-            throw new RuntimeException("WASM execution failed: " + e.getMessage(), e);
+            throw new RuntimeException("Function execution failed: " + e.getMessage(), e);
         }
     }
 
@@ -196,22 +186,15 @@ public class WasmRuntimeService {
      * Check if function is deployed
      */
     public boolean isDeployed(String functionId) {
-        return moduleCache.containsKey(functionId);
+        return functionHandlers.containsKey(functionId);
     }
 
     /**
-     * Get pool statistics
+     * Get pool statistics (for compatibility)
      */
     public PoolStats getPoolStats(String functionId) {
-        BlockingQueue<Instance> pool = instancePools.get(functionId);
-        if (pool == null) {
-            return new PoolStats(0, 0, false);
-        }
-        return new PoolStats(
-            pool.size(),
-            configuration.WasmPoolMaxSize - pool.remainingCapacity(),
-            true
-        );
+        boolean deployed = functionHandlers.containsKey(functionId);
+        return new PoolStats(deployed ? 1 : 0, 0, deployed);
     }
 
     public record PoolStats(int available, int active, boolean deployed) {}
