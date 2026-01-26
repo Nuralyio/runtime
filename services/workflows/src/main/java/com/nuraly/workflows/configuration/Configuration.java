@@ -72,4 +72,14 @@ public class Configuration {
     // Dev Mode - allows triggering draft workflows
     @ConfigProperty(name = "workflows.dev-mode", defaultValue = "false")
     public boolean devMode;
+
+    // Context Memory Settings
+    @ConfigProperty(name = "workflows.memory.storage", defaultValue = "memory")
+    public String memoryStorage; // "memory" or "redis"
+
+    @ConfigProperty(name = "workflows.memory.redis.key-prefix", defaultValue = "workflow:memory:")
+    public String memoryRedisKeyPrefix;
+
+    @ConfigProperty(name = "workflows.memory.ttl-seconds", defaultValue = "86400")
+    public long memoryTtlSeconds; // Default 24 hours
 }
