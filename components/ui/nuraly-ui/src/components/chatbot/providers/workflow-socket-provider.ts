@@ -85,6 +85,9 @@ export class WorkflowSocketProvider implements ChatbotProvider {
   protected config: WorkflowSocketProviderConfig | null = null;
   protected connected: boolean = false;
 
+  // Session ID for this provider instance - used as threadId fallback for context memory
+  protected readonly sessionId: string = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
   // Track active executions and their message handlers
   protected activeExecutions: Map<string, {
     messages: string[];
@@ -397,10 +400,13 @@ export class WorkflowSocketProvider implements ChatbotProvider {
     // Debug: log context to see if files are being passed
     console.log('[WorkflowSocketProvider] buildInput context.uploadedFiles:', context.uploadedFiles);
 
+    // Use thread ID if available, otherwise fall back to session ID for context memory
+    const threadId = context.currentThread?.id || this.sessionId;
+
     // Default input structure for chat workflows
     const input = {
       message: text,
-      threadId: context.currentThread?.id,
+      threadId,
       modules: context.selectedModules,
       metadata: context.metadata,
       files: context.uploadedFiles?.map(f => ({
@@ -413,7 +419,7 @@ export class WorkflowSocketProvider implements ChatbotProvider {
       })) || []
     };
 
-    console.log('[WorkflowSocketProvider] buildInput result files count:', input.files.length);
+    console.log('[WorkflowSocketProvider] buildInput threadId:', threadId, 'files count:', input.files.length);
     return input;
   }
 

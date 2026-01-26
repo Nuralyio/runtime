@@ -201,9 +201,11 @@ export interface NodeConfiguration {
   provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local';
   modelName?: string;
   apiUrlPath?: string;  // KV path for custom API URL (for Ollama)
-  // Memory node
-  memoryType?: 'buffer' | 'summary' | 'vector';
+  // Memory node (context memory for agents/LLM)
+  cutoffMode?: 'message' | 'token';
   maxMessages?: number;
+  // maxTokens is shared with Agent/LLM node above
+  conversationIdExpression?: string;
   // Tool node
   toolName?: string;
   toolConfig?: Record<string, unknown>;
@@ -953,15 +955,20 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
   },
   {
     type: AgentNodeType.MEMORY,
-    name: 'Memory',
-    description: 'Conversation memory for agents',
+    name: 'Context Memory',
+    description: 'Conversation memory for agents - stores and retrieves chat history',
     icon: NODE_ICONS[AgentNodeType.MEMORY],
     color: NODE_COLORS[AgentNodeType.MEMORY],
     category: 'agent',
-    defaultConfig: { memoryType: 'buffer', maxMessages: 10 },
+    defaultConfig: {
+      cutoffMode: 'message',
+      maxMessages: 50,
+      maxTokens: 4000,
+      conversationIdExpression: '${input.threadId}',
+    },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
-      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Context' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Memory Config' }],
     },
   },
   {
