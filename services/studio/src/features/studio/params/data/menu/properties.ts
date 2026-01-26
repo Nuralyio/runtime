@@ -39,6 +39,17 @@ const itemsProperty = event('items')
   .width('50px')
   .handlerType('input')
   .handlerProperty('options')
+  .valueHandler(new ComputedValueHandler((ctx) => {
+    const parameter = 'options';
+    let labelHandler = '';
+    const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
+    if (selectedComponent?.input?.options?.type === 'handler' && selectedComponent?.input?.options?.value) {
+      labelHandler = selectedComponent?.input?.options.value;
+    } else if (selectedComponent?.input?.options?.type === 'array' && selectedComponent?.input?.options?.value) {
+      labelHandler = JSON.stringify(selectedComponent?.input?.options.value, null, 2);
+    }
+    return [parameter, labelHandler];
+  }))
   .handlerValueGetter(new ComputedValueHandler((ctx) => {
     const parameter = 'options';
     let labelHandler = '';

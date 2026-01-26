@@ -7,8 +7,13 @@
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $editorState } from '@nuraly/runtime/redux/store';
-import { getVar, setVar } from '@nuraly/runtime/redux/store/context';
+import { $editorState, $selectedComponents, $currentPageId } from '@nuraly/runtime/redux/store';
+import { $currentApplication } from '@nuraly/runtime/redux/store';
+
+import "./base-panel.ts";
+import "./component-property-panel.ts";
+import "./component-style-panel.ts";
+import "./component-handler-panel.ts";
 
 // Component configuration mappings
 const COMPONENT_CONFIGS: Record<string, {
@@ -281,25 +286,38 @@ export class StudioControlPanel extends LitElement {
   private activeTabIndex: number = 0;
 
   private unsubscribeEditor?: () => void;
+  private unsubscribeSelectedComponents?: () => void;
+  private unsubscribeApp?: () => void;
+  private appId: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
 
+    this.unsubscribeApp = $currentApplication.subscribe((app) => {
+      if (app?.uuid) {
+        this.appId = app.uuid;
+      }
+    });
+
     this.unsubscribeEditor = $editorState.subscribe((state) => {
       this.currentTab = state.currentTab || { type: 'page' };
 
-      // Get selected component from context
-      const selectedComponents = getVar('global', 'selectedComponents')?.value || [];
-      this.selectedComponent = selectedComponents[0] || null;
+      // Get current page from editor state
+      if (state.currentTab?.type === 'page' && state.currentTab?.id) {
+        this.currentPageId = state.currentTab.id;
+      }
+    });
 
-      // Get current page
-      this.currentPageId = getVar('global', 'currentPage')?.value || '';
+    this.unsubscribeSelectedComponents = $selectedComponents.subscribe((components) => {
+      this.selectedComponent = components[0] || null;
     });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.unsubscribeEditor?.();
+    this.unsubscribeSelectedComponents?.();
+    this.unsubscribeApp?.();
   }
 
   private getTabsConfig() {
