@@ -1,32 +1,53 @@
 package com.nuraly.functions.configuration;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.util.List;
 import java.util.Optional;
 
 @Singleton
 public class Configuration {
+
+    // Function templates
     @ConfigProperty(name = "nuraly.functions.template.base.path")
-    public String FunctionsBasePath ;
+    public String FunctionsBasePath;
 
-    @ConfigProperty(name = "nuraly-registry-service.username")
-    public Optional<String> RegistryUsername;
-    @ConfigProperty(name = "nuraly-registry-service.password")
-    public Optional<String> RegistryPassword;
-    @ConfigProperty(name = "nuraly-registry-service.url")
-    public String RegistryURL;
-    @ConfigProperty(name = "nuraly-functions.domain")
-    public String FunctionsDomain;
+    // WASM Runtime
+    @ConfigProperty(name = "nuraly.wasm.modules-dir", defaultValue = "/var/nuraly/wasm/modules")
+    public String WasmModulesDir;
 
-    @ConfigProperty(name = "nuraly-functions.port")
-    public String FunctionsPort;
+    @ConfigProperty(name = "nuraly.wasm.temp-dir", defaultValue = "/var/nuraly/wasm/temp")
+    public String WasmTempDir;
 
-    @ConfigProperty(name = "nuraly-functions.gateway-host", defaultValue = "localhost")
-    public String FunctionsGatewayHost;
+    @ConfigProperty(name = "nuraly.wasm.pool.initial-size", defaultValue = "5")
+    public int WasmPoolInitialSize;
 
-    @ConfigProperty(name = "nuraly-registry-service.skip-push", defaultValue = "false")
-    public boolean SkipRegistryPush;
+    @ConfigProperty(name = "nuraly.wasm.pool.max-size", defaultValue = "100")
+    public int WasmPoolMaxSize;
 
+    @ConfigProperty(name = "nuraly.wasm.execution.timeout-ms", defaultValue = "30000")
+    public long WasmExecutionTimeoutMs;
+
+    @ConfigProperty(name = "nuraly.wasm.execution.max-memory-mb", defaultValue = "64")
+    public int WasmMaxMemoryMb;
+
+    // Network security (configurable)
+    @ConfigProperty(name = "nuraly.wasm.network.enabled", defaultValue = "true")
+    public boolean NetworkEnabled;
+
+    @ConfigProperty(name = "nuraly.wasm.network.block-localhost", defaultValue = "true")
+    public boolean BlockLocalhost;
+
+    @ConfigProperty(name = "nuraly.wasm.network.block-private-ips", defaultValue = "true")
+    public boolean BlockPrivateIps;
+
+    @ConfigProperty(name = "nuraly.wasm.network.blocked-hosts")
+    public Optional<List<String>> BlockedHosts;
+
+    @ConfigProperty(name = "nuraly.wasm.network.allowed-hosts")
+    public Optional<List<String>> AllowedHosts;
+
+    @ConfigProperty(name = "nuraly.wasm.network.timeout-seconds", defaultValue = "30")
+    public int NetworkTimeoutSeconds;
 }

@@ -136,10 +136,17 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
+        <!-- JavaScript Runtime (Javet/V8) -->
         <dependency>
-            <groupId>io.kubernetes</groupId>
-            <artifactId>client-java</artifactId>
-            <version>19.0.0</version>
+            <groupId>com.caoccao.javet</groupId>
+            <artifactId>javet</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- Native library for Linux ARM64 (Docker on Apple Silicon) -->
+        <dependency>
+            <groupId>com.caoccao.javet</groupId>
+            <artifactId>javet-linux-arm64</artifactId>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
