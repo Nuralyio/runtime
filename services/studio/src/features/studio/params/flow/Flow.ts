@@ -369,6 +369,9 @@ export class FlowPage extends LitElement {
   private nodeStatuses: Record<string, 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'> = {};
 
   @state()
+  private agentActivity: Record<string, { type: 'llm' | 'tool'; name?: string; active: boolean }> = {};
+
+  @state()
   private currentExecutionId: string | null = null;
 
   @state()
@@ -515,6 +518,42 @@ export class FlowPage extends LitElement {
       .on('execution:cancelled', (data: any) => {
         console.log('[Flow] Execution cancelled:', data);
         this.setExecutionState(false, null);
+      })
+      .on('execution:llm-call-started', (data: any) => {
+        const nodeId = data.data?.nodeId || data.nodeId;
+        console.log('[Flow] LLM call started:', nodeId, data.data?.provider, data.data?.model);
+        if (nodeId) {
+          this.setAgentActivity(nodeId, { type: 'llm', name: data.data?.model, active: true });
+        }
+      })
+      .on('execution:llm-call-completed', (data: any) => {
+        const nodeId = data.data?.nodeId || data.nodeId;
+        console.log('[Flow] LLM call completed:', nodeId, 'iteration:', data.data?.iteration);
+        if (nodeId) {
+          this.setAgentActivity(nodeId, { type: 'llm', name: data.data?.model, active: false });
+        }
+      })
+      .on('execution:tool-call-started', (data: any) => {
+        const nodeId = data.data?.nodeId || data.nodeId;
+        console.log('[Flow] Tool call started:', nodeId, data.data?.toolName, 'toolNodeId:', data.data?.toolNodeId);
+        if (nodeId) {
+          this.setAgentActivity(nodeId, { type: 'tool', name: data.data?.toolName, active: true });
+        }
+        // Also flash the tool node if it exists
+        if (data.data?.toolNodeId) {
+          this.updateNodeStatus(data.data.toolNodeId, 'RUNNING');
+        }
+      })
+      .on('execution:tool-call-completed', (data: any) => {
+        const nodeId = data.data?.nodeId || data.nodeId;
+        console.log('[Flow] Tool call completed:', nodeId, data.data?.toolName, 'success:', data.data?.success);
+        if (nodeId) {
+          this.setAgentActivity(nodeId, { type: 'tool', name: data.data?.toolName, active: false });
+        }
+        // Mark tool node as completed/failed
+        if (data.data?.toolNodeId) {
+          this.updateNodeStatus(data.data.toolNodeId, data.data?.success ? 'COMPLETED' : 'FAILED');
+        }
       });
 
     // Pre-connect socket so it's ready when we need to subscribe
@@ -573,6 +612,16 @@ export class FlowPage extends LitElement {
   }
 
   /**
+   * Set agent activity state for a node (LLM calls, tool calls)
+   */
+  public setAgentActivity(nodeId: string, activity: { type: 'llm' | 'tool'; name?: string; active: boolean }): void {
+    this.agentActivity = {
+      ...this.agentActivity,
+      [nodeId]: activity,
+    };
+  }
+
+  /**
    * Set execution state (called from handlers)
    */
   public setExecutionState(isExecuting: boolean, executionId: string | null = null): void {
@@ -581,16 +630,48 @@ export class FlowPage extends LitElement {
   }
 
   /**
-   * Reset all node statuses to pending (called from handlers)
+   * Reset node statuses to pending only for nodes reachable from start nodes
    */
   public resetNodeStatuses(): void {
-    if (this.workflow?.nodes) {
-      const statuses: Record<string, 'PENDING'> = {};
-      this.workflow.nodes.forEach((node) => {
-        statuses[node.id] = 'PENDING';
-      });
-      this.nodeStatuses = statuses;
+    if (!this.workflow?.nodes || !this.workflow?.edges) {
+      this.nodeStatuses = {};
+      return;
     }
+
+    // Find start nodes
+    const startTypes = ['START', 'HTTP_START', 'CHAT_START', 'SCHEDULE_START', 'WEBHOOK_START'];
+    const startNodeIds = this.workflow.nodes
+      .filter(n => startTypes.includes(n.type?.toUpperCase() || ''))
+      .map(n => n.id);
+
+    // Build adjacency list from edges
+    const adjacency = new Map<string, string[]>();
+    for (const edge of this.workflow.edges) {
+      const targets = adjacency.get(edge.sourceNodeId) || [];
+      targets.push(edge.targetNodeId);
+      adjacency.set(edge.sourceNodeId, targets);
+    }
+
+    // BFS to find all reachable nodes from start nodes
+    const reachable = new Set<string>(startNodeIds);
+    const queue = [...startNodeIds];
+    while (queue.length > 0) {
+      const nodeId = queue.shift()!;
+      const targets = adjacency.get(nodeId) || [];
+      for (const targetId of targets) {
+        if (!reachable.has(targetId)) {
+          reachable.add(targetId);
+          queue.push(targetId);
+        }
+      }
+    }
+
+    // Set PENDING only for reachable nodes
+    const statuses: Record<string, 'PENDING'> = {};
+    for (const nodeId of reachable) {
+      statuses[nodeId] = 'PENDING';
+    }
+    this.nodeStatuses = statuses;
   }
 
   /**
@@ -824,6 +905,7 @@ export class FlowPage extends LitElement {
           <workflow-canvas
             .workflow=${this.workflow || MOCK_WORKFLOW}
             .nodeStatuses=${this.nodeStatuses}
+            .agentActivity=${this.agentActivity}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}
