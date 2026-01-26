@@ -194,13 +194,17 @@ services:
       context: ./services/textlens
       dockerfile: Dockerfile.api
     ports:
-      - "7006:8000"
+      - "7006:7006"
     volumes:
       - ./services/textlens:/app
     environment:
       - NODE_ENV=development
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
       - PERMISSION_API_BASE_URL=http://api:8000/api
       - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
     env_file:
@@ -222,8 +226,12 @@ services:
       - ./services/textlens:/app
     environment:
       - NODE_ENV=development
-      - REDIS_URL=redis://redis:6379
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     env_file:
       - config/dev.env
     depends_on:
