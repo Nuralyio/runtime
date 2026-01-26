@@ -1,192 +1,26 @@
 /**
- * Native Control Panel (Right Panel) Component
+ * Native Control Panel (Right Panel) Component - Hybrid Approach
  *
- * Replaces the micro-app based control panel with a native Lit component.
- * Displays properties, styles, and handlers for the selected component.
+ * Uses native Lit components for:
+ * - Common properties (Name, ID, Display, Hash)
+ * - Styling (Size, Spacing, Typography, Border, Background)
+ * - Handlers (Event handlers)
+ *
+ * Type-specific properties use a simplified config-driven approach.
+ * Wrapped in nr-panel for detachable/floating window support.
  */
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $editorState, $selectedComponents, $currentPageId } from '@nuraly/runtime/redux/store';
+import { $editorState, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $currentApplication } from '@nuraly/runtime/redux/store';
+import type { ComponentElement } from '@nuraly/runtime/redux/store';
 
-import "./base-panel.ts";
-import "./component-property-panel.ts";
-import "./component-style-panel.ts";
-import "./component-handler-panel.ts";
-
-// Component configuration mappings
-const COMPONENT_CONFIGS: Record<string, {
-  parameters: string[];
-  handlers: string[];
-  themes: string[];
-}> = {
-  text_label: {
-    parameters: ['text_label_properties_collapse'],
-    handlers: ['text_label_handler'],
-    themes: ['text_label_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  text_input: {
-    parameters: ['text_input_blocks'],
-    handlers: ['studio_text_input_handler'],
-    themes: ['text_input_icon_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  textarea: {
-    parameters: ['textarea_blocks'],
-    handlers: ['studio_textarea_handler'],
-    themes: ['textarea_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  slider: {
-    parameters: ['slider_blocks'],
-    handlers: ['studio_slider_handler'],
-    themes: ['slider_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  button_input: {
-    parameters: ['button_blocks'],
-    handlers: ['studio_button_handler'],
-    themes: ['studio_button_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  checkbox: {
-    parameters: ['checkbox_blocks'],
-    handlers: ['studio_checkbox_handler'],
-    themes: ['checkbox_button_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  image: {
-    parameters: ['image_blocks'],
-    handlers: ['studio_image_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  date_picker: {
-    parameters: ['datepicker_block'],
-    handlers: ['studio_datepicker_handler'],
-    themes: ['studio_datepicker_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  select: {
-    parameters: ['select_blocks'],
-    handlers: ['studio_select_handler'],
-    themes: ['studio_select_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  table: {
-    parameters: ['table_blocks'],
-    handlers: ['studio_table_handler'],
-    themes: ['studio_table_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  icon: {
-    parameters: ['icon_blocks'],
-    handlers: ['studio_icon_handler'],
-    themes: ['studio_icon_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  badge: {
-    parameters: ['badge_blocks'],
-    handlers: ['studio_badge_handler'],
-    themes: ['badge_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  tag: {
-    parameters: ['tag_blocks'],
-    handlers: ['studio_tag_handler'],
-    themes: ['tag_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  container: {
-    parameters: ['container_blocks'],
-    handlers: ['studio_container_handler'],
-    themes: ['studio_container_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  card: {
-    parameters: ['card_blocks'],
-    handlers: ['studio_card_handler'],
-    themes: ['card_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  collection: {
-    parameters: ['collection_blocks'],
-    handlers: ['studio_collection_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  ref_component: {
-    parameters: ['ref_component_blocks'],
-    handlers: ['studio_ref_component_handler'],
-    themes: ['studio_ref_component_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  code: {
-    parameters: ['code_blocks'],
-    handlers: ['studio_code_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  rich_text: {
-    parameters: ['rich_text_blocks'],
-    handlers: ['studio_rich_text_handler'],
-    themes: ['studio_rich_text_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  rich_text_editor: {
-    parameters: ['rich_text_editor_blocks'],
-    handlers: ['studio_rich_text_editor_handler'],
-    themes: ['studio_rich_text_editor_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  menu: {
-    parameters: ['menu_blocks'],
-    handlers: ['studio_menu_handler'],
-    themes: ['studio_menu_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  dropdown: {
-    parameters: ['dropdown_blocks'],
-    handlers: ['studio_dropdown_handler'],
-    themes: ['studio_dropdown_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  embed_url: {
-    parameters: ['embed_blocks'],
-    handlers: ['studio_embed_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  link: {
-    parameters: ['link_blocks'],
-    handlers: ['studio_link_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  file_upload: {
-    parameters: ['FileUpload_input_collapse_container'],
-    handlers: ['studio_FileUpload_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  video: {
-    parameters: ['video_blocks'],
-    handlers: ['studio_video_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  document: {
-    parameters: ['document_blocks'],
-    handlers: ['studio_document_handler'],
-    themes: ['border_manager_collapse', 'box_model_collapse']
-  },
-  grid_row: {
-    parameters: ['grid_row_blocks'],
-    handlers: ['studio_grid_row_handler'],
-    themes: ['studio_grid_row_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  grid_col: {
-    parameters: ['grid_col_blocks'],
-    handlers: ['studio_grid_col_handler'],
-    themes: ['studio_grid_col_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  form: {
-    parameters: ['form_blocks'],
-    handlers: ['studio_form_handler'],
-    themes: ['form_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  modal: {
-    parameters: ['modal_blocks'],
-    handlers: ['studio_modal_handler'],
-    themes: ['studio_modal_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  workflow_wrapper: {
-    parameters: ['workflow_blocks'],
-    handlers: ['studio_workflow_handler'],
-    themes: ['studio_workflow_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  },
-  chatbot_wrapper: {
-    parameters: ['chatbot_blocks'],
-    handlers: ['studio_chatbot_handler'],
-    themes: ['studio_chatbot_theme_container', 'border_manager_collapse', 'box_model_collapse']
-  }
-};
+// Import native panels
+import "./native/common-properties-panel.js";
+import "./native/type-properties-panel.js";
+import "./native/style-panel.js";
+import "./native/handlers-panel.js";
 
 @customElement("studio-control-panel")
 export class StudioControlPanel extends LitElement {
@@ -194,20 +28,28 @@ export class StudioControlPanel extends LitElement {
     :host {
       display: block;
       height: 100%;
-      overflow-y: auto;
-      background: var(--panel-bg, white);
+      overflow: hidden;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :host {
-        --panel-bg: #1a1a1a;
-        --text-color: #e0e0e0;
-        --border-color: #3a3a3a;
-      }
-    }
-
-    .panel-container {
+    nr-panel {
       height: 100%;
+      --nuraly-panel-padding: 0;
+      --nuraly-panel-header-padding: 4px 8px;
+      --nuraly-panel-header-padding-small: 4px 8px;
+      --nuraly-panel-header-font-size: 12px;
+      --nuraly-panel-header-font-weight: 400;
+      --nuraly-panel-body-padding-small: 0;
+      --nuraly-panel-border-radius: var(--nuraly-border-radius-none);
+    }
+
+    nr-panel::part(body) {
+      overflow-y: auto;
+    }
+
+    .panel-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .empty-state {
@@ -216,7 +58,7 @@ export class StudioControlPanel extends LitElement {
       align-items: center;
       justify-content: center;
       height: 200px;
-      color: var(--text-color, #666);
+      color: var(--text-secondary, #666);
       font-size: 14px;
       text-align: center;
       padding: 20px;
@@ -229,7 +71,7 @@ export class StudioControlPanel extends LitElement {
     }
 
     nr-tabs {
-      height: 100%;
+      flex: 1;
       display: flex;
       flex-direction: column;
       --nuraly-spacing-tabs-content-padding-small: 0;
@@ -240,41 +82,20 @@ export class StudioControlPanel extends LitElement {
       --nuraly-border-width-tabs-left: 0px;
     }
 
-    /* Micro-app styling overrides for compatibility during transition */
-    micro-app {
-      --nuraly-input-border-radius: 5px;
-      --nuraly-input-border-bottom: 2px solid transparent;
-      --nuraly-input-number-icons-container-width: 48px;
-      --nuraly-input-font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
-      --nuraly-input-font-size: 12px;
-      --nuraly-select-icon-width: 11px;
-      --nuraly-select-border-radius: 5px;
-      --nuraly-button-background-color: rgb(245, 245, 245);
-      --nuraly-button-text-color: #535353;
-      --nr-collapse-content-background-color: transparent;
+    .tab-content {
+      padding: 0;
+      overflow-y: auto;
     }
 
-    @media (prefers-color-scheme: dark) {
-      micro-app {
-        --nuraly-input-border-bottom: 1px solid transparent;
-        --nuraly-select-focus-border: 1px solid #ffffff;
-        --nuraly-button-border-left: 1px solid #272626;
-        --nuraly-button-border-right: 1px solid #272626;
-        --nuraly-button-border-top: 1px solid #272626;
-        --nuraly-button-border-bottom: 1px solid #272626;
-        --nuraly-button-background-color: #494949;
-        --nuraly-button-text-color: #ffffff;
-        --nuraly-button-hover-background-color: #3b3b3b;
-        --nr-collapse-border: 1px solid #a8a8a8;
-        --nr-collapse-header-hover-background-color: #3a3a3a;
-        --nr-collapse-header-collapsed-background-color: #3a3a3a;
-        --nuraly-select-options-background-color: #0a0a0a;
-      }
+    .section-divider {
+      height: 1px;
+      background: var(--border-color, #e0e0e0);
+      margin: 8px 0;
     }
   `;
 
   @state()
-  private selectedComponent: any = null;
+  private selectedComponent: ComponentElement | null = null;
 
   @state()
   private currentTab: { type: string; id?: string } = { type: 'page' };
@@ -285,24 +106,23 @@ export class StudioControlPanel extends LitElement {
   @state()
   private activeTabIndex: number = 0;
 
+  @state()
+  private panelMode: 'embedded' | 'window' = 'embedded';
+
   private unsubscribeEditor?: () => void;
   private unsubscribeSelectedComponents?: () => void;
   private unsubscribeApp?: () => void;
-  private appId: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.unsubscribeApp = $currentApplication.subscribe((app) => {
-      if (app?.uuid) {
-        this.appId = app.uuid;
-      }
+    this.unsubscribeApp = $currentApplication.subscribe(() => {
+      // App subscription kept for future use
     });
 
     this.unsubscribeEditor = $editorState.subscribe((state) => {
       this.currentTab = state.currentTab || { type: 'page' };
 
-      // Get current page from editor state
       if (state.currentTab?.type === 'page' && state.currentTab?.id) {
         this.currentPageId = state.currentTab.id;
       }
@@ -320,30 +140,46 @@ export class StudioControlPanel extends LitElement {
     this.unsubscribeApp?.();
   }
 
-  private getTabsConfig() {
-    if (this.selectedComponent) {
-      const config = COMPONENT_CONFIGS[this.selectedComponent.type];
-      if (config) {
-        return {
-          parameters: [...config.parameters, 'translations_panel_block', 'access_control_panel_block'],
-          handlers: config.handlers,
-          themes: ['select_component_styles_state_container', ...config.themes]
-        };
-      }
-    } else if (this.currentPageId) {
-      return {
-        parameters: ['page_info_container_block', 'access_control_panel_block'],
-        handlers: [],
-        themes: ['PageThemeStudio']
-      };
-    }
-    return null;
+  private renderPropertiesTab() {
+    return html`
+      <div class="tab-content">
+        <!-- Common Properties (Native) -->
+        <common-properties-panel
+          .component=${this.selectedComponent}
+        ></common-properties-panel>
+
+        <div class="section-divider"></div>
+
+        <!-- Type-Specific Properties (Native with config) -->
+        <type-properties-panel
+          .component=${this.selectedComponent}
+        ></type-properties-panel>
+      </div>
+    `;
+  }
+
+  private renderStyleTab() {
+    return html`
+      <div class="tab-content">
+        <native-style-panel
+          .component=${this.selectedComponent}
+        ></native-style-panel>
+      </div>
+    `;
+  }
+
+  private renderHandlersTab() {
+    return html`
+      <div class="tab-content">
+        <native-handlers-panel
+          .component=${this.selectedComponent}
+        ></native-handlers-panel>
+      </div>
+    `;
   }
 
   private renderPropertyTabs() {
-    const config = this.getTabsConfig();
-
-    if (!config) {
+    if (!this.selectedComponent && !this.currentPageId) {
       return html`
         <div class="empty-state">
           <nr-icon name="mouse-pointer"></nr-icon>
@@ -356,32 +192,17 @@ export class StudioControlPanel extends LitElement {
       {
         label: 'Properties',
         icon: 'hammer',
-        content: html`
-          <component-property-panel
-            .componentIds=${config.parameters}
-            .component=${this.selectedComponent}
-          ></component-property-panel>
-        `
+        content: this.renderPropertiesTab()
       },
       {
         label: 'Style',
         icon: 'paintbrush',
-        content: html`
-          <component-style-panel
-            .componentIds=${config.themes}
-            .component=${this.selectedComponent}
-          ></component-style-panel>
-        `
+        content: this.renderStyleTab()
       },
       {
         label: 'Handlers',
         icon: 'git-compare',
-        content: html`
-          <component-handler-panel
-            .componentIds=${config.handlers}
-            .component=${this.selectedComponent}
-          ></component-handler-panel>
-        `
+        content: this.renderHandlersTab()
       }
     ];
 
@@ -410,13 +231,34 @@ export class StudioControlPanel extends LitElement {
     `;
   }
 
+  private handlePanelModeChange(e: CustomEvent) {
+    this.panelMode = e.detail.mode;
+  }
+
+  private getPanelTitle(): string {
+    if (!this.selectedComponent) return 'Properties';
+    return this.selectedComponent.name || this.selectedComponent.type || 'Properties';
+  }
+
   override render() {
     return html`
-      <div class="panel-container">
-        ${this.currentTab.type === 'page' ? this.renderPropertyTabs() : nothing}
-        ${this.currentTab.type === 'function' ? this.renderFunctionPanel() : nothing}
-        ${this.currentTab.type === 'files' ? this.renderFilesPanel() : nothing}
-      </div>
+      <nr-panel
+        mode=${this.panelMode}
+        title=${this.getPanelTitle()}
+        icon="settings"
+        size="custom"
+        .resizable=${this.panelMode === 'window'}
+        .draggable=${this.panelMode === 'window'}
+        maximizePosition="center"
+        @panel-mode-change=${this.handlePanelModeChange}
+        @panel-restore-embedded=${() => this.panelMode = 'embedded'}
+      >
+        <div class="panel-content">
+          ${this.currentTab.type === 'page' ? this.renderPropertyTabs() : nothing}
+          ${this.currentTab.type === 'function' ? this.renderFunctionPanel() : nothing}
+          ${this.currentTab.type === 'files' ? this.renderFilesPanel() : nothing}
+        </div>
+      </nr-panel>
     `;
   }
 }

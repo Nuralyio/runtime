@@ -29,6 +29,9 @@ import { serializeComponentDefinition, getConfigKey } from "../core/properties/s
 // Memoization cache to prevent re-processing
 const componentCache = new Map<string, any[]>();
 
+// Cache version - increment to invalidate cache when generator logic changes
+const CACHE_VERSION = 5;
+
 // Clear cache in development for hot reload
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
@@ -55,8 +58,8 @@ export function loadFromTypeScript(
   themeConfig: any,
   children_ids?: string[]
 ) {
-  // Check cache first using panel container as unique identifier
-  const cacheKey = definition.panel.containerUuid;
+  // Check cache first using panel container + version as unique identifier
+  const cacheKey = `${definition.panel.containerUuid}_v${CACHE_VERSION}`;
   if (componentCache.has(cacheKey)) {
     return componentCache.get(cacheKey)!;
   }
@@ -127,7 +130,7 @@ export function loadFromTypeScriptOnly(
   definition: ComponentDefinition,
   children_ids?: string[]
 ) {
-  const cacheKey = definition.panel.containerUuid;
+  const cacheKey = `${definition.panel.containerUuid}_v${CACHE_VERSION}`;
   if (componentCache.has(cacheKey)) {
     return componentCache.get(cacheKey)!;
   }

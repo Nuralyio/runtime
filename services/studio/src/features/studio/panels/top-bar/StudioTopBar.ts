@@ -7,12 +7,24 @@
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $currentApplication, $editorState } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $editorState, $currentPageId, $applicationPages } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
 import { setEnvirementMode, addComponentAction } from '@nuraly/runtime/redux/actions';
 import { openEditorTab } from '@nuraly/runtime/redux/actions/editor/openEditorTab';
 import { $pageZoom } from '@nuraly/runtime/redux/store';
 import { GenerateName } from '@nuraly/runtime/utils/naming-generator';
+
+// Locale stores
+import { $locale, $supportedLocales, $i18nEnabled, setLocale, getLocaleFlag } from '@nuraly/runtime/state/locale.store';
+
+// Presence indicator component (registers custom element)
+import '@nuraly/runtime/presence/PresenceIndicator';
+
+// Editor for platform state
+import Editor from '@nuraly/runtime/state/editor';
+
+// Runtime context for iframe communication
+import { ExecuteInstance } from '@nuraly/runtime/state/runtime-context';
 
 // Component insert options
 import { getInsertOptions, getEditOptions, getApplicationOptions } from './topbar-options';
@@ -24,38 +36,11 @@ export class StudioTopBar extends LitElement {
       display: block;
       height: 37px;
       border-bottom: 1px solid var(--topbar-border, #d6d6d6);
+      background: var(--topbar-bg, #ffffff);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :host {
-        --topbar-border: #3a3a3a;
-        --topbar-bg: #1a1a1a;
-      }
-    }
-
-    .topbar {
-      display: flex;
-      flex-direction: row;
+    nr-container {
       height: 100%;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 8px;
-      background: var(--topbar-bg, white);
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 60vw;
-      justify-content: space-between;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: flex-end;
     }
 
     .app-details {
@@ -82,14 +67,21 @@ export class StudioTopBar extends LitElement {
       gap: 4px;
     }
 
-    .app-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-color, #333);
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .history-buttons {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .platform-selector {
+      display: flex;
+      align-items: center;
+    }
+
+    nr-divider[type="vertical"] {
+      height: 20px;
+      margin: 0 4px;
+      --nuraly-divider-color: #e0e0e0;
     }
 
     nr-button {
@@ -101,11 +93,11 @@ export class StudioTopBar extends LitElement {
     }
 
     @media (prefers-color-scheme: dark) {
-      .app-name {
-        color: #e0e0e0;
-      }
       .active-mode {
         --nuraly-button-background-color: #3a3a3a;
+      }
+      nr-divider[type="vertical"] {
+        --nuraly-divider-color: #3a3a3a;
       }
     }
   `;
@@ -134,19 +126,41 @@ export class StudioTopBar extends LitElement {
   @state()
   private kvStorageModalOpen: boolean = false;
 
+  @state()
+  private currentPlatform: string = 'desktop';
+
+  @state()
+  private locale: string = 'en';
+
+  @state()
+  private supportedLocales: string[] = [];
+
+  @state()
+  private i18nEnabled: boolean = false;
+
   private unsubscribeApp?: () => void;
   private unsubscribeEnv?: () => void;
   private unsubscribeZoom?: () => void;
   private unsubscribeEditor?: () => void;
+  private unsubscribeCurrentPage?: () => void;
+  private unsubscribePages?: () => void;
+  private unsubscribeLocale?: () => void;
+  private unsubscribeSupportedLocales?: () => void;
+  private unsubscribeI18n?: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
 
     // Subscribe to current application
-    this.unsubscribeApp = $currentApplication.subscribe((app) => {
+    this.unsubscribeApp = $currentApplication.subscribe((app: any) => {
       if (app) {
         this.appName = app.name || 'Untitled App';
-        this.appId = app.uuid || '';
+        const newAppId = app.uuid || '';
+        if (newAppId && newAppId !== this.appId) {
+          this.appId = newAppId;
+          // Set up page subscription after we have appId
+          this.setupPageSubscription();
+        }
       }
     });
 
@@ -160,12 +174,18 @@ export class StudioTopBar extends LitElement {
       this.zoom = Number(zoom) || 100;
     });
 
-    // Subscribe to editor state for current page
+    // Subscribe to editor state for tab type
     this.unsubscribeEditor = $editorState.subscribe((state) => {
-      if (state.currentTab?.type === 'page') {
-        this.currentPageId = state.currentTab.id || '';
-      }
+      // Editor state subscription for future use (e.g., tab type)
     });
+
+    // Platform - read from Editor singleton
+    this.currentPlatform = Editor.currentPlatform?.platform || 'desktop';
+
+    // Locale stores
+    this.unsubscribeLocale = $locale.subscribe((loc) => this.locale = loc);
+    this.unsubscribeSupportedLocales = $supportedLocales.subscribe((locs) => this.supportedLocales = locs);
+    this.unsubscribeI18n = $i18nEnabled.subscribe((enabled) => this.i18nEnabled = enabled);
   }
 
   override disconnectedCallback() {
@@ -174,12 +194,43 @@ export class StudioTopBar extends LitElement {
     this.unsubscribeEnv?.();
     this.unsubscribeZoom?.();
     this.unsubscribeEditor?.();
+    this.unsubscribeCurrentPage?.();
+    this.unsubscribePages?.();
+    this.unsubscribeLocale?.();
+    this.unsubscribeSupportedLocales?.();
+    this.unsubscribeI18n?.();
+  }
+
+  private setupPageSubscription() {
+    // Clean up existing subscriptions
+    this.unsubscribeCurrentPage?.();
+    this.unsubscribePages?.();
+
+    // Subscribe to current page ID for this application
+    this.unsubscribeCurrentPage = $currentPageId(this.appId).subscribe((pageId) => {
+      if (pageId) {
+        this.currentPageId = pageId;
+      }
+    });
+
+    // Subscribe to pages to fallback to first page if no page is selected
+    this.unsubscribePages = $applicationPages(this.appId).subscribe((pages: any[]) => {
+      // If no current page is set and we have pages, set the first page
+      if (!this.currentPageId && pages && pages.length > 0) {
+        const firstPageId = pages[0].uuid;
+        this.currentPageId = firstPageId;
+        // Also persist the selection
+        $currentPageId(this.appId).set(firstPageId);
+      }
+    });
   }
 
   private handleInsertComponent(e: CustomEvent) {
-    const itemValue = e.detail.value || e.detail;
-    const componentType = itemValue.value;
-    const additionalData = itemValue.additionalData || {};
+    const item = e.detail.item;
+    if (!item?.value) return;
+
+    const componentType = item.value.value;
+    const additionalData = item.value.additionalData || {};
     const action = additionalData.action;
 
     if (!this.currentPageId || !this.appId) return;
@@ -204,7 +255,8 @@ export class StudioTopBar extends LitElement {
   }
 
   private handleEditAction(e: CustomEvent) {
-    const action = e.detail.value || e.detail;
+    const item = e.detail.item;
+    const action = item?.value || item?.id;
     this.dispatchEvent(new CustomEvent('edit-action', {
       detail: { action },
       bubbles: true,
@@ -213,8 +265,9 @@ export class StudioTopBar extends LitElement {
   }
 
   private handleApplicationAction(e: CustomEvent) {
-    const itemValue = e.detail.value || e.detail;
-    const action = itemValue.action;
+    const item = e.detail.item;
+    if (!item?.value) return;
+    const action = item.value.action;
 
     if (action === 'open-modal') {
       this.applicationSettingsModalOpen = true;
@@ -223,7 +276,7 @@ export class StudioTopBar extends LitElement {
     } else if (action === 'share') {
       this.shareModalOpen = true;
     } else if (action === 'new-tab') {
-      const tabData = itemValue.tab;
+      const tabData = item.value.tab;
       if (tabData) {
         openEditorTab(tabData);
       }
@@ -247,46 +300,105 @@ export class StudioTopBar extends LitElement {
     window.location.href = '/dashboard';
   }
 
+  private handlePlatformChange(e: CustomEvent): void {
+    const platform = e.detail.value;
+    const configs: Record<string, { platform: string; width: string; height?: string; isMobile: boolean }> = {
+      desktop: { platform: 'desktop', width: '1366px', isMobile: false },
+      tablet: { platform: 'tablet', width: '1024px', height: '768px', isMobile: true },
+      mobile: { platform: 'mobile', width: '430px', height: '767px', isMobile: true }
+    };
+    Editor.currentPlatform = configs[platform];
+    this.currentPlatform = platform;
+  }
+
+  private handleLocaleChange(e: CustomEvent): void {
+    const locale = e.detail.value;
+    if (locale !== 'auto') {
+      setLocale(locale);
+      // Also set previewLocale to trigger iframe update
+      ExecuteInstance.VarsProxy.previewLocale = locale;
+    }
+  }
+
+  private getLocaleOptions() {
+    return [
+      { label: '🌐 Auto', value: 'auto' },
+      ...this.supportedLocales.map(loc => ({
+        label: `${getLocaleFlag(loc)} ${loc.toUpperCase()}`,
+        value: loc
+      }))
+    ];
+  }
+
+  private handleUndo(): void {
+    this.dispatchEvent(new CustomEvent('editor-undo', { bubbles: true, composed: true }));
+  }
+
+  private handleRedo(): void {
+    this.dispatchEvent(new CustomEvent('editor-redo', { bubbles: true, composed: true }));
+  }
+
+  private handleLogout(): void {
+    window.location.href = '/logout';
+  }
+
   override render() {
     return html`
-      <div class="topbar">
-        <div class="topbar-left">
+      <nr-container direction="row" justify="space-between" align="center" padding="sm">
+        <!-- Left section -->
+        <nr-container direction="row" layout="fixed" align="center" .gap=${8}>
+          <!-- Back + App name -->
           <div class="app-details">
-            <!-- Back button -->
             <nr-button
               size="small"
               variant="text"
               .iconLeft=${"arrow-left"}
               @click=${this.handleBackClick}
             ></nr-button>
-
-            <!-- App name -->
-            <span class="app-name">${this.appName}</span>
-
-            <!-- Menu dropdowns -->
-            <div class="menu-group">
-              <nr-dropdown
-                .options=${getInsertOptions()}
-                .trigger=${{ icon: 'plus', label: '' }}
-                size="small"
-                @nr-dropdown-select=${this.handleInsertComponent}
-              ></nr-dropdown>
-
-              <nr-dropdown
-                .options=${getEditOptions()}
-                .trigger=${{ icon: 'pencil', label: '' }}
-                size="small"
-                @nr-dropdown-select=${this.handleEditAction}
-              ></nr-dropdown>
-
-              <nr-dropdown
-                .options=${getApplicationOptions()}
-                .trigger=${{ icon: 'app-window', label: '' }}
-                size="small"
-                @nr-dropdown-select=${this.handleApplicationAction}
-              ></nr-dropdown>
-            </div>
+            <nr-label size="small" weight="medium" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${this.appName}</nr-label>
           </div>
+
+          <nr-divider type="vertical"></nr-divider>
+
+          <!-- Undo/Redo -->
+          <div class="history-buttons">
+            <nr-button size="small" variant="text" .iconLeft=${"corner-up-left"} @click=${this.handleUndo}></nr-button>
+            <nr-button size="small" variant="text" .iconLeft=${"corner-up-right"} @click=${this.handleRedo}></nr-button>
+          </div>
+
+          <nr-divider type="vertical"></nr-divider>
+
+          <!-- Menu dropdowns -->
+          <div class="menu-group">
+            <nr-dropdown
+              .items=${getInsertOptions()}
+              trigger="click"
+              size="small"
+              @nr-dropdown-item-click=${this.handleInsertComponent}
+            >
+              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"plus"}></nr-button>
+            </nr-dropdown>
+
+            <nr-dropdown
+              .items=${getEditOptions()}
+              trigger="click"
+              size="small"
+              @nr-dropdown-item-click=${this.handleEditAction}
+            >
+              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"pencil"}></nr-button>
+            </nr-dropdown>
+
+            <nr-dropdown
+              .items=${getApplicationOptions()}
+              trigger="click"
+              size="small"
+              @nr-dropdown-item-click=${this.handleApplicationAction}
+            >
+              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"app-window"}></nr-button>
+            </nr-dropdown>
+          </div>
+
+          <nr-divider type="vertical"></nr-divider>
 
           <!-- Mode toggle -->
           <div class="mode-buttons">
@@ -306,9 +418,39 @@ export class StudioTopBar extends LitElement {
               @click=${() => this.setMode(ViewMode.Preview)}
             >Preview</nr-button>
           </div>
-        </div>
 
-        <div class="topbar-right">
+          <nr-divider type="vertical"></nr-divider>
+
+          <!-- Platform selector -->
+          <div class="platform-selector">
+            <nr-radio-group
+              type="button"
+              size="small"
+              .options=${[
+                { icon: 'monitor', value: 'desktop' },
+                { icon: 'tablet', value: 'tablet' },
+                { icon: 'smartphone', value: 'mobile' }
+              ]}
+              .value=${this.currentPlatform}
+              @nr-change=${this.handlePlatformChange}
+            ></nr-radio-group>
+          </div>
+
+          <!-- Locale selector (conditional) -->
+          ${this.i18nEnabled && this.supportedLocales.length > 1 ? html`
+            <nr-divider type="vertical"></nr-divider>
+            <nr-select
+              size="small"
+              style="width: 110px"
+              .options=${this.getLocaleOptions()}
+              .value=${this.locale}
+              @nr-change=${this.handleLocaleChange}
+            ></nr-select>
+          ` : nothing}
+        </nr-container>
+
+        <!-- Right section -->
+        <nr-container direction="row" layout="fixed" align="center" .gap=${8}>
           <!-- Zoom control -->
           <div class="zoom-container">
             <nr-text-input
@@ -320,6 +462,13 @@ export class StudioTopBar extends LitElement {
             ></nr-text-input>
             <span>%</span>
           </div>
+
+          <nr-divider type="vertical"></nr-divider>
+
+          <!-- Presence indicator -->
+          <presence-indicator></presence-indicator>
+
+          <nr-divider type="vertical"></nr-divider>
 
           <!-- Settings button -->
           <nr-button
@@ -336,8 +485,18 @@ export class StudioTopBar extends LitElement {
             .iconLeft=${"share"}
             @click=${() => this.shareModalOpen = true}
           >Share</nr-button>
-        </div>
-      </div>
+
+          <nr-divider type="vertical"></nr-divider>
+
+          <!-- Logout button -->
+          <nr-button
+            size="small"
+            variant="text"
+            .iconLeft=${"log-out"}
+            @click=${this.handleLogout}
+          ></nr-button>
+        </nr-container>
+      </nr-container>
 
       <!-- Application Settings Modal -->
       ${this.applicationSettingsModalOpen ? html`
