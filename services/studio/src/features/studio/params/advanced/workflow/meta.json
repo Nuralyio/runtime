@@ -1,9 +1,0 @@
-{
-  "uuid": "workflow_blocks",
-  "name": "Workflow",
-  "themeContainerId": "studio_workflow_theme_container",
-  "configKey": "workflowFields",
-  "children_ids": [
-    "workflow_collapse_container"
-  ]
-}

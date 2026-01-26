@@ -53,3 +53,12 @@ export {
   inputBoolean,
   inputRadio,
 } from './builder';
+
+// Serialization exports
+export {
+  serializePropertyDefinition,
+  serializeComponentDefinition,
+  getConfigKey,
+  createFullConfig,
+  createMetadata,
+} from './serializer';

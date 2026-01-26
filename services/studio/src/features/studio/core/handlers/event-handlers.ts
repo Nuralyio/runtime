@@ -46,12 +46,17 @@ export type InputValueType = 'string' | 'number' | 'boolean' | 'array' | 'object
  */
 export class UpdateNameHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateName';
 
   execute(ctx: HandlerContext): void {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     if (selectedComponent) {
       ctx.updateName(selectedComponent, ctx.EventData.value as string);
     }
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateName', params: [] };
   }
 }
 
@@ -70,6 +75,7 @@ export class UpdateNameHandler implements EventHandler {
  */
 export class UpdateInputHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateInput';
 
   constructor(
     private readonly propertyName: string,
@@ -81,6 +87,10 @@ export class UpdateInputHandler implements EventHandler {
     if (selectedComponent) {
       ctx.updateInput(selectedComponent, this.propertyName, this.valueType, ctx.EventData.value);
     }
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateInput', params: [this.propertyName, this.valueType] };
   }
 }
 
@@ -100,6 +110,7 @@ export class UpdateInputHandler implements EventHandler {
  */
 export class UpdateInputAsHandlerHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateInputAsHandler';
 
   constructor(private readonly propertyName: string) {}
 
@@ -108,6 +119,10 @@ export class UpdateInputAsHandlerHandler implements EventHandler {
     if (selectedComponent) {
       ctx.updateInput(selectedComponent, this.propertyName, 'handler', ctx.EventData.value);
     }
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateInputAsHandler', params: [this.propertyName] };
   }
 }
 
@@ -126,6 +141,7 @@ export class UpdateInputAsHandlerHandler implements EventHandler {
  */
 export class UpdateStyleHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateStyle';
 
   constructor(private readonly propertyName: string) {}
 
@@ -133,6 +149,10 @@ export class UpdateStyleHandler implements EventHandler {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     if (!selectedComponent) return;
     ctx.updateStyle(selectedComponent, this.propertyName, ctx.EventData.value as string);
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateStyle', params: [this.propertyName] };
   }
 }
 
@@ -154,6 +174,7 @@ export class UpdateStyleHandler implements EventHandler {
  */
 export class UpdateStyleWithUnitHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateStyleWithUnit';
 
   constructor(
     private readonly propertyName: string,
@@ -176,6 +197,10 @@ export class UpdateStyleWithUnitHandler implements EventHandler {
 
     ctx.updateStyle(selectedComponent, this.propertyName, value);
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateStyleWithUnit', params: [this.propertyName, this.unit] };
+  }
 }
 
 /**
@@ -193,6 +218,7 @@ export class UpdateStyleWithUnitHandler implements EventHandler {
  */
 export class UpdateStyleHandlerHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateStyleHandler';
 
   constructor(private readonly propertyName: string) {}
 
@@ -201,6 +227,10 @@ export class UpdateStyleHandlerHandler implements EventHandler {
     if (selectedComponent) {
       ctx.updateStyleHandler(selectedComponent, this.propertyName, ctx.EventData.value as string);
     }
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateStyleHandler', params: [this.propertyName] };
   }
 }
 
@@ -218,6 +248,7 @@ export class UpdateStyleHandlerHandler implements EventHandler {
  */
 export class UpdateInputHandlerWithTypeHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateInputHandlerWithType';
 
   constructor(
     private readonly propertyName: string,
@@ -234,6 +265,10 @@ export class UpdateInputHandlerWithTypeHandler implements EventHandler {
         this.handlerValueType
       );
     }
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateInputHandlerWithType', params: [this.propertyName, this.handlerValueType] };
   }
 }
 
@@ -254,6 +289,7 @@ export class UpdateInputHandlerWithTypeHandler implements EventHandler {
  */
 export class CompositeEventHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'composite';
 
   constructor(private readonly handlers: EventHandler[]) {}
 
@@ -261,6 +297,18 @@ export class CompositeEventHandler implements EventHandler {
     for (const handler of this.handlers) {
       handler.execute(ctx);
     }
+  }
+
+  serialize(): string {
+    // Return serialized handlers as inline code
+    return this.handlers.map(h => {
+      if ('serialize' in h && typeof h.serialize === 'function') {
+        const serialized = h.serialize();
+        if (typeof serialized === 'string') return serialized;
+        return JSON.stringify(serialized);
+      }
+      return '';
+    }).join('\n');
   }
 }
 
@@ -280,16 +328,26 @@ export class CompositeEventHandler implements EventHandler {
  */
 export class ConditionalEventHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'conditional';
+
+  private readonly code: string;
 
   constructor(
     private readonly handler: EventHandler,
-    private readonly condition: (ctx: HandlerContext) => boolean
-  ) {}
+    private readonly condition: (ctx: HandlerContext) => boolean,
+    code?: string
+  ) {
+    this.code = code || condition.toString();
+  }
 
   execute(ctx: HandlerContext): void {
     if (this.condition(ctx)) {
       this.handler.execute(ctx);
     }
+  }
+
+  serialize(): string {
+    return this.code;
   }
 }
 
@@ -313,11 +371,20 @@ export class ConditionalEventHandler implements EventHandler {
  */
 export class CustomEventHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'custom';
 
-  constructor(private readonly handler: (ctx: HandlerContext) => void) {}
+  private readonly code: string;
+
+  constructor(private readonly handler: (ctx: HandlerContext) => void, code?: string) {
+    this.code = code || handler.toString();
+  }
 
   execute(ctx: HandlerContext): void {
     this.handler(ctx);
+  }
+
+  serialize(): string {
+    return this.code;
   }
 }
 
@@ -330,9 +397,14 @@ export class CustomEventHandler implements EventHandler {
  */
 export class NoOpEventHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'noop';
 
   execute(_ctx: HandlerContext): void {
     // Intentionally empty
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'noop', params: [] };
   }
 }
 
@@ -354,12 +426,18 @@ export class NoOpEventHandler implements EventHandler {
  */
 export class TransformUpdateInputHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'transformUpdateInput';
+
+  private readonly code: string;
 
   constructor(
     private readonly propertyName: string,
     private readonly transform: (value: unknown) => unknown,
-    private readonly valueType: InputValueType = 'string'
-  ) {}
+    private readonly valueType: InputValueType = 'string',
+    code?: string
+  ) {
+    this.code = code || transform.toString();
+  }
 
   execute(ctx: HandlerContext): void {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
@@ -367,6 +445,10 @@ export class TransformUpdateInputHandler implements EventHandler {
       const transformedValue = this.transform(ctx.EventData.value);
       ctx.updateInput(selectedComponent, this.propertyName, this.valueType, transformedValue);
     }
+  }
+
+  serialize(): string {
+    return this.code;
   }
 }
 
@@ -384,6 +466,7 @@ export class TransformUpdateInputHandler implements EventHandler {
  */
 export class UpdateBooleanInputHandler implements EventHandler {
   readonly handlerType = 'event' as const;
+  readonly ref = 'updateBooleanInput';
 
   constructor(private readonly propertyName: string) {}
 
@@ -399,5 +482,9 @@ export class UpdateBooleanInputHandler implements EventHandler {
                       rawValue === 1;
 
     ctx.updateInput(selectedComponent, this.propertyName, 'boolean', boolValue);
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'updateBooleanInput', params: [this.propertyName] };
   }
 }

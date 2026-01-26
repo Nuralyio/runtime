@@ -38,10 +38,15 @@ import type {
  */
 export class ComponentNameHandler implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentName';
 
   execute(ctx: HandlerContext): string {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     return selectedComponent?.name || '';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentName', params: [] };
   }
 }
 
@@ -61,6 +66,7 @@ export class ComponentNameHandler implements ValueHandler<string> {
  */
 export class ComponentInputHandler<T = string> implements ValueHandler<T> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentInput';
 
   constructor(
     private readonly propertyName: string,
@@ -77,6 +83,10 @@ export class ComponentInputHandler<T = string> implements ValueHandler<T> {
     }
 
     return (input?.value ?? this.defaultValue ?? '') as T;
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentInput', params: [this.propertyName] };
   }
 }
 
@@ -95,6 +105,7 @@ export class ComponentInputHandler<T = string> implements ValueHandler<T> {
  */
 export class ComponentInputHandlerValue implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentInputHandler';
 
   constructor(
     private readonly propertyName: string,
@@ -106,6 +117,10 @@ export class ComponentInputHandlerValue implements ValueHandler<string> {
     const input = ctx.Editor.getComponentBreakpointInput(selectedComponent, this.propertyName);
 
     return input?.type === 'handler' ? (input.value as string || this.defaultValue) : this.defaultValue;
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentInputHandler', params: [this.propertyName] };
   }
 }
 
@@ -127,6 +142,7 @@ export class ComponentInputHandlerValue implements ValueHandler<string> {
  */
 export class ComponentInputRadioHandler implements ValueHandler<RadioValueTuple> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentInputRadio';
 
   constructor(
     private readonly propertyName: string,
@@ -145,6 +161,10 @@ export class ComponentInputRadioHandler implements ValueHandler<RadioValueTuple>
 
     return [this.options, currentValue, 'button'];
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentInputRadio', params: [this.propertyName, this.options, this.defaultValue] };
+  }
 }
 
 /**
@@ -162,6 +182,7 @@ export class ComponentInputRadioHandler implements ValueHandler<RadioValueTuple>
  */
 export class ComponentStyleHandler implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentStyle';
 
   constructor(
     private readonly propertyName: string,
@@ -171,6 +192,10 @@ export class ComponentStyleHandler implements ValueHandler<string> {
   execute(ctx: HandlerContext): string {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     return ctx.Editor.getComponentStyle(selectedComponent, this.propertyName) || this.defaultValue;
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentStyle', params: [this.propertyName] };
   }
 }
 
@@ -190,6 +215,7 @@ export class ComponentStyleHandler implements ValueHandler<string> {
  */
 export class ComponentStyleSelectHandler implements ValueHandler<[SelectOption[], string[]]> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentStyleSelect';
 
   constructor(
     private readonly propertyName: string,
@@ -202,6 +228,10 @@ export class ComponentStyleSelectHandler implements ValueHandler<[SelectOption[]
     const currentValue = ctx.Editor.getComponentStyle(selectedComponent, this.propertyName) || this.defaultValue;
     return [this.options, [currentValue]];
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentStyleSelect', params: [this.propertyName, this.options, this.defaultValue] };
+  }
 }
 
 /**
@@ -212,6 +242,7 @@ export class ComponentStyleSelectHandler implements ValueHandler<[SelectOption[]
  */
 export class ComponentInputSelectHandler implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentInputSelect';
 
   constructor(
     private readonly propertyName: string,
@@ -227,6 +258,10 @@ export class ComponentInputSelectHandler implements ValueHandler<string> {
       ? (input.value as string || this.defaultValue)
       : this.defaultValue;
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentInputSelect', params: [this.propertyName] };
+  }
 }
 
 /**
@@ -238,6 +273,7 @@ export class ComponentInputSelectHandler implements ValueHandler<string> {
  */
 export class StyleHandlerValue implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'styleHandlerValue';
 
   constructor(
     private readonly propertyName: string,
@@ -247,6 +283,10 @@ export class StyleHandlerValue implements ValueHandler<string> {
   execute(ctx: HandlerContext): string {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     return ctx.Editor.getComponentStyleForState(selectedComponent, this.propertyName) || this.defaultValue;
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'styleHandlerValue', params: [this.propertyName] };
   }
 }
 
@@ -259,6 +299,7 @@ export class StyleHandlerValue implements ValueHandler<string> {
  */
 export class DisplayToggleHandler implements ValueHandler<RadioValueTuple> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'displayToggle';
 
   execute(ctx: HandlerContext): RadioValueTuple {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
@@ -280,6 +321,10 @@ export class DisplayToggleHandler implements ValueHandler<RadioValueTuple> {
 
     return [options, String(currentDisplay), 'button'];
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'displayToggle', params: [] };
+  }
 }
 
 /**
@@ -299,6 +344,7 @@ export class DisplayToggleHandler implements ValueHandler<RadioValueTuple> {
  */
 export class RadioWithOptionsHandler implements ValueHandler<RadioValueTuple> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'radioWithOptions';
 
   constructor(
     private readonly propertyName: string,
@@ -310,6 +356,10 @@ export class RadioWithOptionsHandler implements ValueHandler<RadioValueTuple> {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     const currentValue = ctx.Editor.getComponentStyle(selectedComponent, this.propertyName) || this.defaultValue;
     return [this.options, currentValue, 'button'];
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'radioWithOptions', params: [this.propertyName, this.options, this.defaultValue] };
   }
 }
 
@@ -328,6 +378,7 @@ export class RadioWithOptionsHandler implements ValueHandler<RadioValueTuple> {
  */
 export class HandlerValueGetter implements ValueHandler<[string, string]> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'handlerValueGetter';
 
   constructor(
     private readonly propertyName: string,
@@ -360,6 +411,10 @@ export class HandlerValueGetter implements ValueHandler<[string, string]> {
 
     return [this.propertyName, handlerValue];
   }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'handlerValueGetter', params: [this.propertyName, this.sourceType] };
+  }
 }
 
 /**
@@ -370,10 +425,15 @@ export class HandlerValueGetter implements ValueHandler<[string, string]> {
  */
 export class ComponentIdHandler implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentId';
 
   execute(ctx: HandlerContext): string {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     return selectedComponent?.uuid || '';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentId', params: [] };
   }
 }
 
@@ -385,10 +445,15 @@ export class ComponentIdHandler implements ValueHandler<string> {
  */
 export class ComponentHashHandler implements ValueHandler<string> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'componentHash';
 
   execute(ctx: HandlerContext): string {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     return selectedComponent?.hash || selectedComponent?.uuid || '';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'componentHash', params: [] };
   }
 }
 
@@ -405,11 +470,16 @@ export class ComponentHashHandler implements ValueHandler<string> {
  */
 export class StaticValueHandler<T> implements ValueHandler<T> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'staticValue';
 
   constructor(private readonly value: T) {}
 
   execute(_ctx: HandlerContext): T {
     return this.value;
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'staticValue', params: [this.value] };
   }
 }
 
@@ -430,10 +500,21 @@ export class StaticValueHandler<T> implements ValueHandler<T> {
  */
 export class ComputedValueHandler<T> implements ValueHandler<T> {
   readonly handlerType = 'value' as const;
+  readonly ref = 'computed';
 
-  constructor(private readonly compute: (ctx: HandlerContext) => T) {}
+  private readonly code: string;
+
+  constructor(private readonly compute: (ctx: HandlerContext) => T, code?: string) {
+    // Store the function body as code for serialization
+    this.code = code || compute.toString();
+  }
 
   execute(ctx: HandlerContext): T {
     return this.compute(ctx);
+  }
+
+  serialize(): string {
+    // Return the function body as inline code
+    return this.code;
   }
 }

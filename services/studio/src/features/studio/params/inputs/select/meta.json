@@ -1,9 +1,0 @@
-{
-  "uuid": "select_blocks",
-  "name": "Parent Select Container",
-  "themeContainerId": "studio_select_theme_container",
-  "configKey": "selectFields",
-  "children_ids": [
-    "select_collapse_container"
-  ]
-}
