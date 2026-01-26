@@ -283,7 +283,8 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
 
     return html`
       <nr-icon
-        name="window-close"
+        name="x"
+        size="small"
         class="close-icon"
         @mousedown=${(e: MouseEvent) => {
           e.stopPropagation();
