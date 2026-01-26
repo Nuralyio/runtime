@@ -299,10 +299,13 @@ export class ProviderService {
     }
   }  buildContext(): ChatbotContext {
     const state = this.stateHandler.getState();
-    const currentThread = state.currentThreadId 
+    const currentThread = state.currentThreadId
       ? state.threads.find(t => t.id === state.currentThreadId)
       : undefined;
-    
+
+    // Debug: log state to see if uploadedFiles exists
+    console.log('[ProviderService] buildContext state.uploadedFiles:', state.uploadedFiles);
+
     return {
       messages: state.messages,
       metadata: state.metadata,

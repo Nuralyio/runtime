@@ -27,7 +27,7 @@ export function renderLlmFields(
   const providerConfig = getProviderConfig(provider);
 
   // Use provider-specific default if no model set
-  const currentModel = config.modelName as string || '';
+  const currentModel = config.model as string || '';
   const displayModel = currentModel || providerConfig.defaultModel;
 
   return html`
@@ -41,7 +41,7 @@ export function renderLlmFields(
           const newConfig = getProviderConfig(newProvider);
           // Update provider and reset model to new provider's default
           onUpdate('provider', newProvider);
-          onUpdate('modelName', newConfig.defaultModel);
+          onUpdate('model', newConfig.defaultModel);
           onUpdate('maxTokens', newConfig.defaultMaxTokens);
         }}
       ></nr-select>
@@ -50,7 +50,7 @@ export function renderLlmFields(
     <!-- API URL field for providers that need it -->
     ${providerConfig.requiresApiUrl ? html`
       <div class="config-field">
-        <label>API URL${!providerConfig.requiresApiKey ? ' (Optional)' : ''}</label>
+        <label>API URL${providerConfig.requiresApiKey ? '' : ' (Required)'}</label>
         <nr-kv-secret-select
           .provider=${provider}
           .value=${config.apiUrlPath || ''}
@@ -85,7 +85,7 @@ export function renderLlmFields(
           .serverUrlPath=${config.apiUrlPath || ''}
           .value=${displayModel}
           placeholder=${providerConfig.modelPlaceholder}
-          @value-change=${(e: CustomEvent) => onUpdate('modelName', e.detail.value)}
+          @value-change=${(e: CustomEvent) => onUpdate('model', e.detail.value)}
         ></nr-ollama-model-select>
         <span class="field-description">Models fetched from your Ollama server</span>
       ` : providerConfig.modelOptions.length > 0 ? html`
@@ -95,14 +95,14 @@ export function renderLlmFields(
           placeholder=${providerConfig.modelPlaceholder}
           searchable
           allowCustomValue
-          @nr-change=${(e: CustomEvent) => onUpdate('modelName', e.detail.value)}
+          @nr-change=${(e: CustomEvent) => onUpdate('model', e.detail.value)}
         ></nr-select>
         <span class="field-description">Select a model or enter a custom model name</span>
       ` : html`
         <nr-input
           value=${displayModel}
           placeholder=${providerConfig.modelPlaceholder}
-          @nr-input=${(e: CustomEvent) => onUpdate('modelName', e.detail.value)}
+          @nr-input=${(e: CustomEvent) => onUpdate('model', e.detail.value)}
         ></nr-input>
       `}
     </div>

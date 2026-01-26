@@ -867,6 +867,14 @@ export class ChatbotCoreController {
   }
 
   /**
+   * Update chatbot configuration
+   * Merges the provided partial config with existing config
+   */
+  public updateConfig(partialConfig: Partial<ChatbotCoreConfig>): void {
+    this.config = { ...this.config, ...partialConfig };
+  }
+
+  /**
    * Set typing indicator state
    */
   public setTyping(isTyping: boolean): void {
@@ -883,7 +891,8 @@ export class ChatbotCoreController {
       messages: state.messages,
       currentThread: this.getCurrentThread(),
       selectedModules: state.selectedModules,
-      metadata: state.metadata
+      metadata: state.metadata,
+      uploadedFiles: state.uploadedFiles
     };
   }
 

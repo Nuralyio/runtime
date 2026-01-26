@@ -108,6 +108,84 @@ export function renderChatbotTriggerFields(
       ></nr-loading-type-select>
     </div>
 
+    <!-- File Upload Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">File Upload</span>
+        <span class="config-section-desc">Allow users to upload files</span>
+      </div>
+
+      <nr-feature-toggle
+        label="Enable File Upload"
+        description="Allow users to attach files to messages"
+        .checked=${config.enableFileUpload === true}
+        @toggle-change=${(e: CustomEvent) => onUpdate('enableFileUpload', e.detail.checked)}
+      ></nr-feature-toggle>
+
+      ${config.enableFileUpload ? html`
+        <div class="config-field">
+          <label>Max File Size (MB)</label>
+          <nr-input
+            type="number"
+            .value=${String((config.maxFileSize as number) || 10)}
+            placeholder="10"
+            @nr-input=${(e: CustomEvent) => onUpdate('maxFileSize', parseInt(e.detail.value) || 10)}
+          ></nr-input>
+        </div>
+
+        <div class="config-field">
+          <label>Max Files per Message</label>
+          <nr-input
+            type="number"
+            .value=${String((config.maxFiles as number) || 5)}
+            placeholder="5"
+            @nr-input=${(e: CustomEvent) => onUpdate('maxFiles', parseInt(e.detail.value) || 5)}
+          ></nr-input>
+        </div>
+
+        <div class="config-field">
+          <label>Allowed File Types</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <nr-checkbox
+                ?checked=${(config.allowImages as boolean) !== false}
+                @nr-change=${(e: CustomEvent) => onUpdate('allowImages', e.detail.checked)}
+              ></nr-checkbox>
+              Images (PNG, JPG, GIF, WebP)
+            </label>
+            <label class="checkbox-item">
+              <nr-checkbox
+                ?checked=${(config.allowDocuments as boolean) === true}
+                @nr-change=${(e: CustomEvent) => onUpdate('allowDocuments', e.detail.checked)}
+              ></nr-checkbox>
+              Documents (PDF, Word, Excel)
+            </label>
+            <label class="checkbox-item">
+              <nr-checkbox
+                ?checked=${(config.allowText as boolean) === true}
+                @nr-change=${(e: CustomEvent) => onUpdate('allowText', e.detail.checked)}
+              ></nr-checkbox>
+              Text Files (TXT, CSV, JSON)
+            </label>
+            <label class="checkbox-item">
+              <nr-checkbox
+                ?checked=${(config.allowAudio as boolean) === true}
+                @nr-change=${(e: CustomEvent) => onUpdate('allowAudio', e.detail.checked)}
+              ></nr-checkbox>
+              Audio (MP3, WAV)
+            </label>
+            <label class="checkbox-item">
+              <nr-checkbox
+                ?checked=${(config.allowVideo as boolean) === true}
+                @nr-change=${(e: CustomEvent) => onUpdate('allowVideo', e.detail.checked)}
+              ></nr-checkbox>
+              Video (MP4, WebM)
+            </label>
+          </div>
+        </div>
+      ` : nothing}
+    </div>
+
     <!-- Suggestions Section -->
     <div class="config-section">
       <div class="config-section-header">

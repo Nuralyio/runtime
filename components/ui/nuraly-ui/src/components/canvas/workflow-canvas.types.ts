@@ -265,6 +265,15 @@ export interface NodeConfiguration {
   ocrLanguage?: string;
   detectLayout?: boolean;
   asyncMode?: boolean;
+  // Chatbot trigger - file upload
+  enableFileUpload?: boolean;
+  maxFileSize?: number;
+  maxFiles?: number;
+  allowImages?: boolean;
+  allowDocuments?: boolean;
+  allowText?: boolean;
+  allowAudio?: boolean;
+  allowVideo?: boolean;
 }
 
 /**
@@ -292,6 +301,12 @@ export interface WorkflowNode {
   status?: ExecutionStatus;
   selected?: boolean;
   error?: string;
+  /** Agent activity indicator (LLM calls, tool calls) */
+  agentActivity?: {
+    type: 'llm' | 'tool';
+    name?: string;
+    active: boolean;
+  };
 }
 
 /**
@@ -359,6 +374,18 @@ export interface NodeCategory {
 }
 
 /**
+ * Output variable schema for a node
+ * Describes what variables are available from a node's output
+ */
+export interface OutputVariable {
+  name: string;
+  path: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'any';
+  description: string;
+  children?: OutputVariable[];
+}
+
+/**
  * Node template for creating new nodes
  */
 export interface NodeTemplate {
@@ -374,6 +401,8 @@ export interface NodeTemplate {
     configs?: NodePort[];
     outputs: NodePort[];
   };
+  /** Output schema describing available variables from this node */
+  outputSchema?: OutputVariable[];
 }
 
 /**
@@ -570,11 +599,20 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     category: 'trigger',
     defaultConfig: {
       outputVariable: 'chatInput',
+      enableFileUpload: false,
+      maxFileSize: 10,
+      maxFiles: 5,
+      allowImages: true,
+      allowDocuments: false,
+      allowText: false,
+      allowAudio: false,
+      allowVideo: false,
     },
     defaultPorts: {
       inputs: [],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'files', type: PortType.OUTPUT, label: 'Files' },
       ],
     },
   },
@@ -627,10 +665,11 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: NODE_COLORS[WorkflowNodeType.OCR],
     category: 'action',
     defaultConfig: {
-      imageSource: 'base64',
-      ocrLanguage: 'fra',
+      imageSource: 'variable',
+      imageField: '${input.files[0].base64}',
+      language: 'fr',
       detectLayout: false,
-      asyncMode: false,
+      outputVariable: 'ocrResult',
     },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Image' }],
@@ -841,11 +880,20 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       enableSuggestions: false,
       suggestions: [],
       loadingType: 'dots',
+      enableFileUpload: false,
+      maxFileSize: 10,
+      maxFiles: 5,
+      allowImages: true,
+      allowDocuments: false,
+      allowText: false,
+      allowAudio: false,
+      allowVideo: false,
     },
     defaultPorts: {
       inputs: [],
       outputs: [
         { id: 'message', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'files', type: PortType.OUTPUT, label: 'Files' },
         { id: 'session', type: PortType.OUTPUT, label: 'Session Start' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],

@@ -9,37 +9,71 @@ import { NodeConfiguration } from '../../../workflow-canvas.types.js';
 
 /**
  * Render OCR node fields
+ *
+ * Backend expects:
+ * - imageUrl: Direct URL to image
+ * - imageBase64: Base64 encoded image data
+ * - imageField: Variable expression like ${input.files[0].url}
+ * - language: OCR language code (fr, en, ar, etc.)
+ * - detectLayout: Boolean
+ * - outputVariable: Variable name to store result
  */
 export function renderOcrFields(
   config: NodeConfiguration,
   onUpdate: (key: string, value: unknown) => void
 ): TemplateResult {
+  // Determine which source type is being used based on config
+  const getSourceType = () => {
+    if (config.imageUrl) return 'url';
+    if (config.imageBase64) return 'base64';
+    if (config.imageField) return 'variable';
+    return config.imageSource || 'variable';
+  };
+
+  const sourceType = getSourceType();
+
   return html`
     <div class="config-field">
       <label>Image Source</label>
       <nr-select
-        value=${config.imageSource || 'base64'}
-        @nr-select=${(e: CustomEvent) => onUpdate('imageSource', e.detail.value)}
-      >
-        <nr-option value="base64">Base64 Data</nr-option>
-        <nr-option value="url">Image URL</nr-option>
-        <nr-option value="variable">From Variable</nr-option>
-      </nr-select>
+        .value=${sourceType}
+        .options=${[
+          { label: 'From Variable', value: 'variable' },
+          { label: 'Direct URL', value: 'url' },
+          { label: 'Base64 Data', value: 'base64' }
+        ]}
+        @nr-change=${(e: CustomEvent) => {
+          const newSource = e.detail.value;
+          onUpdate('imageSource', newSource);
+          // Clear other fields when switching source type
+          if (newSource === 'url') {
+            onUpdate('imageField', null);
+            onUpdate('imageBase64', null);
+          } else if (newSource === 'variable') {
+            onUpdate('imageUrl', null);
+            onUpdate('imageBase64', null);
+          } else if (newSource === 'base64') {
+            onUpdate('imageUrl', null);
+            onUpdate('imageField', null);
+          }
+        }}
+      ></nr-select>
     </div>
 
-    ${config.imageSource === 'variable' || config.imageSource === 'base64'
+    ${sourceType === 'variable'
       ? html`
           <div class="config-field">
-            <label>Image Variable</label>
+            <label>Image Field</label>
             <nr-input
-              value=${config.imageVariable || ''}
-              placeholder="\${variables.imageData}"
-              @nr-input=${(e: CustomEvent) => onUpdate('imageVariable', e.detail.value)}
+              value=${config.imageField || ''}
+              placeholder="\${input.files[0].base64}"
+              @nr-input=${(e: CustomEvent) => onUpdate('imageField', e.detail.value)}
             ></nr-input>
-            <small class="field-hint">Variable containing the image (base64 or URL)</small>
+            <small class="field-hint">Variable expression for image base64 data (e.g., \${input.files[0].base64})</small>
           </div>
         `
-      : html`
+      : sourceType === 'url'
+      ? html`
           <div class="config-field">
             <label>Image URL</label>
             <nr-input
@@ -47,30 +81,43 @@ export function renderOcrFields(
               placeholder="https://example.com/image.png"
               @nr-input=${(e: CustomEvent) => onUpdate('imageUrl', e.detail.value)}
             ></nr-input>
+            <small class="field-hint">Direct URL to the image</small>
+          </div>
+        `
+      : html`
+          <div class="config-field">
+            <label>Base64 Image</label>
+            <nr-input
+              value=${config.imageBase64 || ''}
+              placeholder="\${variables.imageData}"
+              @nr-input=${(e: CustomEvent) => onUpdate('imageBase64', e.detail.value)}
+            ></nr-input>
+            <small class="field-hint">Variable containing base64 encoded image data</small>
           </div>
         `}
 
     <div class="config-field">
       <label>Language</label>
       <nr-select
-        value=${config.ocrLanguage || 'fra'}
-        @nr-select=${(e: CustomEvent) => onUpdate('ocrLanguage', e.detail.value)}
-      >
-        <nr-option value="fra">French</nr-option>
-        <nr-option value="eng">English</nr-option>
-        <nr-option value="ara">Arabic</nr-option>
-        <nr-option value="deu">German</nr-option>
-        <nr-option value="spa">Spanish</nr-option>
-        <nr-option value="ita">Italian</nr-option>
-        <nr-option value="por">Portuguese</nr-option>
-        <nr-option value="chi_sim">Chinese (Simplified)</nr-option>
-        <nr-option value="jpn">Japanese</nr-option>
-        <nr-option value="kor">Korean</nr-option>
-      </nr-select>
+        .value=${config.language || 'fr'}
+        .options=${[
+          { label: 'French', value: 'fr' },
+          { label: 'English', value: 'en' },
+          { label: 'Arabic', value: 'ar' },
+          { label: 'German', value: 'de' },
+          { label: 'Spanish', value: 'es' },
+          { label: 'Italian', value: 'it' },
+          { label: 'Portuguese', value: 'pt' },
+          { label: 'Chinese', value: 'ch' },
+          { label: 'Japanese', value: 'ja' },
+          { label: 'Korean', value: 'ko' }
+        ]}
+        @nr-change=${(e: CustomEvent) => onUpdate('language', e.detail.value)}
+      ></nr-select>
     </div>
 
     <div class="config-field">
-      <label>
+      <label class="checkbox-label">
         <nr-checkbox
           ?checked=${config.detectLayout || false}
           @nr-change=${(e: CustomEvent) => onUpdate('detectLayout', e.detail.checked)}
@@ -81,24 +128,13 @@ export function renderOcrFields(
     </div>
 
     <div class="config-field">
-      <label>
-        <nr-checkbox
-          ?checked=${config.asyncMode || false}
-          @nr-change=${(e: CustomEvent) => onUpdate('asyncMode', e.detail.checked)}
-        ></nr-checkbox>
-        Async Mode
-      </label>
-      <small class="field-hint">Process asynchronously for large images</small>
-    </div>
-
-    <div class="config-field">
       <label>Output Variable</label>
       <nr-input
         value=${config.outputVariable || 'ocrResult'}
         placeholder="ocrResult"
         @nr-input=${(e: CustomEvent) => onUpdate('outputVariable', e.detail.value)}
       ></nr-input>
-      <small class="field-hint">Variable to store extracted text</small>
+      <small class="field-hint">Variable to store extracted text (access via \${variables.ocrResult.text})</small>
     </div>
   `;
 }

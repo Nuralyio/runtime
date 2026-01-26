@@ -553,6 +553,192 @@ export const workflowCanvasStyles = css`
     color: var(--nuraly-color-text-helper, #888);
   }
 
+  /* Variables section styles */
+  .variables-section {
+    margin-top: var(--nuraly-spacing-3, 12px);
+  }
+
+  .variables-section .config-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-1, 4px);
+  }
+
+  .variables-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-2, 8px);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .variables-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-1, 4px);
+  }
+
+  .variables-group-header {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 10px);
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    color: var(--nuraly-color-interactive, #0f62fe);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .variable-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-1, 4px) var(--nuraly-spacing-2, 8px);
+    background: var(--nuraly-color-background-hover, rgba(255, 255, 255, 0.05));
+    border-radius: var(--nuraly-border-radius-sm, 4px);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .variable-item:hover {
+    background: var(--nuraly-color-layer-02, rgba(255, 255, 255, 0.1));
+  }
+
+  .variable-path {
+    font-family: var(--nuraly-font-family-mono, 'SF Mono', monospace);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text, #fff);
+    word-break: break-all;
+  }
+
+  .variable-type {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 10px);
+    color: var(--nuraly-color-text-helper, #888);
+    padding: 2px 6px;
+    background: var(--nuraly-color-layer-01, rgba(0, 0, 0, 0.2));
+    border-radius: var(--nuraly-border-radius-xs, 3px);
+    flex-shrink: 0;
+  }
+
+  .variable-item.dynamic {
+    border-left: 2px solid var(--nuraly-color-interactive, #0f62fe);
+  }
+
+  .variable-dynamic-badge {
+    font-family: var(--nuraly-font-family);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--nuraly-color-interactive, #0f62fe);
+    padding: 1px 4px;
+    background: rgba(15, 98, 254, 0.15);
+    border-radius: var(--nuraly-border-radius-xs, 3px);
+    flex-shrink: 0;
+  }
+
+  .variables-loading {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-sm, 12px);
+    color: var(--nuraly-color-text-helper, #888);
+    font-style: italic;
+    padding: var(--nuraly-spacing-2, 8px);
+    text-align: center;
+  }
+
+  /* Execution data section styles */
+  .execution-section {
+    border-top: 1px solid var(--nuraly-color-border-subtle, #393939);
+    margin-top: var(--nuraly-spacing-3, 12px);
+    padding-top: var(--nuraly-spacing-3, 12px);
+  }
+
+  .execution-status {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .execution-error {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-2, 8px);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--nuraly-border-radius-sm, 4px);
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-sm, 12px);
+    color: #ef4444;
+    margin-bottom: var(--nuraly-spacing-2, 8px);
+  }
+
+  .execution-error nr-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .execution-data-block {
+    margin-bottom: var(--nuraly-spacing-2, 8px);
+  }
+
+  .execution-data-label {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    font-weight: 500;
+    color: var(--nuraly-color-text-helper, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--nuraly-spacing-1, 4px);
+  }
+
+  .execution-data-content {
+    font-family: var(--nuraly-font-family-mono, 'SF Mono', monospace);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text, #fff);
+    background: var(--nuraly-color-layer-01, rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--nuraly-color-border-subtle, #393939);
+    border-radius: var(--nuraly-border-radius-sm, 4px);
+    padding: var(--nuraly-spacing-2, 8px);
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  .execution-duration {
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-xs, 11px);
+    color: var(--nuraly-color-text-helper, #888);
+    margin-top: var(--nuraly-spacing-2, 8px);
+  }
+
+  .retry-node-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--nuraly-spacing-1, 4px);
+    width: 100%;
+    padding: var(--nuraly-spacing-2, 8px);
+    margin-top: var(--nuraly-spacing-2, 8px);
+    font-family: var(--nuraly-font-family);
+    font-size: var(--nuraly-font-size-sm, 12px);
+    font-weight: 500;
+    color: var(--nuraly-color-text-on-color, #fff);
+    background: var(--nuraly-color-interactive, #0f62fe);
+    border: none;
+    border-radius: var(--nuraly-border-radius-sm, 4px);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .retry-node-btn:hover {
+    background: var(--nuraly-color-interactive-hover, #0353e9);
+  }
+
   .config-info-box {
     display: flex;
     align-items: flex-start;
@@ -749,6 +935,36 @@ export const workflowCanvasStyles = css`
     font-size: var(--nuraly-font-size-xs, 11px);
     font-weight: var(--nuraly-font-weight-medium, 500);
     color: var(--nuraly-color-text-primary, #161616);
+  }
+
+  /* File upload checkbox group */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nuraly-spacing-2, 8px);
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    font-size: var(--nuraly-font-size-sm, 12px);
+    color: var(--nuraly-color-text-primary, #161616);
+    cursor: pointer;
+  }
+
+  .checkbox-item:hover {
+    color: var(--nuraly-color-interactive, #0f62fe);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    font-size: var(--nuraly-font-size-sm, 12px);
+    font-weight: var(--nuraly-font-weight-medium, 500);
+    color: var(--nuraly-color-text-primary, #161616);
+    cursor: pointer;
   }
 
   /* Debug node styles */

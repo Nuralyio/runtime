@@ -16,6 +16,6 @@ export const ollamaConfig: ProviderConfig = {
   requiresApiKey: false,
   requiresApiUrl: true,
   apiKeyDescription: 'Optional - Ollama works without authentication by default',
-  apiUrlDescription: 'Leave empty for default (http://localhost:11434)',
+  apiUrlDescription: 'URL of your Ollama server (e.g., http://localhost:11434)',
   defaultMaxTokens: 2048,
 };
