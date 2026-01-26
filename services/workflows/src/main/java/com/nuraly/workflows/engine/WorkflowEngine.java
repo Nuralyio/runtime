@@ -195,6 +195,87 @@ public class WorkflowEngine {
         }
     }
 
+    /**
+     * Retry a specific node within an execution.
+     * Restores the execution context from before the node failed and re-executes it.
+     */
+    @Transactional
+    public void retryNode(WorkflowExecutionEntity execution, UUID nodeId) throws WorkflowExecutionException {
+        metricsService.recordExecutionStart();
+        long startTime = System.currentTimeMillis();
+
+        ExecutionContext context = new ExecutionContext(execution);
+
+        // Load revision snapshot if executing a specific revision
+        if (execution.revision != null) {
+            try {
+                RevisionSnapshotDTO snapshot = revisionService.getRevisionSnapshot(
+                        execution.workflow.id, execution.revision);
+                context.setRevisionSnapshot(snapshot);
+            } catch (RevisionNotFoundException e) {
+                throw new WorkflowExecutionException(
+                        "Revision " + execution.revision + " not found for workflow " + execution.workflow.id);
+            }
+        }
+
+        // Find the node to retry
+        WorkflowNodeEntity nodeToRetry = findNodeById(execution.workflow, nodeId);
+        if (nodeToRetry == null) {
+            throw new WorkflowExecutionException("Node not found with id: " + nodeId);
+        }
+
+        // Restore context from checkpoint if available
+        Optional<ExecutionCheckpoint> checkpoint = checkpointService.getCheckpoint(execution.id);
+        if (checkpoint.isPresent()) {
+            LOG.infof("Restoring context from checkpoint for node retry");
+            if (checkpoint.get().nodeOutputs != null) {
+                for (Map.Entry<UUID, JsonNode> entry : checkpoint.get().nodeOutputs.entrySet()) {
+                    context.setNodeOutput(entry.getKey(), entry.getValue());
+                }
+            }
+            if (checkpoint.get().variables != null) {
+                context.restoreVariables(checkpoint.get().variables);
+            }
+        }
+
+        execution.status = ExecutionStatus.RUNNING;
+        execution.errorMessage = null; // Clear previous error
+        execution.persist();
+
+        try {
+            LOG.infof("Retrying node '%s' in execution %s", nodeToRetry.name, execution.id);
+            executeFromNode(context, nodeToRetry);
+
+            // Mark as completed
+            execution.status = ExecutionStatus.COMPLETED;
+            execution.outputData = context.getVariablesAsString();
+            execution.variables = context.getVariablesAsString();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            // Clean up checkpoint
+            checkpointService.deleteCheckpoint(execution.id);
+
+            eventService.logExecutionCompleted(execution);
+            metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
+                    System.currentTimeMillis() - startTime);
+
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+            metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
+                    System.currentTimeMillis() - startTime);
+
+            throw new WorkflowExecutionException("Node retry failed: " + e.getMessage(), e);
+        }
+    }
+
     private void executeFromNode(ExecutionContext context, WorkflowNodeEntity node) throws Exception {
         if (context.isCancelled()) {
             return;

@@ -402,6 +402,101 @@ public class WorkflowResource {
     }
 
     @GET
+    @Path("/{id}/latest-node-outputs")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Get latest node outputs for variable discovery")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Node outputs retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<Map<String, JsonNode>> getLatestNodeOutputs(@PathParam("id") UUID id) {
+        try {
+            Map<String, JsonNode> nodeOutputs = executionService.getLatestNodeOutputs(id);
+            return RestResponse.ok(nodeOutputs);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @GET
+    @Path("/{id}/latest-execution")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Get the latest execution with node executions")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Latest execution retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found or no executions")
+    })
+    public RestResponse<WorkflowExecutionDTO> getLatestExecution(@PathParam("id") UUID id) {
+        try {
+            WorkflowExecutionDTO execution = executionService.getLatestExecution(id);
+            if (execution == null) {
+                return RestResponse.status(RestResponse.Status.NOT_FOUND);
+            }
+            return RestResponse.ok(execution);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @GET
+    @Path("/{id}/executions/{executionId}/nodes")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Get node executions for a specific execution")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Node executions retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Execution not found")
+    })
+    public RestResponse<List<NodeExecutionDTO>> getNodeExecutions(
+            @PathParam("id") UUID id,
+            @PathParam("executionId") UUID executionId) {
+        try {
+            List<NodeExecutionDTO> nodeExecutions = executionService.getNodeExecutions(executionId);
+            return RestResponse.ok(nodeExecutions);
+        } catch (com.nuraly.workflows.exception.ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @POST
+    @Path("/{id}/executions/{executionId}/nodes/{nodeId}/retry")
+    @RequiresPermission(
+            permissionType = "workflow:execute",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Retry a specific node within an execution")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Node retry started"),
+            @APIResponse(responseCode = "400", description = "Cannot retry node in current state"),
+            @APIResponse(responseCode = "404", description = "Execution or node not found")
+    })
+    public RestResponse<WorkflowExecutionDTO> retryNode(
+            @PathParam("id") UUID id,
+            @PathParam("executionId") UUID executionId,
+            @PathParam("nodeId") UUID nodeId) {
+        try {
+            WorkflowExecutionDTO execution = executionService.retryNode(executionId, nodeId);
+            return RestResponse.ok(execution);
+        } catch (com.nuraly.workflows.exception.ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (InvalidWorkflowException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
+        }
+    }
+
+    @GET
     @Path("/{id}/trigger")
     @Operation(summary = "Trigger workflow via HTTP GET")
     @APIResponses(value = {
