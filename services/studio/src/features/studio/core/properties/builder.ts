@@ -193,6 +193,19 @@ export class PropertyBuilder<T = unknown> {
 
   // === Code Handler Support ===
 
+  /** Set handler type (input or style) */
+  handlerType(type: HandlerSourceType): this {
+    this.definition.hasHandler = true;
+    this.definition.handlerType = type;
+    return this;
+  }
+
+  /** Set handler property name */
+  handlerProperty(property: string): this {
+    this.definition.handlerProperty = property;
+    return this;
+  }
+
   /** Enable code handler support with configuration */
   withHandler(type: HandlerSourceType = 'input', property?: string): this {
     this.definition.hasHandler = true;
@@ -311,8 +324,39 @@ export class PropertyBuilder<T = unknown> {
         .trim()
         .replace(/^./, (s) => s.toUpperCase());
     }
+
+    // Provide default valueHandler based on property type if not specified
     if (!this.definition.valueHandler) {
-      throw new Error(`Property "${this.definition.name}" requires a valueHandler`);
+      const inputProp = this.definition.inputProperty || this.definition.name;
+      const defaultValue = this.definition.default;
+
+      switch (this.definition.type) {
+        case 'radio':
+        case 'select':
+          this.definition.valueHandler = new ComponentInputRadioHandler(
+            inputProp,
+            this.definition.options || [],
+            defaultValue ?? '',
+            'default'
+          ) as unknown as ValueHandler<T>;
+          break;
+        case 'text':
+        case 'textarea':
+        case 'color':
+        case 'icon':
+        case 'event':
+        case 'date':
+          this.definition.valueHandler = new ComponentInputHandler(inputProp, defaultValue ?? '') as unknown as ValueHandler<T>;
+          break;
+        case 'number':
+          this.definition.valueHandler = new ComponentInputHandler(inputProp, defaultValue ?? 0) as unknown as ValueHandler<T>;
+          break;
+        case 'boolean':
+          this.definition.valueHandler = new ComponentInputHandler(inputProp, defaultValue ?? false) as unknown as ValueHandler<T>;
+          break;
+        default:
+          throw new Error(`Property "${this.definition.name}" requires a valueHandler`);
+      }
     }
 
     return this.definition as PropertyDefinition<T>;

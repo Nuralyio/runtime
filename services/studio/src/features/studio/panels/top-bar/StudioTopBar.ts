@@ -9,10 +9,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { $currentApplication, $editorState } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
-import { $pageZoom, setEnvirementMode } from '@nuraly/runtime/redux/actions';
-import { addEditorTab } from '@nuraly/runtime/redux/actions/editor/addEditorTab';
-import { AddComponent } from '@nuraly/runtime/redux/handlers';
-import { getVar } from '@nuraly/runtime/redux/store/context';
+import { setEnvirementMode, addComponentAction } from '@nuraly/runtime/redux/actions';
+import { openEditorTab } from '@nuraly/runtime/redux/actions/editor/openEditorTab';
+import { $pageZoom } from '@nuraly/runtime/redux/store';
+import { GenerateName } from '@nuraly/runtime/utils/naming-generator';
 
 // Component insert options
 import { getInsertOptions, getEditOptions, getApplicationOptions } from './topbar-options';
@@ -157,7 +157,7 @@ export class StudioTopBar extends LitElement {
 
     // Subscribe to zoom
     this.unsubscribeZoom = $pageZoom.subscribe((zoom) => {
-      this.zoom = zoom || 100;
+      this.zoom = Number(zoom) || 100;
     });
 
     // Subscribe to editor state for current page
@@ -187,12 +187,12 @@ export class StudioTopBar extends LitElement {
     if (action === 'add') {
       const cleanAdditionalData = { ...additionalData };
       delete cleanAdditionalData.action;
-      AddComponent({
-        application_id: this.appId,
-        pageId: this.currentPageId,
-        componentType: componentType,
-        additionalData: cleanAdditionalData
-      });
+      const generatedName = GenerateName(componentType);
+      addComponentAction(
+        { name: generatedName, type: componentType, ...cleanAdditionalData },
+        this.currentPageId,
+        this.appId
+      );
     } else if (action === 'paste') {
       // Handle paste from schema
       this.dispatchEvent(new CustomEvent('paste-component', {
@@ -225,7 +225,7 @@ export class StudioTopBar extends LitElement {
     } else if (action === 'new-tab') {
       const tabData = itemValue.tab;
       if (tabData) {
-        addEditorTab(tabData);
+        openEditorTab(tabData);
       }
     }
   }
@@ -238,7 +238,7 @@ export class StudioTopBar extends LitElement {
     const input = e.target as HTMLInputElement;
     const value = parseInt(input.value, 10);
     if (!isNaN(value) && value >= 10 && value <= 200) {
-      $pageZoom.set(value);
+      $pageZoom.set(String(value));
     }
   }
 

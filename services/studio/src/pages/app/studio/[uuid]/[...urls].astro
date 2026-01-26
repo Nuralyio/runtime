@@ -100,7 +100,7 @@ try {
 
   // Handle page data
   pageData = pageRequest.data;
-  $pages.set(pageData);
+  $pages.set({ [uuid]: pageData });
 
   // Handle component data
   componentData = componentResponse.data.map((component) => component.component);

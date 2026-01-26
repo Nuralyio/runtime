@@ -7,11 +7,10 @@
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $currentApplication, $editorState, $applicationPages, $currentPage } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents } from '@nuraly/runtime/redux/store';
 import { $applicationComponents } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
-import { getVar } from '@nuraly/runtime/redux/store/context';
-import { deletePage, addPage } from '@nuraly/runtime/redux/actions';
+import { deletePageAction, addPageAction } from '@nuraly/runtime/redux/actions';
 import { deleteComponentAction } from '@nuraly/runtime/redux/actions';
 
 interface MenuItem {
@@ -148,8 +147,10 @@ export class StudioLeftPanel extends LitElement {
     super.connectedCallback();
 
     this.unsubscribeApp = $currentApplication.subscribe((app) => {
-      if (app?.uuid) {
+      if (app?.uuid && app.uuid !== this.appId) {
         this.appId = app.uuid;
+        // Set up app-specific subscriptions after we have the appId
+        this.setupAppSubscriptions();
       }
     });
 
@@ -163,12 +164,20 @@ export class StudioLeftPanel extends LitElement {
         this.tabType = stateTabType;
       }
     });
+  }
 
+  private setupAppSubscriptions() {
+    // Clean up existing subscriptions
+    this.unsubscribePages?.();
+    this.unsubscribeCurrentPage?.();
+    this.unsubscribeComponents?.();
+
+    // Set up new subscriptions with valid appId
     this.unsubscribePages = $applicationPages(this.appId).subscribe((pages) => {
       this.pages = pages || [];
     });
 
-    this.unsubscribeCurrentPage = $currentPage.subscribe((pageId) => {
+    this.unsubscribeCurrentPage = $currentPageId(this.appId).subscribe((pageId) => {
       this.currentPageId = pageId || '';
     });
 
@@ -302,17 +311,20 @@ export class StudioLeftPanel extends LitElement {
     const item = e.detail;
 
     if (item.type === 'page') {
-      $currentPage.set(item.id);
+      $currentPageId(this.appId).set(item.id);
       // Clear selection when switching pages
       this.selectedComponents = [];
+      setSelectedComponents([]);
     } else {
       // Component selected
       if (item.page && item.page !== this.currentPageId) {
-        $currentPage.set(item.page);
+        $currentPageId(this.appId).set(item.page);
       }
       const component = this.components.find(c => c.uuid === item.id);
       if (component) {
         this.selectedComponents = [component];
+        // Update global selection state
+        setSelectedComponents([component]);
         // Dispatch selection event for other components to react
         this.dispatchEvent(new CustomEvent('component-selected', {
           detail: { components: [component] },
@@ -330,7 +342,7 @@ export class StudioLeftPanel extends LitElement {
       if (value?.type === 'component' && value?.component) {
         deleteComponentAction(value.component);
       } else if (value?.type === 'page' && value?.page) {
-        deletePage(value.page);
+        deletePageAction(value.page);
       }
     } else if (action === 'copy') {
       this.dispatchEvent(new CustomEvent('copy-component', {
@@ -347,9 +359,10 @@ export class StudioLeftPanel extends LitElement {
   }
 
   private handleAddPage() {
-    addPage({
+    addPageAction({
       application_id: this.appId,
-      name: 'New Page'
+      name: 'New Page',
+      url: ''
     });
   }
 

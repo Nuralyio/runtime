@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { $currentApplication, $applicationComponents, $components } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $applicationComponents, $components, setSelectedComponents } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import Editor from '@nuraly/runtime/state/editor';
@@ -346,6 +346,8 @@ export class PreviewIFramePanel extends LitElement {
     if (!selectedComponent) return;
 
     ExecuteInstance.VarsProxy.selectedComponents = [selectedComponent];
+    // Update global selection state for control panel
+    setSelectedComponents([selectedComponent]);
     const absoluteRect = this.calculateAbsoluteRect(payload.rect);
     this.dispatchEvent(new CustomEvent('component-selected-from-iframe', {
       detail: { component: selectedComponent, rect: absoluteRect },

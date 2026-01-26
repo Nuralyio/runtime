@@ -21,6 +21,7 @@ import {
   ComponentInputHandler,
   sizeRadioOptions,
   HandlerValueGetter,
+  createDisabledAwareRadioHandler,
 } from '../../../core/handlers';
 import {
   InputStateHandler,
@@ -58,6 +59,7 @@ const optionsProperty = event('options')
   .width('50px')
   .handlerType('input')
   .handlerProperty('options')
+  .valueHandler(new HandlerValueGetter('options', 'input'))
   .handlerValueGetter(new HandlerValueGetter('options', 'input'))
   .handlerEventUpdate(new UpdateInputAsHandlerHandler('options'))
   .build();
@@ -72,6 +74,7 @@ const typeProperty = radio('select_type')
   .width('180px')
   .default('default')
   .options(selectTypeOptions)
+  .valueHandler(createDisabledAwareRadioHandler('type', selectTypeOptions, 'default', 'default'))
   .stateHandler(new InputStateHandler('type'))
   .onChange(new UpdateInputHandler('type', 'value'))
   .withInputHandler('type')
@@ -83,6 +86,7 @@ const selectionModeProperty = radio('select_selection_mode')
   .width('180px')
   .default('single')
   .options(selectionModeOptions)
+  .valueHandler(createDisabledAwareRadioHandler('selectionMode', selectionModeOptions, 'single', 'default'))
   .stateHandler(new InputStateHandler('selectionMode'))
   .onChange(new UpdateInputHandler('selectionMode', 'value'))
   .withInputHandler('selectionMode')
@@ -94,6 +98,7 @@ const sizeProperty = radio('sizeselect')
   .width('180px')
   .default('medium')
   .options(sizeRadioOptions)
+  .valueHandler(createDisabledAwareRadioHandler('size', sizeRadioOptions, 'medium', 'default'))
   .stateHandler(new InputStateHandler('size'))
   .onChange(new UpdateInputHandler('size', 'value'))
   .withInputHandler('size')

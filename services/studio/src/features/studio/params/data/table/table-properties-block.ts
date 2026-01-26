@@ -1,22 +1,20 @@
 /**
  * Table Properties Block
- * 
- * This file generates table component configuration properties from a JSON configuration file
- * (config.json). It uses the generic JSON processor for generation.
- * 
- * The configuration is in config.json and processed by property-block-processor.ts
+ *
+ * This file generates table component configuration properties using TypeScript definitions.
+ * Migrated from JSON-based config to TypeScript properties.
  */
 
-import { generateFromConfig, type BlockConfig } from "../../../processors/property-block/index.ts";
-import tableConfig from "./config.json";
+import { loadFromTypeScript } from "../../../processors/typescript-component-loader.ts";
+import { tableDefinition } from "./properties.ts";
+import handlersConfig from "./handlers.json";
+import themeConfig from "./theme.json";
 
-// Type assertion for the JSON config
-const tableConfigData = tableConfig as { tableFields: BlockConfig };
-
-// Generate table components from JSON config
-const generatedTableComponents = generateFromConfig(
-  tableConfigData.tableFields,
-  'table'
+// Generate table components from TypeScript definition
+const generatedTableComponents = loadFromTypeScript(
+  tableDefinition,
+  handlersConfig,
+  themeConfig
 );
 
 export default generatedTableComponents;

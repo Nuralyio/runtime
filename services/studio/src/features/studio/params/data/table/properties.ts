@@ -57,6 +57,11 @@ const dataProperty = event('table_data')
   .placeholder('Configure data')
   .handlerType('input')
   .handlerProperty('data')
+  .valueHandler(new ComputedValueHandler((ctx) => {
+    const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
+    const input = ctx.Editor.getComponentBreakpointInput(selectedComponent, 'data');
+    return input?.type === 'handler' ? (input.value || '') : '';
+  }))
   .handlerValueGetter(new ComputedValueHandler((ctx) => {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
     const input = ctx.Editor.getComponentBreakpointInput(selectedComponent, 'data');
