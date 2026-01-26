@@ -42,6 +42,7 @@ import type {
  */
 export class DefaultStyleStateHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'defaultStyleState';
 
   constructor(private readonly propertyName: string) {}
 
@@ -50,6 +51,10 @@ export class DefaultStyleStateHandler implements StateHandler {
     return selectedComponent?.style_handlers?.[this.propertyName]
       ? 'disabled'
       : 'enabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'defaultStyleState', params: [this.propertyName] };
   }
 }
 
@@ -68,6 +73,7 @@ export class DefaultStyleStateHandler implements StateHandler {
  */
 export class InputStateHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'inputHandler';
 
   constructor(private readonly propertyName: string) {}
 
@@ -77,6 +83,10 @@ export class InputStateHandler implements StateHandler {
 
     const hasHandlerType = inputValue?.type === 'handler' && inputValue?.value;
     return hasHandlerType ? 'disabled' : 'enabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'inputHandler', params: [this.propertyName] };
   }
 }
 
@@ -95,6 +105,7 @@ export class InputStateHandler implements StateHandler {
  */
 export class IconPickerDisableHandler implements BooleanStateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'iconPickerDisable';
 
   constructor(private readonly propertyName: string) {}
 
@@ -103,6 +114,10 @@ export class IconPickerDisableHandler implements BooleanStateHandler {
     const inputValue = selectedComponent?.input?.[this.propertyName] as InputValue | undefined;
 
     return !!(inputValue?.type === 'handler' && inputValue?.value);
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'iconPickerDisable', params: [this.propertyName] };
   }
 }
 
@@ -121,6 +136,7 @@ export class IconPickerDisableHandler implements BooleanStateHandler {
  */
 export class ValueStateHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'valueState';
 
   execute(ctx: HandlerContext): 'enabled' | 'disabled' {
     const selectedComponent = ctx.Utils.first(ctx.$selectedComponents);
@@ -129,6 +145,10 @@ export class ValueStateHandler implements StateHandler {
     return valueInput?.type === 'handler' && valueInput?.value
       ? 'disabled'
       : 'enabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'valueState', params: [] };
   }
 }
 
@@ -146,6 +166,7 @@ export class ValueStateHandler implements StateHandler {
  */
 export class CombinedStateHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'combinedState';
 
   constructor(private readonly propertyName: string) {}
 
@@ -164,6 +185,10 @@ export class CombinedStateHandler implements StateHandler {
     }
 
     return 'enabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'combinedState', params: [this.propertyName] };
   }
 }
 
@@ -184,16 +209,26 @@ export class CombinedStateHandler implements StateHandler {
  */
 export class ConditionalStateHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'conditionalState';
+
+  private readonly code: string;
 
   constructor(
     private readonly condition: (ctx: HandlerContext) => boolean,
-    private readonly enableWhenTrue: boolean = true
-  ) {}
+    private readonly enableWhenTrue: boolean = true,
+    code?: string
+  ) {
+    this.code = code || condition.toString();
+  }
 
   execute(ctx: HandlerContext): 'enabled' | 'disabled' {
     const result = this.condition(ctx);
     const isEnabled = this.enableWhenTrue ? result : !result;
     return isEnabled ? 'enabled' : 'disabled';
+  }
+
+  serialize(): string {
+    return this.code;
   }
 }
 
@@ -205,9 +240,14 @@ export class ConditionalStateHandler implements StateHandler {
  */
 export class AlwaysEnabledHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'alwaysEnabled';
 
   execute(_ctx: HandlerContext): 'enabled' | 'disabled' {
     return 'enabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'alwaysEnabled', params: [] };
   }
 }
 
@@ -219,9 +259,14 @@ export class AlwaysEnabledHandler implements StateHandler {
  */
 export class AlwaysDisabledHandler implements StateHandler {
   readonly handlerType = 'state' as const;
+  readonly ref = 'alwaysDisabled';
 
   execute(_ctx: HandlerContext): 'enabled' | 'disabled' {
     return 'disabled';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'alwaysDisabled', params: [] };
   }
 }
 
@@ -237,6 +282,7 @@ export class AlwaysDisabledHandler implements StateHandler {
  */
 export class InputHelperTextHandler {
   readonly handlerType = 'value' as const;
+  readonly ref = 'inputHelperText';
 
   constructor(private readonly propertyName: string) {}
 
@@ -246,5 +292,9 @@ export class InputHelperTextHandler {
 
     const hasHandlerType = inputValue?.type === 'handler' && inputValue?.value;
     return hasHandlerType ? 'Value driven by handler' : '';
+  }
+
+  serialize(): { ref: string; params: any[] } {
+    return { ref: 'inputHelperText', params: [this.propertyName] };
   }
 }

@@ -2,83 +2,52 @@
  * @fileoverview Translatable Properties Registry
  * @module Studio/Utils/TranslatableProperties
  *
- * Provides dynamic extraction of translatable properties from component configs.
- * Reads the `translatable: true` flag from each component's config.json properties.
+ * Provides dynamic extraction of translatable properties from component definitions.
+ * Reads the `translatable: true` flag from each component's TypeScript property definitions.
  */
 
-// Import component configs
-import textInputConfig from '../params/inputs/text-input/config.json';
-import textareaConfig from '../params/inputs/textarea/config.json';
-import textLabelConfig from '../params/inputs/text-label/config.json';
-import selectConfig from '../params/inputs/select/config.json';
-import checkboxConfig from '../params/inputs/checkbox/config.json';
-import datepickerConfig from '../params/inputs/datepicker/config.json';
-import buttonConfig from '../params/navigation/button/config.json';
-import linkConfig from '../params/navigation/link/config.json';
-import dropdownConfig from '../params/navigation/dropdown/config.json';
-import badgeConfig from '../params/display/badge/config.json';
-import richtextConfig from '../params/content/Richtext/config.json';
-import richtextEditorConfig from '../params/content/RichtextEditor/config.json';
-import fileUploadConfig from '../params/media/file-upload/config.json';
-import modalConfig from '../params/advanced/modal/config.json';
-import menuConfig from '../params/data/menu/config.json';
-
-/**
- * Property definition from config.json
- */
-interface PropertyConfig {
-  name: string;
-  inputProperty?: string;
-  label?: string;
-  translatable?: boolean;
-  [key: string]: any;
-}
+// Import component definitions from TypeScript properties files
+import { textInputDefinition } from '../params/inputs/text-input/properties';
+import { textareaDefinition } from '../params/inputs/textarea/properties';
+import { textLabelDefinition } from '../params/inputs/text-label/properties';
+import { selectDefinition } from '../params/inputs/select/properties';
+import { checkboxDefinition } from '../params/inputs/checkbox/properties';
+import { datepickerDefinition } from '../params/inputs/datepicker/properties';
+import { buttonDefinition } from '../params/navigation/button/properties';
+import { linkDefinition } from '../params/navigation/link/properties';
+import { dropdownDefinition } from '../params/navigation/dropdown/properties';
+import { badgeDefinition } from '../params/display/badge/properties';
+import { richtextDefinition } from '../params/content/Richtext/properties';
+import { richtextEditorDefinition } from '../params/content/RichtextEditor/properties';
+import { fileUploadDefinition } from '../params/media/file-upload/properties';
+import { modalDefinition } from '../params/advanced/modal/properties';
+import { menuDefinition } from '../params/data/menu/properties';
+import type { ComponentDefinition, PropertyDefinition } from '../core/properties/types';
 
 /**
- * Config structure from config.json files
+ * Map of component types to their definition objects
  */
-interface ComponentConfig {
-  [configKey: string]: {
-    properties?: PropertyConfig[];
-    [key: string]: any;
-  };
-}
-
-/**
- * Map of component types to their config objects
- */
-const COMPONENT_CONFIGS: Record<string, ComponentConfig> = {
-  text_input: textInputConfig,
-  textarea: textareaConfig,
-  text_label: textLabelConfig,
-  select: selectConfig,
-  checkbox: checkboxConfig,
-  date_picker: datepickerConfig,
-  button_input: buttonConfig,
-  link: linkConfig,
-  dropdown: dropdownConfig,
-  badge: badgeConfig,
-  rich_text: richtextConfig,
-  rich_text_editor: richtextEditorConfig,
-  file_upload: fileUploadConfig,
-  modal: modalConfig,
-  menu: menuConfig,
+const COMPONENT_DEFINITIONS: Record<string, ComponentDefinition> = {
+  text_input: textInputDefinition,
+  textarea: textareaDefinition,
+  text_label: textLabelDefinition,
+  select: selectDefinition,
+  checkbox: checkboxDefinition,
+  date_picker: datepickerDefinition,
+  button_input: buttonDefinition,
+  link: linkDefinition,
+  dropdown: dropdownDefinition,
+  badge: badgeDefinition,
+  rich_text: richtextDefinition,
+  rich_text_editor: richtextEditorDefinition,
+  file_upload: fileUploadDefinition,
+  modal: modalDefinition,
+  menu: menuDefinition,
 };
 
 /**
- * Extract the properties array from a config object
- * Config files have a top-level key (e.g., "textInputFields") containing the properties
- */
-function extractProperties(config: ComponentConfig): PropertyConfig[] {
-  const configKey = Object.keys(config)[0];
-  if (!configKey) return [];
-
-  return config[configKey]?.properties || [];
-}
-
-/**
  * Get translatable property names for a component type
- * Reads from the component's config.json and returns properties with translatable: true
+ * Reads from the component's TypeScript definition and returns properties with translatable: true
  *
  * @param componentType - The component type (e.g., "text_input", "button_input")
  * @returns Array of property names that are translatable
@@ -93,14 +62,12 @@ function extractProperties(config: ComponentConfig): PropertyConfig[] {
  * ```
  */
 export function getTranslatableProperties(componentType: string): string[] {
-  const config = COMPONENT_CONFIGS[componentType];
-  if (!config) return [];
+  const definition = COMPONENT_DEFINITIONS[componentType];
+  if (!definition) return [];
 
-  const properties = extractProperties(config);
-
-  return properties
-    .filter(prop => prop.translatable === true)
-    .map(prop => prop.inputProperty || prop.name);
+  return definition.properties
+    .filter((prop: PropertyDefinition) => prop.translatable === true)
+    .map((prop: PropertyDefinition) => prop.inputProperty || prop.name);
 }
 
 /**
@@ -111,16 +78,14 @@ export function getTranslatableProperties(componentType: string): string[] {
  * @returns Array of property info objects with name and label
  */
 export function getTranslatablePropertyInfo(componentType: string): Array<{ name: string; label: string }> {
-  const config = COMPONENT_CONFIGS[componentType];
-  if (!config) return [];
+  const definition = COMPONENT_DEFINITIONS[componentType];
+  if (!definition) return [];
 
-  const properties = extractProperties(config);
-
-  return properties
-    .filter(prop => prop.translatable === true)
-    .map(prop => ({
+  return definition.properties
+    .filter((prop: PropertyDefinition) => prop.translatable === true)
+    .map((prop: PropertyDefinition) => ({
       name: prop.inputProperty || prop.name,
-      label: prop.label || prop.name
+      label: prop.label || prop.name,
     }));
 }
 
@@ -140,9 +105,7 @@ export function hasTranslatableProperties(componentType: string): boolean {
  * @returns Array of component types with translatable properties
  */
 export function getTranslatableComponentTypes(): string[] {
-  return Object.keys(COMPONENT_CONFIGS).filter(type =>
-    hasTranslatableProperties(type)
-  );
+  return Object.keys(COMPONENT_DEFINITIONS).filter((type) => hasTranslatableProperties(type));
 }
 
 export default {

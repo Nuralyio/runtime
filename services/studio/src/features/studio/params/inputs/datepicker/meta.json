@@ -1,9 +1,0 @@
-{
-  "uuid": "datepicker_block",
-  "name": "Parent Color Container",
-  "themeContainerId": "studio_datepicker_theme_container",
-  "configKey": "datepickerFields",
-  "children_ids": [
-    "datepickerFields_collapse_container"
-  ]
-}

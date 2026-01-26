@@ -1,9 +1,0 @@
-{
-  "uuid": "checkbox_blocks",
-  "name": "Parent Checkbox Container",
-  "themeContainerId": "checkbox_button_theme_container",
-  "configKey": "checkboxFields",
-  "children_ids": [
-    "checkbox_collapse_container"
-  ]
-}

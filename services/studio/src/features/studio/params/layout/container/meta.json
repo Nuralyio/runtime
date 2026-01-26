@@ -1,9 +1,0 @@
-{
-  "uuid": "container_blocks",
-  "name": "Parent Container Container",
-  "themeContainerId": "studio_container_theme_container",
-  "configKey": "containerFields",
-  "children_ids": [
-    "container_collapse_container"
-  ]
-}
