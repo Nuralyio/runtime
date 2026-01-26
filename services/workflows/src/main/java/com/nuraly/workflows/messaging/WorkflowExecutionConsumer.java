@@ -187,14 +187,22 @@ public class WorkflowExecutionConsumer {
             return;
         }
 
-        if (execution.status != ExecutionStatus.PENDING && execution.status != ExecutionStatus.QUEUED) {
+        // For node retry, we allow QUEUED status (set by the service)
+        // For regular execution, we require PENDING or QUEUED
+        boolean isNodeRetry = message.getRetryNodeId() != null;
+        if (!isNodeRetry && execution.status != ExecutionStatus.PENDING && execution.status != ExecutionStatus.QUEUED) {
             LOG.warnf("Execution %s is not in PENDING/QUEUED state, skipping. Current status: %s",
                     message.getExecutionId(), execution.status);
             return;
         }
 
         try {
-            workflowEngine.execute(execution);
+            if (isNodeRetry) {
+                LOG.infof("Retrying node %s in execution %s", message.getRetryNodeId(), message.getExecutionId());
+                workflowEngine.retryNode(execution, message.getRetryNodeId());
+            } else {
+                workflowEngine.execute(execution);
+            }
 
             // If sync execution, send success reply
             if (message.isSyncExecution()) {
