@@ -64,8 +64,27 @@ class OCRProcessor:
     ) -> np.ndarray:
         """Load image from base64 or URL and convert to numpy array."""
         if image_base64:
-            image_data = base64.b64decode(image_base64)
-            image = Image.open(io.BytesIO(image_data))
+            # Clean base64 string - remove any whitespace/newlines and data URL prefix
+            clean_base64 = image_base64.strip()
+            if ',' in clean_base64:
+                clean_base64 = clean_base64.split(',')[1]
+            # Remove any whitespace that might have been introduced
+            clean_base64 = clean_base64.replace(' ', '').replace('\n', '').replace('\r', '')
+
+            logger.info(f"Base64 length: {len(clean_base64)}, first 50 chars: {clean_base64[:50] if len(clean_base64) > 50 else clean_base64}")
+
+            try:
+                image_data = base64.b64decode(clean_base64)
+                logger.info(f"Decoded image data length: {len(image_data)} bytes")
+            except Exception as e:
+                logger.error(f"Base64 decode error: {e}")
+                raise ValueError(f"Invalid base64 data: {e}")
+
+            try:
+                image = Image.open(io.BytesIO(image_data))
+            except Exception as e:
+                logger.error(f"PIL Image.open error: {e}, data starts with: {image_data[:20] if len(image_data) > 20 else image_data}")
+                raise
         elif image_url:
             with urlopen(image_url) as response:
                 image_data = response.read()
