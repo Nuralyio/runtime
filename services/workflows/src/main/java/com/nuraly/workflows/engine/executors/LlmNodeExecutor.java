@@ -13,6 +13,7 @@ import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.LlmProviderFactory;
 import com.nuraly.workflows.llm.dto.*;
+import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -70,6 +71,12 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     WorkflowEventService eventService;
+
+    @Inject
+    ContextMemoryStore contextMemoryStore;
+
+    @Inject
+    ContextMemoryNodeExecutor contextMemoryNodeExecutor;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -155,6 +162,51 @@ public class LlmNodeExecutor implements NodeExecutor {
             messages.add(LlmMessage.system(systemPrompt));
         }
 
+        // Memory handling variables
+        boolean historyFromAgent = false;
+        MemoryConfig memoryConfig = null;
+        String conversationId = null;
+
+        // Check for conversation history passed by Agent (Option A: Agent handles memory)
+        if (config.has("conversationHistory") && config.get("conversationHistory").isArray()) {
+            historyFromAgent = true;
+            LOG.debugf("Found conversation history from Agent (%d messages)",
+                    config.get("conversationHistory").size());
+            for (JsonNode msgNode : config.get("conversationHistory")) {
+                LlmMessage msg = parseMessageFromJson(msgNode);
+                if (msg != null) {
+                    messages.add(msg);
+                }
+            }
+        } else {
+            // Fallback: Load from memory store for direct LLM usage (without Agent)
+
+            // Check for memory config in node configuration
+            if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
+                config.get("memoryConfig").get("enabled").asBoolean()) {
+                LOG.debugf("Found memory config in node configuration");
+                memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
+                conversationId = memoryConfig.conversationId;
+            } else {
+                // Find connected memory node
+                WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+                if (memoryNode != null) {
+                    LOG.debugf("Found connected memory node: %s", memoryNode.name);
+                    memoryConfig = parseMemoryConfig(memoryNode, context);
+                    conversationId = memoryConfig.conversationId;
+                }
+            }
+
+            // Load conversation history from memory store
+            if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+                List<LlmMessage> history = loadConversationHistory(conversationId, memoryConfig);
+                if (!history.isEmpty()) {
+                    LOG.debugf("Loaded %d messages from memory store for: %s", history.size(), conversationId);
+                    messages.addAll(history);
+                }
+            }
+        }
+
         // Get user prompt from input
         String userPrompt = extractUserPrompt(context, config);
         if (userPrompt == null || userPrompt.isEmpty()) {
@@ -234,6 +286,19 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
         }
 
+        // Save messages to memory only if NOT from Agent (Agent handles its own saving)
+        if (!historyFromAgent && memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
+            // Save the user message
+            contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
+
+            // Save the assistant response
+            if (lastResponse != null && lastResponse.getContent() != null) {
+                contextMemoryStore.addMessage(conversationId, LlmMessage.assistant(lastResponse.getContent()));
+            }
+            LOG.debugf("Saved messages to conversation history: %s (total: %d messages)",
+                    conversationId, contextMemoryStore.getMessageCount(conversationId));
+        }
+
         // Build output
         ObjectNode output = objectMapper.createObjectNode();
 
@@ -254,6 +319,13 @@ public class LlmNodeExecutor implements NodeExecutor {
                 usage.put("totalTokens", lastResponse.getUsage().getTotalTokens());
                 output.set("usage", usage);
             }
+        }
+
+        // Add memory info to output (only for direct LLM usage, not when Agent handles memory)
+        if (!historyFromAgent && conversationId != null && !conversationId.isEmpty()) {
+            output.put("conversationId", conversationId);
+            output.put("memoryEnabled", true);
+            output.put("totalMessages", contextMemoryStore.getMessageCount(conversationId));
         }
 
         // Store response in variables if configured
@@ -650,5 +722,232 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static class ToolContext {
         ToolDefinition definition;
         WorkflowNodeEntity targetNode;
+    }
+
+    /**
+     * Find a memory node connected to this LLM node.
+     * Supports multiple connection methods:
+     * - 'memory' input port
+     * - 'context' input port
+     * - 'context_memory' input port
+     * - Tool-like ports: 'tool_memory', 'tool_context'
+     * - Any edge from a MEMORY node type
+     */
+    private WorkflowNodeEntity findConnectedMemoryNode(WorkflowNodeEntity node) {
+        if (node.workflow == null || node.workflow.edges == null) {
+            return null;
+        }
+
+        // Accepted port names for context memory connection
+        List<String> acceptedPorts = Arrays.asList(
+            "memory", "context", "context_memory",
+            "tool_memory", "tool_context", "tool_context_memory"
+        );
+
+        for (WorkflowEdgeEntity edge : node.workflow.edges) {
+            if (edge.sourceNode == null || edge.sourceNode.type != NodeType.MEMORY) {
+                continue;
+            }
+
+            // Check if this edge connects TO our node
+            if (edge.targetNode != null && edge.targetNode.id.equals(node.id)) {
+                String portId = edge.targetPortId;
+
+                // Accept if port is in accepted list or starts with accepted prefixes
+                if (portId == null || acceptedPorts.contains(portId) ||
+                    portId.startsWith("memory") || portId.startsWith("context")) {
+                    LOG.debugf("Found memory node connected via port: %s", portId);
+                    return edge.sourceNode;
+                }
+            }
+
+            // Also check if memory node is connected FROM our node (reverse direction)
+            if (edge.sourceNode != null && edge.targetNode != null &&
+                edge.sourceNode.id.equals(node.id) &&
+                edge.targetNode.type == NodeType.MEMORY) {
+                String portId = edge.sourcePortId;
+                if (portId != null && (acceptedPorts.contains(portId) ||
+                    portId.startsWith("memory") || portId.startsWith("context") ||
+                    portId.startsWith("tool_memory") || portId.startsWith("tool_context"))) {
+                    LOG.debugf("Found memory node connected via output port: %s", portId);
+                    return edge.targetNode;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse memory configuration from the memory node.
+     */
+    private MemoryConfig parseMemoryConfig(WorkflowNodeEntity memoryNode, ExecutionContext context) {
+        MemoryConfig config = new MemoryConfig();
+
+        try {
+            JsonNode nodeConfig = memoryNode.configuration != null
+                    ? objectMapper.readTree(memoryNode.configuration)
+                    : objectMapper.createObjectNode();
+
+            config.cutoffMode = nodeConfig.has("cutoffMode")
+                    ? nodeConfig.get("cutoffMode").asText()
+                    : "message";
+
+            config.maxMessages = nodeConfig.has("maxMessages")
+                    ? nodeConfig.get("maxMessages").asInt()
+                    : 50;
+
+            config.maxTokens = nodeConfig.has("maxTokens")
+                    ? nodeConfig.get("maxTokens").asInt()
+                    : 4000;
+
+            String conversationIdExpression = nodeConfig.has("conversationIdExpression")
+                    ? nodeConfig.get("conversationIdExpression").asText()
+                    : "${input.threadId}";
+
+            // Resolve the conversation ID
+            config.conversationId = context.resolveExpression(conversationIdExpression);
+
+            // If expression didn't resolve, try common fallbacks
+            if (config.conversationId == null || config.conversationId.isEmpty() ||
+                config.conversationId.equals(conversationIdExpression)) {
+                config.conversationId = tryResolveConversationId(context);
+            }
+        } catch (Exception e) {
+            LOG.warnf("Failed to parse memory config: %s", e.getMessage());
+            config.cutoffMode = "message";
+            config.maxMessages = 50;
+            config.maxTokens = 4000;
+        }
+
+        return config;
+    }
+
+    /**
+     * Parse LlmMessage from JSON (from conversation history passed by Agent).
+     */
+    private LlmMessage parseMessageFromJson(JsonNode msgNode) {
+        if (msgNode == null || !msgNode.has("role")) {
+            return null;
+        }
+
+        String roleStr = msgNode.get("role").asText().toUpperCase();
+        LlmMessage.Role role;
+        try {
+            role = LlmMessage.Role.valueOf(roleStr);
+        } catch (IllegalArgumentException e) {
+            LOG.warnf("Unknown message role: %s", roleStr);
+            return null;
+        }
+
+        String content = msgNode.has("content") ? msgNode.get("content").asText() : null;
+        String toolCallId = msgNode.has("toolCallId") ? msgNode.get("toolCallId").asText() : null;
+        String name = msgNode.has("name") ? msgNode.get("name").asText() : null;
+
+        return LlmMessage.builder()
+                .role(role)
+                .content(content)
+                .toolCallId(toolCallId)
+                .name(name)
+                .build();
+    }
+
+    /**
+     * Parse memory configuration from JSON (passed by Agent node via config).
+     */
+    private MemoryConfig parseMemoryConfigFromJson(JsonNode memoryConfigJson, ExecutionContext context) {
+        MemoryConfig config = new MemoryConfig();
+
+        config.cutoffMode = memoryConfigJson.has("cutoffMode")
+                ? memoryConfigJson.get("cutoffMode").asText()
+                : "message";
+
+        config.maxMessages = memoryConfigJson.has("maxMessages")
+                ? memoryConfigJson.get("maxMessages").asInt()
+                : 50;
+
+        config.maxTokens = memoryConfigJson.has("maxTokens")
+                ? memoryConfigJson.get("maxTokens").asInt()
+                : 4000;
+
+        String conversationIdExpression = memoryConfigJson.has("conversationIdExpression")
+                ? memoryConfigJson.get("conversationIdExpression").asText()
+                : "${input.threadId}";
+
+        // Resolve the conversation ID
+        config.conversationId = context.resolveExpression(conversationIdExpression);
+
+        // If expression didn't resolve, try common fallbacks
+        if (config.conversationId == null || config.conversationId.isEmpty() ||
+            config.conversationId.equals(conversationIdExpression)) {
+            config.conversationId = tryResolveConversationId(context);
+        }
+
+        return config;
+    }
+
+    /**
+     * Try to resolve conversation ID from common input fields.
+     */
+    private String tryResolveConversationId(ExecutionContext context) {
+        JsonNode input = context.getInput();
+        if (input == null) {
+            return null;
+        }
+
+        // Try common field names
+        String[] fields = {"threadId", "conversationId", "sessionId", "chatId", "thread_id", "conversation_id"};
+
+        for (String field : fields) {
+            if (input.has(field) && !input.get(field).isNull()) {
+                return input.get(field).asText();
+            }
+        }
+
+        // Try nested body
+        if (input.has("body") && input.get("body").isObject()) {
+            JsonNode body = input.get("body");
+            for (String field : fields) {
+                if (body.has(field) && !body.get(field).isNull()) {
+                    return body.get(field).asText();
+                }
+            }
+        }
+
+        // Try variables
+        for (String field : fields) {
+            JsonNode varValue = context.getVariable(field);
+            if (varValue != null && !varValue.isNull()) {
+                return varValue.asText();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Load conversation history from memory store with cutoff applied.
+     */
+    private List<LlmMessage> loadConversationHistory(String conversationId, MemoryConfig config) {
+        if (conversationId == null || conversationId.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if ("token".equalsIgnoreCase(config.cutoffMode)) {
+            return contextMemoryStore.getMessagesByTokens(conversationId, config.maxTokens);
+        } else {
+            // Default to message-based cutoff
+            return contextMemoryStore.getMessagesByCount(conversationId, config.maxMessages);
+        }
+    }
+
+    /**
+     * Helper class to hold memory configuration.
+     */
+    private static class MemoryConfig {
+        String cutoffMode = "message";
+        int maxMessages = 50;
+        int maxTokens = 4000;
+        String conversationId;
     }
 }
