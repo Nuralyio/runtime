@@ -314,6 +314,42 @@ export class PreviewIFramePanel extends LitElement {
         this.handleComponentClicked(message.payload);
         break;
       case 'COMPONENT_UPDATED':
+        // If payload has component data, update the parent's store
+        if (message.payload?.component) {
+          const appId = this.applicationId || $currentApplication.get()?.uuid;
+          if (appId) {
+            const currentComponents = $components.get()[appId] || [];
+            const index = currentComponents.findIndex(c => c.uuid === message.payload.uuid);
+            if (index !== -1) {
+              // Merge the updated styles/attributes into the existing component
+              const existingComponent = currentComponents[index];
+              if (message.payload.component.style) {
+                existingComponent.style = { ...existingComponent.style, ...message.payload.component.style };
+              }
+              if (message.payload.component.input) {
+                existingComponent.input = { ...existingComponent.input, ...message.payload.component.input };
+              }
+              // Copy other top-level properties
+              Object.keys(message.payload.component).forEach(key => {
+                if (key !== 'style' && key !== 'input') {
+                  existingComponent[key] = message.payload.component[key];
+                }
+              });
+
+              // Also update selectedComponents if this component is selected
+              const selectedComponents = ExecuteInstance.Vars.selectedComponents;
+              if (selectedComponents?.length && selectedComponents[0]?.uuid === message.payload.uuid) {
+                selectedComponents[0] = existingComponent;
+              }
+            }
+          }
+        }
+
+        // Add to sentToIframe to prevent loop (parent -> iframe -> parent -> iframe...)
+        if (message.payload?.uuid) {
+          this.sentToIframe.add(message.payload.uuid);
+        }
+
         eventDispatcher.emit('component:updated', message.payload);
         break;
       case 'COMPONENT_HOVERED':

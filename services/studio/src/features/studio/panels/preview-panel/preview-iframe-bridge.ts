@@ -18,6 +18,16 @@ export interface PreviewMessage {
 const updatesFromParent = new Set<string>();
 
 /**
+ * Strip non-serializable properties from a component before sending to parent.
+ * Properties like Instance (Proxy), parent (circular ref), children (circular ref) cannot be cloned.
+ */
+function sanitizeComponentForParent(component: any): any {
+  if (!component) return component;
+  const { Instance, parent, children, __microAppContext, ...serializableProps } = component;
+  return serializableProps;
+}
+
+/**
  * Initialize the iframe bridge for communication with parent editor
  */
 export function initializePreviewBridge() {
@@ -48,6 +58,25 @@ export function initializePreviewBridge() {
       updatesFromParent.delete(data.uuid);
       return;
     }
+
+    // Get the full updated component from store and send to parent
+    const appId = $currentApplication.get()?.uuid;
+    if (appId && data?.uuid) {
+      const components = $components.get()[appId] || [];
+      const updatedComponent = components.find(c => c.uuid === data.uuid);
+      if (updatedComponent) {
+        sendMessageToParent({
+          type: 'COMPONENT_UPDATED',
+          payload: {
+            uuid: data.uuid,
+            component: sanitizeComponentForParent(updatedComponent)
+          }
+        });
+        return;
+      }
+    }
+
+    // Fallback: send just the data (for cases without uuid)
     sendMessageToParent({
       type: 'COMPONENT_UPDATED',
       payload: data

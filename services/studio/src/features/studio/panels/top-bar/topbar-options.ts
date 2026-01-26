@@ -6,9 +6,9 @@
  */
 
 export interface DropdownOption {
-  id?: string;
+  id: string;
   label: string;
-  value: any;
+  value?: any;
   icon?: string;
   options?: DropdownOption[];
 }
@@ -19,6 +19,7 @@ export interface DropdownOption {
 export function getInsertOptions(): DropdownOption[] {
   const inputOptions: DropdownOption[] = [
     {
+      id: 'text_input',
       label: 'Text Input',
       value: {
         value: 'text_input',
@@ -27,6 +28,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'text-cursor-input'
     },
     {
+      id: 'textarea',
       label: 'Textarea',
       value: {
         value: 'textarea',
@@ -42,6 +44,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'align-left'
     },
     {
+      id: 'button_input',
       label: 'Button',
       value: {
         value: 'button_input',
@@ -50,6 +53,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'mouse'
     },
     {
+      id: 'checkbox',
       label: 'Checkbox',
       value: {
         value: 'checkbox',
@@ -62,6 +66,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'square-check'
     },
     {
+      id: 'select',
       label: 'Select',
       value: {
         value: 'select',
@@ -80,6 +85,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'list-video'
     },
     {
+      id: 'date_picker',
       label: 'DatePicker',
       value: {
         value: 'date_picker',
@@ -88,6 +94,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'calendar'
     },
     {
+      id: 'slider',
       label: 'Slider',
       value: {
         value: 'slider',
@@ -104,6 +111,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'sliders'
     },
     {
+      id: 'file_upload',
       label: 'File Upload',
       value: {
         value: 'file_upload',
@@ -112,6 +120,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'file-up'
     },
     {
+      id: 'form',
       label: 'Form',
       value: {
         value: 'form',
@@ -123,6 +132,7 @@ export function getInsertOptions(): DropdownOption[] {
 
   const displayOptions: DropdownOption[] = [
     {
+      id: 'text_label',
       label: 'Text Label',
       value: {
         value: 'text_label',
@@ -131,6 +141,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'case-sensitive'
     },
     {
+      id: 'rich_text',
       label: 'Rich Text',
       value: {
         value: 'rich_text',
@@ -143,6 +154,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'whole-word'
     },
     {
+      id: 'badge',
       label: 'Badge',
       value: {
         value: 'badge',
@@ -155,6 +167,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'badge'
     },
     {
+      id: 'tag',
       label: 'Tag',
       value: {
         value: 'tag',
@@ -167,6 +180,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'tag'
     },
     {
+      id: 'card',
       label: 'Card',
       value: {
         value: 'card',
@@ -179,6 +193,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'credit-card'
     },
     {
+      id: 'icon',
       label: 'Icon',
       value: {
         value: 'icon',
@@ -187,6 +202,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'badge'
     },
     {
+      id: 'code',
       label: 'Code',
       value: {
         value: 'code',
@@ -195,17 +211,31 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'file-code'
     },
     {
+      id: 'embed_url',
       label: 'Embed URL',
       value: {
         value: 'embed_url',
         additionalData: { action: 'add', style: { width: '600px', height: '400px' } }
       },
       icon: 'file-code'
+    },
+    {
+      id: 'link',
+      label: 'Link',
+      value: {
+        value: 'link',
+        additionalData: {
+          action: 'add',
+          style: { width: 'auto' }
+        }
+      },
+      icon: 'link'
     }
   ];
 
   const layoutOptions: DropdownOption[] = [
     {
+      id: 'container',
       label: 'Container',
       value: {
         value: 'container',
@@ -214,6 +244,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'grip-vertical'
     },
     {
+      id: 'modal',
       label: 'Modal',
       value: {
         value: 'modal',
@@ -230,6 +261,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'square-stack'
     },
     {
+      id: 'grid_row',
       label: 'Grid Row',
       value: {
         value: 'grid_row',
@@ -245,6 +277,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'rows-3'
     },
     {
+      id: 'grid_col',
       label: 'Grid Col',
       value: {
         value: 'grid_col',
@@ -257,6 +290,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'columns-3'
     },
     {
+      id: 'ref_component',
       label: 'Ref Component',
       value: {
         value: 'ref_component',
@@ -265,6 +299,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'asterisk'
     },
     {
+      id: 'workflow_wrapper',
       label: 'Workflow',
       value: {
         value: 'workflow_wrapper',
@@ -283,6 +318,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'workflow'
     },
     {
+      id: 'chatbot_wrapper',
       label: 'Chatbot',
       value: {
         value: 'chatbot_wrapper',
@@ -303,11 +339,21 @@ export function getInsertOptions(): DropdownOption[] {
         }
       },
       icon: 'message-circle'
+    },
+    {
+      id: 'micro_app',
+      label: 'Micro App',
+      value: {
+        value: 'micro_app',
+        additionalData: { action: 'add', style: { width: '300px' } }
+      },
+      icon: 'component'
     }
   ];
 
   const dataOptions: DropdownOption[] = [
     {
+      id: 'table',
       label: 'Table',
       value: {
         value: 'table',
@@ -316,6 +362,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'table'
     },
     {
+      id: 'collection',
       label: 'Collection',
       value: {
         value: 'collection',
@@ -324,6 +371,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'database'
     },
     {
+      id: 'menu',
       label: 'Menu',
       value: {
         value: 'menu',
@@ -348,6 +396,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'menu'
     },
     {
+      id: 'dropdown',
       label: 'Dropdown',
       value: {
         value: 'dropdown',
@@ -370,6 +419,7 @@ export function getInsertOptions(): DropdownOption[] {
 
   const mediaOptions: DropdownOption[] = [
     {
+      id: 'image',
       label: 'Image',
       value: {
         value: 'image',
@@ -378,6 +428,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'image'
     },
     {
+      id: 'video',
       label: 'Video',
       value: {
         value: 'video',
@@ -386,6 +437,7 @@ export function getInsertOptions(): DropdownOption[] {
       icon: 'video'
     },
     {
+      id: 'document',
       label: 'Document',
       value: {
         value: 'document',
@@ -396,11 +448,11 @@ export function getInsertOptions(): DropdownOption[] {
   ];
 
   return [
-    { id: 'input', label: 'Input', options: inputOptions, icon: 'keyboard', value: '' },
-    { id: 'display', label: 'Display', options: displayOptions, icon: 'tv-minimal', value: '' },
-    { id: 'layout', label: 'Layout', options: layoutOptions, icon: 'columns', value: '' },
-    { id: 'data', label: 'Data', options: dataOptions, icon: 'database', value: '' },
-    { id: 'media', label: 'Media', options: mediaOptions, icon: 'image', value: '' }
+    { id: 'input', label: 'Input', options: inputOptions, icon: 'keyboard' },
+    { id: 'display', label: 'Display', options: displayOptions, icon: 'tv-minimal' },
+    { id: 'layout', label: 'Layout', options: layoutOptions, icon: 'columns' },
+    { id: 'data', label: 'Data', options: dataOptions, icon: 'database' },
+    { id: 'media', label: 'Media', options: mediaOptions, icon: 'image' }
   ];
 }
 
@@ -409,11 +461,11 @@ export function getInsertOptions(): DropdownOption[] {
  */
 export function getEditOptions(): DropdownOption[] {
   return [
-    { label: 'Copy', value: 'copy', icon: 'copy' },
-    { label: 'Paste', value: 'paste', icon: 'clipboard' },
-    { label: 'Delete', value: 'delete', icon: 'trash' },
-    { label: 'Export', value: 'export', icon: 'file-down' },
-    { label: 'Import', value: 'import', icon: 'file-up' }
+    { id: 'copy', label: 'Copy', value: 'copy', icon: 'copy' },
+    { id: 'paste', label: 'Paste', value: 'paste', icon: 'clipboard' },
+    { id: 'delete', label: 'Delete', value: 'delete', icon: 'trash' },
+    { id: 'export', label: 'Export', value: 'export', icon: 'file-down' },
+    { id: 'import', label: 'Import', value: 'import', icon: 'file-up' }
   ];
 }
 
@@ -423,21 +475,25 @@ export function getEditOptions(): DropdownOption[] {
 export function getApplicationOptions(): DropdownOption[] {
   return [
     {
+      id: 'app-settings',
       label: 'Application Settings',
       value: { action: 'open-modal' },
       icon: 'settings'
     },
     {
+      id: 'kv-storage',
       label: 'KV Storage',
       value: { action: 'open-kv-modal' },
       icon: 'database'
     },
     {
+      id: 'share',
       label: 'Share',
       value: { action: 'share' },
       icon: 'share'
     },
     {
+      id: 'new-workflow',
       label: 'New Workflow',
       value: {
         action: 'new-tab',
@@ -446,6 +502,7 @@ export function getApplicationOptions(): DropdownOption[] {
       icon: 'workflow'
     },
     {
+      id: 'database',
       label: 'Database',
       value: {
         action: 'new-tab',

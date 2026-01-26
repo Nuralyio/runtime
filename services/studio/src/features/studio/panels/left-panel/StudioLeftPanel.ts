@@ -7,20 +7,20 @@
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $applicationComponents } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
 import { deletePageAction, addPageAction } from '@nuraly/runtime/redux/actions';
 import { deleteComponentAction } from '@nuraly/runtime/redux/actions';
 
 interface MenuItem {
-  id: string;
+  id?: string;  // Custom: uuid of page/component
   text: string;
-  icon: string;
+  icon?: string;
   selected?: boolean;
   opened?: boolean;
-  type?: string;
-  page?: string;
+  type?: string;  // Custom: 'page' or undefined for components
+  page?: string;  // Custom: parent page uuid for components
   children?: MenuItem[];
   menu?: {
     icon: string;
@@ -32,6 +32,9 @@ interface MenuItem {
     }>;
   };
 }
+
+// Store menu items for lookup by path
+let menuItemsCache: MenuItem[] = [];
 
 @customElement("studio-left-panel")
 export class StudioLeftPanel extends LitElement {
@@ -45,14 +48,7 @@ export class StudioLeftPanel extends LitElement {
       border-right: 1px solid var(--panel-border, #e0e0e0);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :host {
-        --panel-bg: #1a1a1a;
-        --panel-border: #3a3a3a;
-        --text-color: #e0e0e0;
-        --hover-bg: #2a2a2a;
-      }
-    }
+    
 
     .panel-header {
       display: flex;
@@ -107,12 +103,7 @@ export class StudioLeftPanel extends LitElement {
       overflow-y: auto;
     }
 
-    @media (prefers-color-scheme: dark) {
-      nr-menu {
-        --nuraly-menu-link-icon-color: #e0e0e0;
-        --nuraly-color-icon: #e0e0e0;
-      }
-    }
+   
   `;
 
   @state()
@@ -140,13 +131,14 @@ export class StudioLeftPanel extends LitElement {
   private unsubscribePages?: () => void;
   private unsubscribeCurrentPage?: () => void;
   private unsubscribeComponents?: () => void;
+  private unsubscribeSelectedComponents?: () => void;
   private unsubscribeEnv?: () => void;
   private unsubscribeApp?: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.unsubscribeApp = $currentApplication.subscribe((app) => {
+    this.unsubscribeApp = $currentApplication.subscribe((app: any) => {
       if (app?.uuid && app.uuid !== this.appId) {
         this.appId = app.uuid;
         // Set up app-specific subscriptions after we have the appId
@@ -171,18 +163,32 @@ export class StudioLeftPanel extends LitElement {
     this.unsubscribePages?.();
     this.unsubscribeCurrentPage?.();
     this.unsubscribeComponents?.();
+    this.unsubscribeSelectedComponents?.();
 
     // Set up new subscriptions with valid appId
-    this.unsubscribePages = $applicationPages(this.appId).subscribe((pages) => {
-      this.pages = pages || [];
+    this.unsubscribeCurrentPage = $currentPageId(this.appId).subscribe((pageId) => {
+      if (pageId) {
+        this.currentPageId = pageId;
+      }
     });
 
-    this.unsubscribeCurrentPage = $currentPageId(this.appId).subscribe((pageId) => {
-      this.currentPageId = pageId || '';
+    this.unsubscribePages = $applicationPages(this.appId).subscribe((pages: any[]) => {
+      this.pages = pages || [];
+      // If no current page is set and we have pages, set the first page
+      if (!this.currentPageId && pages && pages.length > 0) {
+        const firstPageId = pages[0].uuid;
+        this.currentPageId = firstPageId;
+        $currentPageId(this.appId).set(firstPageId);
+      }
     });
 
     this.unsubscribeComponents = $applicationComponents(this.appId).subscribe((components) => {
       this.components = components || [];
+    });
+
+    // Subscribe to global selected components
+    this.unsubscribeSelectedComponents = $selectedComponents.subscribe((components) => {
+      this.selectedComponents = components || [];
     });
   }
 
@@ -192,6 +198,7 @@ export class StudioLeftPanel extends LitElement {
     this.unsubscribePages?.();
     this.unsubscribeCurrentPage?.();
     this.unsubscribeComponents?.();
+    this.unsubscribeSelectedComponents?.();
     this.unsubscribeEnv?.();
     this.unsubscribeApp?.();
   }
@@ -235,8 +242,11 @@ export class StudioLeftPanel extends LitElement {
   private buildMenuItems(): MenuItem[] {
     const selectedComponentId = this.selectedComponents[0]?.uuid;
 
-    return this.pages.map((page) => {
-      const pageComponents = this.components.filter(c => c.pageId === page.uuid && !c.parent_id);
+    const items = this.pages.map((page) => {
+      // Get root components for this page (components without parent or with root=true)
+      const pageComponents = this.components.filter(c =>
+        c.pageId === page.uuid && (c.root === true || !c.parent_id)
+      );
 
       const children = this.buildComponentTree(pageComponents, page.uuid, selectedComponentId);
 
@@ -261,6 +271,24 @@ export class StudioLeftPanel extends LitElement {
         }
       };
     });
+
+    // Cache for path lookup
+    menuItemsCache = items;
+    return items;
+  }
+
+  // Get menu item by path (array of indices)
+  private getItemByPath(path: number[]): MenuItem | null {
+    let items = menuItemsCache;
+    let item: MenuItem | null = null;
+
+    for (const index of path) {
+      if (!items || index >= items.length) return null;
+      item = items[index];
+      items = item.children || [];
+    }
+
+    return item;
   }
 
   private buildComponentTree(components: any[], pageId: string, selectedComponentId?: string): MenuItem[] {
@@ -307,11 +335,15 @@ export class StudioLeftPanel extends LitElement {
     });
   }
 
-  private handleMenuSelect(e: CustomEvent) {
-    const item = e.detail;
+  private handleMenuChange(e: CustomEvent) {
+    // change event gives { path, value } where path is array of indices
+    const { path } = e.detail;
+    const item = this.getItemByPath(path);
+
+    if (!item) return;
 
     if (item.type === 'page') {
-      $currentPageId(this.appId).set(item.id);
+      $currentPageId(this.appId).set(item.id!);
       // Clear selection when switching pages
       this.selectedComponents = [];
       setSelectedComponents([]);
@@ -336,22 +368,25 @@ export class StudioLeftPanel extends LitElement {
   }
 
   private handleMenuAction(e: CustomEvent) {
-    const { action, value } = e.detail;
+    // action-click event gives { value, path, item, originalEvent, close }
+    const { value: action, item } = e.detail;
+    const additionalData = item?.additionalData;
 
     if (action === 'delete') {
-      if (value?.type === 'component' && value?.component) {
-        deleteComponentAction(value.component);
-      } else if (value?.type === 'page' && value?.page) {
-        deletePageAction(value.page);
+      if (additionalData?.type === 'component' && additionalData?.component) {
+        const comp = additionalData.component;
+        deleteComponentAction(comp.uuid, comp.application_id);
+      } else if (additionalData?.type === 'page' && additionalData?.page) {
+        deletePageAction(additionalData.page);
       }
     } else if (action === 'copy') {
       this.dispatchEvent(new CustomEvent('copy-component', {
-        detail: { component: value?.component },
+        detail: { component: additionalData?.component },
         bubbles: true,
         composed: true
       }));
     } else if (action === 'copyName') {
-      const name = value?.component?.name;
+      const name = additionalData?.component?.name;
       if (name) {
         navigator.clipboard.writeText(name);
       }
@@ -381,10 +416,10 @@ export class StudioLeftPanel extends LitElement {
       </div>
       <div class="panel-content">
         <nr-menu
-          .options=${menuItems}
+          .items=${menuItems}
           arrowPosition="left"
-          @nr-menu-select=${this.handleMenuSelect}
-          @nr-menu-action=${this.handleMenuAction}
+          @change=${this.handleMenuChange}
+          @action-click=${this.handleMenuAction}
         ></nr-menu>
       </div>
     `;
