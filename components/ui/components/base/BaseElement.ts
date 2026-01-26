@@ -256,7 +256,15 @@ export class BaseElementCore extends LitElement {
    * @param data - Additional data to pass to the handler
    */
   executeEvent(eventName: string, event?: Event, data: Record<string, any> = {}): void {
+    // Execute the handler code if defined
     this.eventController.execute(eventName, event, data);
+
+    // Also dispatch a DOM CustomEvent so native panels can listen
+    this.dispatchEvent(new CustomEvent(eventName, {
+      bubbles: true,
+      composed: true,
+      detail: data
+    }));
   }
 
   /**

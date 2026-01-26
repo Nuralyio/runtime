@@ -246,7 +246,7 @@ export class AttributeBorderValue extends BaseElementBlock {
     if (this.component.event.borderChanged) {
       const fn = executeHandler(
         this.component,
-        getNestedAttribute(this.component, `event.borderChanged`),
+        getNestedAttribute(this.component, `evealnt.borderChanged`),
         {
           borders,
         },

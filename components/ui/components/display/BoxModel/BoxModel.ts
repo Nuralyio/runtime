@@ -5,6 +5,9 @@ import { customElement, property } from "lit/decorators.js";
 
 @customElement("box-model-display")
 export class BoxModelDisplay extends BaseElementBlock {
+  /** Direct box values - takes precedence over resolvedInputs when provided */
+  @property({ type: Object }) boxValues: Record<string, { value: number; unit: string }> | null = null;
+
   static override styles = [
     css`
       :host {
@@ -431,7 +434,7 @@ export class BoxModelDisplay extends BaseElementBlock {
   }
 
   override renderComponent() {
-    const handlers = this.resolvedInputs?.value;
+    const handlers = this.boxValues;
 
     if (!handlers) {
       return html`

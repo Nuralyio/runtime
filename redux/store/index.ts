@@ -4,10 +4,12 @@
  */
 
 // Component Store
-export { 
+export {
   $components,
-  $applicationComponents, 
+  $applicationComponents,
   $selectedComponent,
+  $selectedComponents,
+  setSelectedComponents,
   $currentComponentId,
   $hoveredComponentId,
   $hoveredComponent,
