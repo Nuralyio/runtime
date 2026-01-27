@@ -120,6 +120,11 @@ export const $editorState = atom({
       id: "database",
       label: "Database",
       type: "database"
+    },
+    {
+      id: "journal",
+      label: "Journal",
+      type: "journal"
     }
   ]
 });
