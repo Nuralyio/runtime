@@ -106,6 +106,13 @@ export function renderChatbotTriggerFields(
         .value=${(config.loadingType as string) || 'dots'}
         @value-change=${(e: CustomEvent) => onUpdate('loadingType', e.detail.value)}
       ></nr-loading-type-select>
+
+      <nr-feature-toggle
+        label="Always Open Plan"
+        description="Show execution plan before running the workflow"
+        .checked=${config.alwaysOpenPlan === true}
+        @toggle-change=${(e: CustomEvent) => onUpdate('alwaysOpenPlan', e.detail.checked)}
+      ></nr-feature-toggle>
     </div>
 
     <!-- File Upload Section -->

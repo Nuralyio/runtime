@@ -107,6 +107,9 @@ export interface ChatbotTriggerConfiguration {
   enableModules: boolean;
   boxedLayout: boolean;
 
+  // Execution behavior
+  alwaysOpenPlan: boolean;
+
   // Suggestions
   suggestions: SuggestionConfig[];
 
@@ -136,6 +139,7 @@ export const DEFAULT_CHATBOT_TRIGGER_CONFIG: ChatbotTriggerConfiguration = {
   enableSuggestions: true,
   enableModules: false,
   boxedLayout: false,
+  alwaysOpenPlan: false,
   suggestions: [],
   modules: [],
   welcomeMessage: '',
