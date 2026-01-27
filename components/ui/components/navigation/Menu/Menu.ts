@@ -32,6 +32,10 @@ export class MenuBlock extends BaseElementBlock {
     super();
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+  }
+
   override renderComponent() {
     return html`
 
@@ -44,6 +48,17 @@ export class MenuBlock extends BaseElementBlock {
           size=${this.resolvedInputs?.size ?? 'medium'}
           arrowPosition=${this.resolvedInputs?.arrowPosition ?? 'right'}
           .items=${this.resolvedInputs?.options ?? []}
+          .onLabelEdit=${(detail: { path: number[]; oldValue: string; newValue: string }) => {
+            const option = detail.path.reduce((acc: {
+              children: { [x: string]: any; };
+            }, curr: string | number) => acc && acc.children && acc.children[curr], { children: this.resolvedInputs?.options });
+            this.executeEvent('onLabelEdit', undefined, {
+              path: detail.path,
+              oldValue: detail.oldValue,
+              newValue: detail.newValue,
+              item: option
+            });
+          }}
           @change="${(e: CustomEvent) => {
             const selectedOptionPath = e.detail.path;
             const selectedPage = this.resolvedInputs.options[selectedOptionPath[0]]?.id;
@@ -65,6 +80,18 @@ export class MenuBlock extends BaseElementBlock {
               action: e.detail.value,
               originalEvent: e.detail.originalEvent,
               close: e.detail.close
+            });
+          }}"
+          @label-edit="${(e: CustomEvent) => {
+            const path = e.detail.path;
+            const option = path.reduce((acc: {
+              children: { [x: string]: any; };
+            }, curr: string | number) => acc && acc.children && acc.children[curr], { children: this.resolvedInputs?.options });
+            this.executeEvent('onLabelEdit', e, {
+              path: e.detail.path,
+              oldValue: e.detail.oldValue,
+              newValue: e.detail.newValue,
+              item: option
             });
           }}">
         </nr-menu>
