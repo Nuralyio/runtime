@@ -45,6 +45,8 @@ export interface IMenu {
   disabled?: boolean;
   /** Whether the submenu is opened */
   opened?: boolean;
+  /** Whether the menu item label can be edited (double-click to edit) */
+  editable?: boolean;
   /** Child menu items for nested menus */
   children?: IMenu[];
 }
