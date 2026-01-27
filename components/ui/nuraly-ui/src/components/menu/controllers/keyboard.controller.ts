@@ -40,6 +40,12 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
    */
   handleKeydown(event: KeyboardEvent): void {
     try {
+      // Skip keyboard handling when editing (input or contenteditable is focused)
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return; // Let the input handle the event
+      }
+
       const key = event.key;
 
       // Arrow navigation

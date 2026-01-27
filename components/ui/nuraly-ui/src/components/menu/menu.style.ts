@@ -353,6 +353,34 @@ const menuStyle = css`
   .menu--large .sub-menu .sub-menu-header {
     padding: var(--nuraly-sub-menu-header-padding-large, 1px);
   }
+
+  /* Edit input styles */
+  .edit-input {
+    flex: 1;
+    min-width: 0;
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    background-color: var(--nuraly-menu-edit-input-background, transparent);
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    outline: none;
+  }
+
+  .edit-input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .menu-link.editing,
+  .sub-menu.editing > .sub-menu-header {
+    background-color: var(--nuraly-menu-edit-background, transparent);
+  }
+
 `;
 
 export const styles = [menuStyle];
