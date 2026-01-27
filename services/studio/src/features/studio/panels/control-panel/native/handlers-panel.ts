@@ -9,42 +9,17 @@ import { LitElement, html, css } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
+import type { PageElement } from "../../../../runtime/redux/handlers/pages/page.interface";
 import "../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
+import { COMPONENT_EVENTS } from "../../../core/properties/registry";
+import { updatePageHandler } from "../../../../runtime/redux/handlers/pages/handler";
 
-// Event configurations per component type
-const COMPONENT_EVENTS: Record<string, Array<{ name: string; label: string; description: string }>> = {
-  text_label: [
-    { name: "onClick", label: "On Click", description: "Triggered when the label is clicked" }
-  ],
-  text_input: [
-    { name: "onChange", label: "On Change", description: "Triggered when the value changes" },
-    { name: "onFocus", label: "On Focus", description: "Triggered when the input gains focus" },
-    { name: "onBlur", label: "On Blur", description: "Triggered when the input loses focus" },
-    { name: "onEnter", label: "On Enter", description: "Triggered when Enter key is pressed" }
-  ],
-  button_input: [
-    { name: "onClick", label: "On Click", description: "Triggered when the button is clicked" }
-  ],
-  checkbox: [
-    { name: "onChange", label: "On Change", description: "Triggered when the checkbox state changes" }
-  ],
-  select: [
-    { name: "onChange", label: "On Change", description: "Triggered when selection changes" },
-    { name: "onSearch", label: "On Search", description: "Triggered when search input changes" }
-  ],
-  container: [
-    { name: "onClick", label: "On Click", description: "Triggered when the container is clicked" }
-  ],
-  image: [
-    { name: "onClick", label: "On Click", description: "Triggered when the image is clicked" },
-    { name: "onLoad", label: "On Load", description: "Triggered when the image loads" },
-    { name: "onError", label: "On Error", description: "Triggered when the image fails to load" }
-  ],
-  form: [
-    { name: "onSubmit", label: "On Submit", description: "Triggered when the form is submitted" },
-    { name: "onReset", label: "On Reset", description: "Triggered when the form is reset" }
-  ]
-};
+// Page-level events
+const PAGE_EVENTS = [
+  { name: "onInit", label: "On Init", description: "Triggered when the page initializes" },
+  { name: "onUnload", label: "On Unload", description: "Triggered when the page unloads" },
+  { name: "onResize", label: "On Resize", description: "Triggered when the page resizes" },
+];
 
 @customElement("native-handlers-panel")
 export class NativeHandlersPanel extends LitElement {
@@ -90,6 +65,9 @@ export class NativeHandlersPanel extends LitElement {
   @property({ attribute: false })
   component: ComponentElement | null = null;
 
+  @property({ attribute: false })
+  page: PageElement | null = null;
+
   @state()
   private expandedHandlers: Set<string> = new Set();
 
@@ -123,6 +101,67 @@ export class NativeHandlersPanel extends LitElement {
       newExpanded.add(eventName);
     }
     this.expandedHandlers = newExpanded;
+  }
+
+  // === Page Handler Methods ===
+
+  private getPageHandlerCode(eventName: string): string {
+    if (!this.page?.event) return "";
+    return this.page.event[eventName] ?? "";
+  }
+
+  private hasPageHandler(eventName: string): boolean {
+    const code = this.getPageHandlerCode(eventName);
+    return code.trim().length > 0;
+  }
+
+  private updatePageHandler(eventName: string, code: string) {
+    if (!this.page) return;
+
+    const currentEvents = this.page.event || {};
+    const updatedPage = {
+      ...this.page,
+      event: { ...currentEvents, [eventName]: code }
+    };
+    updatePageHandler(updatedPage);
+  }
+
+  private renderPageHandler(event: { name: string; label: string; description: string }) {
+    const hasCode = this.hasPageHandler(event.name);
+    const code = this.getPageHandlerCode(event.name);
+    const isExpanded = this.expandedHandlers.has(event.name) || hasCode;
+
+    return html`
+      <div class="handler-item">
+        <div class="handler-header" @click=${() => this.toggleHandler(event.name)}>
+          <nr-row gutter="8" align="middle">
+            <nr-col flex="none">
+              <nr-icon name=${isExpanded ? "chevron-down" : "chevron-right"} size="14"></nr-icon>
+            </nr-col>
+            <nr-col flex="auto">
+              <nr-label size="small">${event.label}</nr-label>
+            </nr-col>
+            <nr-col flex="none">
+              <nr-tag size="small" variant=${hasCode ? "success" : "default"}>
+                ${hasCode ? "Active" : "Empty"}
+              </nr-tag>
+            </nr-col>
+          </nr-row>
+        </div>
+        ${isExpanded ? html`
+          <div class="handler-content">
+            <nr-label size="small" variant="secondary">${event.description}</nr-label>
+            <div class="handler-editor">
+              <code-editor
+                language="javascript"
+                .code=${code || "// Enter JavaScript code..."}
+                @change=${(e: CustomEvent) => this.updatePageHandler(event.name, e.detail.value)}
+              ></code-editor>
+            </div>
+          </div>
+        ` : ""}
+      </div>
+    `;
   }
 
   private renderHandler(event: { name: string; label: string; description: string }) {
@@ -164,7 +203,16 @@ export class NativeHandlersPanel extends LitElement {
   }
 
   override render() {
+    // If no component selected, show page handlers
     if (!this.component) {
+      if (this.page) {
+        return html`
+          <div style="padding: 0 12px 8px;">
+            <nr-label size="small" variant="secondary">Page Handlers</nr-label>
+          </div>
+          ${PAGE_EVENTS.map(event => this.renderPageHandler(event))}
+        `;
+      }
       return html`
         <nr-row justify="center" style="padding: 16px;">
           <nr-col>

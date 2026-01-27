@@ -11,7 +11,6 @@ import { $currentApplication, $editorState, $currentPageId, $applicationPages } 
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
 import { setEnvirementMode, addComponentAction } from '@nuraly/runtime/redux/actions';
 import { openEditorTab } from '@nuraly/runtime/redux/actions/editor/openEditorTab';
-import { $pageZoom } from '@nuraly/runtime/redux/store';
 import { GenerateName } from '@nuraly/runtime/utils/naming-generator';
 
 // Locale stores
@@ -147,9 +146,6 @@ export class StudioTopBar extends LitElement {
   private mode: ViewMode = ViewMode.Edit;
 
   @state()
-  private zoom: number = 100;
-
-  @state()
   private applicationSettingsModalOpen: boolean = false;
 
   @state()
@@ -172,7 +168,6 @@ export class StudioTopBar extends LitElement {
 
   private unsubscribeApp?: () => void;
   private unsubscribeEnv?: () => void;
-  private unsubscribeZoom?: () => void;
   private unsubscribeEditor?: () => void;
   private unsubscribeCurrentPage?: () => void;
   private unsubscribePages?: () => void;
@@ -201,11 +196,6 @@ export class StudioTopBar extends LitElement {
       this.mode = env.mode;
     });
 
-    // Subscribe to zoom
-    this.unsubscribeZoom = $pageZoom.subscribe((zoom) => {
-      this.zoom = Number(zoom) || 100;
-    });
-
     // Subscribe to editor state for tab type
     this.unsubscribeEditor = $editorState.subscribe((state) => {
       // Editor state subscription for future use (e.g., tab type)
@@ -224,7 +214,6 @@ export class StudioTopBar extends LitElement {
     super.disconnectedCallback();
     this.unsubscribeApp?.();
     this.unsubscribeEnv?.();
-    this.unsubscribeZoom?.();
     this.unsubscribeEditor?.();
     this.unsubscribeCurrentPage?.();
     this.unsubscribePages?.();
@@ -317,14 +306,6 @@ export class StudioTopBar extends LitElement {
 
   private setMode(mode: ViewMode) {
     setEnvirementMode(mode);
-  }
-
-  private handleZoomChange(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const value = parseInt(input.value, 10);
-    if (!isNaN(value) && value >= 10 && value <= 200) {
-      $pageZoom.set(String(value));
-    }
   }
 
   private handleBackClick() {
@@ -455,18 +436,6 @@ export class StudioTopBar extends LitElement {
             ></nr-select>
           ` : nothing}
 
-          <nr-divider type="vertical"></nr-divider>
-
-          <div class="zoom-container">
-            <nr-text-input
-              size="small"
-              type="number"
-              .value=${String(this.zoom)}
-              style="width: 60px"
-              @change=${this.handleZoomChange}
-            ></nr-text-input>
-            <span>%</span>
-          </div>
         </div>
 
         <!-- Right section -->

@@ -7,9 +7,11 @@
  */
 
 import { LitElement, html, css } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
+import type { PageElement } from "../../../../runtime/redux/handlers/pages/page.interface";
+import { updatePageHandler } from "../../../../runtime/redux/handlers/pages/handler";
 import EditorInstance from "../../../../runtime/state/editor";
 import { eventDispatcher } from "../../../../runtime/utils/change-detection";
 import { ExecuteInstance } from "../../../../runtime/state/runtime-context";
@@ -94,8 +96,11 @@ export class NativeStylePanel extends LitElement {
     }
   `;
 
-  @state()
-  private component: ComponentElement | null = null;
+  @property({ attribute: false })
+  component: ComponentElement | null = null;
+
+  @property({ attribute: false })
+  page: PageElement | null = null;
 
   @state()
   private styleState: string = "default";
@@ -325,8 +330,61 @@ export class NativeStylePanel extends LitElement {
     `;
   }
 
+  // === Page Style Methods ===
+
+  private handlePageStyleChange(styleProperty: string, value: string) {
+    if (!this.page) {
+      console.warn('[StylePanel] No page available for style update');
+      return;
+    }
+
+    console.log('[StylePanel] handlePageStyleChange:', {
+      styleProperty,
+      value,
+      pageUuid: this.page.uuid,
+      currentStyle: this.page.style
+    });
+
+    const updatedStyle = { ...(this.page.style || {}), [styleProperty]: value };
+    const updatedPage = { ...this.page, style: updatedStyle };
+
+    console.log('[StylePanel] Calling updatePageHandler with:', {
+      uuid: updatedPage.uuid,
+      style: updatedPage.style
+    });
+
+    updatePageHandler(updatedPage);
+  }
+
+  private renderPageStyles() {
+    if (!this.page) return html``;
+
+    return html`
+      <div class="section-title">Page Styles</div>
+
+      <!-- Background Color -->
+      ${this.renderPropertyRow("Background", html`
+        <nr-color-picker
+          .value=${this.page.style?.["--nuraly-page-background-color"] || "#ffffff"}
+          @nr-color-change=${(e: CustomEvent) => this.handlePageStyleChange("--nuraly-page-background-color", e.detail.value)}
+        ></nr-color-picker>
+      `)}
+
+      <!-- Background Color Dark -->
+      ${this.renderPropertyRow("Background (Dark)", html`
+        <nr-color-picker
+          .value=${this.page.style?.["--nuraly-page-background-color-dark"] || "#1a1a1a"}
+          @nr-color-change=${(e: CustomEvent) => this.handlePageStyleChange("--nuraly-page-background-color-dark", e.detail.value)}
+        ></nr-color-picker>
+      `)}
+    `;
+  }
+
   override render() {
     if (!this.component) {
+      if (this.page) {
+        return this.renderPageStyles();
+      }
       return html`<nr-label size="small" variant="secondary" style="padding: 16px; display: block; text-align: center;">No component selected</nr-label>`;
     }
 
@@ -408,7 +466,7 @@ export class NativeStylePanel extends LitElement {
           <nr-color-picker
             size="small"
             .value=${this.getStyleValue("color") || "#000000"}
-            @color-changed=${(e: CustomEvent) => this.updateStyleWithCssVar("color", e.detail.value)}
+            @nr-color-change=${(e: CustomEvent) => this.updateStyleWithCssVar("color", e.detail.value)}
           ></nr-color-picker>
         `)}
         ${this.renderPropertyRow("Text Align", html`
@@ -433,7 +491,7 @@ export class NativeStylePanel extends LitElement {
           <nr-color-picker
             size="small"
             .value=${this.getStyleValue("background-color") || "transparent"}
-            @nr-change=${(e: CustomEvent) => this.updateStyle("background-color", e.detail.value)}
+            @nr-color-change=${(e: CustomEvent) => this.updateStyle("background-color", e.detail.value)}
           ></nr-color-picker>
         `)}
       </div>

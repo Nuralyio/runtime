@@ -62,3 +62,7 @@ export {
   createFullConfig,
   createMetadata,
 } from './serializer';
+
+// NOTE: Registry exports are NOT included here to avoid circular dependencies.
+// Import directly from './registry' when needed:
+// import { COMPONENT_PROPERTIES, COMPONENT_EVENTS } from '../core/properties/registry';

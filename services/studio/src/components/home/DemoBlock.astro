@@ -1,0 +1,155 @@
+---
+/**
+ * DemoBlock Component
+ * Interactive demo with minimal styling
+ */
+
+const demoAppId = "home-demo-app";
+
+const demoPages = [
+  {
+    uuid: "demo-page-001",
+    application_id: demoAppId,
+    name: "Demo",
+    url: "/demo",
+    is_default: true,
+    style: { backgroundColor: "transparent", padding: "0" },
+  },
+];
+
+const demoComponents = [
+  {
+    uuid: "demo-comp-001",
+    name: "Container",
+    type: "container",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: true,
+    childrenIds: ["demo-comp-002", "demo-comp-003", "demo-comp-004"],
+    style: { display: "flex", flexDirection: "column", gap: "24px", padding: "0" },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {},
+  },
+  {
+    uuid: "demo-comp-002",
+    name: "Title",
+    type: "text_label",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    style: { fontSize: "14px", color: "#666", margin: "0" },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: { value: { type: "string", value: "Interactive counter built with the low-code runtime" } },
+  },
+  {
+    uuid: "demo-comp-003",
+    name: "Counter",
+    type: "text_label",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    style: { fontSize: "64px", fontWeight: "600", color: "#14144b", textAlign: "center", padding: "32px 0", letterSpacing: "-0.03em" },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: { value: { type: "handler", value: `return $count || 0;` } },
+  },
+  {
+    uuid: "demo-comp-004",
+    name: "Buttons",
+    type: "container",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    childrenIds: ["demo-comp-005", "demo-comp-006", "demo-comp-007"],
+    style: { display: "flex", gap: "12px", justifyContent: "center" },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {},
+  },
+  {
+    uuid: "demo-comp-005",
+    name: "Decrement",
+    type: "button_input",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    event: { onClick: `$count = ($count || 0) - 1;` },
+    input: { label: { type: "string", value: "−" }, variant: { type: "string", value: "outlined" } },
+  },
+  {
+    uuid: "demo-comp-006",
+    name: "Reset",
+    type: "button_input",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    event: { onClick: `$count = 0;` },
+    input: { label: { type: "string", value: "Reset" }, variant: { type: "string", value: "text" } },
+  },
+  {
+    uuid: "demo-comp-007",
+    name: "Increment",
+    type: "button_input",
+    application_id: demoAppId,
+    pageId: "demo-page-001",
+    root: false,
+    event: { onClick: `$count = ($count || 0) + 1;` },
+    input: { label: { type: "string", value: "+" }, variant: { type: "string", value: "filled" } },
+  },
+];
+---
+
+<section class="demo-section">
+  <div class="container">
+    <div class="demo-header" data-animate>
+      <p class="section-label">Try it</p>
+      <h2>See it in action</h2>
+    </div>
+
+    <div class="demo-container" data-animate id="demo-micro-app-container">
+      <p style="text-align: center; color: #999; padding: 40px 0;">Loading...</p>
+    </div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ demoAppId, demoComponents, demoPages }}>
+  window.__HOME_DEMO_DATA__ = { appId: demoAppId, components: demoComponents, pages: demoPages };
+</script>
+
+<script>
+  import { MicroApp } from "../../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+  import "../../features/runtime/components";
+
+  void MicroApp;
+
+  async function initDemo() {
+    await customElements.whenDefined('micro-app');
+
+    const data = (window as any).__HOME_DEMO_DATA__;
+    if (!data?.appId) return;
+
+    const microApp = document.createElement('micro-app') as any;
+    microApp.id = 'home-demo';
+    microApp.uuid = data.appId;
+    microApp.page_uuid = "demo-page-001";
+    microApp.useIsolatedContext = true;
+    microApp.appComponents = data.components;
+    microApp.appPages = data.pages;
+    microApp.mode = "preview";
+    microApp.prod = true;
+
+    const container = document.getElementById('demo-micro-app-container');
+    if (container) {
+      container.innerHTML = '';
+      container.appendChild(microApp);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initDemo);
+  } else {
+    initDemo();
+  }
+</script>
