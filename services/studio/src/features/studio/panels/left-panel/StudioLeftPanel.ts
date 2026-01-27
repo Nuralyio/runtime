@@ -21,6 +21,9 @@ import "../../../runtime/components/ui/components/utility/RevisionPanel/Revision
 // Import workflow list panel
 import "./WorkflowListPanel.js";
 
+// Import functions panel
+import "../../../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel.js";
+
 interface MenuItem {
   id?: string;  // Custom: uuid of page/component
   text: string;
@@ -604,6 +607,12 @@ export class StudioLeftPanel extends LitElement {
     `;
   }
 
+  private renderFunctionsPanel() {
+    return html`
+      <functions-panel></functions-panel>
+    `;
+  }
+
   override render() {
     if (this.mode !== ViewMode.Edit) {
       return nothing;
@@ -614,6 +623,8 @@ export class StudioLeftPanel extends LitElement {
         return this.renderWorkflowPanel();
       case 'database':
         return this.renderDatabasePanel();
+      case 'function':
+        return this.renderFunctionsPanel();
       default:
         return this.renderMainPanel();
     }
