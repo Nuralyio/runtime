@@ -8,10 +8,23 @@ export class Page {
     uuid: string;
     need_authentification: boolean;
     component_ids: string [];
-    style : any;
+    style: any;
+    event: any;
 
-    constructor(name: string, url: string, description:string, application_id: string, user_id: string, uuid: string, need_authentification: boolean, component_ids: string [],style : any= {}) {
+    constructor(
+        name: string,
+        url: string,
+        description: string,
+        application_id: string,
+        user_id: string,
+        uuid: string,
+        need_authentification: boolean,
+        component_ids: string[],
+        style: any = {},
+        event: any = {}
+    ) {
         this.style = style;
+        this.event = event;
         this.name = name;
         this.url = url;
         this.description = description;

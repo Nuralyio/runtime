@@ -131,6 +131,7 @@ model pages {
   id                    Int      @id @default(autoincrement())
   component_ids         String[] @default([])
   style                 Json     @default("{}")
+  event                 Json     @default("{}")
   name                  String
   url                   String
   description           String  @default("")

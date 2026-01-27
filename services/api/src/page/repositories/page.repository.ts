@@ -36,8 +36,9 @@ export class PageRepository implements IPageRepository {
             page.uuid,
             page.need_authentification,
             page.component_ids,
-            page.style
-        ) 
+            page.style,
+            page.event
+        )
     }
 
     public async findPagesByApplicationUUID(uuid: string): Promise<Page[]> {
@@ -53,7 +54,8 @@ export class PageRepository implements IPageRepository {
             page.uuid,
             page.need_authentification,
             page.component_ids,
-            page.style
+            page.style,
+            page.event
         ));
     }
 
@@ -84,12 +86,10 @@ export class PageRepository implements IPageRepository {
             page.uuid,
             page.need_authentification,
             page.component_ids,
-            page.style
+            page.style,
+            page.event
         );
     }
-
-
-    
 
     public async findPageByName(name: string): Promise<Page[]> {
         const pages = await prisma.pages.findMany(
@@ -103,12 +103,14 @@ export class PageRepository implements IPageRepository {
             page.user_id,
             page.uuid,
             page.need_authentification,
-            page.component_id
+            page.component_ids,
+            page.style,
+            page.event
         ));
     }
     public async update( page: Page): Promise<Page> {
         console.log("page", page);
-        const { name, url, description,application_id, user_id, uuid, need_authentification, component_ids, style ={} } = page;
+        const { name, url, description, application_id, user_id, uuid, need_authentification, component_ids, style = {}, event = {} } = page;
 
         const updatedPage = await prisma.pages.update({
             where: { uuid },
@@ -121,7 +123,8 @@ export class PageRepository implements IPageRepository {
                 uuid,
                 need_authentification,
                 component_ids,
-                style
+                style,
+                event
             }
         });
         return updatedPage;
