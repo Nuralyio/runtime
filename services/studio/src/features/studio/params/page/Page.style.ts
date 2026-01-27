@@ -50,15 +50,19 @@ const pageStyle = css`
 
   .page-container {
     position: relative;
-    margin-top : 40px;
-    background: var(--page-background-color, white);
+    background: var(--nuraly-page-background-color, white);
     --nuraly-tabs-content-padding: 0;
     --nuraly-tabs-border-radius: 8px;
     --nuraly-tabs-container-box-shadow : 0px 0px 5px 0px #dbdbdbbf ;
     --nuraly-tabs-container-background-local-color: transparent;
     --nuraly-tabs-label-active-background-color: transparent;
     margin: auto;
-    
+  }
+
+  :host([data-theme="dark"]) .page-container,
+  :host([data-theme="default-dark"]) .page-container,
+  :host([data-theme="carbon-dark"]) .page-container {
+    background: var(--nuraly-page-background-color-dark, #1a1a1a);
   }
   .page-container.viewer {
     margin-top: 0px;

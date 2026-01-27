@@ -10,8 +10,16 @@ import { customElement, state } from "lit/decorators.js";
 import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $applicationComponents } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
-import { deletePageAction, addPageAction } from '@nuraly/runtime/redux/actions';
-import { deleteComponentAction } from '@nuraly/runtime/redux/actions';
+import { deletePageAction, addPageAction, updatePageAction } from '@nuraly/runtime/redux/actions';
+import { deleteComponentAction, updateComponentName } from '@nuraly/runtime/redux/actions';
+import { openEditorTab } from '@nuraly/runtime/redux/actions/editor/openEditorTab';
+import { workflowService } from '../../../../services/workflow.service';
+
+// Import revision panel
+import "../../../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel.js";
+
+// Import workflow list panel
+import "./WorkflowListPanel.js";
 
 interface MenuItem {
   id?: string;  // Custom: uuid of page/component
@@ -19,6 +27,7 @@ interface MenuItem {
   icon?: string;
   selected?: boolean;
   opened?: boolean;
+  editable?: boolean;  // Allow inline label editing
   type?: string;  // Custom: 'page' or undefined for components
   page?: string;  // Custom: parent page uuid for components
   children?: MenuItem[];
@@ -48,7 +57,30 @@ export class StudioLeftPanel extends LitElement {
       border-right: 1px solid var(--panel-border, #e0e0e0);
     }
 
-    
+    .panel-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    nr-tabs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      --nuraly-spacing-tabs-content-padding-small: 0;
+      --nuraly-border-width-tabs-content-top: 0px;
+      --nuraly-border-width-tabs-top: 0px;
+      --nuraly-border-width-tabs-right: 0px;
+      --nuraly-border-width-tabs-bottom: 1px;
+      --nuraly-border-width-tabs-left: 0px;
+    }
+
+    .tab-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     .panel-header {
       display: flex;
@@ -70,6 +102,19 @@ export class StudioLeftPanel extends LitElement {
       padding: 8px;
     }
 
+    .pages-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .pages-header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 4px 8px;
+      border-bottom: 1px solid var(--panel-border, #e0e0e0);
+    }
+
     .add-button {
       display: flex;
       align-items: center;
@@ -85,25 +130,6 @@ export class StudioLeftPanel extends LitElement {
       background: var(--hover-bg, #f5f5f5);
     }
 
-    nr-menu {
-      --nuraly-menu-border: none;
-      --nuraly-menu-font-size: 13px;
-      --nuraly-sub-menu-highlighted-background-color: transparent;
-      --nuraly-menu-selected-link-border: 5px solid transparent;
-      --nuraly-menu-selected-link-background-color: transparent;
-      --nuraly-menu-selected-color: #5393f8;
-      --nuraly-menu-link-icon-color: #222222e3;
-      --nuraly-color-icon: #222222e3;
-      --nuraly-menu-focus-border: 2px solid transparent;
-      --nuraly-menu-focus-color: #5393f8;
-      margin-left: 13px;
-      margin-top: 11px;
-      --nuraly-menu-link-padding-medium: 4px;
-      height: calc(100vh - 120px);
-      overflow-y: auto;
-    }
-
-   
   `;
 
   @state()
@@ -126,6 +152,9 @@ export class StudioLeftPanel extends LitElement {
 
   @state()
   private mode: ViewMode = ViewMode.Edit;
+
+  @state()
+  private activeTabIndex: number = 0;
 
   private unsubscribeEditor?: () => void;
   private unsubscribePages?: () => void;
@@ -255,7 +284,8 @@ export class StudioLeftPanel extends LitElement {
         text: page.name,
         icon: 'file',
         type: 'page',
-        selected: page.uuid === this.currentPageId,
+        editable: true,
+        selected: false, // Pages have children, don't show selected bg
         opened: page.uuid === this.currentPageId,
         children,
         menu: {
@@ -306,6 +336,7 @@ export class StudioLeftPanel extends LitElement {
         text: component.name,
         icon: this.getComponentIcon(component.type, component.input),
         page: pageId,
+        editable: true,
         selected: component.uuid === selectedComponentId,
         children,
         menu: {
@@ -393,6 +424,35 @@ export class StudioLeftPanel extends LitElement {
     }
   }
 
+  private handleLabelEdit(e: CustomEvent) {
+    const { path, oldValue, newValue, item } = e.detail;
+
+    if (!newValue || newValue === oldValue) return;
+
+    // Get the item from path if not provided directly
+    const menuItem = item || this.getItemByPath(path);
+    if (!menuItem) return;
+
+    if (menuItem.type === 'page' && menuItem.id) {
+      // Rename page
+      const page = this.pages.find(p => p.uuid === menuItem.id);
+      if (page) {
+        updatePageAction({ ...page, name: newValue }, this.appId);
+      }
+    } else if (menuItem.id) {
+      // Rename component
+      const component = this.components.find(c => c.uuid === menuItem.id);
+      if (component) {
+        updateComponentName(
+          component.application_id,
+          component.uuid,
+          newValue,
+          true
+        );
+      }
+    }
+  }
+
   private handleAddPage() {
     addPageAction({
       application_id: this.appId,
@@ -401,28 +461,114 @@ export class StudioLeftPanel extends LitElement {
     });
   }
 
-  private renderPagesPanel() {
+  private renderPagesContent() {
     const menuItems = this.buildMenuItems();
 
     return html`
-      <div class="panel-header">
-        <span class="panel-title">Pages</span>
-        <nr-button
-          size="small"
-          variant="text"
-          .iconLeft=${"plus"}
-          @click=${this.handleAddPage}
-        >Add Page</nr-button>
-      </div>
-      <div class="panel-content">
-        <nr-menu
-          .items=${menuItems}
-          arrowPosition="left"
-          @change=${this.handleMenuChange}
-          @action-click=${this.handleMenuAction}
-        ></nr-menu>
+      <div class="tab-content">
+        <div class="pages-header">
+          <nr-button
+            size="small"
+            variant="text"
+            .iconLeft=${"plus"}
+            @click=${() => this.handleAddPage()}
+          >Add Page</nr-button>
+        </div>
+        <div class="pages-content">
+          <nr-menu
+            .items=${menuItems}
+            arrowPosition="left"
+            @change=${(e: CustomEvent) => this.handleMenuChange(e)}
+            @action-click=${(e: CustomEvent) => this.handleMenuAction(e)}
+            @label-edit=${(e: CustomEvent) => this.handleLabelEdit(e)}
+            style="
+              --nuraly-menu-border: none;
+              --nuraly-menu-font-size: 13px;
+              --nuraly-sub-menu-highlighted-background-color: transparent;
+              --nuraly-menu-selected-link-border: 2px solid transparent;
+              --nuraly-menu-selected-link-background-color: rgba(83, 147, 248, 0.1);
+              --nuraly-menu-selected-color: #5393f8;
+              --nuraly-menu-link-icon-color: #222222e3;
+              --nuraly-color-icon: #222222e3;
+              --nuraly-menu-focus-border: 2px solid transparent;
+              --nuraly-menu-focus-color: #5393f8;
+              --nuraly-menu-link-border: 2px solid transparent;
+              --nuraly-menu-link-border-radius: 4px;
+              --nuraly-menu-link-padding: 4px 8px;
+              --nuraly-menu-link-padding-medium: 4px 8px;
+              --nuraly-menu-link-padding-small: 4px 8px;
+              --nuraly-menu-selected-link-padding: 4px 8px;
+              --nuraly-sub-menu-link-padding: 4px 8px;
+              --nuraly-sub-menu-selected-link-padding: 4px 8px;
+              margin: 8px;
+              height: calc(100vh - 160px);
+              overflow-y: auto;
+            "
+          ></nr-menu>
+        </div>
       </div>
     `;
+  }
+
+  private renderRevisionsContent() {
+    return html`
+      <div class="tab-content">
+        <revision-panel></revision-panel>
+      </div>
+    `;
+  }
+
+  private renderMainPanel() {
+    const tabs = [
+      {
+        label: 'Pages',
+        icon: 'file',
+        content: this.renderPagesContent()
+      },
+      {
+        label: 'Revisions',
+        icon: 'history',
+        content: this.renderRevisionsContent()
+      }
+    ];
+
+    return html`
+      <div class="panel-container">
+        <nr-tabs
+          size="small"
+          align="stretch"
+          .activeTab=${this.activeTabIndex}
+          .tabs=${tabs}
+          @nr-tab-click=${(e: CustomEvent) => this.activeTabIndex = e.detail.index}
+        ></nr-tabs>
+      </div>
+    `;
+  }
+
+  private async handleAddWorkflow() {
+    const name = prompt("Enter workflow name:", "New Workflow");
+    if (!name) return;
+
+    try {
+      const workflow = await workflowService.createWorkflow(this.appId, name);
+
+      // Open the new workflow in editor
+      openEditorTab({
+        id: workflow.id,
+        type: "flow",
+        label: workflow.name,
+        detail: { workflowId: workflow.id },
+      });
+
+      // Refresh the workflow list
+      const listPanel = this.shadowRoot?.querySelector("workflow-list-panel") as any;
+      if (listPanel?.loadWorkflows) {
+        listPanel.loadWorkflows();
+      }
+    } catch (error) {
+      console.error("Failed to create workflow:", error);
+      alert("Failed to create workflow");
+    }
   }
 
   private renderWorkflowPanel() {
@@ -433,6 +579,7 @@ export class StudioLeftPanel extends LitElement {
           size="small"
           variant="text"
           .iconLeft=${"plus"}
+          @click=${() => this.handleAddWorkflow()}
         >Add Workflow</nr-button>
       </div>
       <div class="panel-content">
@@ -468,7 +615,7 @@ export class StudioLeftPanel extends LitElement {
       case 'database':
         return this.renderDatabasePanel();
       default:
-        return this.renderPagesPanel();
+        return this.renderMainPanel();
     }
   }
 }

@@ -20,6 +20,7 @@ export class EditorInteractivePanel extends LitElement {
     :host {
       height: calc(100vh - 90px);
       display: block;
+      width: 100%;
     }
     .iframe-wrapper {
       width: 100%;
@@ -35,16 +36,10 @@ export class EditorInteractivePanel extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.initializeSubscriptions();
-    // Set initial width
-    this.style.width = this.mode === ViewMode.Edit ? "calc(100vw - 650px)" : "100vw";
   }
 
   updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
-    if (changedProperties.has('mode')) {
-      const width = this.mode === ViewMode.Edit ? "calc(100vw - 650px)" : "100vw";
-      this.style.width = width;
-    }
   }
 
   render() {

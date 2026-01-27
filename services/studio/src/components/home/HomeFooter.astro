@@ -1,0 +1,77 @@
+---
+/**
+ * HomeFooter Component
+ * Minimal footer
+ */
+
+const links = {
+  product: {
+    title: "Product",
+    items: [
+      { label: "Editor", href: "/features/editor" },
+      { label: "Functions", href: "/features/functions" },
+      { label: "AI Copilot", href: "/features/ai" },
+      { label: "Deploy", href: "/features/deploy" },
+    ]
+  },
+  developers: {
+    title: "Developers",
+    items: [
+      { label: "Documentation", href: "/docs" },
+      { label: "API Reference", href: "/docs/api" },
+      { label: "Examples", href: "/examples" },
+      { label: "GitHub", href: "https://github.com/nuraly" },
+    ]
+  },
+  company: {
+    title: "Company",
+    items: [
+      { label: "About", href: "/about" },
+      { label: "Blog", href: "/blog" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" },
+    ]
+  },
+  legal: {
+    title: "Legal",
+    items: [
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+    ]
+  }
+};
+
+const year = new Date().getFullYear();
+---
+
+<footer class="home-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="home-logo" style="margin-bottom: 16px;">
+          <img src="/images/nuraly-logo-light.png" alt="Nuraly" height="32" style="filter: brightness(0) invert(1);" />
+        </a>
+        <p>Build enterprise-grade applications with visual tools and AI assistance.</p>
+      </div>
+
+      {Object.values(links).map((section) => (
+        <div>
+          <p class="footer-heading">{section.title}</p>
+          <ul class="footer-links">
+            {section.items.map((item) => (
+              <li><a href={item.href}>{item.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} Nuraly</p>
+      <div class="footer-legal">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>

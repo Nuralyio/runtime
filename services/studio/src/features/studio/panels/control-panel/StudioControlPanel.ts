@@ -14,13 +14,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { $editorState, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $currentApplication } from '@nuraly/runtime/redux/store';
+import { $currentPage } from '@nuraly/runtime/redux/store/page';
 import type { ComponentElement } from '@nuraly/runtime/redux/store';
+import type { PageElement } from '../../../runtime/redux/handlers/pages/page.interface';
 
 // Import native panels
 import "./native/common-properties-panel.js";
 import "./native/type-properties-panel.js";
 import "./native/style-panel.js";
 import "./native/handlers-panel.js";
+import "./native/access-panel.js";
 
 @customElement("studio-control-panel")
 export class StudioControlPanel extends LitElement {
@@ -43,13 +46,18 @@ export class StudioControlPanel extends LitElement {
     }
 
     nr-panel::part(body) {
-      overflow-y: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     .panel-content {
       height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .empty-state {
@@ -72,8 +80,7 @@ export class StudioControlPanel extends LitElement {
 
     nr-tabs {
       flex: 1;
-      display: flex;
-      flex-direction: column;
+      min-height: 0;
       --nuraly-spacing-tabs-content-padding-small: 0;
       --nuraly-border-width-tabs-content-top: 0px;
       --nuraly-border-width-tabs-top: 0px;
@@ -82,8 +89,15 @@ export class StudioControlPanel extends LitElement {
       --nuraly-border-width-tabs-left: 0px;
     }
 
+    nr-tabs::part(tab-content) {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
     .tab-content {
       padding: 0;
+      height: 100%;
       overflow-y: auto;
     }
 
@@ -96,6 +110,9 @@ export class StudioControlPanel extends LitElement {
 
   @state()
   private selectedComponent: ComponentElement | null = null;
+
+  @state()
+  private currentPage: PageElement | null = null;
 
   @state()
   private currentTab: { type: string; id?: string } = { type: 'page' };
@@ -112,12 +129,14 @@ export class StudioControlPanel extends LitElement {
   private unsubscribeEditor?: () => void;
   private unsubscribeSelectedComponents?: () => void;
   private unsubscribeApp?: () => void;
+  private unsubscribePage?: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.unsubscribeApp = $currentApplication.subscribe(() => {
-      // App subscription kept for future use
+    this.unsubscribeApp = $currentApplication.subscribe((app) => {
+      // Update page subscription when app changes
+      this.updatePageSubscription();
     });
 
     this.unsubscribeEditor = $editorState.subscribe((state) => {
@@ -125,6 +144,7 @@ export class StudioControlPanel extends LitElement {
 
       if (state.currentTab?.type === 'page' && state.currentTab?.id) {
         this.currentPageId = state.currentTab.id;
+        this.updatePageSubscription();
       }
     });
 
@@ -133,26 +153,46 @@ export class StudioControlPanel extends LitElement {
     });
   }
 
+  private updatePageSubscription() {
+    // Unsubscribe from previous page
+    this.unsubscribePage?.();
+
+    const app = $currentApplication.get();
+    if (!app?.uuid || !this.currentPageId) {
+      this.currentPage = null;
+      return;
+    }
+
+    // Subscribe to current page
+    const pageStore = $currentPage(app.uuid, this.currentPageId);
+    this.unsubscribePage = pageStore.subscribe((page) => {
+      this.currentPage = page || null;
+    });
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.unsubscribeEditor?.();
     this.unsubscribeSelectedComponents?.();
     this.unsubscribeApp?.();
+    this.unsubscribePage?.();
   }
 
   private renderPropertiesTab() {
     return html`
       <div class="tab-content">
-        <!-- Common Properties (Native) -->
-        <common-properties-panel
-          .component=${this.selectedComponent}
-        ></common-properties-panel>
-
-        <div class="section-divider"></div>
+        <!-- Common Properties (Native) - only show when component selected -->
+        ${this.selectedComponent ? html`
+          <common-properties-panel
+            .component=${this.selectedComponent}
+          ></common-properties-panel>
+          <div class="section-divider"></div>
+        ` : nothing}
 
         <!-- Type-Specific Properties (Native with config) -->
         <type-properties-panel
           .component=${this.selectedComponent}
+          .page=${this.currentPage}
         ></type-properties-panel>
       </div>
     `;
@@ -163,6 +203,7 @@ export class StudioControlPanel extends LitElement {
       <div class="tab-content">
         <native-style-panel
           .component=${this.selectedComponent}
+          .page=${this.currentPage}
         ></native-style-panel>
       </div>
     `;
@@ -173,17 +214,29 @@ export class StudioControlPanel extends LitElement {
       <div class="tab-content">
         <native-handlers-panel
           .component=${this.selectedComponent}
+          .page=${this.currentPage}
         ></native-handlers-panel>
       </div>
     `;
   }
 
+  private renderAccessTab() {
+    return html`
+      <div class="tab-content">
+        <native-access-panel
+          .component=${this.selectedComponent}
+          .page=${this.currentPage}
+        ></native-access-panel>
+      </div>
+    `;
+  }
+
   private renderPropertyTabs() {
-    if (!this.selectedComponent && !this.currentPageId) {
+    if (!this.selectedComponent && !this.currentPage) {
       return html`
         <div class="empty-state">
           <nr-icon name="mouse-pointer"></nr-icon>
-          <p>Select a component to view its properties</p>
+          <p>Select a component or page to view properties</p>
         </div>
       `;
     }
@@ -203,6 +256,11 @@ export class StudioControlPanel extends LitElement {
         label: 'Handlers',
         icon: 'git-compare',
         content: this.renderHandlersTab()
+      },
+      {
+        label: 'Access',
+        icon: 'shield',
+        content: this.renderAccessTab()
       }
     ];
 
@@ -236,8 +294,13 @@ export class StudioControlPanel extends LitElement {
   }
 
   private getPanelTitle(): string {
-    if (!this.selectedComponent) return 'Properties';
-    return this.selectedComponent.name || this.selectedComponent.type || 'Properties';
+    if (this.selectedComponent) {
+      return this.selectedComponent.name || this.selectedComponent.type || 'Properties';
+    }
+    if (this.currentPage) {
+      return this.currentPage.name || 'Page Properties';
+    }
+    return 'Properties';
   }
 
   override render() {

@@ -18,6 +18,9 @@ export class LeftPanel extends LitElement {
         height: 100%;
         width: 300px;
       }
+      :host(.hidden) {
+        display: none;
+      }
     `
   ];
 
@@ -31,12 +34,21 @@ export class LeftPanel extends LitElement {
 
     this.unsubscribeEnvironment = $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
+      this.updateVisibility();
     });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.unsubscribeEnvironment?.();
+  }
+
+  private updateVisibility() {
+    if (this.mode !== ViewMode.Edit) {
+      this.classList.add('hidden');
+    } else {
+      this.classList.remove('hidden');
+    }
   }
 
   render() {

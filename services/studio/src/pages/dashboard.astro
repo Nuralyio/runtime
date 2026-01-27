@@ -1,30 +1,5 @@
 ---
-import { processHeaders } from '../features/runtime/utils/api-calls-utils';
-import { fetchApplicationPagesById, fetchApplicationComponentById, fetchAllApplications } from '../services';
-
 export const prerender = false;
-
-const dashboardAPPUUID = process.env.DASHBOARD_APP_UUID;
-const dashboardAPPPageUUID = process.env.DASHBOARD_PAGE_UUID;
-let pageData, componentData, applications, application;
-
-const processedHeaders = processHeaders(Astro.request.headers);
-
-  // Load application pages, components, and applications in parallel
-  const [pageRequest, componentResponse, applicationsRequest] =
-    await Promise.all([
-    fetchApplicationPagesById(processedHeaders, dashboardAPPUUID),
-    fetchApplicationComponentById(processedHeaders, dashboardAPPUUID),
-    fetchAllApplications(processedHeaders)
-  ]);
-  pageData = pageRequest.data;
-
-
-  applications = applicationsRequest.data;
-  application = applications.find((application) => application.uuid === dashboardAPPUUID);
-
-  componentData = componentResponse.data.map((component) => component.component);
-
 ---
 
 <!doctype html>
@@ -32,7 +7,7 @@ const processedHeaders = processHeaders(Astro.request.headers);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
+    <title>Dashboard - Nuraly</title>
 
     <!-- Nuraly UI Theme CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
@@ -46,85 +21,26 @@ const processedHeaders = processHeaders(Astro.request.headers);
 
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: #f9fafb;
+        background: var(--nuraly-color-background);
         min-height: 100vh;
       }
 
-      .dashboard-container {
-        width: 100%;
-        min-height: 100vh;
-      }
-
-      micro-app {
+      nuraly-dashboard {
         display: block;
         width: 100%;
-        height: 100%;
+        min-height: 100vh;
       }
     </style>
   </head>
   <body>
-    <div class="dashboard-container" id="dashboard-micro-app-container">
-      <!-- MicroApp will be created dynamically after properties are ready -->
-    </div>
-
-    <script is:inline define:vars={{ dashboardAPPUUID, dashboardAPPPageUUID, componentData, pageData }}>
-      window.__DASHBOARD_DATA__ = {
-        uuid: dashboardAPPUUID,
-        page_uuid: dashboardAPPPageUUID,
-        components: componentData,
-        pages: pageData,
-      };
-    </script>
+    <nuraly-dashboard></nuraly-dashboard>
 
     <script>
-      // Import MicroApp directly to prevent tree-shaking in production
-      import { MicroApp } from "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
-      // Import all runtime components for child components
+      // Import and register all dashboard components
+      import "../features/dashboard";
+
+      // Also import runtime components for NuralyUI
       import "../features/runtime/components";
-
-      // Ensure MicroApp is not tree-shaken (side effect)
-      void MicroApp;
-
-      async function initializeDashboardMicroApp() {
-        // Wait for the custom element to be defined
-        await customElements.whenDefined('micro-app');
-
-        const data = (window as any).__DASHBOARD_DATA__;
-
-        if (!data || !data.uuid) {
-          console.error('[Dashboard] Missing required data:', data);
-          return;
-        }
-
-        // Create the micro-app element
-        const microApp = document.createElement('micro-app') as any;
-        microApp.id = 'dashboard-micro-app';
-
-        // Set properties BEFORE adding to DOM
-        microApp.uuid = data.uuid;
-        microApp.page_uuid = data.page_uuid;
-        microApp.useIsolatedContext = true;
-        microApp.appComponents = data.components;
-        microApp.appPages = data.pages;
-        microApp.mode = "preview";
-        microApp.prod = true;
-
-        // Add to DOM - this triggers connectedCallback
-        const container = document.getElementById('dashboard-micro-app-container');
-        if (container) {
-          container.appendChild(microApp);
-        } else {
-          console.error('[Dashboard] Container not found!');
-        }
-      }
-
-      // Initialize when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener("DOMContentLoaded", initializeDashboardMicroApp);
-      } else {
-        // DOM already loaded
-        initializeDashboardMicroApp();
-      }
     </script>
   </body>
 </html>

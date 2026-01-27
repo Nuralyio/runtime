@@ -9,7 +9,7 @@ import Editor from '@nuraly/runtime/state/editor';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE' | 'PAGE_STYLE_UPDATE';
   payload?: any;
 }
 
@@ -31,6 +31,21 @@ export class PreviewIFramePanel extends LitElement {
       align-items: flex-start;
       overflow: auto;
       background: #f5f5f5;
+    }
+
+    /* Preview mode: full width, no margins */
+    .iframe-container.preview-mode {
+      background: white;
+    }
+
+    .iframe-container.preview-mode .iframe-wrapper {
+      margin: 0;
+      width: 100% !important;
+      height: 100% !important;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      transform: none !important;
     }
 
     .iframe-wrapper {
@@ -115,6 +130,7 @@ export class PreviewIFramePanel extends LitElement {
   @state() private iframeReady = false;
   @state() private currentPlatform: { platform: string; width: string; height?: string } = Editor.currentPlatform;
   @state() private zoomLevel: number = 100;
+  @state() private currentMode: string = 'edit';
 
   // Track current page to avoid sending duplicate SET_PAGE messages
   private currentPageId: string = '';
@@ -134,6 +150,7 @@ export class PreviewIFramePanel extends LitElement {
     this.setupComponentStoreSubscription();
     this.setupModeListener();
     this.setupPageChangeListener();
+    this.setupPageStyleListener();
     this.setupPlatformListener();
     this.setupZoomListener();
     this.setupLocaleListener();
@@ -276,8 +293,12 @@ export class PreviewIFramePanel extends LitElement {
   }
 
   private setupModeListener() {
+    // Set initial mode
+    this.currentMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
+
     eventDispatcher.on('Vars:currentEditingMode', () => {
       const mode = ExecuteInstance.Vars.currentEditingMode;
+      this.currentMode = mode || 'edit';
       this.sendMessageToIframe({
         type: 'SET_MODE',
         payload: mode
@@ -301,6 +322,21 @@ export class PreviewIFramePanel extends LitElement {
             payload: newPageId
           });
         }
+      }
+    });
+  }
+
+  private setupPageStyleListener() {
+    // Listen for page style updates and sync to iframe
+    eventDispatcher.on('page:style-updated', (data: { pageId: string; style: any }) => {
+      if (this.iframeReady && data?.pageId && data?.style) {
+        this.sendMessageToIframe({
+          type: 'PAGE_STYLE_UPDATE',
+          payload: {
+            pageId: data.pageId,
+            style: data.style
+          }
+        });
       }
     });
   }
@@ -499,9 +535,10 @@ export class PreviewIFramePanel extends LitElement {
     const iframeWidth = this.currentPlatform?.width || '100%';
     const iframeHeight = this.currentPlatform?.height || '100%';
     const scale = this.zoomLevel / 100;
+    const isPreviewMode = this.currentMode === 'preview';
 
     return html`
-      <div class="iframe-container">
+      <div class="iframe-container ${isPreviewMode ? 'preview-mode' : ''}">
         ${this.isLoading ? html`
           <div class="loading-overlay">
             <div class="loading-spinner"></div>

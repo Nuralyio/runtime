@@ -1,0 +1,48 @@
+---
+/**
+ * FeatureShowcase Component
+ * Alternating layout sections
+ */
+
+const showcases = [
+  {
+    label: "Visual Design",
+    title: "Build interfaces visually",
+    description: "Drag components onto your canvas. Adjust properties, styles, and layouts in real-time. Preview on any device size instantly.",
+    visual: "Editor Preview",
+    reverse: false
+  },
+  {
+    label: "Backend Logic",
+    title: "Serverless by default",
+    description: "Create APIs and backend functions without infrastructure management. Write JavaScript, deploy instantly, and scale to millions of requests.",
+    visual: "Function Editor",
+    reverse: true
+  }
+];
+---
+
+<section>
+  {showcases.map((item) => (
+    <div class="showcase" data-animate>
+      <div class="container">
+        <div class={`showcase-grid ${item.reverse ? 'reverse' : ''}`}>
+          <div class="showcase-content">
+            <p class="section-label">{item.label}</p>
+            <h2>{item.title}</h2>
+            <p>{item.description}</p>
+            <a href="/docs" class="link">
+              Learn more
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 12l4-4-4-4"/>
+              </svg>
+            </a>
+          </div>
+          <div class="showcase-visual">
+            {item.visual}
+          </div>
+        </div>
+      </div>
+    </div>
+  ))}
+</section>

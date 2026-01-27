@@ -1,0 +1,456 @@
+---
+/**
+ * HeroSection Component
+ * Split layout - text left, visual right
+ */
+
+const words = ["Apps", "Agents", "APIs", "Workflows", "Backend"];
+---
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <h1>
+          Build <span class="typewriter"><span class="typewriter-text"></span><span class="typewriter-cursor"></span></span><br/>
+          from your browser
+        </h1>
+        <p class="hero-subtitle">
+          The visual editor, serverless functions, and AI assistance you need to ship production-ready applications. Powered by the Nuraly Platform.
+        </p>
+        <div class="hero-actions">
+          <a href="/signup" class="btn btn-primary">
+            GET STARTED
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+            </svg>
+          </a>
+          <a href="/contact" class="btn btn-secondary">
+            TALK TO US
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-illustration">
+          <!-- Clean Node-based Workflow -->
+          <svg viewBox="0 0 580 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.08"/>
+              </filter>
+            </defs>
+
+            <!-- Light background -->
+            <rect width="580" height="520" rx="12" fill="#f8fafc"/>
+
+            <!-- Connection Lines (curved, gray) -->
+            <g fill="none" stroke="#d1d5db" stroke-width="1.5">
+              <!-- Chat to AI Agent -->
+              <path d="M155 130 C200 130, 220 130, 250 130"/>
+              <!-- AI Agent to Prompt -->
+              <path d="M345 100 C380 100, 400 70, 400 55"/>
+              <!-- AI Agent to Tools -->
+              <path d="M345 120 C390 120, 410 120, 410 120"/>
+              <!-- AI Agent to Context Memory -->
+              <path d="M345 140 C380 140, 400 170, 400 190"/>
+              <!-- AI Agent to Database -->
+              <path d="M345 160 C380 180, 400 240, 400 260"/>
+
+              <!-- Studio to Table -->
+              <path d="M155 390 C190 390, 220 390, 250 390"/>
+              <!-- Studio to Form -->
+              <path d="M155 420 C190 420, 220 450, 250 470"/>
+            </g>
+
+            <!-- Chat Preview Panel -->
+            <g transform="translate(15, 30)" filter="url(#cardShadow)">
+              <rect width="140" height="200" rx="10" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+
+              <!-- Header -->
+              <rect width="140" height="36" rx="10" fill="white"/>
+              <rect y="26" width="140" height="10" fill="white"/>
+              <line x1="0" y1="36" x2="140" y2="36" stroke="#f3f4f6" stroke-width="1"/>
+              <text x="12" y="16" font-size="8" fill="#6b7280" font-family="system-ui">⚡</text>
+              <text x="22" y="16" font-size="9" fill="#111" font-family="system-ui" font-weight="600">Workflow Chat</text>
+              <circle cx="100" cy="14" r="4" fill="#22c55e"/>
+              <text x="108" y="17" font-size="7" fill="#22c55e" font-family="system-ui">Online</text>
+
+              <!-- Chat content -->
+              <text x="20" y="70" font-size="12" fill="#111" font-family="system-ui" font-weight="600">Start a</text>
+              <text x="20" y="88" font-size="12" fill="#111" font-family="system-ui" font-weight="600">conversation</text>
+
+              <!-- Input area -->
+              <g transform="translate(10, 150)">
+                <rect width="120" height="40" rx="8" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+                <text x="10" y="18" font-size="8" fill="#9ca3af" font-family="system-ui">Send a message...</text>
+                <g transform="translate(8, 24)">
+                  <rect width="42" height="12" rx="4" fill="white" stroke="#e5e7eb" stroke-width="0.5"/>
+                  <text x="6" y="9" font-size="6" fill="#6b7280" font-family="system-ui">📎 Attach</text>
+                </g>
+              </g>
+
+              <!-- Connection point -->
+              <circle cx="140" cy="100" r="5" fill="#d1d5db" stroke="white" stroke-width="2"/>
+            </g>
+
+            <!-- Node: AI Agent (larger, central) -->
+            <g transform="translate(250, 70)" filter="url(#cardShadow)">
+              <rect width="95" height="120" rx="8" fill="white"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="60" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+              <!-- Right connection points -->
+              <circle cx="95" cy="30" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+              <circle cx="95" cy="50" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+              <circle cx="95" cy="70" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+              <circle cx="95" cy="90" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+
+              <g transform="translate(10, 10)">
+                <rect width="24" height="24" rx="6" fill="#8b5cf6"/>
+                <rect x="6" y="6" width="12" height="12" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+                <circle cx="12" cy="12" r="3" fill="white"/>
+              </g>
+              <text x="40" y="20" font-size="11" fill="#111" font-family="system-ui" font-weight="600">AI Agent</text>
+              <rect x="40" y="26" width="24" height="14" rx="4" fill="#8b5cf6" opacity="0.15"/>
+              <text x="47" y="36" font-size="8" fill="#8b5cf6" font-family="system-ui" font-weight="600">AI</text>
+              <text x="10" y="58" font-size="8" fill="#6b7280" font-family="system-ui">Autonomous AI</text>
+              <text x="10" y="70" font-size="8" fill="#6b7280" font-family="system-ui">agent that can</text>
+              <text x="10" y="82" font-size="8" fill="#6b7280" font-family="system-ui">use tools</text>
+
+              <!-- Small labels for connections -->
+              <text x="10" y="100" font-size="6" fill="#9ca3af" font-family="system-ui">Prompt · Memory · Tools · DB</text>
+            </g>
+
+            <!-- Node: Prompt -->
+            <g transform="translate(375, 15)" filter="url(#cardShadow)">
+              <rect width="70" height="55" rx="6" fill="white"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="40" r="3" fill="#d1d5db" stroke="white" stroke-width="1.5"/>
+
+              <g transform="translate(8, 8)">
+                <rect width="18" height="18" rx="4" fill="#ec4899"/>
+                <rect x="4" y="5" width="10" height="2" rx="1" fill="white"/>
+                <rect x="4" y="8" width="7" height="2" rx="1" fill="white"/>
+                <rect x="4" y="11" width="9" height="2" rx="1" fill="white"/>
+              </g>
+              <text x="30" y="20" font-size="9" fill="#111" font-family="system-ui" font-weight="600">Prompt</text>
+              <text x="8" y="40" font-size="6" fill="#6b7280" font-family="system-ui">Template for</text>
+              <text x="8" y="48" font-size="6" fill="#6b7280" font-family="system-ui">LLM calls</text>
+            </g>
+
+            <!-- Node: Tools -->
+            <g transform="translate(375, 95)" filter="url(#cardShadow)">
+              <rect width="70" height="55" rx="6" fill="white"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="25" r="3" fill="#d1d5db" stroke="white" stroke-width="1.5"/>
+
+              <g transform="translate(8, 8)">
+                <rect width="18" height="18" rx="4" fill="#3b82f6"/>
+                <text x="3" y="13" font-size="9" fill="white" font-family="monospace" font-weight="bold">&lt;/&gt;</text>
+              </g>
+              <text x="30" y="20" font-size="9" fill="#111" font-family="system-ui" font-weight="600">Tools</text>
+              <text x="8" y="40" font-size="6" fill="#6b7280" font-family="system-ui">Execute code</text>
+              <text x="8" y="48" font-size="6" fill="#6b7280" font-family="system-ui">& functions</text>
+            </g>
+
+            <!-- Node: Context Memory -->
+            <g transform="translate(375, 175)" filter="url(#cardShadow)">
+              <rect width="70" height="55" rx="6" fill="white"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="15" r="3" fill="#d1d5db" stroke="white" stroke-width="1.5"/>
+
+              <g transform="translate(8, 8)">
+                <rect width="18" height="18" rx="4" fill="#22c55e"/>
+                <rect x="4" y="4" width="10" height="10" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+                <path d="M6 7 h6 M6 9 h6 M6 11 h4" stroke="white" stroke-width="0.8" stroke-linecap="round"/>
+              </g>
+              <text x="30" y="20" font-size="8" fill="#111" font-family="system-ui" font-weight="600">Memory</text>
+              <text x="8" y="40" font-size="6" fill="#6b7280" font-family="system-ui">Chat history &</text>
+              <text x="8" y="48" font-size="6" fill="#6b7280" font-family="system-ui">context</text>
+            </g>
+
+            <!-- Node: Database -->
+            <g transform="translate(375, 255)" filter="url(#cardShadow)">
+              <rect width="70" height="55" rx="6" fill="white"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="5" r="3" fill="#d1d5db" stroke="white" stroke-width="1.5"/>
+
+              <g transform="translate(8, 8)">
+                <rect width="18" height="18" rx="4" fill="#f59e0b"/>
+                <ellipse cx="9" cy="7" rx="5" ry="2.5" fill="none" stroke="white" stroke-width="1.2"/>
+                <path d="M4 7 v6 c0 2 5 4 10 2 v-8" fill="none" stroke="white" stroke-width="1.2"/>
+              </g>
+              <text x="30" y="20" font-size="9" fill="#111" font-family="system-ui" font-weight="600">Database</text>
+              <text x="8" y="40" font-size="6" fill="#6b7280" font-family="system-ui">Store & query</text>
+              <text x="8" y="48" font-size="6" fill="#6b7280" font-family="system-ui">data</text>
+            </g>
+
+            <!-- Studio Preview Panel -->
+            <g transform="translate(15, 340)" filter="url(#cardShadow)">
+              <rect width="140" height="130" rx="10" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+
+              <!-- Header -->
+              <rect width="140" height="28" rx="10" fill="white"/>
+              <rect y="18" width="140" height="10" fill="white"/>
+              <line x1="0" y1="28" x2="140" y2="28" stroke="#f3f4f6" stroke-width="1"/>
+              <text x="10" y="18" font-size="9" fill="#111" font-family="system-ui" font-weight="600">Page Editor</text>
+
+              <!-- Tab indicators -->
+              <g transform="translate(75, 8)">
+                <rect width="28" height="12" rx="2" fill="#8b5cf6" opacity="0.15"/>
+                <text x="5" y="9" font-size="6" fill="#8b5cf6" font-family="system-ui">Editor</text>
+              </g>
+              <g transform="translate(106, 8)">
+                <rect width="28" height="12" rx="2" fill="#f3f4f6"/>
+                <text x="7" y="9" font-size="6" fill="#9ca3af" font-family="system-ui">DB</text>
+              </g>
+
+              <!-- Canvas preview with component tree hint -->
+              <g transform="translate(8, 35)">
+                <!-- Component tree sidebar hint -->
+                <rect width="35" height="85" rx="4" fill="#f9fafb" stroke="#e5e7eb" stroke-width="0.5"/>
+                <text x="4" y="10" font-size="5" fill="#9ca3af" font-family="system-ui">Pages</text>
+                <rect x="3" y="14" width="29" height="8" rx="2" fill="#8b5cf6" opacity="0.2"/>
+                <text x="5" y="20" font-size="5" fill="#8b5cf6" font-family="system-ui">Page1</text>
+                <rect x="5" y="24" width="25" height="6" rx="1" fill="white" stroke="#e5e7eb" stroke-width="0.3"/>
+                <rect x="5" y="32" width="25" height="6" rx="1" fill="white" stroke="#e5e7eb" stroke-width="0.3"/>
+                <rect x="5" y="40" width="25" height="6" rx="1" fill="white" stroke="#e5e7eb" stroke-width="0.3"/>
+
+                <!-- Canvas area -->
+                <rect x="38" y="0" width="84" height="85" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="0.5"/>
+                <!-- Preview elements -->
+                <rect x="44" y="8" width="72" height="10" rx="2" fill="#e5e7eb"/>
+                <rect x="44" y="22" width="30" height="20" rx="2" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+                <rect x="78" y="22" width="38" height="20" rx="2" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="0.5"/>
+                <rect x="44" y="46" width="72" height="32" rx="2" fill="#ecfdf5" stroke="#22c55e" stroke-width="0.5"/>
+                <!-- Table grid lines -->
+                <line x1="44" y1="56" x2="116" y2="56" stroke="#22c55e" stroke-width="0.3" opacity="0.5"/>
+                <line x1="44" y1="66" x2="116" y2="66" stroke="#22c55e" stroke-width="0.3" opacity="0.5"/>
+                <line x1="68" y1="46" x2="68" y2="78" stroke="#22c55e" stroke-width="0.3" opacity="0.5"/>
+                <line x1="92" y1="46" x2="92" y2="78" stroke="#22c55e" stroke-width="0.3" opacity="0.5"/>
+              </g>
+
+              <!-- Connection points -->
+              <circle cx="140" cy="50" r="5" fill="#d1d5db" stroke="white" stroke-width="2"/>
+              <circle cx="140" cy="80" r="5" fill="#d1d5db" stroke="white" stroke-width="2"/>
+            </g>
+
+            <!-- Real Table Component -->
+            <g transform="translate(250, 340)" filter="url(#cardShadow)">
+              <rect width="120" height="80" rx="6" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="50" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+
+              <!-- Table Header -->
+              <rect x="1" y="1" width="118" height="18" rx="5" fill="#f9fafb"/>
+              <text x="10" y="13" font-size="7" fill="#374151" font-family="system-ui" font-weight="600">Name</text>
+              <text x="50" y="13" font-size="7" fill="#374151" font-family="system-ui" font-weight="600">Email</text>
+              <text x="90" y="13" font-size="7" fill="#374151" font-family="system-ui" font-weight="600">Role</text>
+              <line x1="0" y1="19" x2="120" y2="19" stroke="#e5e7eb" stroke-width="1"/>
+
+              <!-- Table Row 1 -->
+              <text x="10" y="33" font-size="6" fill="#111" font-family="system-ui">John D.</text>
+              <text x="50" y="33" font-size="6" fill="#6b7280" font-family="system-ui">john@...</text>
+              <rect x="88" y="26" width="24" height="10" rx="3" fill="#dbeafe"/>
+              <text x="93" y="33" font-size="5" fill="#3b82f6" font-family="system-ui">Admin</text>
+              <line x1="5" y1="39" x2="115" y2="39" stroke="#f3f4f6" stroke-width="0.5"/>
+
+              <!-- Table Row 2 -->
+              <text x="10" y="51" font-size="6" fill="#111" font-family="system-ui">Sarah M.</text>
+              <text x="50" y="51" font-size="6" fill="#6b7280" font-family="system-ui">sarah@...</text>
+              <rect x="88" y="44" width="24" height="10" rx="3" fill="#dcfce7"/>
+              <text x="95" y="51" font-size="5" fill="#22c55e" font-family="system-ui">User</text>
+              <line x1="5" y1="57" x2="115" y2="57" stroke="#f3f4f6" stroke-width="0.5"/>
+
+              <!-- Table Row 3 -->
+              <text x="10" y="69" font-size="6" fill="#111" font-family="system-ui">Mike R.</text>
+              <text x="50" y="69" font-size="6" fill="#6b7280" font-family="system-ui">mike@...</text>
+              <rect x="88" y="62" width="24" height="10" rx="3" fill="#fef3c7"/>
+              <text x="93" y="69" font-size="5" fill="#f59e0b" font-family="system-ui">Editor</text>
+            </g>
+
+            <!-- Real Form Component -->
+            <g transform="translate(250, 435)" filter="url(#cardShadow)">
+              <rect width="120" height="80" rx="6" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+              <!-- Left connection point -->
+              <circle cx="0" cy="35" r="4" fill="#d1d5db" stroke="white" stroke-width="2"/>
+
+              <!-- Form Title -->
+              <text x="10" y="16" font-size="8" fill="#111" font-family="system-ui" font-weight="600">Contact Form</text>
+
+              <!-- Name Input -->
+              <text x="10" y="30" font-size="6" fill="#6b7280" font-family="system-ui">Name</text>
+              <rect x="10" y="33" width="100" height="14" rx="3" fill="#f9fafb" stroke="#e5e7eb" stroke-width="0.5"/>
+              <text x="14" y="43" font-size="6" fill="#9ca3af" font-family="system-ui">Enter name...</text>
+
+              <!-- Email Input -->
+              <text x="10" y="55" font-size="6" fill="#6b7280" font-family="system-ui">Email</text>
+              <rect x="10" y="58" width="65" height="14" rx="3" fill="#f9fafb" stroke="#e5e7eb" stroke-width="0.5"/>
+              <text x="14" y="68" font-size="6" fill="#9ca3af" font-family="system-ui">Enter email...</text>
+
+              <!-- Submit Button -->
+              <rect x="80" y="58" width="30" height="14" rx="3" fill="#8b5cf6"/>
+              <text x="87" y="68" font-size="6" fill="white" font-family="system-ui" font-weight="600">Submit</text>
+            </g>
+
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: 40px 0 60px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .hero-content {
+    padding-left: 20px;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 5.5vw, 72px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
+    margin-bottom: 28px;
+    color: var(--color-text);
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 480px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-illustration {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .hero-illustration svg {
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .hero-content {
+      padding-left: 0;
+      border-left: none;
+      text-align: center;
+    }
+
+    .hero-subtitle {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .hero-visual {
+      order: -1;
+    }
+
+    .hero-illustration {
+      max-width: 400px;
+    }
+  }
+</style>
+
+<script define:vars={{ words }}>
+  window.__TYPEWRITER_WORDS__ = words;
+</script>
+
+<script>
+  function initTypewriter() {
+    const words = (window as any).__TYPEWRITER_WORDS__ || ["apps", "agents"];
+    const textEl = document.querySelector('.typewriter-text');
+    if (!textEl) return;
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let isPausing = false;
+
+    const typeSpeed = 100;
+    const deleteSpeed = 60;
+    const pauseTime = 2000;
+
+    function type() {
+      const currentWord = words[wordIndex];
+
+      if (isPausing) {
+        setTimeout(() => {
+          isPausing = false;
+          isDeleting = true;
+          type();
+        }, pauseTime);
+        return;
+      }
+
+      if (isDeleting) {
+        textEl.textContent = currentWord.substring(0, charIndex - 1);
+        charIndex--;
+
+        if (charIndex === 0) {
+          isDeleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          setTimeout(type, 200);
+          return;
+        }
+      } else {
+        textEl.textContent = currentWord.substring(0, charIndex + 1);
+        charIndex++;
+
+        if (charIndex === currentWord.length) {
+          isPausing = true;
+          setTimeout(type, 100);
+          return;
+        }
+      }
+
+      setTimeout(type, isDeleting ? deleteSpeed : typeSpeed);
+    }
+
+    type();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTypewriter);
+  } else {
+    initTypewriter();
+  }
+</script>

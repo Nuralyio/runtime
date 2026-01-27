@@ -9,155 +9,32 @@ import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
+import type { PageElement } from "../../../../runtime/redux/handlers/pages/page.interface";
 import "../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
 import { $i18nEnabled, $supportedLocales } from "../../../../runtime/state/locale.store";
 import { $currentApplication } from "../../../../runtime/redux/store";
+import { COMPONENT_PROPERTIES, type NativePropertyConfig } from "../../../core/properties/registry";
+import { updatePageHandler } from "../../../../runtime/redux/handlers/pages/handler";
 
-interface PropertyConfig {
-  name: string;
-  label: string;
-  type: "text" | "number" | "boolean" | "select" | "color" | "textarea";
-  options?: Array<{ label: string; value: string }>;
-  placeholder?: string;
-  inputProperty?: string;
-  supportsHandler?: boolean;
-  translatable?: boolean;
-}
-
-const COMPONENT_PROPERTIES: Record<string, PropertyConfig[]> = {
-  text_label: [
-    { name: "value", label: "Text", type: "text", inputProperty: "value", placeholder: "Enter text", supportsHandler: true, translatable: true },
-    { name: "size", label: "Size", type: "select", inputProperty: "size", supportsHandler: true, options: [
-      { label: "Small", value: "small" },
-      { label: "Medium", value: "medium" },
-      { label: "Large", value: "large" }
-    ]},
-    { name: "variant", label: "Variant", type: "select", inputProperty: "variant", supportsHandler: true, options: [
-      { label: "Default", value: "default" },
-      { label: "Secondary", value: "secondary" },
-      { label: "Success", value: "success" },
-      { label: "Warning", value: "warning" },
-      { label: "Error", value: "error" }
-    ]},
-    { name: "required", label: "Required", type: "boolean", inputProperty: "required", supportsHandler: true },
-    { name: "for", label: "For (Input ID)", type: "text", inputProperty: "for", placeholder: "Enter input ID" }
-  ],
-  text_input: [
-    { name: "value", label: "Value", type: "text", inputProperty: "value", placeholder: "Default value", supportsHandler: true, translatable: true },
-    { name: "placeholder", label: "Placeholder", type: "text", inputProperty: "placeholder", supportsHandler: true, translatable: true },
-    { name: "size", label: "Size", type: "select", inputProperty: "size", supportsHandler: true, options: [
-      { label: "Small", value: "small" },
-      { label: "Medium", value: "medium" },
-      { label: "Large", value: "large" }
-    ]},
-    { name: "type", label: "Type", type: "select", inputProperty: "type", options: [
-      { label: "Text", value: "text" },
-      { label: "Password", value: "password" },
-      { label: "Email", value: "email" },
-      { label: "Number", value: "number" }
-    ]},
-    { name: "required", label: "Required", type: "boolean", inputProperty: "required", supportsHandler: true },
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  button_input: [
-    { name: "label", label: "Label", type: "text", inputProperty: "label", placeholder: "Button text", supportsHandler: true, translatable: true },
-    { name: "variant", label: "Variant", type: "select", inputProperty: "variant", supportsHandler: true, options: [
-      { label: "Primary", value: "primary" },
-      { label: "Secondary", value: "secondary" },
-      { label: "Ghost", value: "ghost" },
-      { label: "Danger", value: "danger" }
-    ]},
-    { name: "size", label: "Size", type: "select", inputProperty: "size", options: [
-      { label: "Small", value: "small" },
-      { label: "Medium", value: "medium" },
-      { label: "Large", value: "large" }
-    ]},
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  container: [
-    { name: "direction", label: "Direction", type: "select", inputProperty: "direction", options: [
-      { label: "Row", value: "row" },
-      { label: "Column", value: "column" }
-    ]},
-    { name: "gap", label: "Gap", type: "text", inputProperty: "gap", placeholder: "e.g., 8px" },
-    { name: "padding", label: "Padding", type: "text", inputProperty: "padding", placeholder: "e.g., 16px" }
-  ],
-  image: [
-    { name: "src", label: "Source URL", type: "text", inputProperty: "src", placeholder: "https://...", supportsHandler: true },
-    { name: "alt", label: "Alt Text", type: "text", inputProperty: "alt", placeholder: "Image description", supportsHandler: true },
-    { name: "objectFit", label: "Object Fit", type: "select", inputProperty: "objectFit", options: [
-      { label: "Contain", value: "contain" },
-      { label: "Cover", value: "cover" },
-      { label: "Fill", value: "fill" },
-      { label: "None", value: "none" }
-    ]}
-  ],
-  checkbox: [
-    { name: "label", label: "Label", type: "text", inputProperty: "label", supportsHandler: true },
-    { name: "checked", label: "Checked", type: "boolean", inputProperty: "checked", supportsHandler: true },
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  select: [
-    { name: "placeholder", label: "Placeholder", type: "text", inputProperty: "placeholder", supportsHandler: true },
-    { name: "options", label: "Options", type: "text", inputProperty: "options", placeholder: "JSON array", supportsHandler: true },
-    { name: "size", label: "Size", type: "select", inputProperty: "size", options: [
-      { label: "Small", value: "small" },
-      { label: "Medium", value: "medium" },
-      { label: "Large", value: "large" }
-    ]},
-    { name: "searchable", label: "Searchable", type: "boolean", inputProperty: "searchable" },
-    { name: "multiple", label: "Multiple", type: "boolean", inputProperty: "multiple" },
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  icon: [
-    { name: "name", label: "Icon Name", type: "text", inputProperty: "name", placeholder: "e.g., home", supportsHandler: true },
-    { name: "size", label: "Size", type: "text", inputProperty: "size", placeholder: "e.g., 24px" },
-    { name: "color", label: "Color", type: "color", inputProperty: "color", supportsHandler: true }
-  ],
-  textarea: [
-    { name: "value", label: "Value", type: "textarea", inputProperty: "value", supportsHandler: true },
-    { name: "placeholder", label: "Placeholder", type: "text", inputProperty: "placeholder", supportsHandler: true },
-    { name: "rows", label: "Rows", type: "number", inputProperty: "rows", placeholder: "4" },
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  date_picker: [
-    { name: "value", label: "Value", type: "text", inputProperty: "value", supportsHandler: true },
-    { name: "placeholder", label: "Placeholder", type: "text", inputProperty: "placeholder", supportsHandler: true },
-    { name: "format", label: "Format", type: "text", inputProperty: "format", placeholder: "YYYY-MM-DD" },
-    { name: "disabled", label: "Disabled", type: "boolean", inputProperty: "disabled", supportsHandler: true }
-  ],
-  slider: [
-    { name: "value", label: "Value", type: "number", inputProperty: "value", supportsHandler: true },
-    { name: "min", label: "Min", type: "number", inputProperty: "min", placeholder: "0" },
-    { name: "max", label: "Max", type: "number", inputProperty: "max", placeholder: "100" },
-    { name: "step", label: "Step", type: "number", inputProperty: "step", placeholder: "1" }
-  ],
-  badge: [
-    { name: "value", label: "Value", type: "text", inputProperty: "value", supportsHandler: true },
-    { name: "variant", label: "Variant", type: "select", inputProperty: "variant", options: [
-      { label: "Default", value: "default" },
-      { label: "Primary", value: "primary" },
-      { label: "Success", value: "success" },
-      { label: "Warning", value: "warning" },
-      { label: "Error", value: "error" }
-    ]}
-  ],
-  tag: [
-    { name: "value", label: "Value", type: "text", inputProperty: "value", supportsHandler: true },
-    { name: "closable", label: "Closable", type: "boolean", inputProperty: "closable" }
-  ]
-};
+// Use NativePropertyConfig from registry as PropertyConfig
+type PropertyConfig = NativePropertyConfig;
 
 @customElement("type-properties-panel")
 export class TypePropertiesPanel extends LitElement {
   static override styles = css`
     :host {
       display: block;
+      --nuraly-button-padding-small: 5px;
+      --nuraly-button-min-width: auto;
     }
 
     nr-row {
       padding: 0 12px;
       margin-bottom: 8px;
+    }
+
+    nr-row nr-input {
+      width: 141px;
     }
 
     .handler-editor {
@@ -198,6 +75,9 @@ export class TypePropertiesPanel extends LitElement {
 
   @property({ attribute: false })
   component: ComponentElement | null = null;
+
+  @property({ attribute: false })
+  page: PageElement | null = null;
 
   @state()
   private expandedHandlers: Map<string, string> = new Map(); // prop name -> initial code
@@ -584,8 +464,83 @@ export class TypePropertiesPanel extends LitElement {
       .join(' ');
   }
 
+  // === Page Properties Methods ===
+
+  private handlePagePropertyChange(property: string, value: any) {
+    if (!this.page) return;
+
+    const updatedPage = { ...this.page, [property]: value };
+    updatePageHandler(updatedPage);
+  }
+
+  private renderPageProperties() {
+    if (!this.page) return nothing;
+
+    return html`
+      <nr-row>
+        <nr-col span="24">
+          <nr-label size="small" variant="secondary">Page Properties</nr-label>
+        </nr-col>
+      </nr-row>
+
+      <!-- Page Name -->
+      <nr-row gutter="8">
+        <nr-col span="8"><nr-label size="small">Name</nr-label></nr-col>
+        <nr-col flex="auto">
+          <nr-input
+            size="small"
+            .value=${this.page.name || ""}
+            placeholder="Page name"
+            @nr-input=${(e: CustomEvent) => this.handlePagePropertyChange("name", e.detail.value)}
+          ></nr-input>
+        </nr-col>
+      </nr-row>
+
+      <!-- Page URL -->
+      <nr-row gutter="8">
+        <nr-col span="8"><nr-label size="small">URL</nr-label></nr-col>
+        <nr-col flex="auto">
+          <nr-input
+            size="small"
+            .value=${this.page.url || ""}
+            placeholder="page-url"
+            @nr-input=${(e: CustomEvent) => this.handlePagePropertyChange("url", e.detail.value)}
+          ></nr-input>
+        </nr-col>
+      </nr-row>
+
+      <!-- Page Description -->
+      <nr-row gutter="8">
+        <nr-col span="8"><nr-label size="small">Description</nr-label></nr-col>
+        <nr-col flex="auto">
+          <nr-input
+            size="small"
+            .value=${this.page.description || ""}
+            placeholder="Page description"
+            @nr-input=${(e: CustomEvent) => this.handlePagePropertyChange("description", e.detail.value)}
+          ></nr-input>
+        </nr-col>
+      </nr-row>
+
+      <!-- Is Default Page -->
+      <nr-row gutter="8">
+        <nr-col span="8"><nr-label size="small">Default Page</nr-label></nr-col>
+        <nr-col flex="auto">
+          <nr-checkbox
+            ?checked=${this.page.is_default === true}
+            @nr-change=${(e: CustomEvent) => this.handlePagePropertyChange("is_default", e.detail.checked)}
+          ></nr-checkbox>
+        </nr-col>
+      </nr-row>
+    `;
+  }
+
   override render() {
+    // If no component selected, show page properties
     if (!this.component) {
+      if (this.page) {
+        return this.renderPageProperties();
+      }
       return html`<nr-row justify="center"><nr-col><nr-label size="small" variant="secondary">No component selected</nr-label></nr-col></nr-row>`;
     }
 
