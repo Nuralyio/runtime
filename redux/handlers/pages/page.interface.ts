@@ -7,6 +7,7 @@ export type PageElement = {
   name: string;
   url: string;
   style?: any;
+  event?: { [key: string]: string };  // Page-level event handlers (onInit, onUnload, etc.)
   components?: ComponentElement[];
   component_ids?: string[];
   description?: string;
