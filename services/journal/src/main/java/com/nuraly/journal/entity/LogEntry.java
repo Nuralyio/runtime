@@ -20,7 +20,7 @@ import java.util.UUID;
     @Index(name = "idx_logs_timestamp", columnList = "timestamp DESC"),
     @Index(name = "idx_logs_service", columnList = "service"),
     @Index(name = "idx_logs_type", columnList = "type"),
-    @Index(name = "idx_logs_correlation_id", columnList = "correlationId"),
+    @Index(name = "idx_logs_correlation_id", columnList = "correlation_id"),
     @Index(name = "idx_logs_level", columnList = "level")
 })
 @Getter
