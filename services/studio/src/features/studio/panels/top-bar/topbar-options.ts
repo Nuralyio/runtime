@@ -518,6 +518,15 @@ export function getApplicationOptions(): DropdownOption[] {
         tab: { id: 'journal', label: 'Journal', type: 'journal' }
       },
       icon: 'scroll-text'
+    },
+    {
+      id: 'functions',
+      label: 'Functions',
+      value: {
+        action: 'new-tab',
+        tab: { id: 'functions', label: 'Functions', type: 'function' }
+      },
+      icon: 'function-square'
     }
   ];
 }
