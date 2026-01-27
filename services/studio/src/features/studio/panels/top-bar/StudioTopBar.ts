@@ -26,21 +26,58 @@ import Editor from '@nuraly/runtime/state/editor';
 // Runtime context for iframe communication
 import { ExecuteInstance } from '@nuraly/runtime/state/runtime-context';
 
+// Event dispatcher for platform changes
+import { eventDispatcher } from '@nuraly/runtime/utils/change-detection';
+
 // Component insert options
 import { getInsertOptions, getEditOptions, getApplicationOptions } from './topbar-options';
+
+// Modal components
+import '@nuraly/runtime/components/ui/components/utility/ShareModal/ShareModal';
+import '@nuraly/runtime/components/ui/components/utility/KvModal/KvModal';
+import '@nuraly/runtime/components/ui/components/utility/AppSettingsModal/AppSettingsModal';
 
 @customElement("studio-topbar")
 export class StudioTopBar extends LitElement {
   static override styles = css`
     :host {
       display: block;
+      width: 100vw;
+      max-width: 100%;
       height: 37px;
       border-bottom: 1px solid var(--topbar-border, #d6d6d6);
       background: var(--topbar-bg, #ffffff);
+      box-sizing: border-box;
     }
 
-    nr-container {
+    .topbar-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
       height: 100%;
+      padding: 0 8px;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-center {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-right {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
     }
 
     .app-details {
@@ -79,8 +116,11 @@ export class StudioTopBar extends LitElement {
     }
 
     nr-divider[type="vertical"] {
+      display: inline-block;
+      width: 1px;
       height: 20px;
       margin: 0 4px;
+      background-color: var(--nuraly-divider-color, #e0e0e0);
       --nuraly-divider-color: #e0e0e0;
     }
 
@@ -92,14 +132,6 @@ export class StudioTopBar extends LitElement {
       --nuraly-button-background-color: var(--active-bg, #e0e0e0);
     }
 
-    @media (prefers-color-scheme: dark) {
-      .active-mode {
-        --nuraly-button-background-color: #3a3a3a;
-      }
-      nr-divider[type="vertical"] {
-        --nuraly-divider-color: #3a3a3a;
-      }
-    }
   `;
 
   @state()
@@ -307,8 +339,15 @@ export class StudioTopBar extends LitElement {
       tablet: { platform: 'tablet', width: '1024px', height: '768px', isMobile: true },
       mobile: { platform: 'mobile', width: '430px', height: '767px', isMobile: true }
     };
-    Editor.currentPlatform = configs[platform];
+    const newPlatform = configs[platform];
+    Editor.currentPlatform = { ...newPlatform };
     this.currentPlatform = platform;
+
+    // Update VarsProxy and trigger refresh
+    if (ExecuteInstance?.VarsProxy) {
+      ExecuteInstance.VarsProxy.currentPlatform = { ...newPlatform };
+    }
+    eventDispatcher.emit("component:refresh");
   }
 
   private handleLocaleChange(e: CustomEvent): void {
@@ -344,31 +383,22 @@ export class StudioTopBar extends LitElement {
 
   override render() {
     return html`
-      <nr-container direction="row" justify="space-between" align="center" padding="sm">
+      <div class="topbar-row">
         <!-- Left section -->
-        <nr-container direction="row" layout="fixed" align="center" .gap=${8}>
-          <!-- Back + App name -->
-          <div class="app-details">
-            <nr-button
-              size="small"
-              variant="text"
-              .iconLeft=${"arrow-left"}
-              @click=${this.handleBackClick}
-            ></nr-button>
-            <nr-label size="small" weight="medium" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${this.appName}</nr-label>
-          </div>
+        <div class="topbar-left">
+          <nr-button
+            size="small"
+            type="default"
+            style="--nuraly-button-min-width:47px;width:auto;"
+            iconposition="left"
+            .iconLeft=${"arrow-left"}
+            @click=${this.handleBackClick}
+          ></nr-button>
+          <nr-label size="small" weight="medium" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${this.appName}</nr-label>
+        </div>
 
-          <nr-divider type="vertical"></nr-divider>
-
-          <!-- Undo/Redo -->
-          <div class="history-buttons">
-            <nr-button size="small" variant="text" .iconLeft=${"corner-up-left"} @click=${this.handleUndo}></nr-button>
-            <nr-button size="small" variant="text" .iconLeft=${"corner-up-right"} @click=${this.handleRedo}></nr-button>
-          </div>
-
-          <nr-divider type="vertical"></nr-divider>
-
-          <!-- Menu dropdowns -->
+        <!-- Center section -->
+        <div class="topbar-center">
           <div class="menu-group">
             <nr-dropdown
               .items=${getInsertOptions()}
@@ -376,7 +406,7 @@ export class StudioTopBar extends LitElement {
               size="small"
               @nr-dropdown-item-click=${this.handleInsertComponent}
             >
-              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"plus"}></nr-button>
+              <nr-button slot="trigger" size="small" type="default" style="--nuraly-button-min-width:47px;width:auto;" iconposition="left" .iconLeft=${"plus"}></nr-button>
             </nr-dropdown>
 
             <nr-dropdown
@@ -385,7 +415,7 @@ export class StudioTopBar extends LitElement {
               size="small"
               @nr-dropdown-item-click=${this.handleEditAction}
             >
-              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"pencil"}></nr-button>
+              <nr-button slot="trigger" size="small" type="default" style="--nuraly-button-min-width:47px;width:auto;" iconposition="left" .iconLeft=${"pencil"}></nr-button>
             </nr-dropdown>
 
             <nr-dropdown
@@ -394,34 +424,12 @@ export class StudioTopBar extends LitElement {
               size="small"
               @nr-dropdown-item-click=${this.handleApplicationAction}
             >
-              <nr-button slot="trigger" size="small" variant="text" .iconLeft=${"app-window"}></nr-button>
+              <nr-button slot="trigger" size="small" type="default" style="--nuraly-button-min-width:47px;width:auto;" iconposition="left" .iconLeft=${"app-window"}></nr-button>
             </nr-dropdown>
           </div>
 
           <nr-divider type="vertical"></nr-divider>
 
-          <!-- Mode toggle -->
-          <div class="mode-buttons">
-            <nr-button
-              size="small"
-              variant=${this.mode === ViewMode.Edit ? 'primary' : 'secondary'}
-              class=${this.mode === ViewMode.Edit ? 'active-mode' : ''}
-              .iconLeft=${"pencil"}
-              @click=${() => this.setMode(ViewMode.Edit)}
-            >Edit</nr-button>
-
-            <nr-button
-              size="small"
-              variant=${this.mode === ViewMode.Preview ? 'primary' : 'secondary'}
-              class=${this.mode === ViewMode.Preview ? 'active-mode' : ''}
-              .iconLeft=${"play"}
-              @click=${() => this.setMode(ViewMode.Preview)}
-            >Preview</nr-button>
-          </div>
-
-          <nr-divider type="vertical"></nr-divider>
-
-          <!-- Platform selector -->
           <div class="platform-selector">
             <nr-radio-group
               type="button"
@@ -436,7 +444,6 @@ export class StudioTopBar extends LitElement {
             ></nr-radio-group>
           </div>
 
-          <!-- Locale selector (conditional) -->
           ${this.i18nEnabled && this.supportedLocales.length > 1 ? html`
             <nr-divider type="vertical"></nr-divider>
             <nr-select
@@ -447,11 +454,9 @@ export class StudioTopBar extends LitElement {
               @nr-change=${this.handleLocaleChange}
             ></nr-select>
           ` : nothing}
-        </nr-container>
 
-        <!-- Right section -->
-        <nr-container direction="row" layout="fixed" align="center" .gap=${8}>
-          <!-- Zoom control -->
+          <nr-divider type="vertical"></nr-divider>
+
           <div class="zoom-container">
             <nr-text-input
               size="small"
@@ -462,23 +467,47 @@ export class StudioTopBar extends LitElement {
             ></nr-text-input>
             <span>%</span>
           </div>
+        </div>
+
+        <!-- Right section -->
+        <div class="topbar-right">
+          <div class="mode-buttons">
+            ${this.mode === ViewMode.Edit ? html`
+              <nr-button
+                size="small"
+                type="default"
+                style="--nuraly-button-min-width:47px;width:auto;"
+                iconposition="left"
+                .iconLeft=${"play"}
+                @click=${() => this.setMode(ViewMode.Preview)}
+              >Preview</nr-button>
+            ` : html`
+              <nr-button
+                size="small"
+                type="default"
+                style="--nuraly-button-min-width:47px;width:auto;"
+                iconposition="left"
+                .iconLeft=${"pencil"}
+                @click=${() => this.setMode(ViewMode.Edit)}
+              >Edit</nr-button>
+            `}
+          </div>
 
           <nr-divider type="vertical"></nr-divider>
 
-          <!-- Presence indicator -->
           <presence-indicator></presence-indicator>
 
           <nr-divider type="vertical"></nr-divider>
 
-          <!-- Settings button -->
           <nr-button
             size="small"
-            variant="text"
+            type="default"
+            style="--nuraly-button-min-width:47px;width:auto;"
+            iconposition="left"
             .iconLeft=${"settings"}
             @click=${() => this.applicationSettingsModalOpen = true}
           ></nr-button>
 
-          <!-- Share button -->
           <nr-button
             size="small"
             variant="primary"
@@ -488,26 +517,25 @@ export class StudioTopBar extends LitElement {
 
           <nr-divider type="vertical"></nr-divider>
 
-          <!-- Logout button -->
           <nr-button
             size="small"
-            variant="text"
+            type="default"
+            style="--nuraly-button-min-width:47px;width:auto;"
+            iconposition="left"
             .iconLeft=${"log-out"}
             @click=${this.handleLogout}
           ></nr-button>
-        </nr-container>
-      </nr-container>
+        </div>
+      </div>
 
       <!-- Application Settings Modal -->
       ${this.applicationSettingsModalOpen ? html`
         <nr-modal
           .open=${this.applicationSettingsModalOpen}
           title="Application Settings"
-          @nr-modal-close=${() => this.applicationSettingsModalOpen = false}
+          @modal-close=${() => this.applicationSettingsModalOpen = false}
         >
-          <application-settings-panel
-            .appId=${this.appId}
-          ></application-settings-panel>
+          <app-settings-modal></app-settings-modal>
         </nr-modal>
       ` : nothing}
 
@@ -516,11 +544,9 @@ export class StudioTopBar extends LitElement {
         <nr-modal
           .open=${this.shareModalOpen}
           title="Share Application"
-          @nr-modal-close=${() => this.shareModalOpen = false}
+          @modal-close=${() => this.shareModalOpen = false}
         >
-          <share-application-panel
-            .appId=${this.appId}
-          ></share-application-panel>
+          <share-modal></share-modal>
         </nr-modal>
       ` : nothing}
 
@@ -529,11 +555,9 @@ export class StudioTopBar extends LitElement {
         <nr-modal
           .open=${this.kvStorageModalOpen}
           title="KV Storage"
-          @nr-modal-close=${() => this.kvStorageModalOpen = false}
+          @modal-close=${() => this.kvStorageModalOpen = false}
         >
-          <kv-storage-panel
-            .appId=${this.appId}
-          ></kv-storage-panel>
+          <kv-modal></kv-modal>
         </nr-modal>
       ` : nothing}
     `;
