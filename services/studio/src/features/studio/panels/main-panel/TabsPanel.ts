@@ -6,6 +6,7 @@ import "../../params/flow/Flow.ts";
 import "../../params/function/Function.ts";
 import "../../params/database/Database.ts";
 import "../../params/files/Files.ts";
+import "../../params/journal/Journal.ts";
 import "./EditorInteractivePanel.ts";
 import { $editorState } from '../../../runtime/redux/store/apps.ts';
 import { css, html, LitElement } from "lit";
@@ -113,6 +114,14 @@ export class TabsPanel extends LitElement {
                 label: tab.label,
                 type: "database",
                 content: html`<div style="width: 100%; height: calc(100vh - 130px);"><database-page .detail=${tab.detail}></database-page></div>`
+              });
+              break;
+            case "journal":
+              this.editableTabs.push({
+                id: tab.id,
+                label: tab.label,
+                type: "journal",
+                content: html`<div style="width: 100%; height: calc(100vh - 130px);"><journal-page .detail=${tab.detail}></journal-page></div>`
               });
               break;
           }

@@ -70,6 +70,7 @@ function initializeTabFromUrl(): void {
     page: { id: "0", label: "Page editor", type: "page" },
     flow: { id: "flow", label: "Workflows", type: "flow" },
     database: { id: "database", label: "Database", type: "database" },
+    journal: { id: "journal", label: "Journal", type: "journal" },
   };
 
   const tabConfig = tabConfigs[tabType];
