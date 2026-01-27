@@ -509,6 +509,15 @@ export function getApplicationOptions(): DropdownOption[] {
         tab: { id: 'database', label: 'Database', type: 'database' }
       },
       icon: 'database'
+    },
+    {
+      id: 'journal',
+      label: 'Journal',
+      value: {
+        action: 'new-tab',
+        tab: { id: 'journal', label: 'Journal', type: 'journal' }
+      },
+      icon: 'scroll-text'
     }
   ];
 }

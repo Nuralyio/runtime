@@ -110,4 +110,35 @@ export const APIS_URL = {
     `${API_BASE}/api/v1/db/pool?applicationId=${appId}&connectionPath=${encodeURIComponent(connectionPath)}`,
   dbHealth: () =>
     `${API_BASE}/api/v1/db/health`,
+
+  // Journal Logs Endpoints
+  getJournalLogs: (params: {
+    service?: string;
+    type?: string;
+    level?: string;
+    correlationId?: string;
+    from?: string;
+    to?: string;
+    dataQuery?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    const searchParams = new URLSearchParams();
+    if (params.service) searchParams.append('service', params.service);
+    if (params.type) searchParams.append('type', params.type);
+    if (params.level) searchParams.append('level', params.level);
+    if (params.correlationId) searchParams.append('correlationId', params.correlationId);
+    if (params.from) searchParams.append('from', params.from);
+    if (params.to) searchParams.append('to', params.to);
+    if (params.dataQuery) searchParams.append('dataQuery', params.dataQuery);
+    if (params.limit) searchParams.append('limit', params.limit.toString());
+    if (params.offset) searchParams.append('offset', params.offset.toString());
+    return `${API_BASE}/api/v1/logs?${searchParams.toString()}`;
+  },
+  getJournalLog: (id: string) => `${API_BASE}/api/v1/logs/${id}`,
+  getJournalExecutionLogs: (executionId: string) =>
+    `${API_BASE}/api/v1/logs/execution/${executionId}`,
+  getJournalStats: () => `${API_BASE}/api/v1/logs/stats`,
+  getJournalTrace: (correlationId: string) =>
+    `${API_BASE}/api/v1/logs/trace/${correlationId}`,
 };
