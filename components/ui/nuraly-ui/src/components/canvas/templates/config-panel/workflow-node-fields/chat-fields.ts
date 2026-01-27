@@ -112,6 +112,25 @@ export function renderChatStartFields(
         </div>
       ` : nothing}
     </div>
+
+    <!-- Execution Behavior Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Execution Behavior</span>
+        <span class="config-section-desc">Configure how the workflow executes</span>
+      </div>
+
+      <div class="config-field">
+        <label class="checkbox-label">
+          <nr-checkbox
+            ?checked=${config.alwaysOpenPlan === true}
+            @nr-change=${(e: CustomEvent) => onUpdate('alwaysOpenPlan', e.detail.checked)}
+          ></nr-checkbox>
+          Always Open Plan
+        </label>
+        <span class="field-description">Show execution plan before running the workflow</span>
+      </div>
+    </div>
   `;
 }
 

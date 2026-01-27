@@ -102,6 +102,18 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         this.viewportController?.updateTransform();
       });
     }
+
+    // Auto-open chat preview for CHAT_START nodes with alwaysOpenPlan enabled on load
+    if (!oldValue || oldValue.id !== value.id) {
+      const chatStartNode = value.nodes.find(
+        node => node.type === WorkflowNodeType.CHAT_START && node.configuration?.alwaysOpenPlan === true
+      );
+      if (chatStartNode && this.previewNodeId !== chatStartNode.id) {
+        this.updateComplete.then(() => {
+          this.handleNodePreview({ detail: { node: chatStartNode } } as CustomEvent);
+        });
+      }
+    }
   }
 
   @property({ type: Boolean })
@@ -382,6 +394,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
 
     this.dispatchNodeSelected(node);
+
+    // Auto-open chat preview if alwaysOpenPlan is enabled for CHAT_START nodes
+    if (
+      node.type === WorkflowNodeType.CHAT_START &&
+      node.configuration?.alwaysOpenPlan === true &&
+      this.previewNodeId !== node.id
+    ) {
+      this.handleNodePreview({ detail: { node } } as CustomEvent);
+    }
   }
 
   // Note: Node drag handling is now in DragController
