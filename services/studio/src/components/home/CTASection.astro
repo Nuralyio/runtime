@@ -3,14 +3,19 @@
  * CTASection Component
  * Minimal call-to-action
  */
+
+const realm = import.meta.env.PUBLIC_KEYCLOAK_REALM || 'nuraly';
+const clientId = import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID || 'nuraly-web';
+const redirectUri = import.meta.env.PUBLIC_KEYCLOAK_REDIRECT_URI || 'http://localhost/cb';
+const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrations?client_id=${clientId}&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(redirectUri)}`;
 ---
 
 <section class="cta" data-animate>
   <div class="container">
-    <h2>Start building today</h2>
-    <p>Free to get started. No credit card required.</p>
+    <h2>Deploy your first AI agent today</h2>
+    <p>Build production-ready AI workflows in minutes. Free tier included.</p>
     <div class="cta-actions">
-      <a href="/signup" class="btn btn-primary">Get started</a>
+      <a href={registrationUrl} class="btn btn-primary">Get started</a>
       <a href="/contact" class="btn btn-secondary">Talk to us</a>
     </div>
   </div>

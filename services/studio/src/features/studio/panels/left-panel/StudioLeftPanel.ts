@@ -7,6 +7,7 @@
 
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
+import { ExecuteInstance } from '@nuraly/runtime';
 import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $applicationComponents } from '@nuraly/runtime/redux/store';
 import { $environment, ViewMode } from '@nuraly/runtime/redux/store/environment';
@@ -378,6 +379,8 @@ export class StudioLeftPanel extends LitElement {
 
     if (item.type === 'page') {
       $currentPageId(this.appId).set(item.id!);
+      // Update ExecuteInstance.VarsProxy to trigger iframe update
+      ExecuteInstance.VarsProxy.currentPage = item.id!;
       // Clear selection when switching pages
       this.selectedComponents = [];
       setSelectedComponents([]);
@@ -385,6 +388,8 @@ export class StudioLeftPanel extends LitElement {
       // Component selected
       if (item.page && item.page !== this.currentPageId) {
         $currentPageId(this.appId).set(item.page);
+        // Update ExecuteInstance.VarsProxy to trigger iframe update
+        ExecuteInstance.VarsProxy.currentPage = item.page;
       }
       const component = this.components.find(c => c.uuid === item.id);
       if (component) {

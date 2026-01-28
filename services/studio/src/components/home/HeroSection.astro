@@ -4,7 +4,12 @@
  * Split layout - text left, visual right
  */
 
-const words = ["Apps", "Agents", "APIs", "Workflows", "Backend"];
+const words = ["AI Agents", "Smart Workflows", "LLM Pipelines", "Chatbots", "Automations"];
+
+const realm = import.meta.env.PUBLIC_KEYCLOAK_REALM || 'nuraly';
+const clientId = import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID || 'nuraly-web';
+const redirectUri = import.meta.env.PUBLIC_KEYCLOAK_REDIRECT_URI || 'http://localhost/cb';
+const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrations?client_id=${clientId}&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(redirectUri)}`;
 ---
 
 <section class="hero">
@@ -12,21 +17,21 @@ const words = ["Apps", "Agents", "APIs", "Workflows", "Backend"];
     <div class="hero-grid">
       <div class="hero-content">
         <h1>
-          Build <span class="typewriter"><span class="typewriter-text"></span><span class="typewriter-cursor"></span></span><br/>
-          from your browser
+          Deploy <span class="typewriter"><span class="typewriter-text"></span><span class="typewriter-cursor"></span></span><br/>
+          that actually work
         </h1>
         <p class="hero-subtitle">
-          The visual editor, serverless functions, and AI assistance you need to ship production-ready applications. Powered by the Nuraly Platform.
+          The AI Agentic platform for building autonomous workflows, intelligent chatbots, and LLM-powered applications. Visual design meets enterprise-grade AI infrastructure.
         </p>
         <div class="hero-actions">
-          <a href="/signup" class="btn btn-primary">
-            GET STARTED
+          <a href={registrationUrl} class="btn btn-primary">
+            BUILD YOUR FIRST AGENT
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
             </svg>
           </a>
           <a href="/contact" class="btn btn-secondary">
-            TALK TO US
+            SEE AI IN ACTION
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
             </svg>
@@ -327,6 +332,18 @@ const words = ["Apps", "Agents", "APIs", "Workflows", "Backend"];
     line-height: 1.0;
     margin-bottom: 28px;
     color: var(--color-text);
+  }
+
+  .hero h1 .typewriter {
+    display: inline-block;
+    min-width: 340px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 .typewriter {
+      min-width: 200px;
+    }
   }
 
   .hero-subtitle {

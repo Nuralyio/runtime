@@ -143,17 +143,15 @@ export const StudioGridCol = loadFromTypeScript(
   gridColTheme
 );
 
-// Card (JSON - no properties.ts)
-import cardConfig from "./layout/card/card-config.json";
+// Card (TypeScript)
+import { cardDefinition } from "./layout/card/properties.ts";
 import cardHandlers from "./layout/card/card-handlers.json";
 import cardTheme from "./layout/card/card-theme.json";
-import cardMeta from "./layout/card/card-meta.json";
 
-export const StudioCard = loadComponentProperties(
-  cardConfig,
+export const StudioCard = loadFromTypeScript(
+  cardDefinition,
   cardHandlers,
-  cardTheme,
-  cardMeta
+  cardTheme
 );
 
 // ========================================
@@ -256,17 +254,15 @@ export const StudioBadge = loadFromTypeScript(
   badgeTheme
 );
 
-// Tag (JSON - no properties.ts)
-import tagConfig from "./display/tag/tag-config.json";
+// Tag (TypeScript)
+import { tagDefinition } from "./display/tag/properties.ts";
 import tagHandlers from "./display/tag/tag-handlers.json";
 import tagTheme from "./display/tag/tag-theme.json";
-import tagMeta from "./display/tag/tag-meta.json";
 
-export const StudioTag = loadComponentProperties(
-  tagConfig,
+export const StudioTag = loadFromTypeScript(
+  tagDefinition,
   tagHandlers,
-  tagTheme,
-  tagMeta
+  tagTheme
 );
 
 // ========================================

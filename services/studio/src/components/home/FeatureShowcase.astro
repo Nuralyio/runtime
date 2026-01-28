@@ -39,7 +39,11 @@ const showcases = [
             </a>
           </div>
           <div class="showcase-visual">
-            {item.visual}
+            {item.visual === "Editor Preview" ? (
+              <img src="/images/studio-editor.png" alt="Visual Editor Preview" class="showcase-image" />
+            ) : (
+              item.visual
+            )}
           </div>
         </div>
       </div>
