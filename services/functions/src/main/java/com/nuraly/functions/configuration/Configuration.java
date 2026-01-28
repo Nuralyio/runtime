@@ -50,4 +50,26 @@ public class Configuration {
 
     @ConfigProperty(name = "nuraly.wasm.network.timeout-seconds", defaultValue = "30")
     public int NetworkTimeoutSeconds;
+
+    // URL Import settings
+    @ConfigProperty(name = "nuraly.url-import.enabled", defaultValue = "true")
+    public boolean UrlImportEnabled;
+
+    @ConfigProperty(name = "nuraly.url-import.timeout-seconds", defaultValue = "30")
+    public int UrlImportTimeoutSeconds;
+
+    @ConfigProperty(name = "nuraly.url-import.max-size-bytes", defaultValue = "5242880")  // 5MB
+    public int UrlImportMaxSizeBytes;
+
+    @ConfigProperty(name = "nuraly.url-import.max-imports", defaultValue = "20")
+    public int UrlImportMaxImports;
+
+    @ConfigProperty(name = "nuraly.url-import.allowed-domains")
+    public Optional<List<String>> UrlImportAllowedDomains;
+
+    @ConfigProperty(name = "nuraly.url-import.blocked-patterns")
+    public Optional<List<String>> UrlImportBlockedPatterns;
+
+    @ConfigProperty(name = "nuraly.url-import.cache-ttl-seconds", defaultValue = "3600")
+    public int UrlImportCacheTtlSeconds;
 }
