@@ -214,7 +214,7 @@ export class StudioLeftPanel extends LitElement {
       }
     });
 
-    this.unsubscribeComponents = $applicationComponents(this.appId).subscribe((components) => {
+    this.unsubscribeComponents = $applicationComponents(this.appId).subscribe((components: any[]) => {
       this.components = components || [];
     });
 
