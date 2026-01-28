@@ -1,12 +1,10 @@
 package com.nuraly.functions.service;
 
-import com.nuraly.functions.configuration.Configuration;
 import com.nuraly.functions.dto.FunctionDTO;
 import com.nuraly.functions.dto.InvokeRequest;
 import com.nuraly.functions.dto.mapper.FunctionDTOMapper;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.exception.FunctionNotFoundException;
-import com.nuraly.functions.exception.ImportResolutionException;
 import org.jboss.logging.Logger;
 import com.nuraly.library.permission.PermissionCheckRequest;
 import com.nuraly.library.permission.PermissionClient;
@@ -29,22 +27,13 @@ public class FunctionService {
     boolean permissionsEnabled;
 
     @Inject
-    Configuration configuration;
-
-    @Inject
     FunctionDTOMapper functionDTOMapper;
-
-    @Inject
-    UrlImportService urlImportService;
 
     @Inject
     ContainerManager containerManager;
 
     @Inject
     FunctionInvoker functionInvoker;
-
-    @Inject
-    WasmRuntimeService wasmRuntime;
 
     @Inject
     PermissionClient permissionClient;
@@ -241,22 +230,20 @@ public class FunctionService {
     }
 
     /**
-     * Deploy a function to the V8 runtime.
+     * Deploy a function.
      * Permission is verified by the gateway.
      *
-     * Resolves URL imports (e.g., from esm.sh) at deploy time:
-     * - Fetches modules from CDN
-     * - Inlines them into the handler
-     * - Tracks line offsets for error translation
+     * With Deno workers, this is a no-op since handlers are sent directly
+     * to workers via RabbitMQ at invocation time. URL imports are resolved
+     * natively by Deno.
      *
      * @param functionId The ID of the function to deploy.
      * @param userUuid The user's UUID.
      * @throws FunctionNotFoundException If no function is found with the given ID.
      * @throws PermissionDeniedException If authentication is required.
-     * @throws ImportResolutionException If URL import resolution fails.
      */
     public void deployFunction(UUID functionId, String userUuid)
-            throws FunctionNotFoundException, PermissionDeniedException, Exception {
+            throws FunctionNotFoundException, PermissionDeniedException {
         checkFunctionPermission(functionId, userUuid);
 
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
@@ -264,27 +251,10 @@ public class FunctionService {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
         }
 
-        String handler = functionEntity.getHandler();
-        int lineOffset = 0;
-
-        // Resolve URL imports if enabled and present
-        if (configuration.UrlImportEnabled && urlImportService.hasUrlImports(handler)) {
-            try {
-                LOG.infof("Resolving URL imports for function %s", functionId);
-                UrlImportService.ResolvedHandler resolved = urlImportService.resolveImports(handler);
-                handler = resolved.code();
-                lineOffset = resolved.preambleLineCount();
-                LOG.infof("Resolved %d URL imports for function %s (preamble: %d lines)",
-                    resolved.resolvedUrls().size(), functionId, lineOffset);
-            } catch (ImportResolutionException e) {
-                LOG.errorf("Failed to resolve imports for function %s: %s", functionId, e.getMessage());
-                throw e;
-            }
-        }
-
-        // Deploy to V8 runtime with line offset for error translation
-        wasmRuntime.deploy(functionId.toString(), handler, lineOffset);
+        // With Deno workers, deployment is a no-op - handlers are sent at invocation time
+        LOG.infof("Function %s ready for execution", functionId);
     }
+
     public String invokeFunction(UUID functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {
@@ -293,5 +263,4 @@ public class FunctionService {
 
         return functionInvoker.invoke(functionEntity, request);
     }
-
 }

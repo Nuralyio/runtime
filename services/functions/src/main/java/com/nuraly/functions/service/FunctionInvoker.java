@@ -1,81 +1,71 @@
 package com.nuraly.functions.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.functions.dto.InvokeRequest;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.entity.enums.EventStatus;
 import com.nuraly.functions.entity.enums.EventType;
+import com.nuraly.functions.messaging.FunctionExecutionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
-import java.util.Map;
-import java.util.UUID;
+import org.jboss.logging.Logger;
 
 /**
- * Invokes functions via WASM runtime.
+ * Invokes functions via Deno workers (RabbitMQ).
  */
 @ApplicationScoped
 @Transactional
 public class FunctionInvoker {
 
+    private static final Logger LOG = Logger.getLogger(FunctionInvoker.class);
+
     @Inject
-    WasmRuntimeService wasmRuntime;
+    FunctionExecutionService executionService;
 
     @Inject
     EventService eventService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     /**
-     * Invoke function via WASM runtime
+     * Invoke function via Deno workers.
      */
     public String invoke(FunctionEntity function, InvokeRequest payload) throws Exception {
         String functionId = function.getId().toString();
-
-        // Check if deployed
-        if (!wasmRuntime.isDeployed(functionId)) {
-            throw new RuntimeException("Function not deployed. Please build first.");
-        }
+        String functionName = function.getLabel();
+        String handler = function.getHandler();
 
         // Log pending event
         eventService.logEvent(
             EventType.FUNCTION_INVOCATION,
-            function.getLabel(),
+            functionName,
             EventStatus.PENDING,
             payload.getData()
         );
 
         try {
-            // Prepare input
-            Map<String, Object> input = Map.of(
-                "body", payload.getData(),
-                "context", Map.of(
-                    "functionId", functionId,
-                    "functionName", function.getLabel(),
-                    "invocationId", UUID.randomUUID().toString()
-                )
+            // Execute via Deno workers
+            String result = executionService.executeSync(
+                functionId,
+                functionName,
+                handler,
+                payload.getData()
             );
-            String inputJson = objectMapper.writeValueAsString(input);
-
-            // Execute via WASM
-            String result = wasmRuntime.invokeSync(functionId, inputJson);
 
             // Log success
             eventService.logEvent(
                 EventType.FUNCTION_INVOCATION,
-                function.getLabel(),
+                functionName,
                 EventStatus.SUCCESS,
                 payload.getData()
             );
 
+            LOG.debugf("Function %s executed successfully", functionId);
             return result;
 
         } catch (Exception e) {
             // Log failure
             eventService.logEvent(
                 EventType.FUNCTION_INVOCATION,
-                function.getLabel(),
+                functionName,
                 EventStatus.FAILURE,
                 payload.getData()
             );
