@@ -497,6 +497,234 @@ void shouldBundleLodashAndExecute() throws Exception {
 
 ---
 
+## Phase 9: Source Maps for Error Line Numbers
+
+### Problem
+
+When bundling, esbuild combines all code into a single file. If an error occurs at line 847 of the bundle, the user has no idea where that is in their original `handler.ts`.
+
+**Without source maps:**
+```
+Error: Cannot read property 'name' of undefined
+    at handler.js:847:23
+```
+
+**With source maps:**
+```
+Error: Cannot read property 'name' of undefined
+    at processItem (handler.ts:15:10)
+```
+
+### Solution: Generate and Use Source Maps
+
+#### 9.1 Update BundlerService to Generate Source Maps
+
+Modify esbuild command:
+
+```java
+runCommand(tempDir, "esbuild", "handler.ts",
+    "--bundle",
+    "--format=iife",
+    "--global-name=__bundle",
+    "--platform=neutral",
+    "--target=es2020",
+    "--sourcemap=inline",  // Embed source map in the bundle
+    "--outfile=" + outputFile);
+```
+
+**Options:**
+- `--sourcemap=inline`: Embeds source map as base64 in the JS file (simpler, one file)
+- `--sourcemap=external`: Creates separate `.map` file (requires storing both)
+
+**Recommendation:** Use `inline` for simplicity.
+
+#### 9.2 Update FunctionEntity to Store Source Map (if external)
+
+If using external source maps:
+
+```java
+@Lob
+@Column(columnDefinition = "TEXT")
+private String sourceMap;  // JSON source map for error translation
+```
+
+#### 9.3 Create SourceMapService
+
+**File**: `src/main/java/com/nuraly/functions/service/SourceMapService.java`
+
+```java
+@ApplicationScoped
+public class SourceMapService {
+
+    /**
+     * Translate a bundled stack trace to original source locations.
+     *
+     * @param stackTrace The error stack trace from V8
+     * @param sourceMap The source map JSON (or inline from bundle)
+     * @return Stack trace with original file/line numbers
+     */
+    public String translateStackTrace(String stackTrace, String sourceMap);
+
+    /**
+     * Extract inline source map from bundled code.
+     */
+    public String extractInlineSourceMap(String bundledCode);
+}
+```
+
+#### 9.4 Source Map Parsing
+
+Source maps are JSON with this structure:
+
+```json
+{
+  "version": 3,
+  "sources": ["handler.ts"],
+  "sourcesContent": ["import _ from 'lodash';\n..."],
+  "mappings": "AAAA,OAAO,CAAC,MAAM...",
+  "names": ["handler", "input", "_"]
+}
+```
+
+**Libraries to parse source maps in Java:**
+- Use a simple VLQ decoder (source maps use Base64 VLQ encoding)
+- Or invoke a Node.js script with `source-map` library
+
+**Simple approach** - use V8 to parse the source map:
+
+```java
+public String translateStackTrace(String stackTrace, String bundledCode) {
+    try (V8Runtime runtime = v8Host.createV8Runtime()) {
+        // Load source-map library (pre-bundled)
+        runtime.getExecutor(sourceMapLibrary).executeVoid();
+
+        // Extract and parse source map
+        runtime.getExecutor("""
+            const sourceMap = extractSourceMap(%s);
+            const consumer = new SourceMapConsumer(sourceMap);
+            """.formatted(escapeJs(bundledCode))).executeVoid();
+
+        // Translate stack trace
+        runtime.getGlobalObject().set("__stackTrace", stackTrace);
+        V8Value result = runtime.getExecutor("""
+            translateStackTrace(__stackTrace, consumer);
+            """).execute();
+
+        return result.toString();
+    }
+}
+```
+
+#### 9.5 Update WasmRuntimeService Error Handling
+
+**File**: `src/main/java/com/nuraly/functions/service/WasmRuntimeService.java`
+
+Modify the `executeFunction` method to translate errors:
+
+```java
+@Inject
+SourceMapService sourceMapService;
+
+// Store source maps alongside handlers
+private final ConcurrentHashMap<String, String> functionSourceMaps = new ConcurrentHashMap<>();
+
+public void deploy(String functionId, String handler, String sourceMap) {
+    // ... existing validation ...
+    functionHandlers.put(functionId, handler);
+    if (sourceMap != null) {
+        functionSourceMaps.put(functionId, sourceMap);
+    }
+}
+
+private String executeFunction(String functionId, String handler, String inputJson) {
+    try (V8Runtime runtime = v8Host.createV8Runtime()) {
+        // ... existing code ...
+    } catch (Exception e) {
+        String sourceMap = functionSourceMaps.get(functionId);
+        if (sourceMap != null) {
+            String translatedError = sourceMapService.translateStackTrace(
+                e.getMessage(), sourceMap);
+            throw new RuntimeException(translatedError, e);
+        }
+        throw new RuntimeException("Function execution failed: " + e.getMessage(), e);
+    }
+}
+```
+
+#### 9.6 Error Response Format
+
+Update error responses to include helpful information:
+
+```json
+{
+  "error": "Cannot read property 'name' of undefined",
+  "location": {
+    "file": "handler.ts",
+    "line": 15,
+    "column": 10,
+    "functionName": "processItem"
+  },
+  "stack": [
+    "at processItem (handler.ts:15:10)",
+    "at handler (handler.ts:8:5)"
+  ],
+  "originalStack": "at handler.js:847:23..."  // For debugging
+}
+```
+
+### Implementation Complexity
+
+| Approach | Complexity | Accuracy |
+|----------|------------|----------|
+| Inline source maps + V8 parsing | Medium | High |
+| External source maps + Java VLQ decoder | High | High |
+| Simple line offset heuristic | Low | Low |
+
+**Recommendation:** Start with inline source maps (`--sourcemap=inline`) and V8-based parsing.
+
+---
+
+## Updated Implementation Order
+
+| Order | Task | Effort | Dependencies |
+|-------|------|--------|--------------|
+| 1 | Add `dependencies` field to entity/DTO | Small | None |
+| 2 | Database migration | Small | #1 |
+| 3 | Create `BundlerService` | Medium | None |
+| 4 | Add configuration properties | Small | None |
+| 5 | Update `FunctionService.deployFunction()` | Small | #3, #4 |
+| 6 | Security: package validation | Medium | #3 |
+| 7 | Update API endpoints | Small | #1, #2 |
+| 8 | Update Dockerfile | Small | None |
+| 9 | **Create `SourceMapService`** | Medium | #3 |
+| 10 | **Update error handling with source maps** | Medium | #9 |
+| 11 | Create new templates | Small | None |
+| 12 | Testing | Medium | All |
+
+---
+
+## Updated Files to Modify/Create
+
+### New Files
+- `src/main/java/com/nuraly/functions/service/BundlerService.java`
+- `src/main/java/com/nuraly/functions/service/SourceMapService.java`
+- `src/main/java/com/nuraly/functions/exception/BundleException.java`
+- `src/main/resources/js/source-map-helper.js` (helper for V8 source map parsing)
+- `templates/v2/wasm/handler-with-deps.ts`
+- `src/main/resources/db/migration/V2__add_dependencies_column.sql`
+
+### Modified Files
+- `src/main/java/com/nuraly/functions/entity/FunctionEntity.java`
+- `src/main/java/com/nuraly/functions/dto/FunctionDTO.java`
+- `src/main/java/com/nuraly/functions/dto/mapper/FunctionDTOMapper.java`
+- `src/main/java/com/nuraly/functions/service/FunctionService.java`
+- `src/main/java/com/nuraly/functions/service/WasmRuntimeService.java`
+- `src/main/java/com/nuraly/functions/configuration/Configuration.java`
+- `src/main/resources/application.properties`
+- `Dockerfile`
+
+---
+
 ## Future Enhancements
 
 1. **Dependency Caching**: Cache npm installs by dependency hash
@@ -504,3 +732,4 @@ void shouldBundleLodashAndExecute() throws Exception {
 3. **Private npm Registry**: Support for private packages
 4. **Bundle Size Analysis**: Show users their bundle size
 5. **TypeScript Type Definitions**: Auto-include @types packages
+6. **Enhanced Error UI**: Show code snippet with highlighted error line
