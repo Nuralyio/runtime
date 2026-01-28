@@ -1536,6 +1536,145 @@ public record ValidateImportsResponse(boolean valid, List<String> resolvedUrls, 
 
 ---
 
+## Line Number Mapping for URL Imports
+
+### The Problem
+
+When we inline modules, the user's code shifts down:
+
+```
+Original:                          After inlining:
+Line 1: import _ from 'esm.sh/..'; Line 1-846: [inlined lodash code]
+Line 2:                            Line 847: const _ = __mod0.default;
+Line 3: export function handler()  Line 848:
+Line 4:   return _.sortBy(...);    Line 849: export function handler()
+                                   Line 850:   return _.sortBy(...);  ← Error here!
+```
+
+If an error occurs at line 850, user sees `line 850` but their code says `line 4`.
+
+### Solution: Track Line Offset
+
+Since we control the transformation, we know exactly how many lines the preamble adds.
+
+#### Update ResolvedHandler Record
+
+```java
+public record ResolvedHandler(
+    String code,
+    List<String> resolvedUrls,
+    String originalSource,
+    int preambleLineCount  // NEW: lines added before user code
+) {}
+```
+
+#### Update buildResolvedCode()
+
+```java
+String buildResolvedCode(String handler, List<UrlImport> imports, Map<String, FetchedModule> modules) {
+    StringBuilder preamble = new StringBuilder();
+    // ... build preamble ...
+
+    // Count preamble lines
+    int preambleLines = preamble.toString().split("\n").length;
+
+    // Store for error translation
+    return new ResolvedHandler(
+        preamble.toString() + rewrittenHandler,
+        new ArrayList<>(modules.keySet()),
+        handler,
+        preambleLines
+    );
+}
+```
+
+#### Store Line Offset with Function
+
+```java
+// In WasmRuntimeService
+private final ConcurrentHashMap<String, Integer> functionLineOffsets = new ConcurrentHashMap<>();
+
+public void deploy(String functionId, String handler, int lineOffset) {
+    // ... existing code ...
+    functionLineOffsets.put(functionId, lineOffset);
+}
+```
+
+#### Translate Error Line Numbers
+
+```java
+private String translateErrorLineNumber(String functionId, String errorMessage) {
+    Integer offset = functionLineOffsets.get(functionId);
+    if (offset == null || offset == 0) {
+        return errorMessage;
+    }
+
+    // Pattern: "at line 850" or ":850:" or "line 850, column 10"
+    Pattern linePattern = Pattern.compile("(line |:)(\\d+)(:|,|\\b)");
+    Matcher matcher = linePattern.matcher(errorMessage);
+    StringBuffer result = new StringBuffer();
+
+    while (matcher.find()) {
+        int reportedLine = Integer.parseInt(matcher.group(2));
+        int originalLine = reportedLine - offset;
+
+        if (originalLine > 0) {
+            matcher.appendReplacement(result,
+                matcher.group(1) + originalLine + matcher.group(3));
+        }
+    }
+    matcher.appendTail(result);
+
+    return result.toString();
+}
+```
+
+#### Updated Error Handling in executeFunction()
+
+```java
+private String executeFunction(String functionId, String handler, String inputJson) {
+    try (V8Runtime runtime = v8Host.createV8Runtime()) {
+        // ... existing code ...
+    } catch (Exception e) {
+        String message = e.getMessage();
+
+        // Translate line numbers
+        message = translateErrorLineNumber(functionId, message);
+
+        throw new RuntimeException("Function execution failed: " + message, e);
+    }
+}
+```
+
+### Example Error Translation
+
+**Before translation:**
+```
+Error: Cannot read property 'name' of undefined
+    at handler (handler.js:850:15)
+    at Object.<anonymous> (handler.js:855:1)
+```
+
+**After translation:**
+```
+Error: Cannot read property 'name' of undefined
+    at handler (handler.js:4:15)      ← User's actual line 4
+    at Object.<anonymous> (handler.js:9:1)
+```
+
+### Why This Is Simpler Than Full Bundling
+
+| Aspect | URL Imports | NPM Bundling |
+|--------|-------------|--------------|
+| **Transformation** | Simple prepend | Full code rewrite |
+| **Line mapping** | Single offset | Complex source map |
+| **User code** | Unchanged (mostly) | Completely transformed |
+| **Accuracy** | Exact | Requires source map parsing |
+
+With URL imports, we just need one number (preamble line count) to translate all errors. With bundling, every line could map to a different original location.
+
+---
+
 ## Testing Plan
 
 ### Unit Tests
