@@ -13,6 +13,8 @@ import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * JavaScript Runtime Service - executes JavaScript functions using V8 (Javet).
@@ -33,6 +35,14 @@ public class WasmRuntimeService {
 
     // Store deployed function handlers
     private final ConcurrentHashMap<String, String> functionHandlers = new ConcurrentHashMap<>();
+
+    // Store line offsets for error translation (from URL import preambles)
+    private final ConcurrentHashMap<String, Integer> functionLineOffsets = new ConcurrentHashMap<>();
+
+    // Pattern to match line numbers in error messages
+    private static final Pattern LINE_NUMBER_PATTERN = Pattern.compile(
+        "(line |:)(\\d+)(:|,|\\)|\\s|$)"
+    );
 
     @PostConstruct
     void init() {
@@ -63,9 +73,20 @@ public class WasmRuntimeService {
     }
 
     /**
-     * Deploy a JavaScript function handler
+     * Deploy a JavaScript function handler.
      */
     public void deploy(String functionId, String handler) {
+        deploy(functionId, handler, 0);
+    }
+
+    /**
+     * Deploy a JavaScript function handler with line offset tracking.
+     *
+     * @param functionId The unique function ID
+     * @param handler The JavaScript handler code
+     * @param lineOffset Number of lines added before user code (for URL imports preamble)
+     */
+    public void deploy(String functionId, String handler, int lineOffset) {
         long startTime = System.nanoTime();
 
         // Validate the handler compiles
@@ -77,13 +98,22 @@ public class WasmRuntimeService {
                 throw new RuntimeException("Handler must define a 'handler' function");
             }
         } catch (Exception e) {
-            throw new RuntimeException("Invalid handler: " + e.getMessage(), e);
+            // Translate line numbers in compilation errors
+            String message = translateLineNumbers(functionId, e.getMessage(), lineOffset);
+            throw new RuntimeException("Invalid handler: " + message, e);
         }
 
         functionHandlers.put(functionId, handler);
 
+        // Store line offset for runtime error translation
+        if (lineOffset > 0) {
+            functionLineOffsets.put(functionId, lineOffset);
+        } else {
+            functionLineOffsets.remove(functionId);
+        }
+
         long durationMs = (System.nanoTime() - startTime) / 1_000_000;
-        LOG.infof("Deployed function: %s in %d ms", functionId, durationMs);
+        LOG.infof("Deployed function: %s in %d ms (lineOffset: %d)", functionId, durationMs, lineOffset);
     }
 
     /**
@@ -100,6 +130,7 @@ public class WasmRuntimeService {
      */
     public void undeploy(String functionId) {
         functionHandlers.remove(functionId);
+        functionLineOffsets.remove(functionId);
         LOG.infof("Undeployed function: %s", functionId);
     }
 
@@ -112,7 +143,7 @@ public class WasmRuntimeService {
             if (handler == null) {
                 throw new RuntimeException("Function not deployed: " + functionId);
             }
-            return executeFunction(handler, inputJson);
+            return executeFunction(functionId, handler, inputJson);
         }, executor);
     }
 
@@ -134,7 +165,7 @@ public class WasmRuntimeService {
         }
     }
 
-    private String executeFunction(String handler, String inputJson) {
+    private String executeFunction(String functionId, String handler, String inputJson) {
         try (V8Runtime runtime = v8Host.createV8Runtime()) {
             // Load the handler
             runtime.getExecutor(handler).executeVoid();
@@ -166,7 +197,8 @@ public class WasmRuntimeService {
 
                 if (promise.getState() == V8ValuePromise.STATE_REJECTED) {
                     V8Value reason = promise.getResult();
-                    throw new RuntimeException("Promise rejected: " + reason.toString());
+                    String errorMsg = translateLineNumbers(functionId, reason.toString());
+                    throw new RuntimeException("Promise rejected: " + errorMsg);
                 }
 
                 result = promise.getResult();
@@ -178,8 +210,44 @@ public class WasmRuntimeService {
 
             return jsonResult.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Function execution failed: " + e.getMessage(), e);
+            String translatedMsg = translateLineNumbers(functionId, e.getMessage());
+            throw new RuntimeException("Function execution failed: " + translatedMsg, e);
         }
+    }
+
+    /**
+     * Translate line numbers in error messages back to original source lines.
+     * Used when URL imports add a preamble that shifts user code down.
+     */
+    private String translateLineNumbers(String functionId, String message) {
+        Integer offset = functionLineOffsets.get(functionId);
+        return translateLineNumbers(functionId, message, offset != null ? offset : 0);
+    }
+
+    /**
+     * Translate line numbers in error messages using a specific offset.
+     */
+    private String translateLineNumbers(String functionId, String message, int offset) {
+        if (message == null || offset <= 0) {
+            return message;
+        }
+
+        Matcher matcher = LINE_NUMBER_PATTERN.matcher(message);
+        StringBuffer result = new StringBuffer();
+
+        while (matcher.find()) {
+            int reportedLine = Integer.parseInt(matcher.group(2));
+            int originalLine = reportedLine - offset;
+
+            // Only translate if the result is positive (line is in user code)
+            if (originalLine > 0) {
+                matcher.appendReplacement(result,
+                    matcher.group(1) + originalLine + matcher.group(3));
+            }
+        }
+        matcher.appendTail(result);
+
+        return result.toString();
     }
 
     /**
