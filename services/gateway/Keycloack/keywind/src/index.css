@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Base styles
+    ======================================================================== */
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply text-secondary-700;
+  }
+}
+
 @layer components {
   /* Alpine.js
     ======================================================================== */
@@ -29,5 +42,56 @@
 
   .separate:not(:empty)::before {
     @apply mr-2;
+  }
+
+  /* Background Panel
+    ======================================================================== */
+
+  .login-bg-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Form input styles
+    ======================================================================== */
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Custom scrollbar
+    ======================================================================== */
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-secondary-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-secondary-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-secondary-400;
   }
 }

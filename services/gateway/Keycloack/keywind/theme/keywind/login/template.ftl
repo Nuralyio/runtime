@@ -17,13 +17,14 @@
   displayRequiredFields=false
   script=""
   showAnotherWayIfPresent=true
+  headerSubtitle=""
 >
   <#assign cardHeader>
     <@logo.kw>
       ${kcSanitize(msg("loginTitleHtml", (realm.displayNameHtml!"")))?no_esc}
     </@logo.kw>
     <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
-      <@heading.kw>
+      <@heading.kw subtitle=headerSubtitle>
         <#nested "header">
       </@heading.kw>
     <#else>
@@ -44,7 +45,7 @@
     </#if>
     <#nested "form">
     <#if displayRequiredFields>
-      <p class="text-secondary-600 text-sm">
+      <p class="text-secondary-500 text-sm">
         * ${msg("requiredFields")}
       </p>
     </#if>
@@ -63,6 +64,11 @@
     <#if displayInfo>
       <#nested "info">
     </#if>
+    <#if realm.internationalizationEnabled && locale.supported?size gt 1>
+      <div class="mt-6 flex justify-center">
+        <@localeProvider.kw currentLocale=locale.current locales=locale.supported />
+      </div>
+    </#if>
   </#assign>
 
   <html<#if realm.internationalizationEnabled> lang="${locale.currentLanguageTag}"</#if>>
@@ -74,9 +80,6 @@
         <@card.kw content=cardContent footer=cardFooter header=cardHeader />
         <@nav.kw>
           <#nested "nav">
-          <#if realm.internationalizationEnabled && locale.supported?size gt 1>
-            <@localeProvider.kw currentLocale=locale.current locales=locale.supported />
-          </#if>
         </@nav.kw>
       </@container.kw>
     </@body.kw>

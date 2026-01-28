@@ -13,11 +13,12 @@
 <@layout.registrationLayout
   displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??
   displayMessage=!messagesPerField.existsError("username", "password")
+  headerSubtitle="Start your journey"
   ;
   section
 >
   <#if section="header">
-    ${msg("loginAccountTitle")}
+    Sign In to Your Account
   <#elseif section="form">
     <#if realm.password>
       <@form.kw
@@ -72,7 +73,7 @@
     </#if>
   <#elseif section="info">
     <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
-      <div class="text-center">
+      <div class="text-center text-secondary-600">
         ${msg("noAccount")}
         <@link.kw color="primary" href=url.registrationUrl>
           ${msg("doRegister")}
