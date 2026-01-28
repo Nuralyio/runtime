@@ -24,6 +24,7 @@ import "./native/type-properties-panel.js";
 import "./native/style-panel.js";
 import "./native/handlers-panel.js";
 import "./native/access-panel.js";
+import "./native/function-properties-panel.js";
 
 @customElement("studio-control-panel")
 export class StudioControlPanel extends LitElement {
