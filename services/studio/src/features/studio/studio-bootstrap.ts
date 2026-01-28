@@ -3,11 +3,9 @@
  * Initializes the studio editor when on studio paths.
  */
 
-import { $components } from '../runtime/redux/store/component/store';
 import { $currentApplication, $editorState } from '../runtime/redux/store/apps';
 import { getAppMembersData } from '../runtime/redux/store/app-members';
 import { refreshWorkflows } from '../runtime/redux/store/workflow';
-import { eventDispatcher } from '../runtime/utils/change-detection';
 import { registerStudioComponents } from './register-studio-components';
 import { presenceClient, PresenceIndicator } from '../runtime/presence';
 import { ComponentRegistry } from '../runtime/utils/component-registry';
@@ -49,10 +47,6 @@ export function initializeStudio(): void {
       // Set initial tab based on URL routing
       initializeTabFromUrl();
 
-      import("./studio-entrypoint").then(studioModule => {
-        $components.setKey("1", studioModule.default as any);
-        eventDispatcher.emit('component:refresh');
-      });
     }
   }
 }
