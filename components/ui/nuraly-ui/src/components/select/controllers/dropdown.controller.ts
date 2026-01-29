@@ -126,7 +126,7 @@ export class SelectDropdownController extends BaseSelectController implements Dr
   }
 
   /**
-   * Calculate optimal dropdown placement
+   * Calculate optimal dropdown placement using fixed positioning
    */
   calculatePosition(): void {
     try {
@@ -135,26 +135,46 @@ export class SelectDropdownController extends BaseSelectController implements Dr
       }
 
       if (!this._dropdownElement || !this._triggerElement) {
-          return;
+        return;
       }
 
       const triggerRect = this._triggerElement.getBoundingClientRect();
+      const dropdownRect = this._dropdownElement.getBoundingClientRect();
       const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      const viewportWidth = window.visualViewport?.width || window.innerWidth;
 
       // Calculate available space for determining placement
       const spaceBelow = viewportHeight - triggerRect.bottom;
       const spaceAbove = triggerRect.top;
 
-      // Determine optimal placement (we'll use a default height for calculation)
-      const estimatedDropdownHeight = 200; // Reasonable default
+      // Use actual dropdown height if available, otherwise estimate
+      const estimatedDropdownHeight = dropdownRect.height || 200;
       const placement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
-      
-      // Store the placement for applyPosition to use
+
+      // Calculate fixed position based on trigger's viewport position
+      const offset = 4; // Gap between trigger and dropdown
+      let top: number;
+
+      if (placement === 'bottom') {
+        top = triggerRect.bottom + offset;
+      } else {
+        top = triggerRect.top - estimatedDropdownHeight - offset;
+      }
+
+      // Horizontal position - align to trigger's left edge
+      let left = triggerRect.left;
+
+      // Ensure dropdown stays within viewport bounds
+      const dropdownWidth = triggerRect.width; // Match trigger width by default
+      left = Math.max(8, Math.min(left, viewportWidth - dropdownWidth - 8));
+      top = Math.max(8, Math.min(top, viewportHeight - estimatedDropdownHeight - 8));
+
+      // Store the calculated position
       this._position = {
-        left: 0, // Not used with absolute positioning
-        width: 0, // Not used with absolute positioning  
+        left,
+        width: triggerRect.width,
         placement,
-        top: 0 // Not used with absolute positioning
+        top
       };
 
       this.applyPosition();
@@ -173,15 +193,17 @@ export class SelectDropdownController extends BaseSelectController implements Dr
         this._dropdownElement.style.removeProperty('position');
         this._dropdownElement.style.removeProperty('top');
         this._dropdownElement.style.removeProperty('left');
+        this._dropdownElement.style.removeProperty('right');
+        this._dropdownElement.style.removeProperty('bottom');
         this._dropdownElement.style.removeProperty('width');
         this._dropdownElement.style.removeProperty('min-width');
-        
+
         // Only remove max-height if host doesn't have a custom maxHeight
         const customMaxHeight = (this.host as any).maxHeight;
         if (!customMaxHeight) {
           this._dropdownElement.style.removeProperty('max-height');
         }
-        
+
         this._dropdownElement.style.removeProperty('min-height');
         this._dropdownElement.style.removeProperty('height');
         this._dropdownElement.style.removeProperty('overflow-y');
@@ -255,7 +277,7 @@ export class SelectDropdownController extends BaseSelectController implements Dr
   }
 
   /**
-   * Apply calculated position to dropdown element
+   * Apply calculated position to dropdown element using fixed positioning
    */
   private applyPosition(): void {
     try {
@@ -265,60 +287,50 @@ export class SelectDropdownController extends BaseSelectController implements Dr
 
       // Check if host has a custom maxHeight set
       const hostMaxHeight = (this.host as any).maxHeight;
-      
+
       // Check if CSS max-height is set to auto via CSS custom property
       const computedStyle = getComputedStyle(this._dropdownElement);
       const cssMaxHeight = computedStyle.getPropertyValue('--nuraly-select-local-dropdown-max-height')?.trim();
       const isAutoHeight = cssMaxHeight === 'auto' || (!hostMaxHeight && cssMaxHeight === 'auto');
-      
-      const { placement } = this._position;
-      
-  // Get the exact wrapper width including borders
-  const triggerBounds = this._triggerElement.getBoundingClientRect();
-  const wrapperWidth = triggerBounds.width;
-      
-      // Use absolute positioning relative to the trigger element (combobox)
-      this._dropdownElement.style.position = 'absolute';
-      this._dropdownElement.style.left = '0';
-      this._dropdownElement.style.right = 'auto';
-  // Ensure dropdown is at least as wide as the trigger, but allow it to be wider via CSS
-  this._dropdownElement.style.minWidth = `${wrapperWidth}px`;
-  this._dropdownElement.style.removeProperty('width');
-      this._dropdownElement.style.zIndex = '1000';
+
+      const { placement, top, left, width } = this._position;
+
+      // Use fixed positioning to escape overflow containers
+      this._dropdownElement.style.position = 'fixed';
+      this._dropdownElement.style.top = `${top}px`;
+      this._dropdownElement.style.left = `${left}px`;
+      this._dropdownElement.style.removeProperty('right');
+      this._dropdownElement.style.removeProperty('bottom');
+
+      // Set width to match trigger width
+      this._dropdownElement.style.minWidth = `${width}px`;
+      this._dropdownElement.style.removeProperty('width');
+      this._dropdownElement.style.zIndex = 'var(--nuraly-select-dropdown-z-index, 9999)';
       this._dropdownElement.style.height = 'auto';
-      
+
       // Only set maxHeight to 'none' if host doesn't have a custom maxHeight and we're not using auto height
       if (!hostMaxHeight && !isAutoHeight) {
         this._dropdownElement.style.maxHeight = 'none';
       }
-      
+
       this._dropdownElement.style.minHeight = 'auto';
-      
-      // Set position based on placement
-      if (placement === 'bottom') {
-        this._dropdownElement.style.top = '100%';
-        this._dropdownElement.style.bottom = 'auto';
-      } else {
-        this._dropdownElement.style.top = 'auto';
-        this._dropdownElement.style.bottom = '100%';
-      }
-      
+
       // Force a layout to get the natural content height
       const naturalHeight = this._dropdownElement.scrollHeight;
-      
-      // Now calculate available space for constraining
+
+      // Calculate available space for constraining
       const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      const triggerBounds = this._triggerElement.getBoundingClientRect();
       let availableSpace: number;
-      
-      // Calculate available space using bounds we already calculated
+
       if (placement === 'bottom') {
         // For bottom placement, available space is from trigger bottom to viewport bottom
-        availableSpace = viewportHeight - triggerBounds.bottom - 10;  // 10px margin from bottom
+        availableSpace = viewportHeight - triggerBounds.bottom - 10; // 10px margin from bottom
       } else {
         // For top placement, available space is from viewport top to trigger top
         availableSpace = triggerBounds.top - 10; // 10px margin from top
       }
-      
+
       if (hostMaxHeight) {
         // Use the host's custom maxHeight and enable scrolling
         this._dropdownElement.style.maxHeight = hostMaxHeight;
@@ -339,12 +351,10 @@ export class SelectDropdownController extends BaseSelectController implements Dr
           this._dropdownElement.style.overflowY = 'auto';
         }
       }
-      
+
       // Add placement class for styling
       this._dropdownElement.classList.remove('placement-top', 'placement-bottom');
       this._dropdownElement.classList.add(`placement-${placement}`);
-      
-      // Position and constraints applied successfully
 
     } catch (error) {
       this.handleError(error as Error, 'applyPosition');
@@ -381,19 +391,21 @@ export class SelectDropdownController extends BaseSelectController implements Dr
   };
 
   /**
-   * Handle scroll to manage dropdown visibility
+   * Handle scroll to manage dropdown visibility and position
    */
   private handleScroll = (): void => {
     if (this._isOpen && this._triggerElement) {
       const triggerRect = this._triggerElement.getBoundingClientRect();
       const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      
+
       // Close dropdown if trigger is scrolled out of view
       if (triggerRect.bottom < 0 || triggerRect.top > viewportHeight) {
         this.close();
+      } else {
+        // With fixed positioning, we need to recalculate position on scroll
+        // to keep the dropdown aligned with the trigger
+        this.calculatePosition();
       }
-      // With absolute positioning, the dropdown moves with the trigger automatically
-      // so no need to recalculate position on scroll
     }
   };
 

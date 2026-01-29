@@ -331,14 +331,11 @@ export const styles = css`
 
   /* Dropdown options */
   .options {
-    /* Default positioning - will be overridden by controller when opened */
-    position: absolute;
-    top: 100%;
-    margin-top: 1px;
-    left: 0;
-    right: 0;
+    /* Fixed positioning to escape overflow containers */
+    position: fixed;
+    /* top/left will be set by controller */
     background-color: var(--nuraly-select-dropdown-background, var(--nuraly-color-background-panel));
-    border: var(--nuraly-select-dropdown-border-width, var(--nuraly-select-border-width, var(--nuraly-select-local-border-width))) solid 
+    border: var(--nuraly-select-dropdown-border-width, var(--nuraly-select-border-width, var(--nuraly-select-local-border-width))) solid
             var(--nuraly-select-dropdown-border-color, var(--nuraly-color-border));
     border-radius: var(--nuraly-select-dropdown-border-radius, var(--nuraly-select-border-radius, var(--nuraly-select-local-border-radius)));
     box-shadow: var(--nuraly-select-dropdown-shadow, 0 6px 16px 0 rgba(0, 0, 0, 0.08));
@@ -356,22 +353,25 @@ export const styles = css`
       --nuraly-select-dropdown-width,
       var(--select-dropdown-width, var(--nuraly-select-local-dropdown-width))
     );
-    min-width: 100%; /* Ensure dropdown is at least as wide as the wrapper */
     /* Create new stacking context to prevent layering issues */
     isolation: isolate;
     /* Ensure solid background to prevent visual bleed-through */
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* Force above other elements */
-    transform: translateZ(0);
+    /* Prevent pointer events when hidden */
+    pointer-events: none;
+  }
+
+  :host([show]) .options {
+    pointer-events: auto;
   }
 
   .options.placement-top {
-    top: auto;
-    bottom: 100%;
-    margin-bottom: 1px;
-    margin-top: 0;
     animation: dropdown-enter-top var(--nuraly-select-dropdown-animation-duration, var(--nuraly-select-local-dropdown-animation-duration)) ease-out;
+  }
+
+  .options.placement-bottom {
+    animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, var(--nuraly-select-local-dropdown-animation-duration)) ease-out;
   }
 
   @keyframes dropdown-enter {
