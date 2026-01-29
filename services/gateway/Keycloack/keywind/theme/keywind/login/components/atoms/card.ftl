@@ -1,5 +1,5 @@
 <#macro kw content="" footer="" header="">
-  <div class="flex-1 flex flex-col justify-center max-w-md w-full">
+  <div class="flex-1 flex flex-col justify-center mx-auto" style="width: 100%; min-width: 400px; max-width: 500px;">
     <#if header?has_content>
       <div class="space-y-2 mb-8">
         ${header}

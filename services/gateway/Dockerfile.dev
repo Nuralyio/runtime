@@ -6,6 +6,7 @@ WORKDIR /usr/local/openresty/nginx
 COPY Nginx/nginx-fully.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY Nginx/config /usr/local/openresty/nginx/conf/config
 COPY Nginx/locations /usr/local/openresty/nginx/conf/locations
+COPY Nginx/errors /usr/local/openresty/nginx/conf/errors
 
 # Copy Lua scripts to OpenResty's lualib directory where they can be accessed by worker processes
 COPY Nginx/lua-lib/main.lua /usr/local/openresty/lualib/main.lua
