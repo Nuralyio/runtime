@@ -323,6 +323,7 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
   .hero-content {
     padding-left: 20px;
     border-left: 1px solid var(--color-border);
+    min-width: 480px;
   }
 
   .hero h1 {
@@ -379,13 +380,14 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
   @media (max-width: 900px) {
     .hero-grid {
       grid-template-columns: 1fr;
-      gap: 48px;
+      gap: 32px;
     }
 
     .hero-content {
       padding-left: 0;
       border-left: none;
       text-align: center;
+      min-width: auto;
     }
 
     .hero-subtitle {
@@ -398,11 +400,7 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
     }
 
     .hero-visual {
-      order: -1;
-    }
-
-    .hero-illustration {
-      max-width: 400px;
+      display: none;
     }
   }
 </style>
