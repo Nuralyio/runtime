@@ -10,7 +10,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
 import type { PageElement } from "../../../../runtime/redux/handlers/pages/page.interface";
-import "../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
+import "@nuralyui/code-editor";
 import { $i18nEnabled, $supportedLocales } from "../../../../runtime/state/locale.store";
 import { $currentApplication } from "../../../../runtime/redux/store";
 import { COMPONENT_PROPERTIES, type NativePropertyConfig } from "../../../core/properties/registry";
@@ -43,8 +43,8 @@ export class TypePropertiesPanel extends LitElement {
       overflow: hidden;
     }
 
-    .handler-editor code-editor {
-      --editor-height: 120px;
+    .handler-editor nr-code-editor {
+      --nr-code-editor-height: 120px;
       display: block;
     }
 
@@ -355,15 +355,15 @@ export class TypePropertiesPanel extends LitElement {
           </nr-col>
         </nr-row>
         <div class="handler-editor">
-          <code-editor
+          <nr-code-editor
             language="javascript"
             .code=${editorCode}
-            @change=${(e: CustomEvent) => {
+            @nr-change=${(e: CustomEvent) => {
               const code = e.detail.value;
               this.expandedHandlers.set(prop.name, code);
               this.handleHandlerChange(prop, code);
             }}
-          ></code-editor>
+          ></nr-code-editor>
           <nr-label size="small" variant="secondary">Available: Vars, Props, Component, Database</nr-label>
         </div>
       `;

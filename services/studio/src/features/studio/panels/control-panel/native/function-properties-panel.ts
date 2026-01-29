@@ -16,6 +16,7 @@ import {
 } from '../../../../runtime/redux/store/function-editor';
 import { invokeFunctionHandler } from '../../../../runtime/redux/handlers/functions/invoke-function-handler';
 import { setInvokeStatus, setLastResult, setLastError } from '../../../../runtime/redux/store/function-editor';
+import "@nuralyui/code-editor";
 
 @customElement("function-properties-panel")
 export class FunctionPropertiesPanel extends LitElement {
@@ -101,7 +102,7 @@ export class FunctionPropertiesPanel extends LitElement {
       overflow: hidden;
     }
 
-    .payload-editor code-editor {
+    .payload-editor nr-code-editor {
       height: 100%;
     }
 
@@ -415,12 +416,12 @@ export class FunctionPropertiesPanel extends LitElement {
           <div class="payload-panel">
             <span class="section-label">Request Body (JSON)</span>
             <div class="payload-editor">
-              <code-editor
+              <nr-code-editor
                 theme="vs-dark"
-                @change=${this.handlePayloadChange}
+                @nr-change=${this.handlePayloadChange}
                 .code=${payloadString}
                 language="json"
-              ></code-editor>
+              ></nr-code-editor>
             </div>
             <button
               class="invoke-button"

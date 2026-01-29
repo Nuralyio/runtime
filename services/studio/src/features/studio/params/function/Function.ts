@@ -13,6 +13,7 @@ import {
   setLastResult,
   type ActionStatus,
 } from '../../../runtime/redux/store/function-editor';
+import "@nuralyui/code-editor";
 
 /**
  * Debounce utility function
@@ -176,7 +177,7 @@ export class FunctionContent extends LitElement {
       background: var(--n-color-surface, #fff);
     }
 
-    .editor-panel code-editor {
+    .editor-panel nr-code-editor {
       flex: 1;
       min-height: 0;
     }
@@ -422,15 +423,15 @@ export class FunctionContent extends LitElement {
         <div class="main-content">
           <!-- Code Editor -->
           <div class="editor-panel">
-            <code-editor
+            <nr-code-editor
               theme="vs-dark"
-              @change=${(event: CustomEvent) => {
+              @nr-change=${(event: CustomEvent) => {
                 const { detail: { value } } = event;
                 this.debouncedHandleCodeChange(value);
               }}
               .code=${this.detail?.handler ?? ''}
               language="typescript"
-            ></code-editor>
+            ></nr-code-editor>
           </div>
         </div>
 
