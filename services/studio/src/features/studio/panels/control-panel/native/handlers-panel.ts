@@ -57,7 +57,7 @@ export class NativeHandlersPanel extends LitElement {
     }
 
     .handler-editor nr-code-editor {
-      --nr-code-editor-height: 120px;
+      --nuraly-code-editor-height: 120px;
       display: block;
     }
   `;
