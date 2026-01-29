@@ -30,6 +30,11 @@ export class PropertyGenerator {
     // Check if property is translatable (text/textarea with translatable flag)
     const isTranslatable = property.translatable && (property.type === 'text' || property.type === 'textarea');
 
+    // Debug logging for translatable properties
+    if (property.translatable) {
+      console.log('[PropertyGenerator] Property:', property.name, 'translatable:', property.translatable, 'type:', property.type, 'isTranslatable:', isTranslatable);
+    }
+
     // Determine row children_ids based on whether auto checkbox is needed and handler support
     let rowChildrenIds = [labelUuid];
 
@@ -120,11 +125,16 @@ export class PropertyGenerator {
     
     // Handler wrapper container (if property has handler support)
     if (hasHandlerSupport) {
-      let wrapperChildren = property.autoCheckbox ? [inputContainerUuid, handlerUuid] : [inputUuid, handlerUuid];
-
-      // Add translation toggle icon if translatable
-      if (isTranslatable) {
-        wrapperChildren.push(translationToggleUuid);
+      // Build children: input, then globe icon (if translatable), then handler icon
+      let wrapperChildren: string[];
+      if (property.autoCheckbox) {
+        wrapperChildren = isTranslatable
+          ? [inputContainerUuid, translationToggleUuid, handlerUuid]
+          : [inputContainerUuid, handlerUuid];
+      } else {
+        wrapperChildren = isTranslatable
+          ? [inputUuid, translationToggleUuid, handlerUuid]
+          : [inputUuid, handlerUuid];
       }
 
       components.push({
@@ -135,8 +145,9 @@ export class PropertyGenerator {
         inputHandlers: {},
         style: {
           display: "flex",
-          "justify-content": "space-between",
-          "align-items": "center"
+          "flex-direction": "row",
+          "align-items": "center",
+          gap: "4px"
         },
         style_handlers: {},
         styleBreakPoints: {
@@ -163,49 +174,22 @@ export class PropertyGenerator {
     }
 
     // Translation toggle button (if translatable and has handler support)
+    // Uses dedicated translation-toggle component similar to event handler
     if (isTranslatable && hasHandlerSupport) {
       const propName = property.inputProperty || property.name;
+      console.log('[PropertyGenerator] Creating translation toggle for:', propName, 'uuid:', translationToggleUuid);
       components.push({
         uuid: translationToggleUuid,
         application_id: "1",
         name: `${property.label} Translation Toggle`,
-        type: "icon_button",
-        inputHandlers: {},
+        type: "translation_toggle",
+        ...COMMON_ATTRIBUTES,
         style: {
-          width: "18px",
-          height: "18px",
-          "min-width": "18px",
-          padding: "0"
+          display: "block",
+          width: "30px"
         },
-        style_handlers: {},
-        styleBreakPoints: {
-          mobile: {},
-          tablet: {},
-          laptop: {}
-        },
-        attributesHandlers: {},
-        errors: {},
-        children_ids: [],
-        input: {
-          icon: {
-            type: "string",
-            value: "globe"
-          },
-          size: {
-            type: "string",
-            value: "small"
-          },
-          color: {
-            type: "handler",
-            value: `return $i18n_${propName}_visible ? 'primary' : 'default';`
-          },
-          display: {
-            type: "handler",
-            value: `return $currentEditingApplication?.i18n?.enabled === true && $currentEditingApplication?.i18n?.supportedLocales?.length > 1;`
-          }
-        },
-        event: {
-          click: `$i18n_${propName}_visible = !$i18n_${propName}_visible;`
+        attributes: {
+          "property-name": propName
         }
       });
     }

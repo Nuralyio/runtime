@@ -1,9 +1,0 @@
-{
-  "uuid": "icon_blocks",
-  "name": "Parent Icon Container",
-  "themeContainerId": "studio_icon_theme_container",
-  "configKey": "iconFields",
-  "children_ids": [
-    "icon_collapse_container"
-  ]
-}

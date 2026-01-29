@@ -102,6 +102,7 @@ export const pagesMenu = {
               id: component.uuid,
               page: pageId,
               selected: isSelected,
+              editable: true,
               handlerKey: "onSelect",
               menu: {
                 icon: 'ellipsis-vertical',
@@ -180,6 +181,7 @@ export const pagesMenu = {
             opened: page.uuid === currentPage || isPageWithSelectedComponent,
             icon: 'file',
             type: "page",
+            editable: true,
             handlerKey: "onSelect",
             children: children,
             menu: {
@@ -266,6 +268,31 @@ export const pagesMenu = {
             closeMenu?.();
             ShowSuccessToast('Component name copied to clipboard');
           });
+        }
+      }
+    `,
+    onLabelEdit: /* js */`
+      const { path, oldValue, newValue, item } = EventData;
+      const itemType = item?.type;
+      const itemId = item?.id;
+
+      if (itemType === "page" && itemId) {
+        // Rename page
+        const currentEditingApplication = GetVar("currentEditingApplication");
+        const appPages = Vars[currentEditingApplication?.uuid + ".appPages"];
+        const page = appPages?.find(p => p.uuid === itemId);
+        if (page) {
+          page.name = newValue;
+          updatePage(page);
+          ShowSuccessToast('Page renamed to "' + newValue + '"');
+        }
+      } else if (itemId) {
+        // Rename component
+        const component = Editor.components.find(c => c.uuid === itemId);
+        if (component) {
+          component.name = newValue;
+          UpdateComponentAction(component);
+          ShowSuccessToast('Component renamed to "' + newValue + '"');
         }
       }
     `

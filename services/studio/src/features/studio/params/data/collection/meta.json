@@ -1,9 +1,0 @@
-{
-  "uuid": "collection_blocks",
-  "name": "Parent Collection Container",
-  "themeContainerId": "studio_collection_theme_container",
-  "configKey": "collectionFields",
-  "children_ids": [
-    "collection_collapse_container"
-  ]
-}

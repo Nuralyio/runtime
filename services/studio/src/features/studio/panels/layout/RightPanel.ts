@@ -11,16 +11,22 @@ import "../control-panel/ControlPanelTabs.ts";
 @customElement("right-panel")
 export class RightPanel extends LitElement {
   static styles = [css`
-     aside {
-        display: none;
-      }
-      :host{
+      :host {
+        display: block;
+        width: 350px;
+        height: 100%;
         --nuraly-tabs-content-padding: 20px;
         --nuraly-tabs-content-maring: 10px;
-        --nuraly-tabs-container-background-color : white;
+        --nuraly-tabs-container-background-color: white;
       }
-      aside.visible {
+      :host(.hidden) {
+        display: none;
+      }
+      aside {
         display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
       }`];
 
   @state()
@@ -31,26 +37,44 @@ export class RightPanel extends LitElement {
 
   showSecondsRow: boolean;
 
-  constructor() {
-    super();
-    $environment.subscribe((environment: Environment) => {
+  private unsubscribeEnvironment?: () => void;
+  private unsubscribeEditorState?: () => void;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.unsubscribeEnvironment = $environment.subscribe((environment: Environment) => {
       this.mode = environment.mode;
+      this.updateVisibility();
     });
-    $editorState.subscribe((editorState) => {
+    this.unsubscribeEditorState = $editorState.subscribe((editorState) => {
       this.currentTabType = editorState.currentTab?.type || "page";
+      this.updateVisibility();
     });
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unsubscribeEnvironment?.();
+    this.unsubscribeEditorState?.();
+  }
+
+  private updateVisibility() {
+    // Hide in preview mode, or when viewing workflow/database tabs
+    const shouldHide = this.mode !== ViewMode.Edit ||
+      this.currentTabType === "flow" ||
+      this.currentTabType === "database";
+
+    if (shouldHide) {
+      this.classList.add('hidden');
+    } else {
+      this.classList.remove('hidden');
+    }
+  }
 
   render() {
-    // Hide right panel for flow and database tabs
-    const shouldShow = this.mode === ViewMode.Edit && this.currentTabType !== "flow" && this.currentTabType !== "database";
-
     return html`
-
-      <aside
-        class=" sidebar  flex flex-col ${shouldShow ? "visible" : ""}"
-        style="height: 100%; width: 350px; min-width: 350px; max-width: 350px; flex: 0 0 450px;">
+      <aside class="sidebar">
         <div class="my-4 w-full text-center">
           <span class="font-mono text-xl font-bold tracking-widest"></span>
         </div>

@@ -152,19 +152,20 @@ export class ComponentResizeOverlay extends LitElement {
         top: rect.top,
         left: rect.left
       };
-      
+
       // Store actual dimensions
       this.actualHeight = rect.height;
       this.actualWidth = rect.width;
-      
+
       // Get computed style to check for auto values
       const styleWidth = this.component?.style?.width;
       const styleHeight = this.component?.style?.height;
-      
+
       this.size = {
         width: (!styleWidth || styleWidth === 'auto') ? 'auto' : Math.round(rect.width),
         height: (!styleHeight || styleHeight === 'auto') ? 'auto' : Math.round(rect.height)
       };
+
       this.requestUpdate();
     }
   }
@@ -242,30 +243,35 @@ export class ComponentResizeOverlay extends LitElement {
   private applyResize() {
     const el = this.componentRef.value;
     if (!el) return;
-    
-    const { type: type, uuid, application_id: appId } = this.component;
+
+    const { type, uuid, application_id: appId } = this.component;
     const styleUpdates: any = {};
-    
+
+    // Get actual rendered size from bounding rect
+    const rect = el.getBoundingClientRect();
+    const width = `${Math.round(rect.width)}px`;
+    const height = `${Math.round(rect.height)}px`;
+
     switch(type) {
       case ComponentType.Button:
-        styleUpdates["--nuraly-button-width"] = el.style.width;
+        styleUpdates["--nuraly-button-width"] = width;
         break;
       case ComponentType.Icon:
-        styleUpdates["--nuraly-icon-width"] = el.style.width;
-        styleUpdates["--nuraly-icon-height"] = el.style.height;
+        styleUpdates["--nuraly-icon-width"] = width;
+        styleUpdates["--nuraly-icon-height"] = height;
         break;
       case ComponentType.Select:
-        styleUpdates["--nuraly-select-width"] = el.style.width;
+        styleUpdates["--nuraly-select-width"] = width;
         break;
       case ComponentType.TextInput:
       case ComponentType.DatePicker:
-        styleUpdates.width = el.style.width;
+        styleUpdates.width = width;
         break;
       default:
-        styleUpdates.width = el.style.width;
-        styleUpdates.height = el.style.height;
+        styleUpdates.width = width;
+        styleUpdates.height = height;
     }
-    
+
     updateComponentAttributes(appId, uuid, "style", styleUpdates);
   }
 

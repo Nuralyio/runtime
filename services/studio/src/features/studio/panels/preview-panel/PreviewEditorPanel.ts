@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 import { keyed } from "lit/directives/keyed.js";
-import { ViewMode, $currentPageViewPort, $pageZoom, $draggingComponentInfo, type ComponentElement } from '@nuraly/runtime/redux/store';
+import { ViewMode, $currentPageViewPort, $draggingComponentInfo, type ComponentElement } from '@nuraly/runtime/redux/store';
 import { type Ref } from "lit/directives/ref.js";
 
 import { eventDispatcher } from '@nuraly/runtime/utils';
@@ -33,6 +33,54 @@ export class PreviewEditorPanel extends LitElement {
     .zoom-area {
       overflow: visible;
       min-height: 100%;
+      transform-origin: top left;
+    }
+
+    /* Zoom Controls */
+    .zoom-controls {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .zoom-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .zoom-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #333;
+    }
+
+    .zoom-btn:active {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .zoom-value {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 12px;
+      color: #666;
+      min-width: 48px;
+      text-align: center;
     }
   `;
 
@@ -133,12 +181,25 @@ export class PreviewEditorPanel extends LitElement {
         `) : nothing}
       </div>
 
+      ${this.mode === ViewMode.Edit ? html`
+        <div class="zoom-controls">
+          <button class="zoom-btn" @click=${() => this.handleZoomOut()} title="Zoom Out">
+            <nr-icon name="minus" size="small"></nr-icon>
+          </button>
+          <span class="zoom-value">${this.zoomLevel}%</span>
+          <button class="zoom-btn" @click=${() => this.handleZoomIn()} title="Zoom In">
+            <nr-icon name="plus" size="small"></nr-icon>
+          </button>
+        </div>
+      ` : nothing}
+
       <div class="page-container">
         <div
           class="zoom-area"
           style=${styleMap({
             margin: "0 auto",
             width: this.currentPageViewPort,
+            transform: `scale(${this.zoomLevel / 100})`,
           })}
         >
           <slot></slot>
@@ -180,10 +241,6 @@ export class PreviewEditorPanel extends LitElement {
       this.updateViewPort(viewPort);
     });
 
-    $pageZoom.subscribe(pageZoom => {
-      this.updateZoomLevel(pageZoom);
-    });
-
     $draggingComponentInfo.subscribe(draggingInfo => {
       if (draggingInfo === null) {
         requestAnimationFrame(() => {
@@ -203,9 +260,12 @@ export class PreviewEditorPanel extends LitElement {
     this.requestUpdate();
   }
 
-  private updateZoomLevel(pageZoom: string) {
-    this.zoomLevel = Number(pageZoom) || 100;
-    this.requestUpdate();
+  private handleZoomIn() {
+    this.zoomLevel = Math.min(this.zoomLevel + 10, 200);
+  }
+
+  private handleZoomOut() {
+    this.zoomLevel = Math.max(this.zoomLevel - 10, 25);
   }
 
   /**

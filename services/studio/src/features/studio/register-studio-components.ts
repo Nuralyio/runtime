@@ -26,6 +26,7 @@ import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapp
 import "./components/i18n/TranslationsInput";
 import "./components/i18n/TranslationsEditor";
 import "./components/i18n/PropertyTranslationCollapse";
+import "./components/i18n/TranslationToggle";
 
 export function registerStudioComponents(): void {
   ComponentRegistry.register({ type: ComponentType.Event, tagName: "parameter-event-handler" });
@@ -60,5 +61,12 @@ export function registerStudioComponents(): void {
     template: (props) => html`<property-translation-collapse
       .component=${props.component}
     ></property-translation-collapse>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.TranslationToggle,
+    tagName: "translation-toggle",
+    template: (props) => html`<translation-toggle
+      .component=${props.component}
+    ></translation-toggle>`,
   });
 }
