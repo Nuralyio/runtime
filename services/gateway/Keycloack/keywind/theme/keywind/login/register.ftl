@@ -7,11 +7,12 @@
 
 <@layout.registrationLayout
   displayMessage=!messagesPerField.existsError("firstName", "lastName", "email", "username", "password", "password-confirm")
+  headerSubtitle="Start your journey"
   ;
   section
 >
   <#if section="header">
-    ${msg("registerTitle")}
+    Create Your Account
   <#elseif section="form">
     <@form.kw action=url.registrationAction method="post">
       <@input.kw
@@ -81,8 +82,11 @@
       </@buttonGroup.kw>
     </@form.kw>
   <#elseif section="nav">
-    <@link.kw color="secondary" href=url.loginUrl size="small">
-      ${kcSanitize(msg("backToLogin"))?no_esc}
-    </@link.kw>
+    <div class="text-center text-secondary-600">
+      Already have an account?
+      <@link.kw color="primary" href=url.loginUrl>
+        Sign in
+      </@link.kw>
+    </div>
   </#if>
 </@layout.registrationLayout>
