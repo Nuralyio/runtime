@@ -6,6 +6,20 @@
 
 const showcases = [
   {
+    label: "AI Agents",
+    title: "Autonomous agents that get things done",
+    description: "Build AI agents that can reason, plan, and execute tasks autonomously. Connect to OpenAI, Anthropic, Gemini, or your own models. Add tools, memory, and RAG capabilities with a few clicks.",
+    visual: "AI Agent",
+    reverse: false
+  },
+  {
+    label: "Workflow Automation",
+    title: "Visual workflow orchestration",
+    description: "Design complex automations with our drag-and-drop workflow builder. Add conditions, loops, parallel execution, and human-in-the-loop approvals. Trigger from webhooks, schedules, or events.",
+    visual: "Workflow Builder",
+    reverse: true
+  },
+  {
     label: "Visual Design",
     title: "Build interfaces visually",
     description: "Drag components onto your canvas. Adjust properties, styles, and layouts in real-time. Preview on any device size instantly.",
@@ -31,7 +45,7 @@ const showcases = [
             <p class="section-label">{item.label}</p>
             <h2>{item.title}</h2>
             <p>{item.description}</p>
-            <a href="/docs" class="link">
+            <a href="http://docs.nuraly.io/" class="link">
               Learn more
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M6 12l4-4-4-4"/>
@@ -41,6 +55,12 @@ const showcases = [
           <div class="showcase-visual">
             {item.visual === "Editor Preview" ? (
               <img src="/images/studio-editor.png" alt="Visual Editor Preview" class="showcase-image" />
+            ) : item.visual === "Function Editor" ? (
+              <img src="/images/studio-faas.png" alt="Function Editor Preview" class="showcase-image" />
+            ) : item.visual === "AI Agent" ? (
+              <img src="/images/studio-agent.png" alt="AI Agent Builder" class="showcase-image" />
+            ) : item.visual === "Workflow Builder" ? (
+              <img src="/images/studio-workflow.png" alt="Workflow Designer" class="showcase-image" />
             ) : (
               item.visual
             )}
@@ -50,3 +70,37 @@ const showcases = [
     </div>
   ))}
 </section>
+
+<style>
+  .showcase-placeholder {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, var(--color-primary-bg), #fff);
+    border: 1px dashed var(--color-border-dashed);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--color-primary-light);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .showcase-placeholder svg {
+    width: 60%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  .showcase-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    object-fit: contain;
+    background: #fff;
+  }
+</style>
