@@ -326,10 +326,6 @@ export const prerender = false;
       }
 
       .showcase-visual {
-        aspect-ratio: 4/3;
-        background: linear-gradient(135deg, var(--color-primary-bg), #fff);
-        border: 1px dashed var(--color-border-dashed);
-        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -340,9 +336,14 @@ export const prerender = false;
 
       .showcase-image {
         width: 100%;
-        height: 100%;
-        object-fit: contain;
+        height: auto;
         border-radius: 12px;
+        border: 1px solid var(--color-border);
+        object-fit: contain;
+        object-position: top left;
+        border-radius: 12px;
+        transform: scale(1.2);
+        transform-origin: top left;
       }
 
       @media (max-width: 900px) {
@@ -377,8 +378,8 @@ export const prerender = false;
       }
 
       .demo-container {
-        max-width: 640px;
-        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
         background: #ffffff;
         border: 1px solid var(--color-border);
         border-radius: 12px;
