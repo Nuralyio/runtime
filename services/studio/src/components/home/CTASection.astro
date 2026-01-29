@@ -3,11 +3,6 @@
  * CTASection Component
  * Minimal call-to-action
  */
-
-const realm = import.meta.env.PUBLIC_KEYCLOAK_REALM || 'nuraly';
-const clientId = import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID || 'nuraly-web';
-const redirectUri = import.meta.env.PUBLIC_KEYCLOAK_REDIRECT_URI || 'http://localhost/cb';
-const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrations?client_id=${clientId}&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(redirectUri)}`;
 ---
 
 <section class="cta" data-animate>
@@ -16,7 +11,6 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
     <p>Visual workflows. Enterprise security. Your data stays yours.</p>
     <div class="cta-actions">
       <a href="https://calendly.com/aymen-nuraly" class="btn btn-primary">Schedule a Call</a>
-      <a href="/case-studies" class="btn btn-secondary">See Case Studies</a>
     </div>
   </div>
 </section>
