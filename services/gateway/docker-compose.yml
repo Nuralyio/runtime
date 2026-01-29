@@ -45,6 +45,7 @@ services:
       CHAT_HOSTNAME: ${CHAT_HOSTNAME:-chat.copilot.tn:6900}
     volumes:
       - ./Nginx/nginx-fully.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./Nginx/errors:/usr/local/openresty/nginx/conf/errors
     ports:
       - 80:80
     depends_on:

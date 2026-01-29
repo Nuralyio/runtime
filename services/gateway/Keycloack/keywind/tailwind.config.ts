@@ -9,21 +9,36 @@ export default {
   plugins: [require('@tailwindcss/forms')],
   theme: {
     extend: {
+      fontFamily: {
+        mono: ['SF Mono', 'Fira Code', 'Fira Mono', 'Menlo', 'monospace'],
+      },
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#4285F4',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50: '#f0f0f8',
+          100: '#e0e0f0',
+          200: '#c0c0e0',
+          300: '#9090c0',
+          400: '#5050a0',
+          500: '#14144b',
+          600: '#1e1e6e',
+          700: '#0f0f3c',
+          800: '#0a0a32',
+          900: '#050520',
+          950: '#020210',
         },
-        secondary: colors.slate,
+        secondary: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e8e8f0',
+          300: '#d8d8e4',
+          400: '#8c8ca8',
+          500: '#5c5c7a',
+          600: '#4a4a68',
+          700: '#0f0f3c',
+          800: '#0a0a32',
+          900: '#050520',
+          950: '#020210',
+        },
 
         provider: {
           apple: '#000000',
