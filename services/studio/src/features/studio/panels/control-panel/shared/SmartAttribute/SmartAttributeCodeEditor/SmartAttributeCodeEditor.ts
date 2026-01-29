@@ -1,8 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
-// Static import: rely on CodeEditor to be SSR-safe internally
-import "../../../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
+// Import NuralyUI Code Editor component
+import "@nuralyui/code-editor";
 import Editor from "../../../../../../runtime/state/editor";
 @customElement("smart-attribute-codeeditor")
 export class SmartAttributeCodeeditor extends LitElement {
@@ -53,16 +53,16 @@ export class SmartAttributeCodeeditor extends LitElement {
       <div style=${styleMap(this.containerStyle)}>
         ${this.isEditorLoaded
           ? html`
-              <code-editor
+              <nr-code-editor
                 theme="vs"
-                @change=${(event: CustomEvent) => {
+                @nr-change=${(event: CustomEvent) => {
                   const {
                     detail: { value }
                   } = event;
                   this.debounce(() => this.handleCodeEditorChange(value), 1000);
                 }}
-                @focusin=${() => { Editor.isEditingHandler = true; }}
-                @focusout=${() => {
+                @nr-focus=${() => { Editor.isEditingHandler = true; }}
+                @nr-blur=${() => {
                   // Only clear the flag if no debounce is pending
                   // This prevents the editor from closing while a save is in progress
                   if (!this.debounceTimeout) {
@@ -71,7 +71,7 @@ export class SmartAttributeCodeeditor extends LitElement {
                 }}
                 .code=${this.value}
                 language="javascript"
-              ></code-editor>
+              ></nr-code-editor>
             `
           : html`<p>Loading editor...</p>`}
         <markdown-renderer markdown=${this.data}></markdown-renderer>

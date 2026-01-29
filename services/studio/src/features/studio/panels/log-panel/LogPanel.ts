@@ -6,6 +6,7 @@ import { LocalStorage, RuntimeHelpers } from '@nuraly/runtime/utils';
 import { executeHandler, ExecuteInstance } from '@nuraly/runtime';
 import { $componentById } from '@nuraly/runtime/redux/store';
 import Editor from '@nuraly/runtime/state';
+import "@nuralyui/code-editor";
 
 @customElement("log-panel")
 export class LogPanel extends LitElement {
@@ -337,13 +338,13 @@ export class LogPanel extends LitElement {
             <div class="log-content">
               ${repeat(this.logContent, (entry, index) => index, (entry) => html`<div>${entry}</div>`)}
             </div>
-            <code-editor
+            <nr-code-editor
               .language=${'javascript'}
               .code=${this.code}
-              @change=${(e: CustomEvent) => {
+              @nr-change=${(e: CustomEvent) => {
                 this.code = e.detail.value;
               }}
-              @editor-keydown=${async (e: CustomEvent) => {
+              @nr-keydown=${async (e: CustomEvent) => {
                 // Handle up/down arrow keys for history navigation (with or without Ctrl)
                 if ((e.detail.key === 'ArrowUp' && e.detail.shiftKey) ) {
                   if (this.historyPosition < this.commandHistory.length - 1) {
@@ -372,18 +373,18 @@ export class LogPanel extends LitElement {
                       }
                       this.historyPosition = -1;
                     }
-                    
+
                     // Process the code
                     let processedCode = this.code;
                     if (!processedCode.startsWith('return')) {
                       processedCode = 'return ' + processedCode;
                     }
                     processedCode = `return (async () => { ${processedCode} })()`;
-                    
+
                     const fn = executeHandler({}, processedCode, {});
                     const result = RuntimeHelpers.isPromise(fn) ? await fn : fn;
                     Editor.Console.log(result);
-                            
+
                   } catch(error) {
                     EditorInstance.Console.log(formatCodeWithErrorHighlight(this.code, error));
                   }
@@ -392,8 +393,8 @@ export class LogPanel extends LitElement {
                   e.preventDefault();
                 }
               }}
-              style="--editor-height: 30px">
-            </code-editor>
+              style="--nr-code-editor-height: 30px">
+            </nr-code-editor>
           </div>
         `
         : html`
