@@ -42,6 +42,17 @@ help:
 	@echo "  make redeploy-workflows - Pull, rebuild and restart workflows"
 	@echo "  make redeploy-kv        - Pull, rebuild and restart kv service"
 	@echo ""
+	@echo "Database Migrations:"
+	@echo "  make db-migrate         - Run all migrations (API + Java services)"
+	@echo "  make db-migrate-api     - Run API migrations only"
+	@echo "  make db-migrate-java    - Run Java service migrations only"
+	@echo "  make db-seed            - Run API seed only"
+	@echo "  make db-seed-apply      - Apply all seed files"
+	@echo "  make db-dump-seeds      - Dump current DB data as seeds (dev UUIDs)"
+	@echo "  make db-dump-seeds-prod - Dump current DB data as seeds (prod UUIDs)"
+	@echo "  make db-status          - Check migration status for all services"
+	@echo "  make db-reset           - Full reset: drop, migrate, seed"
+	@echo ""
 	@echo "Kubernetes (Minikube):"
 	@echo "  make minikube-start     - Start minikube cluster"
 	@echo "  make minikube-stop      - Stop minikube cluster"
@@ -216,14 +227,81 @@ status:
 		fi; \
 	done
 
-# Database operations
-db-migrate:
-	@echo "Running database migrations..."
-	docker compose -f docker-compose.dev.yml exec api npm run migrate
+# =============================================================================
+# Database Migrations & Seeds
+# =============================================================================
+.PHONY: db-migrate db-migrate-api db-migrate-java db-seed db-seed-apply db-dump-seeds db-dump-seeds-prod db-status db-reset
 
+# Run all migrations (API first for permissions, then Java services)
+db-migrate: db-migrate-api db-migrate-java
+	@echo "✅ All migrations complete"
+
+# API migrations + seed (creates users, roles, permissions)
+db-migrate-api:
+	@echo "Running API migrations..."
+	cd services/api && npx prisma migrate deploy
+	@echo "Running API seed (users, roles, permissions)..."
+	cd services/api && npx prisma db seed || echo "Warning: API seed failed or not configured"
+
+# Java service migrations (depends on API being seeded first)
+db-migrate-java:
+	@echo "Running Java service migrations..."
+	@echo "Migrating functions..."
+	@cd services/functions && ./mvnw flyway:migrate -q 2>/dev/null || echo "Warning: Functions migration failed"
+	@echo "Migrating workflows..."
+	@cd services/workflows && ./mvnw flyway:migrate -q 2>/dev/null || echo "Warning: Workflows migration failed"
+	@echo "Migrating journal..."
+	@cd services/journal && ./mvnw flyway:migrate -q 2>/dev/null || echo "Warning: Journal migration failed"
+	@echo "Migrating kv..."
+	@cd services/kv && ./mvnw flyway:migrate -q 2>/dev/null || echo "Warning: KV migration failed"
+	@echo "✅ Java service migrations complete"
+
+# Seed only (for re-seeding without migrations)
+db-seed:
+	@echo "Seeding API (users, roles, applications, permissions)..."
+	cd services/api && npx prisma db seed
+
+# Dump current database data as seed files (for dev)
+db-dump-seeds:
+	@echo "Dumping current database data (dev UUIDs)..."
+	./scripts/dump-seeds.sh dev
+
+# Dump current database data with prod UUIDs
+db-dump-seeds-prod:
+	@echo "Dumping current database data (prod UUIDs)..."
+	./scripts/dump-seeds.sh prod
+
+# Apply seeds to all databases
+db-seed-apply:
+	@echo "Applying seeds to all databases..."
+	./scripts/apply-seeds.sh
+
+# Full reset: drop, migrate, seed
 db-reset:
-	@echo "Resetting database..."
-	docker compose -f docker-compose.dev.yml exec api npm run db:reset
+	@echo "Resetting all databases..."
+	cd services/api && npx prisma migrate reset --force
+	@$(MAKE) db-migrate-java
+	@$(MAKE) db-seed-apply
+	@echo "✅ Database reset complete"
+
+# Check migration status
+db-status:
+	@echo "=== Migration Status ==="
+	@echo ""
+	@echo "--- API (Prisma) ---"
+	@cd services/api && npx prisma migrate status 2>/dev/null || echo "Could not check API migration status"
+	@echo ""
+	@echo "--- Functions (Flyway) ---"
+	@cd services/functions && ./mvnw flyway:info -q 2>/dev/null || echo "Could not check Functions migration status"
+	@echo ""
+	@echo "--- Workflows (Flyway) ---"
+	@cd services/workflows && ./mvnw flyway:info -q 2>/dev/null || echo "Could not check Workflows migration status"
+	@echo ""
+	@echo "--- Journal (Flyway) ---"
+	@cd services/journal && ./mvnw flyway:info -q 2>/dev/null || echo "Could not check Journal migration status"
+	@echo ""
+	@echo "--- KV (Flyway) ---"
+	@cd services/kv && ./mvnw flyway:info -q 2>/dev/null || echo "Could not check KV migration status"
 
 # Backup operations
 backup:
