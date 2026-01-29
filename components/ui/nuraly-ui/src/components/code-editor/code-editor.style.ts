@@ -8,16 +8,16 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    --nr-code-editor-width: 100%;
-    --nr-code-editor-height: 100%;
-    --nr-code-editor-min-height: 0;
-    --nr-code-editor-max-height: none;
-    --nr-code-editor-border-radius: 4px;
-    --nr-code-editor-border: 1px solid var(--nr-border-color, #e0e0e0);
+    --nuraly-code-editor-width: 100%;
+    --nuraly-code-editor-height: 100%;
+    --nuraly-code-editor-min-height: 0;
+    --nuraly-code-editor-max-height: none;
+    --nuraly-code-editor-border-radius: 4px;
+    --nuraly-code-editor-border: 1px solid var(--nuraly-border-color, #e0e0e0);
 
     display: block;
-    width: var(--nr-code-editor-width);
-    height: var(--nr-code-editor-height);
+    width: var(--nuraly-code-editor-width);
+    height: var(--nuraly-code-editor-height);
   }
 
   :host([hidden]) {
@@ -27,9 +27,9 @@ export const styles = css`
   .editor-container {
     width: 100%;
     height: 100%;
-    min-height: var(--nr-code-editor-min-height);
-    max-height: var(--nr-code-editor-max-height);
-    border-radius: var(--nr-code-editor-border-radius);
+    min-height: var(--nuraly-code-editor-min-height);
+    max-height: var(--nuraly-code-editor-max-height);
+    border-radius: var(--nuraly-code-editor-border-radius);
     overflow: hidden;
   }
 
