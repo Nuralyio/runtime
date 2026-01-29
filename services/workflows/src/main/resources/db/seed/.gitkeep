@@ -1,0 +1,2 @@
+# Seed data directory
+# Run 'make db-dump-seeds' to generate current-data.sql
