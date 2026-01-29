@@ -1,43 +1,37 @@
 package com.nuraly.functions.service;
 
 import com.nuraly.functions.entity.FunctionEntity;
-import com.nuraly.functions.exception.ImageBuildError;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.jboss.logging.Logger;
 
 /**
- * Builds functions - compiles to WASM instead of Docker containers.
+ * Manages function builds.
+ *
+ * With Deno workers, there is no compilation step - handlers are sent
+ * directly to workers at invocation time. This class exists for API
+ * compatibility and validates the function is ready for execution.
  */
 @ApplicationScoped
 @Transactional
 public class ContainerManager {
 
-    @Inject
-    WasmCompilerService wasmCompiler;
-
-    @Inject
-    WasmRuntimeService wasmRuntime;
+    private static final Logger LOG = Logger.getLogger(ContainerManager.class);
 
     /**
-     * Build function - compiles to WASM and deploys to runtime
+     * Build function - validates function is ready for execution.
+     * With Deno workers, no actual compilation is needed.
      */
-    public String buildDockerImage(FunctionEntity functionEntity) throws ImageBuildError {
-        try {
-            String functionId = functionEntity.getId().toString();
+    public String buildDockerImage(FunctionEntity functionEntity) {
+        String functionId = functionEntity.getId().toString();
 
-            // Compile TypeScript/JavaScript to WASM
-            byte[] wasmBytes = wasmCompiler.compileToWasm(functionEntity);
-
-            // Deploy to WASM runtime
-            wasmRuntime.deploy(functionId, wasmBytes);
-
-            System.out.println("Function compiled and deployed: " + functionEntity.getLabel());
-
-            return "wasm:" + functionId;
-
-        } catch (Exception e) {
-            throw new ImageBuildError("Failed to compile function: " + e.getMessage());
+        // Validate handler exists
+        if (functionEntity.getHandler() == null || functionEntity.getHandler().isBlank()) {
+            throw new IllegalArgumentException("Function handler is empty");
         }
+
+        LOG.infof("Function %s validated and ready for execution", functionEntity.getLabel());
+
+        return "deno:" + functionId;
     }
 }

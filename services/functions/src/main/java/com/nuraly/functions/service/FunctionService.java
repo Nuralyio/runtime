@@ -5,6 +5,7 @@ import com.nuraly.functions.dto.InvokeRequest;
 import com.nuraly.functions.dto.mapper.FunctionDTOMapper;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.exception.FunctionNotFoundException;
+import org.jboss.logging.Logger;
 import com.nuraly.library.permission.PermissionCheckRequest;
 import com.nuraly.library.permission.PermissionClient;
 import com.nuraly.library.permission.PermissionDeniedException;
@@ -20,6 +21,8 @@ import java.util.UUID;
 @Transactional
 public class FunctionService {
 
+    private static final Logger LOG = Logger.getLogger(FunctionService.class);
+
     @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
     boolean permissionsEnabled;
 
@@ -31,9 +34,6 @@ public class FunctionService {
 
     @Inject
     FunctionInvoker functionInvoker;
-
-    @Inject
-    WasmRuntimeService wasmRuntime;
 
     @Inject
     PermissionClient permissionClient;
@@ -230,8 +230,12 @@ public class FunctionService {
     }
 
     /**
-     * Deploy a function to the V8 runtime.
+     * Deploy a function.
      * Permission is verified by the gateway.
+     *
+     * With Deno workers, this is a no-op since handlers are sent directly
+     * to workers via RabbitMQ at invocation time. URL imports are resolved
+     * natively by Deno.
      *
      * @param functionId The ID of the function to deploy.
      * @param userUuid The user's UUID.
@@ -239,7 +243,7 @@ public class FunctionService {
      * @throws PermissionDeniedException If authentication is required.
      */
     public void deployFunction(UUID functionId, String userUuid)
-            throws FunctionNotFoundException, PermissionDeniedException, Exception {
+            throws FunctionNotFoundException, PermissionDeniedException {
         checkFunctionPermission(functionId, userUuid);
 
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
@@ -247,9 +251,10 @@ public class FunctionService {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
         }
 
-        // Deploy handler directly to V8 runtime
-        wasmRuntime.deploy(functionId.toString(), functionEntity.getHandler());
+        // With Deno workers, deployment is a no-op - handlers are sent at invocation time
+        LOG.infof("Function %s ready for execution", functionId);
     }
+
     public String invokeFunction(UUID functionId, InvokeRequest request) throws FunctionNotFoundException, Exception {
         FunctionEntity functionEntity = FunctionEntity.findById(functionId);
         if (functionEntity == null) {
@@ -258,5 +263,4 @@ public class FunctionService {
 
         return functionInvoker.invoke(functionEntity, request);
     }
-
 }
