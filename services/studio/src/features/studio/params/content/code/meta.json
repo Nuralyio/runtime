@@ -1,9 +1,0 @@
-{
-  "uuid": "code_blocks",
-  "name": "Parent Code Container",
-  "themeContainerId": "studio_code_theme_container",
-  "configKey": "codeFields",
-  "children_ids": [
-    "code_collapse_container"
-  ]
-}

@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { $currentApplication, $applicationComponents, $components } from '@nuraly/runtime/redux/store';
+import { $currentApplication, $applicationComponents, $components, setSelectedComponents } from '@nuraly/runtime/redux/store';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 import Editor from '@nuraly/runtime/state/editor';
@@ -9,7 +9,7 @@ import Editor from '@nuraly/runtime/state/editor';
  * Message types for iframe communication
  */
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE' | 'PAGE_STYLE_UPDATE';
   payload?: any;
 }
 
@@ -31,6 +31,21 @@ export class PreviewIFramePanel extends LitElement {
       align-items: flex-start;
       overflow: auto;
       background: #f5f5f5;
+    }
+
+    /* Preview mode: full width, no margins */
+    .iframe-container.preview-mode {
+      background: white;
+    }
+
+    .iframe-container.preview-mode .iframe-wrapper {
+      margin: 0;
+      width: 100% !important;
+      height: 100% !important;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      transform: none !important;
     }
 
     .iframe-wrapper {
@@ -115,6 +130,7 @@ export class PreviewIFramePanel extends LitElement {
   @state() private iframeReady = false;
   @state() private currentPlatform: { platform: string; width: string; height?: string } = Editor.currentPlatform;
   @state() private zoomLevel: number = 100;
+  @state() private currentMode: string = 'edit';
 
   // Track current page to avoid sending duplicate SET_PAGE messages
   private currentPageId: string = '';
@@ -134,6 +150,7 @@ export class PreviewIFramePanel extends LitElement {
     this.setupComponentStoreSubscription();
     this.setupModeListener();
     this.setupPageChangeListener();
+    this.setupPageStyleListener();
     this.setupPlatformListener();
     this.setupZoomListener();
     this.setupLocaleListener();
@@ -276,8 +293,12 @@ export class PreviewIFramePanel extends LitElement {
   }
 
   private setupModeListener() {
+    // Set initial mode
+    this.currentMode = ExecuteInstance.Vars.currentEditingMode || 'edit';
+
     eventDispatcher.on('Vars:currentEditingMode', () => {
       const mode = ExecuteInstance.Vars.currentEditingMode;
+      this.currentMode = mode || 'edit';
       this.sendMessageToIframe({
         type: 'SET_MODE',
         payload: mode
@@ -305,6 +326,21 @@ export class PreviewIFramePanel extends LitElement {
     });
   }
 
+  private setupPageStyleListener() {
+    // Listen for page style updates and sync to iframe
+    eventDispatcher.on('page:style-updated', (data: { pageId: string; style: any }) => {
+      if (this.iframeReady && data?.pageId && data?.style) {
+        this.sendMessageToIframe({
+          type: 'PAGE_STYLE_UPDATE',
+          payload: {
+            pageId: data.pageId,
+            style: data.style
+          }
+        });
+      }
+    });
+  }
+
   private handleIframeMessage(message: PreviewMessage) {
     switch (message.type) {
       case 'READY':
@@ -314,6 +350,42 @@ export class PreviewIFramePanel extends LitElement {
         this.handleComponentClicked(message.payload);
         break;
       case 'COMPONENT_UPDATED':
+        // If payload has component data, update the parent's store
+        if (message.payload?.component) {
+          const appId = this.applicationId || $currentApplication.get()?.uuid;
+          if (appId) {
+            const currentComponents = $components.get()[appId] || [];
+            const index = currentComponents.findIndex(c => c.uuid === message.payload.uuid);
+            if (index !== -1) {
+              // Merge the updated styles/attributes into the existing component
+              const existingComponent = currentComponents[index];
+              if (message.payload.component.style) {
+                existingComponent.style = { ...existingComponent.style, ...message.payload.component.style };
+              }
+              if (message.payload.component.input) {
+                existingComponent.input = { ...existingComponent.input, ...message.payload.component.input };
+              }
+              // Copy other top-level properties
+              Object.keys(message.payload.component).forEach(key => {
+                if (key !== 'style' && key !== 'input') {
+                  existingComponent[key] = message.payload.component[key];
+                }
+              });
+
+              // Also update selectedComponents if this component is selected
+              const selectedComponents = ExecuteInstance.Vars.selectedComponents;
+              if (selectedComponents?.length && selectedComponents[0]?.uuid === message.payload.uuid) {
+                selectedComponents[0] = existingComponent;
+              }
+            }
+          }
+        }
+
+        // Add to sentToIframe to prevent loop (parent -> iframe -> parent -> iframe...)
+        if (message.payload?.uuid) {
+          this.sentToIframe.add(message.payload.uuid);
+        }
+
         eventDispatcher.emit('component:updated', message.payload);
         break;
       case 'COMPONENT_HOVERED':
@@ -346,6 +418,8 @@ export class PreviewIFramePanel extends LitElement {
     if (!selectedComponent) return;
 
     ExecuteInstance.VarsProxy.selectedComponents = [selectedComponent];
+    // Update global selection state for control panel
+    setSelectedComponents([selectedComponent]);
     const absoluteRect = this.calculateAbsoluteRect(payload.rect);
     this.dispatchEvent(new CustomEvent('component-selected-from-iframe', {
       detail: { component: selectedComponent, rect: absoluteRect },
@@ -461,9 +535,10 @@ export class PreviewIFramePanel extends LitElement {
     const iframeWidth = this.currentPlatform?.width || '100%';
     const iframeHeight = this.currentPlatform?.height || '100%';
     const scale = this.zoomLevel / 100;
+    const isPreviewMode = this.currentMode === 'preview';
 
     return html`
-      <div class="iframe-container">
+      <div class="iframe-container ${isPreviewMode ? 'preview-mode' : ''}">
         ${this.isLoading ? html`
           <div class="loading-overlay">
             <div class="loading-spinner"></div>

@@ -1,0 +1,58 @@
+---
+/**
+ * HomeHeader Component
+ * Clean header like baseten
+ */
+
+const realm = import.meta.env.PUBLIC_KEYCLOAK_REALM || 'nuraly';
+const clientId = import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID || 'nuraly-web';
+const redirectUri = import.meta.env.PUBLIC_KEYCLOAK_REDIRECT_URI || 'http://localhost/cb';
+const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrations?client_id=${clientId}&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(redirectUri)}`;
+---
+
+<header class="home-header" style="background: #f8fafc;">
+  <div class="container">
+    <div class="home-header-inner">
+      <a href="/" class="home-logo">
+        <span class="logo-text">Nuraly</span>
+        <span class="logo-slogan">The AI Agentic platform</span>
+      </a>
+
+      <nav class="home-nav">
+        <div class="home-nav-links">
+          <a href="#features" class="home-nav-link">Features</a>
+          <a href="http://docs.nuraly.io/" class="home-nav-link">Docs</a>
+        </div>
+
+        <div class="home-nav-actions">
+          <a href="/dashboard" class="btn btn-secondary">LOG IN</a>
+          <a href={registrationUrl} class="btn btn-primary">GET STARTED</a>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .home-logo {
+    margin-left: 21px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f0f3c;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .logo-slogan {
+    font-size: 11px;
+    color: #6b7280;
+    letter-spacing: 0.02em;
+  }
+</style>

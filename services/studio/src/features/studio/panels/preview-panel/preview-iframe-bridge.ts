@@ -6,16 +6,27 @@
  */
 
 import { $currentApplication, $components } from '@nuraly/runtime/redux/store';
+import { $pages } from '@nuraly/runtime/redux/store/page';
 import { ExecuteInstance } from '@nuraly/runtime';
 import { eventDispatcher } from '@nuraly/runtime/utils';
 
 export interface PreviewMessage {
-  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE';
+  type: 'COMPONENTS_UPDATE' | 'COMPONENT_UPDATE_SINGLE' | 'COMPONENT_DELETED' | 'COMPONENT_SELECTED' | 'SET_MODE' | 'SELECT_COMPONENT' | 'READY' | 'COMPONENT_CLICKED' | 'COMPONENT_UPDATED' | 'COMPONENT_HOVERED' | 'SET_PAGE' | 'SET_LOCALE' | 'PAGE_STYLE_UPDATE';
   payload?: any;
 }
 
 // Track UUIDs of components being updated from parent to prevent loops
 const updatesFromParent = new Set<string>();
+
+/**
+ * Strip non-serializable properties from a component before sending to parent.
+ * Properties like Instance (Proxy), parent (circular ref), children (circular ref) cannot be cloned.
+ */
+function sanitizeComponentForParent(component: any): any {
+  if (!component) return component;
+  const { Instance, parent, children, __microAppContext, ...serializableProps } = component;
+  return serializableProps;
+}
 
 /**
  * Initialize the iframe bridge for communication with parent editor
@@ -48,6 +59,25 @@ export function initializePreviewBridge() {
       updatesFromParent.delete(data.uuid);
       return;
     }
+
+    // Get the full updated component from store and send to parent
+    const appId = $currentApplication.get()?.uuid;
+    if (appId && data?.uuid) {
+      const components = $components.get()[appId] || [];
+      const updatedComponent = components.find(c => c.uuid === data.uuid);
+      if (updatedComponent) {
+        sendMessageToParent({
+          type: 'COMPONENT_UPDATED',
+          payload: {
+            uuid: data.uuid,
+            component: sanitizeComponentForParent(updatedComponent)
+          }
+        });
+        return;
+      }
+    }
+
+    // Fallback: send just the data (for cases without uuid)
     sendMessageToParent({
       type: 'COMPONENT_UPDATED',
       payload: data
@@ -84,6 +114,9 @@ function handleParentMessage(event: MessageEvent) {
     case 'SET_LOCALE':
       handleSetLocale(message.payload);
       break;
+    case 'PAGE_STYLE_UPDATE':
+      handlePageStyleUpdate(message.payload);
+      break;
   }
 }
 
@@ -105,6 +138,31 @@ function handleSetLocale(payload: string | undefined) {
     // Emit event to trigger component re-renders
     eventDispatcher.emit('Vars:previewLocale', payload);
   }
+}
+
+function handlePageStyleUpdate(payload: { pageId: string; style: any } | undefined) {
+  if (!payload?.pageId) return;
+
+  const appId = $currentApplication.get()?.uuid;
+  if (!appId) return;
+
+  // Update the page in the store
+  const currentPages = $pages.get();
+  const appPages = currentPages[appId] || [];
+  const updatedPages = appPages.map((page: any) => {
+    if (page.uuid === payload.pageId) {
+      return { ...page, style: payload.style };
+    }
+    return page;
+  });
+
+  $pages.set({
+    ...currentPages,
+    [appId]: updatedPages
+  });
+
+  // Emit event to trigger Page component refresh
+  eventDispatcher.emit('Vars:currentPage');
 }
 
 function handleComponentsUpdate(payload: any[] | undefined) {

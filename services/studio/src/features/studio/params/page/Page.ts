@@ -61,6 +61,8 @@ export class PageContent extends LitElement {
    * Refresh the page component and re-render all child components
    */
   refreshComponent(): void {
+    console.log('[Page] refreshComponent called');
+
     const currentPlatform = ExecuteInstance.Vars.currentPlatform;
     if(currentPlatform?.platform !== this.currentPlatform?.platform) {
       this.currentPlatform = currentPlatform;
@@ -202,8 +204,34 @@ export class PageContent extends LitElement {
     window.addEventListener("keydown", boundKeyHandler);
     this.cleanupFunctions.push(() => window.removeEventListener("keydown", boundKeyHandler));
 
-    this.style.setProperty('--nuraly-page-background-color', this.currentPage?.style?.["--nuraly-page-background-color"]);
-    this.style.setProperty('--nuraly-page-background-color-dark', this.currentPage?.style?.["--nuraly-page-background-color-dark"]);
+    this.updatePageBackground();
+  }
+
+  /**
+   * Update page background CSS variables when page style changes
+   */
+  private updatePageBackground(): void {
+    const bgColor = this.currentPage?.style?.["--nuraly-page-background-color"];
+    const bgColorDark = this.currentPage?.style?.["--nuraly-page-background-color-dark"];
+
+    console.log('[Page] updatePageBackground:', {
+      pageUuid: this.currentPage?.uuid,
+      bgColor,
+      bgColorDark,
+      fullStyle: this.currentPage?.style
+    });
+
+    if (bgColor) {
+      this.style.setProperty('--nuraly-page-background-color', bgColor);
+    } else {
+      this.style.removeProperty('--nuraly-page-background-color');
+    }
+
+    if (bgColorDark) {
+      this.style.setProperty('--nuraly-page-background-color-dark', bgColorDark);
+    } else {
+      this.style.removeProperty('--nuraly-page-background-color-dark');
+    }
   }
 
   disconnectedCallback() {
@@ -215,6 +243,16 @@ export class PageContent extends LitElement {
 
     // Clean up RxJS subscriptions
     this.subscription.unsubscribe();
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    // Update page background when currentPage changes
+    if (changedProperties.has('currentPage')) {
+      console.log('[Page] currentPage property changed, updating background');
+      this.updatePageBackground();
+    }
   }
 
   protected firstUpdated(_changedProperties: PropertyValues): void {

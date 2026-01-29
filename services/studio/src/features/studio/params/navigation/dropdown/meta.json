@@ -1,9 +1,0 @@
-{
-  "uuid": "dropdown_blocks",
-  "name": "Parent Dropdown Container",
-  "themeContainerId": "studio_dropdown_theme_container",
-  "configKey": "dropdownFields",
-  "children_ids": [
-    "dropdown_collapse_container"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "uuid": "button_blocks",
-  "name": "Parent Button Container",
-  "themeContainerId": "studio_button_theme_container",
-  "configKey": "buttonFields",
-  "children_ids": [
-    "button_collapse_container"
-  ]
-}

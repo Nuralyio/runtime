@@ -34,6 +34,9 @@ if (urls) {
   } else if (firstPart === "database" || firstPart === "db") {
     tabType = "database";
     // Rest of path could be database-specific routing in future
+  } else if (firstPart === "journal" || firstPart === "logs") {
+    tabType = "journal";
+    // Rest of path could be journal-specific routing in future
   } else if (firstPart === "pages" || firstPart === "page") {
     tabType = "page";
     // Everything after /pages/ is the nested page URL
@@ -100,7 +103,7 @@ try {
 
   // Handle page data
   pageData = pageRequest.data;
-  $pages.set(pageData);
+  $pages.set({ [uuid]: pageData });
 
   // Handle component data
   componentData = componentResponse.data.map((component) => component.component);

@@ -1,0 +1,58 @@
+---
+/**
+ * HomeFooter Component
+ * Minimal footer
+ */
+
+const links = {
+  product: {
+    title: "Product",
+    items: [
+      { label: "Features", href: "#features" },
+      { label: "Demo", href: "#demo" },
+    ]
+  },
+  developers: {
+    title: "Developers",
+    items: [
+      { label: "Documentation", href: "http://docs.nuraly.io/" },
+    ]
+  },
+  company: {
+    title: "Company",
+    items: [
+      { label: "Contact", href: "https://calendly.com/aymen-nuraly" },
+    ]
+  }
+};
+
+const year = new Date().getFullYear();
+---
+
+<footer class="home-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="home-logo" style="margin-bottom: 16px;">
+          <img src="/images/nuraly-logo-light.png" alt="Nuraly" height="32" style="filter: brightness(0) invert(1);" />
+        </a>
+        <p>The AI Agentic platform for building autonomous workflows and LLM-powered applications.</p>
+      </div>
+
+      {Object.values(links).map((section) => (
+        <div>
+          <p class="footer-heading">{section.title}</p>
+          <ul class="footer-links">
+            {section.items.map((item) => (
+              <li><a href={item.href}>{item.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} Nuraly</p>
+    </div>
+  </div>
+</footer>
