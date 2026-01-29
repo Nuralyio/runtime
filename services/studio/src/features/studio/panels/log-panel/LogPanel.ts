@@ -393,7 +393,7 @@ export class LogPanel extends LitElement {
                   e.preventDefault();
                 }
               }}
-              style="--nr-code-editor-height: 30px">
+              style="--nuraly-code-editor-height: 30px">
             </nr-code-editor>
           </div>
         `
