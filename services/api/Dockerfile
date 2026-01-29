@@ -15,4 +15,6 @@ RUN npm run build
 
 EXPOSE 8081
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
+# Note: Migrations are now triggered manually via 'make db-migrate'
+# In development, Prisma migrations can be run at startup via the dev compose override
+CMD ["npm", "run", "start"]
