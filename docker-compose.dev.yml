@@ -64,11 +64,18 @@ services:
       - REDIS_URL=redis://redis:6379
       - DOCKER_HOST=unix:///var/run/docker.sock
       - KUBECONFIG=/root/.kube/config
+      - PERMISSIONS_ENABLED=false
+      # RabbitMQ Configuration for Deno workers
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     env_file:
       - config/dev.env
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     networks:
       - nuraly-network
       - minikube
@@ -345,6 +352,29 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     volumes:
       - rabbitmq_dev_data:/var/lib/rabbitmq
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Deno Worker - Function Execution Workers
+  deno-worker:
+    build:
+      context: ./services/functions/worker
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./services/functions/worker/src:/app/src
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - EXECUTE_QUEUE=functions.execute
+      - RESULTS_QUEUE=functions.results
+      - DLQ_QUEUE=functions.dlq
+      - PREFETCH_COUNT=5
+      - DEFAULT_TIMEOUT=30000
+      - ALLOWED_HOSTS=esm.sh,cdn.jsdelivr.net,cdn.skypack.dev,unpkg.com,esm.run
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 2
     networks:
       - nuraly-network
     restart: unless-stopped
