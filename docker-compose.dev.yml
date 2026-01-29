@@ -402,6 +402,8 @@ services:
     build:
       context: ./services/gateway/Keycloack
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./services/gateway/Keycloack/keywind/theme/keywind:/opt/keycloak/themes/keywind
     environment:
       KC_DB: postgres
       KC_DB_URL: 'jdbc:postgresql://postgres/keycloak'
