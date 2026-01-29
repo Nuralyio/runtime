@@ -6,7 +6,6 @@
 
 import HomeHeader from '../components/home/HomeHeader.astro';
 import HeroSection from '../components/home/HeroSection.astro';
-import AgenticAISection from '../components/home/AgenticAISection.astro';
 import FeatureCards from '../components/home/FeatureCards.astro';
 import FeatureShowcase from '../components/home/FeatureShowcase.astro';
 import DemoBlock from '../components/home/DemoBlock.astro';
@@ -293,8 +292,8 @@ export const prerender = false;
 
       .showcase-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 80px;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 60px;
         align-items: center;
       }
 
@@ -340,10 +339,7 @@ export const prerender = false;
         border-radius: 12px;
         border: 1px solid var(--color-border);
         object-fit: contain;
-        object-position: top left;
         border-radius: 12px;
-        transform: scale(1.2);
-        transform-origin: top left;
       }
 
       @media (max-width: 900px) {
@@ -576,10 +572,9 @@ export const prerender = false;
     <HomeHeader />
     <main>
       <HeroSection />
-      <AgenticAISection />
+      <DemoBlock />
       <FeatureCards />
       <FeatureShowcase />
-      <DemoBlock />
       <CTASection />
     </main>
     <HomeFooter />
