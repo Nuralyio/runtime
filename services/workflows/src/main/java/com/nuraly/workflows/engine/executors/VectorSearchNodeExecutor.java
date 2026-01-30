@@ -154,9 +154,10 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         // Get metadata filter if provided
         Map<String, Object> metadataFilter = null;
         if (input.has("metadataFilter") && input.get("metadataFilter").isObject()) {
-            metadataFilter = new HashMap<>();
+            final Map<String, Object> filterMap = new HashMap<>();
             input.get("metadataFilter").fields().forEachRemaining(entry ->
-                metadataFilter.put(entry.getKey(), entry.getValue().asText()));
+                filterMap.put(entry.getKey(), entry.getValue().asText()));
+            metadataFilter = filterMap;
         }
 
         // Perform search with metrics
