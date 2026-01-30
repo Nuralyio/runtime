@@ -518,7 +518,8 @@ class GuardrailChecksTest {
         @Test
         @DisplayName("Should create fail with details")
         void shouldCreateFailWithDetails() {
-            var details = java.util.Map.of("key", "value");
+            Map<String, Object> details = new java.util.HashMap<>();
+            details.put("key", "value");
             GuardrailResult result = GuardrailResult.failWithDetails("test", "Failed", details);
 
             assertFalse(result.isPassed());
