@@ -33,7 +33,7 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 
 // Import custom type definitions
-import { databaseTypeDefinitions } from '../../../../../../../types/database.types';
+import { databaseTypeDefinitions } from '../../../../../../types/database.types';
 
 // Setup Monaco workers (client-side only)
 if (typeof self !== 'undefined') {
