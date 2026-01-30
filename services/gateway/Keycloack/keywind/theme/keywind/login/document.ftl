@@ -3,7 +3,7 @@
 
   <meta charset="utf-8">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <#if properties.meta?has_content>
     <#list properties.meta?split(" ") as meta>
