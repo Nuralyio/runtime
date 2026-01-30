@@ -1,6 +1,7 @@
 import { DropdownController, DropdownPosition } from '../interfaces/index.js';
 import { BaseDropdownController } from './base.controller.js';
 import type { NrDropdownElement } from '../dropdown.component.js';
+import { determineOptimalPlacement } from '../../../shared/utils/dropdown-positioning.js';
 
 export class NrDropdownController extends BaseDropdownController implements DropdownController {
   private _isOpen: boolean = false;
@@ -343,7 +344,8 @@ export class NrDropdownController extends BaseDropdownController implements Drop
       const estimatedDropdownHeight = dropdownRect.height || 200;
       const dropdownWidth = dropdownRect.width || 300;
 
-      const verticalPlacement = this.determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
+      // Use shared positioning utility for vertical placement
+      const verticalPlacement = determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
       const horizontalPlacement = this.determineHorizontalPlacement(dropdownWidth, spaceLeft, spaceRight);
 
       // Calculate fixed position based on trigger's viewport position
@@ -377,22 +379,6 @@ export class NrDropdownController extends BaseDropdownController implements Drop
     } catch (error) {
       this.handleError(error as Error, 'calculatePosition');
     }
-  }
-
-  private determineOptimalPlacement(
-    dropdownHeight: number, 
-    spaceAbove: number, 
-    spaceBelow: number
-  ): 'top' | 'bottom' {
-    if (spaceBelow >= dropdownHeight) {
-      return 'bottom';
-    }
-    
-    if (spaceAbove >= dropdownHeight) {
-      return 'top';
-    }
-    
-    return spaceAbove > spaceBelow ? 'top' : 'bottom';
   }
 
   private determineHorizontalPlacement(

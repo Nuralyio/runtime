@@ -1,9 +1,28 @@
 import { ReactiveController, ReactiveControllerHost } from 'lit';
 import { DropdownController, DropdownHost, DropdownPosition, DropdownSpace } from './dropdown.interface.js';
+import {
+  calculateFixedPosition,
+  applyFixedPosition,
+  applyHeightConstraints,
+  resetDropdownPosition,
+  isTriggerInViewport
+} from '../utils/dropdown-positioning.js';
+
+/**
+ * Configuration options for the shared dropdown controller
+ */
+export interface DropdownControllerOptions {
+  /** Gap between trigger and dropdown in pixels (default: 4) */
+  offset?: number;
+  /** CSS variable for z-index (default: '9999') */
+  zIndex?: string;
+  /** Margin from viewport edges in pixels (default: 8) */
+  viewportMargin?: number;
+}
 
 /**
  * Shared dropdown controller for components that need dropdown functionality
- * Based on the select component's dropdown controller but generalized for reuse
+ * Uses fixed positioning to prevent clipping by overflow containers
  */
 export class SharedDropdownController implements ReactiveController, DropdownController {
   private _host: ReactiveControllerHost & DropdownHost;
@@ -11,10 +30,16 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
   private _position: DropdownPosition = { top: 0, left: 0, width: 0, placement: 'bottom' };
   private _dropdownElement: HTMLElement | null = null;
   private _triggerElement: HTMLElement | null = null;
+  private _options: Required<DropdownControllerOptions>;
 
-  constructor(host: ReactiveControllerHost & DropdownHost) {
+  constructor(host: ReactiveControllerHost & DropdownHost, options: DropdownControllerOptions = {}) {
     this._host = host;
     this._host.addController(this);
+    this._options = {
+      offset: options.offset ?? 4,
+      zIndex: options.zIndex ?? '9999',
+      viewportMargin: options.viewportMargin ?? 8,
+    };
   }
 
   hostConnected(): void {
@@ -51,10 +76,10 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
         this._isOpen = true;
         (this._host as any).show = true;
         this._host.requestUpdate();
-        
+
         // Always refresh elements before calculating position
         this.findElements();
-        
+
         // Calculate position after DOM update
         setTimeout(() => {
           this.calculatePosition();
@@ -119,7 +144,7 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
   }
 
   /**
-   * Calculate optimal dropdown placement
+   * Calculate optimal dropdown placement using fixed positioning
    */
   calculatePosition(): void {
     try {
@@ -128,45 +153,19 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
       }
 
       if (!this._dropdownElement || !this._triggerElement) {
-          return;
+        return;
       }
 
-      const triggerRect = this._triggerElement.getBoundingClientRect();
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      // Use shared positioning utility
+      const { offset, viewportMargin } = this._options;
+      const position = calculateFixedPosition(
+        this._triggerElement,
+        this._dropdownElement,
+        { offset, viewportMargin }
+      );
 
-      // Calculate available space for determining placement
-      const spaceBelow = viewportHeight - triggerRect.bottom;
-      const spaceAbove = triggerRect.top;
-
-      // Get the actual height of the dropdown element for accurate placement calculation
-      let dropdownHeight = 200; // fallback
-      if (this._dropdownElement) {
-        // Temporarily make it visible to measure height
-        const originalDisplay = this._dropdownElement.style.display;
-        const originalVisibility = this._dropdownElement.style.visibility;
-        const originalPosition = this._dropdownElement.style.position;
-        
-        this._dropdownElement.style.visibility = 'hidden';
-        this._dropdownElement.style.display = 'block';
-        this._dropdownElement.style.position = 'absolute';
-        
-        dropdownHeight = this._dropdownElement.offsetHeight || this._dropdownElement.scrollHeight || 200;
-        
-        // Restore original styles
-        this._dropdownElement.style.display = originalDisplay;
-        this._dropdownElement.style.visibility = originalVisibility;
-        this._dropdownElement.style.position = originalPosition;
-      }
-      
-      const placement = this.determineOptimalPlacement(dropdownHeight, spaceAbove, spaceBelow);
-      
-      // Store the placement for applyPosition to use
-      this._position = {
-        left: 0, // Not used with absolute positioning
-        width: 0, // Not used with absolute positioning  
-        placement,
-        top: 0 // Not used with absolute positioning
-      };
+      // Store the calculated position
+      this._position = position;
 
       this.applyPosition();
 
@@ -181,20 +180,7 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
   resetPosition(): void {
     try {
       if (this._dropdownElement) {
-        this._dropdownElement.style.removeProperty('position');
-        this._dropdownElement.style.removeProperty('top');
-        this._dropdownElement.style.removeProperty('left');
-        this._dropdownElement.style.removeProperty('width');
-        this._dropdownElement.style.removeProperty('max-height');
-        this._dropdownElement.style.removeProperty('min-height');
-        this._dropdownElement.style.removeProperty('height');
-        this._dropdownElement.style.removeProperty('overflow-y');
-        this._dropdownElement.style.removeProperty('transform');
-        this._dropdownElement.style.removeProperty('display');
-        this._dropdownElement.style.removeProperty('opacity');
-        this._dropdownElement.style.removeProperty('visibility');
-        this._dropdownElement.style.removeProperty('z-index');
-        this._dropdownElement.classList.remove('placement-top', 'placement-bottom');
+        resetDropdownPosition(this._dropdownElement);
       }
     } catch (error) {
       this.handleError(error as Error, 'resetPosition');
@@ -218,9 +204,9 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
       if (this._dropdownElement && this._triggerElement) {
         return;
       }
-      
+
       const hostElement = this._host as any;
-      
+
       // First priority: use the elements that were explicitly set via setElements()
       // This ensures each instance gets its own elements
       if (hostElement.optionsElement && hostElement.wrapper) {
@@ -228,43 +214,20 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
         this._triggerElement = hostElement.wrapper;
         return;
       }
-      
+
       // Fallback: try to find from shadow DOM (but this can be problematic with multiple instances)
       if (hostElement.shadowRoot) {
-        this._dropdownElement = hostElement.shadowRoot.querySelector('.calendar-container, .month-dropdown, .year-dropdown');
-        this._triggerElement = hostElement.shadowRoot.querySelector('.datepicker-input, .toggle-month-view, .toggle-year-view');
+        this._dropdownElement = hostElement.shadowRoot.querySelector('.options, .dropdown__panel, .calendar-container');
+        this._triggerElement = hostElement.shadowRoot.querySelector('.wrapper, .dropdown__trigger, .datepicker-input');
       }
-      
+
     } catch (error) {
       this.handleError(error as Error, 'findElements');
     }
   }
 
   /**
-   * Determine optimal dropdown placement
-   */
-  private determineOptimalPlacement(
-    dropdownHeight: number, 
-    spaceAbove: number, 
-    spaceBelow: number
-  ): 'top' | 'bottom' {
-    // If there's enough space below, use bottom
-    if (spaceBelow >= dropdownHeight) {
-      return 'bottom';
-    }
-    
-    // If there's enough space above, use top
-    if (spaceAbove >= dropdownHeight) {
-      return 'top';
-    }
-    
-    // If neither has enough space, choose the side with more space
-    // This ensures the dropdown appears even in constrained spaces
-    return spaceAbove > spaceBelow ? 'top' : 'bottom';
-  }
-
-  /**
-   * Apply calculated position to dropdown element
+   * Apply calculated position to dropdown element using fixed positioning
    */
   private applyPosition(): void {
     try {
@@ -272,66 +235,18 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
         return;
       }
 
-      const { placement } = this._position;
-      
-      // Get the exact wrapper width including borders
-      const triggerBounds = this._triggerElement.getBoundingClientRect();
-      const wrapperWidth = triggerBounds.width;
-      
-      // Use absolute positioning relative to the trigger element (combobox)
-      this._dropdownElement.style.position = 'absolute';
-      this._dropdownElement.style.left = '0';
-      this._dropdownElement.style.right = 'auto';
-      this._dropdownElement.style.width = `${wrapperWidth}px`; // Exact wrapper width in pixels
-      this._dropdownElement.style.zIndex = '1000';
-      this._dropdownElement.style.height = 'auto';
-      this._dropdownElement.style.maxHeight = 'none';
-      this._dropdownElement.style.minHeight = 'auto';
-      
-      // Set position based on placement
-      console.log(`Applying ${placement} placement to dropdown`);
-      if (placement === 'bottom') {
-        this._dropdownElement.style.top = '100%';
-        this._dropdownElement.style.bottom = 'auto';
-        console.log('Applied bottom placement: top=100%, bottom=auto');
-      } else {
-        this._dropdownElement.style.top = 'auto';
-        this._dropdownElement.style.bottom = '100%';
-        console.log('Applied top placement: top=auto, bottom=100%');
-      }
-      
-      // Force a layout to get the natural content height
-      const naturalHeight = this._dropdownElement.scrollHeight;
-      
-      // Now calculate available space for constraining
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      let availableSpace: number;
-      
-      // Calculate available space using bounds we already calculated
-      if (placement === 'bottom') {
-        // For bottom placement, available space is from trigger bottom to viewport bottom
-        availableSpace = viewportHeight - triggerBounds.bottom - 10;  // 10px margin from bottom
-      } else {
-        // For top placement, available space is from viewport top to trigger top
-        availableSpace = triggerBounds.top - 10; // 10px margin from top
-      }
-      
-      // Apply the calculated constraints
-      if (naturalHeight > availableSpace) {
-        // Content is larger than available space, so constrain and add scrolling
-        this._dropdownElement.style.maxHeight = `${availableSpace}px`;
-        this._dropdownElement.style.overflowY = 'auto';
-      } else {
-        // Content fits, so use natural height with auto overflow for consistency
-        this._dropdownElement.style.maxHeight = `${naturalHeight}px`;
-        this._dropdownElement.style.overflowY = 'auto';
-      }
-      
-      // Add placement class for styling
-      this._dropdownElement.classList.remove('placement-top', 'placement-bottom');
-      this._dropdownElement.classList.add(`placement-${placement}`);
-      
-      // Position and constraints applied successfully
+      const { zIndex, viewportMargin } = this._options;
+
+      // Apply fixed positioning using shared utility
+      applyFixedPosition(this._dropdownElement, this._position, zIndex);
+
+      // Apply height constraints using shared utility
+      applyHeightConstraints(
+        this._dropdownElement,
+        this._triggerElement,
+        this._position.placement,
+        { viewportMargin }
+      );
 
     } catch (error) {
       this.handleError(error as Error, 'applyPosition');
@@ -368,19 +283,18 @@ export class SharedDropdownController implements ReactiveController, DropdownCon
   };
 
   /**
-   * Handle scroll to manage dropdown visibility
+   * Handle scroll to manage dropdown visibility and position
    */
   private handleScroll = (): void => {
     if (this._isOpen && this._triggerElement) {
-      const triggerRect = this._triggerElement.getBoundingClientRect();
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      
       // Close dropdown if trigger is scrolled out of view
-      if (triggerRect.bottom < 0 || triggerRect.top > viewportHeight) {
+      if (!isTriggerInViewport(this._triggerElement)) {
         this.close();
+      } else {
+        // With fixed positioning, we need to recalculate position on scroll
+        // to keep the dropdown aligned with the trigger
+        this.calculatePosition();
       }
-      // With absolute positioning, the dropdown moves with the trigger automatically
-      // so no need to recalculate position on scroll
     }
   };
 
