@@ -192,19 +192,6 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
   }
 
   private initializeEditor(): void {
-    // Register custom language (demo)
-    monaco.languages.register({ id: 'mylang' });
-    monaco.languages.setMonarchTokensProvider('mylang', {
-      tokenizer: {
-        root: [
-          [/#.*$/, 'comment'],
-          [/\b(begin|end|if|else|while)\b/, 'keyword'],
-          [/[=+\-*/]/, 'operator'],
-          [/\d+/, 'number'],
-        ],
-      },
-    });
-
     // Determine initial theme - prefer data-theme if no explicit theme set
     const initialTheme = this.getInitialTheme();
 
