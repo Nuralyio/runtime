@@ -61,6 +61,9 @@ public class VectorWriteNodeExecutor implements NodeExecutor {
     @Inject
     VectorStoreService vectorStoreService;
 
+    @Inject
+    com.nuraly.workflows.monitoring.RagMetricsService ragMetrics;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -193,8 +196,19 @@ public class VectorWriteNodeExecutor implements NodeExecutor {
             }
         }
 
-        // Store embeddings
-        List<UUID> storedIds = vectorStoreService.storeBatch(embeddings);
+        // Store embeddings with metrics
+        long storeStart = System.currentTimeMillis();
+        List<UUID> storedIds;
+
+        try {
+            storedIds = vectorStoreService.storeBatch(embeddings);
+            long storeDuration = System.currentTimeMillis() - storeStart;
+            ragMetrics.recordVectorsStored(collectionName, storedIds.size(), storeDuration, true);
+        } catch (Exception e) {
+            long storeDuration = System.currentTimeMillis() - storeStart;
+            ragMetrics.recordVectorsStored(collectionName, 0, storeDuration, false);
+            throw e;
+        }
 
         // Build output
         ObjectNode output = objectMapper.createObjectNode();

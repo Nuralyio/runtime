@@ -8,7 +8,9 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.monitoring.RagMetricsService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
 import java.util.ArrayList;
@@ -56,6 +58,9 @@ public class ContextBuilderNodeExecutor implements NodeExecutor {
     private static final int DEFAULT_MAX_DOCUMENTS = 10;
     private static final double CHARS_PER_TOKEN = 4.0;
 
+    @Inject
+    RagMetricsService ragMetrics;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -101,7 +106,8 @@ public class ContextBuilderNodeExecutor implements NodeExecutor {
         String header = config.has("header") ? config.get("header").asText() : "";
         String footer = config.has("footer") ? config.get("footer").asText() : "";
 
-        // Build context
+        // Build context with timing
+        long startTime = System.currentTimeMillis();
         StringBuilder contextBuilder = new StringBuilder();
         List<String> sources = new ArrayList<>();
         int documentsUsed = 0;
@@ -177,6 +183,10 @@ public class ContextBuilderNodeExecutor implements NodeExecutor {
         if (input.has("isolationKey")) {
             output.put("isolationKey", input.get("isolationKey").asText());
         }
+
+        // Record metrics
+        long duration = System.currentTimeMillis() - startTime;
+        ragMetrics.recordContextBuilt(documentsUsed, estimatedTokens, duration);
 
         LOG.debugf("Built context with %d documents (~%d tokens) from %d results",
                    documentsUsed, estimatedTokens, results.size());

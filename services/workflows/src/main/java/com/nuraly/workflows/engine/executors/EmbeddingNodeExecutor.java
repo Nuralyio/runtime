@@ -62,6 +62,9 @@ public class EmbeddingNodeExecutor implements NodeExecutor {
     @Inject
     Configuration configuration;
 
+    @Inject
+    com.nuraly.workflows.monitoring.RagMetricsService ragMetrics;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -125,24 +128,41 @@ public class EmbeddingNodeExecutor implements NodeExecutor {
 
         LOG.debugf("Embedding %d text(s) with provider=%s, model=%s", texts.size(), providerName, model);
 
-        // Generate embeddings
+        // Generate embeddings with metrics tracking
         int batchSize = config.has("batchSize") ? config.get("batchSize").asInt() : DEFAULT_BATCH_SIZE;
         List<EmbeddingProvider.EmbeddingResult> results = new ArrayList<>();
         int totalTokens = 0;
 
-        // Process in batches
-        for (int i = 0; i < texts.size(); i += batchSize) {
-            List<String> batch = texts.subList(i, Math.min(i + batchSize, texts.size()));
-            List<EmbeddingProvider.EmbeddingResult> batchResults = provider.embedBatch(batch, model, apiKey, baseUrl);
+        long startTime = System.currentTimeMillis();
+        ragMetrics.recordEmbeddingStart();
 
-            for (EmbeddingProvider.EmbeddingResult result : batchResults) {
-                if (!result.isSuccess()) {
-                    return NodeExecutionResult.failure("Embedding failed: " + result.getError(), true);
+        try {
+            // Process in batches
+            for (int i = 0; i < texts.size(); i += batchSize) {
+                List<String> batch = texts.subList(i, Math.min(i + batchSize, texts.size()));
+                List<EmbeddingProvider.EmbeddingResult> batchResults = provider.embedBatch(batch, model, apiKey, baseUrl);
+
+                for (EmbeddingProvider.EmbeddingResult result : batchResults) {
+                    if (!result.isSuccess()) {
+                        long duration = System.currentTimeMillis() - startTime;
+                        ragMetrics.recordEmbeddingComplete(providerName, model, texts.size(), duration, false);
+                        return NodeExecutionResult.failure("Embedding failed: " + result.getError(), true);
+                    }
+                    totalTokens += result.getTokenCount();
                 }
-                totalTokens += result.getTokenCount();
+
+                results.addAll(batchResults);
             }
 
-            results.addAll(batchResults);
+            // Record successful metrics
+            long duration = System.currentTimeMillis() - startTime;
+            ragMetrics.recordEmbeddingComplete(providerName, model, texts.size(), duration, true);
+            ragMetrics.recordEmbeddingTokens(providerName, model, totalTokens);
+
+        } catch (Exception e) {
+            long duration = System.currentTimeMillis() - startTime;
+            ragMetrics.recordEmbeddingComplete(providerName, model, texts.size(), duration, false);
+            throw e;
         }
 
         // Build output

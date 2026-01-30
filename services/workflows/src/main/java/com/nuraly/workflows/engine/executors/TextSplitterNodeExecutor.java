@@ -11,6 +11,7 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.monitoring.RagMetricsService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -62,6 +63,9 @@ public class TextSplitterNodeExecutor implements NodeExecutor {
     @Inject
     SentenceTextSplitter sentenceSplitter;
 
+    @Inject
+    RagMetricsService ragMetrics;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -108,8 +112,13 @@ public class TextSplitterNodeExecutor implements NodeExecutor {
             }
         };
 
-        // Split the text
+        // Split the text with timing
+        long startTime = System.currentTimeMillis();
         List<TextSplitter.TextChunk> chunks = splitter.split(content, chunkSize, chunkOverlap);
+        long duration = System.currentTimeMillis() - startTime;
+
+        // Record metrics
+        ragMetrics.recordTextSplit(strategy, content.length(), chunks.size(), duration);
 
         // Build output
         ObjectNode output = objectMapper.createObjectNode();

@@ -62,18 +62,100 @@ public class VectorStoreService {
     }
 
     /**
-     * Store multiple embeddings in batch.
+     * Store multiple embeddings in batch using a single INSERT statement.
+     * Much faster than individual inserts for large batches.
      */
     @Transactional
     public List<UUID> storeBatch(List<EmbeddingEntity> embeddings) {
-        List<UUID> ids = new ArrayList<>();
-
-        for (EmbeddingEntity embedding : embeddings) {
-            UUID id = store(embedding);
-            ids.add(id);
+        if (embeddings == null || embeddings.isEmpty()) {
+            return new ArrayList<>();
         }
 
+        // For small batches, use simple insert
+        if (embeddings.size() <= 5) {
+            List<UUID> ids = new ArrayList<>();
+            for (EmbeddingEntity embedding : embeddings) {
+                ids.add(store(embedding));
+            }
+            return ids;
+        }
+
+        // For larger batches, use batch INSERT
+        List<UUID> ids = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("""
+            INSERT INTO embeddings (
+                id, workflow_id, isolation_key, collection_name, content, embedding,
+                metadata, source_id, source_type, chunk_index, token_count,
+                created_at, updated_at
+            ) VALUES
+            """);
+
+        // Build VALUES clause for all embeddings
+        for (int i = 0; i < embeddings.size(); i++) {
+            if (i > 0) {
+                sql.append(",\n");
+            }
+            sql.append("(:id").append(i)
+               .append(", :workflowId").append(i)
+               .append(", :isolationKey").append(i)
+               .append(", :collection").append(i)
+               .append(", :content").append(i)
+               .append(", :embedding").append(i).append("::vector")
+               .append(", :metadata").append(i).append("::jsonb")
+               .append(", :sourceId").append(i)
+               .append(", :sourceType").append(i)
+               .append(", :chunkIndex").append(i)
+               .append(", :tokenCount").append(i)
+               .append(", NOW(), NOW())");
+        }
+
+        var query = entityManager.createNativeQuery(sql.toString());
+
+        // Set parameters for all embeddings
+        for (int i = 0; i < embeddings.size(); i++) {
+            EmbeddingEntity embedding = embeddings.get(i);
+            UUID id = UUID.randomUUID();
+            ids.add(id);
+
+            query.setParameter("id" + i, id)
+                 .setParameter("workflowId" + i, embedding.workflowId)
+                 .setParameter("isolationKey" + i, embedding.isolationKey)
+                 .setParameter("collection" + i, embedding.collectionName)
+                 .setParameter("content" + i, embedding.content)
+                 .setParameter("embedding" + i, vectorToString(embedding.embedding))
+                 .setParameter("metadata" + i, embedding.metadata != null ? embedding.metadata : "{}")
+                 .setParameter("sourceId" + i, embedding.sourceId)
+                 .setParameter("sourceType" + i, embedding.sourceType)
+                 .setParameter("chunkIndex" + i, embedding.chunkIndex != null ? embedding.chunkIndex : 0)
+                 .setParameter("tokenCount" + i, embedding.tokenCount);
+        }
+
+        query.executeUpdate();
+
+        LOG.debugf("Batch inserted %d embeddings", embeddings.size());
         return ids;
+    }
+
+    /**
+     * Store embeddings in batches of specified size.
+     * Useful for very large datasets to avoid query size limits.
+     */
+    @Transactional
+    public List<UUID> storeBatchChunked(List<EmbeddingEntity> embeddings, int chunkSize) {
+        if (embeddings == null || embeddings.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<UUID> allIds = new ArrayList<>();
+
+        for (int i = 0; i < embeddings.size(); i += chunkSize) {
+            int end = Math.min(i + chunkSize, embeddings.size());
+            List<EmbeddingEntity> chunk = embeddings.subList(i, end);
+            List<UUID> chunkIds = storeBatch(chunk);
+            allIds.addAll(chunkIds);
+        }
+
+        return allIds;
     }
 
     /**
