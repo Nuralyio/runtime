@@ -1,0 +1,24 @@
+/**
+ * Editor Theme - Code Editor Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Code Editor dimensions */
+  --nuraly-code-editor-width: 100%;
+  --nuraly-code-editor-height: 100%;
+  --nuraly-code-editor-min-height: 0;
+  --nuraly-code-editor-max-height: none;
+
+  /* Code Editor border */
+  --nuraly-code-editor-border-width: 1px;
+  --nuraly-code-editor-border-radius: 4px;
+  --nuraly-code-editor-border-style: solid;
+
+  /* Code Editor font */
+  --nuraly-code-editor-font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --nuraly-code-editor-font-size: 13px;
+  --nuraly-code-editor-line-height: 1.5;
+
+  /* Code Editor transitions */
+  --nuraly-code-editor-transition: border-color 0.15s ease-in-out;
+}

@@ -1,0 +1,37 @@
+/**
+ * Editor Theme - Code Editor Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  /* Code Editor background */
+  --nuraly-code-editor-background: #ffffff;
+  --nuraly-code-editor-background-hover: #ffffff;
+  --nuraly-code-editor-background-focus: #ffffff;
+
+  /* Code Editor border */
+  --nuraly-code-editor-border-color: #dee2e6;
+  --nuraly-code-editor-border-color-hover: #c8cdd1;
+  --nuraly-code-editor-border-color-focus: #0d6efd;
+  --nuraly-code-editor-border: 1px solid var(--nuraly-code-editor-border-color);
+
+  /* Code Editor text */
+  --nuraly-code-editor-text-color: #212529;
+  --nuraly-code-editor-line-number-color: #6c757d;
+  --nuraly-code-editor-selection-background: rgba(13, 110, 253, 0.15);
+
+  /* Code Editor gutter */
+  --nuraly-code-editor-gutter-background: #f8f9fa;
+  --nuraly-code-editor-gutter-border-color: #dee2e6;
+
+  /* Code Editor scrollbar */
+  --nuraly-code-editor-scrollbar-background: #f8f9fa;
+  --nuraly-code-editor-scrollbar-thumb: #c1c1c1;
+  --nuraly-code-editor-scrollbar-thumb-hover: #a8a8a8;
+
+  /* Code Editor focus shadow */
+  --nuraly-code-editor-focus-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+
+  /* Monaco theme to use */
+  --nuraly-code-editor-monaco-theme: vs;
+}
