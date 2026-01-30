@@ -22,13 +22,19 @@ import java.util.*;
  * Guardrail Node Executor - Validates and filters LLM inputs/outputs for safety.
  *
  * Provides multiple check types:
- * - PII Detection: Detect and optionally redact personally identifiable information
- * - Prompt Injection: Detect potential prompt injection attacks
- * - Content Moderation: Filter harmful, toxic, or inappropriate content
- * - Topic Restriction: Block specific topics
- * - Length Validation: Ensure text length is within bounds
- * - Schema Validation: Validate JSON structure against schema
- * - Regex Pattern: Match/block based on regex patterns
+ *
+ * KEYWORD-BASED (fast, no API cost):
+ * - pii: Detect and optionally redact personally identifiable information
+ * - injection: Detect potential prompt injection attacks
+ * - moderation: Filter harmful, toxic, or inappropriate content (keyword-based)
+ * - topics: Block specific topics by keyword matching
+ * - length: Ensure text length is within bounds
+ * - regex: Match/block based on regex patterns
+ *
+ * LLM-ENHANCED (ML-powered, requires API key):
+ * - openai_moderation: OpenAI Moderation API for ML-based content moderation
+ * - llm_policy: LLM-based validation against custom natural language policies
+ * - semantic_topic: Embedding-based off-topic detection using semantic similarity
  *
  * Node Configuration:
  * {
@@ -92,6 +98,7 @@ public class GuardrailNodeExecutor implements NodeExecutor {
     @Inject
     MeterRegistry meterRegistry;
 
+    // Keyword-based checks (fast, no API cost)
     @Inject
     PiiDetector piiDetector;
 
@@ -103,6 +110,16 @@ public class GuardrailNodeExecutor implements NodeExecutor {
 
     @Inject
     TopicRestrictor topicRestrictor;
+
+    // LLM-enhanced checks (ML-powered, requires API key)
+    @Inject
+    OpenAiModerationCheck openAiModerationCheck;
+
+    @Inject
+    LlmPolicyCheck llmPolicyCheck;
+
+    @Inject
+    SemanticTopicCheck semanticTopicCheck;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -292,12 +309,19 @@ public class GuardrailNodeExecutor implements NodeExecutor {
 
     private GuardrailResult executeCheck(GuardrailCheck check, String content) {
         return switch (check.getType().toLowerCase()) {
+            // Keyword-based checks (fast, no API cost)
             case "pii" -> piiDetector.check(content, check.getConfig());
             case "injection", "prompt_injection" -> injectionDetector.check(content, check.getConfig());
             case "moderation", "content_moderation" -> contentModerator.check(content, check.getConfig());
             case "topics", "topic_restriction" -> topicRestrictor.check(content, check.getConfig());
             case "length" -> checkLength(content, check.getConfig());
             case "regex", "pattern" -> checkRegex(content, check.getConfig());
+
+            // LLM-enhanced checks (ML-powered, requires API key)
+            case "openai_moderation" -> openAiModerationCheck.check(content, check.getConfig());
+            case "llm_policy" -> llmPolicyCheck.check(content, check.getConfig());
+            case "semantic_topic" -> semanticTopicCheck.check(content, check.getConfig());
+
             default -> {
                 LOG.warnf("Unknown guardrail check type: %s", check.getType());
                 yield GuardrailResult.pass(check.getType());
