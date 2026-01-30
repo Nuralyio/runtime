@@ -15,6 +15,7 @@ import {
   type CodeEditorChangeEventDetail,
   type CodeEditorKeyEventDetail
 } from './code-editor.types.js';
+import { ThemeAwareMixin } from '../../shared/theme-mixin.js';
 
 // Monaco Editor Imports
 import * as monaco from 'monaco-editor';
@@ -81,7 +82,7 @@ if (typeof self !== 'undefined') {
  * @cssprop [--nr-code-editor-border-radius=4px] - Border radius
  */
 @customElement('nr-code-editor')
-export class NrCodeEditorElement extends LitElement {
+export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
   static override styles = styles;
 
   /** Monaco editor instance */
@@ -92,6 +93,9 @@ export class NrCodeEditorElement extends LitElement {
 
   /** Reference to the editor container */
   private containerRef: Ref<HTMLElement> = createRef();
+
+  /** Track the last applied Monaco theme to avoid unnecessary updates */
+  private lastAppliedTheme?: string;
 
   /** Makes the editor read-only */
   @property({ type: Boolean, reflect: true })
@@ -201,11 +205,14 @@ export class NrCodeEditorElement extends LitElement {
       },
     });
 
+    // Determine initial theme - prefer data-theme if no explicit theme set
+    const initialTheme = this.getInitialTheme();
+
     try {
       this.editor = monaco.editor.create(this.containerRef.value!, {
         value: this.code,
         language: this.language,
-        theme: this.theme,
+        theme: initialTheme,
         fontSize: this.fontSize,
         automaticLayout: true,
         readOnly: this.readonly,
@@ -316,17 +323,57 @@ export class NrCodeEditorElement extends LitElement {
   }
 
   private setupThemeListener(): void {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (!this.theme) {
-        monaco.editor.setTheme(this.getAutoTheme());
-      }
-    });
+    // The ThemeAwareMixin handles theme observation automatically
+    // We just need to apply the initial theme
+    this.applyThemeFromMixin();
   }
 
-  private getAutoTheme(): string {
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches
-      ? CODE_EDITOR_THEME.Dark
-      : CODE_EDITOR_THEME.Light;
+  /**
+   * Convert the mixin's currentTheme to Monaco theme
+   * Uses explicit theme prop if set, otherwise derives from data-theme
+   */
+  private getMonacoThemeFromMixin(): string {
+    // If explicit theme prop is set, use it
+    if (this.theme) {
+      return this.theme;
+    }
+
+    // Use the mixin's currentTheme which handles data-theme and system preference
+    const currentTheme = this.currentTheme;
+
+    // Map theme values to Monaco themes
+    if (currentTheme.includes('dark')) {
+      return CODE_EDITOR_THEME.Dark;
+    }
+
+    return CODE_EDITOR_THEME.Light;
+  }
+
+  /**
+   * Apply the current theme from the mixin to Monaco editor
+   */
+  private applyThemeFromMixin(): void {
+    if (!this.isEditorReady || !this.editor) return;
+
+    const monacoTheme = this.getMonacoThemeFromMixin();
+
+    // Only update if theme has changed
+    if (monacoTheme !== this.lastAppliedTheme) {
+      try {
+        monaco.editor.setTheme(monacoTheme);
+        this.lastAppliedTheme = monacoTheme;
+      } catch {
+        // Ignore errors
+      }
+    }
+  }
+
+  /**
+   * Get the initial theme for the editor
+   * Priority: explicit theme prop > data-theme > system preference
+   */
+  private getInitialTheme(): string {
+    return this.getMonacoThemeFromMixin();
   }
 
   private setupCustomIntelliSense(): void {
@@ -477,6 +524,9 @@ export class NrCodeEditorElement extends LitElement {
 
     if (!this.isEditorReady || !this.editor) return;
 
+    // Apply theme from mixin on every update (handles data-theme changes)
+    this.applyThemeFromMixin();
+
     if (changedProperties.has('code') && this.code !== changedProperties.get('code')) {
       const model = this.editor.getModel();
       if (model && this.code !== this.getValue()) {
@@ -552,6 +602,7 @@ export class NrCodeEditorElement extends LitElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
 
+    // Clean up Monaco editor
     if (this.editor) {
       const model = this.editor.getModel();
       this.editor.dispose();
