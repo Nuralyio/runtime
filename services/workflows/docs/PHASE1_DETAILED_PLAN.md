@@ -16,16 +16,17 @@ Phase 1 establishes the foundation for RAG capabilities:
                               │     Node        │
                               └────────┬────────┘
                                        │
-                    ┌──────────────────┼──────────────────┐
-                    │                  │                  │
-                    ▼                  ▼                  ▼
-           ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-           │    OpenAI     │  │    Ollama     │  │    Cohere     │
-           │   Embedding   │  │   Embedding   │  │   Embedding   │
-           │   Provider    │  │   Provider    │  │   Provider    │
-           └───────────────┘  └───────────────┘  └───────────────┘
-                    │                  │                  │
-                    └──────────────────┼──────────────────┘
+         ┌─────────────────────────────┼─────────────────────────────┐
+         │                  │                  │                     │
+         ▼                  ▼                  ▼                     ▼
+┌───────────────┐  ┌───────────────┐  ┌───────────────┐  ┌─────────────────┐
+│    OpenAI     │  │    Ollama     │  │    Cohere     │  │   Local ONNX    │
+│   Embedding   │  │   Embedding   │  │   Embedding   │  │   Embedding     │
+│   Provider    │  │   Provider    │  │   Provider    │  │   (no API key)  │
+│   (cloud)     │  │   (local)     │  │   (cloud)     │  │                 │
+└───────────────┘  └───────────────┘  └───────────────┘  └─────────────────┘
+         │                  │                  │                     │
+         └─────────────────────────────┼─────────────────────────────┘
                                        │
                                        ▼
                               ┌─────────────────┐
@@ -33,6 +34,20 @@ Phase 1 establishes the foundation for RAG capabilities:
                               │   PostgreSQL    │
                               └─────────────────┘
 ```
+
+### Local Embedding Options Comparison
+
+| Provider | API Key | Internet | Latency | Cost | Quality |
+|----------|---------|----------|---------|------|---------|
+| **OpenAI** | Required | Required | ~200ms | $0.0001/1K tokens | Excellent |
+| **Ollama** | None | None | ~100ms | Free | Good-Excellent |
+| **Local ONNX** | None | None | ~10ms | Free | Good |
+| **Cohere** | Required | Required | ~150ms | $0.0001/1K tokens | Excellent |
+
+**Recommendation:**
+- **Production (quality):** OpenAI `text-embedding-3-small`
+- **Production (privacy):** Ollama with `nomic-embed-text`
+- **Development/Testing:** Local ONNX with `all-MiniLM-L6-v2`
 
 ---
 
@@ -1033,6 +1048,363 @@ public class OllamaEmbeddingProvider implements EmbeddingProvider {
 
 ---
 
+### Step 6.5: Local ONNX Embedding Provider (Day 3) - NO API KEY REQUIRED
+
+**Purpose:** Run sentence-transformer models locally without any API key or internet connection.
+
+**Dependencies to Add (pom.xml):**
+```xml
+<!-- ONNX Runtime for local model inference -->
+<dependency>
+    <groupId>com.microsoft.onnxruntime</groupId>
+    <artifactId>onnxruntime</artifactId>
+    <version>1.17.0</version>
+</dependency>
+
+<!-- DJL HuggingFace Tokenizers for text tokenization -->
+<dependency>
+    <groupId>ai.djl.huggingface</groupId>
+    <artifactId>tokenizers</artifactId>
+    <version>0.30.0</version>
+</dependency>
+```
+
+**Supported Local Models:**
+
+| Model | Dimensions | Size | Quality | Use Case |
+|-------|------------|------|---------|----------|
+| `all-MiniLM-L6-v2` | 384 | 23MB | Good | Fast, general purpose |
+| `all-MiniLM-L12-v2` | 384 | 34MB | Better | Balanced |
+| `all-mpnet-base-v2` | 768 | 420MB | Best | High quality |
+| `paraphrase-MiniLM-L6-v2` | 384 | 23MB | Good | Paraphrase detection |
+
+**File:** `src/main/java/com/nuraly/workflows/embedding/providers/LocalOnnxEmbeddingProvider.java`
+
+```java
+package com.nuraly.workflows.embedding.providers;
+
+import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer;
+import ai.onnxruntime.*;
+import com.nuraly.workflows.embedding.EmbeddingProvider;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.logging.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+
+/**
+ * Local ONNX Embedding Provider - No API key required!
+ *
+ * Runs sentence-transformer models locally using ONNX Runtime.
+ * Perfect for:
+ *   - Development and testing (no API costs)
+ *   - Air-gapped environments (no internet)
+ *   - Privacy-sensitive data (no external calls)
+ *   - Low latency requirements (~10ms vs ~200ms for cloud)
+ *
+ * Default model: all-MiniLM-L6-v2 (384 dimensions, 23MB)
+ *
+ * Models are auto-downloaded from HuggingFace on first use.
+ */
+@ApplicationScoped
+public class LocalOnnxEmbeddingProvider implements EmbeddingProvider {
+
+    private static final Logger LOG = Logger.getLogger(LocalOnnxEmbeddingProvider.class);
+
+    // Model configurations
+    private static final Map<String, ModelConfig> MODELS = Map.of(
+        "all-MiniLM-L6-v2", new ModelConfig(384,
+            "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/onnx/model.onnx",
+            "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer.json"),
+        "all-MiniLM-L12-v2", new ModelConfig(384,
+            "https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2/resolve/main/onnx/model.onnx",
+            "https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2/resolve/main/tokenizer.json"),
+        "paraphrase-MiniLM-L6-v2", new ModelConfig(384,
+            "https://huggingface.co/sentence-transformers/paraphrase-MiniLM-L6-v2/resolve/main/onnx/model.onnx",
+            "https://huggingface.co/sentence-transformers/paraphrase-MiniLM-L6-v2/resolve/main/tokenizer.json")
+    );
+
+    private static final String DEFAULT_MODEL = "all-MiniLM-L6-v2";
+    private static final Path CACHE_DIR = Path.of(System.getProperty("user.home"), ".cache", "nuraly", "models");
+
+    private OrtEnvironment environment;
+    private final Map<String, LoadedModel> loadedModels = new HashMap<>();
+
+    @PostConstruct
+    void init() {
+        try {
+            environment = OrtEnvironment.getEnvironment();
+            LOG.info("ONNX Runtime initialized for local embeddings");
+        } catch (Exception e) {
+            LOG.error("Failed to initialize ONNX Runtime", e);
+        }
+    }
+
+    @PreDestroy
+    void cleanup() {
+        for (LoadedModel model : loadedModels.values()) {
+            try {
+                model.session.close();
+                model.tokenizer.close();
+            } catch (Exception e) {
+                LOG.warn("Error closing model", e);
+            }
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "local";
+    }
+
+    @Override
+    public boolean supportsModel(String model) {
+        return MODELS.containsKey(model);
+    }
+
+    @Override
+    public String getDefaultModel() {
+        return DEFAULT_MODEL;
+    }
+
+    @Override
+    public int getEmbeddingDimension(String model) {
+        ModelConfig config = MODELS.get(model);
+        return config != null ? config.dimensions : 384;
+    }
+
+    @Override
+    public EmbeddingResult embed(String text, String model, String apiKey, String baseUrl) {
+        // apiKey and baseUrl are ignored for local models
+        String useModel = model != null && MODELS.containsKey(model) ? model : DEFAULT_MODEL;
+
+        try {
+            LoadedModel loaded = getOrLoadModel(useModel);
+            float[] embedding = computeEmbedding(loaded, text);
+            return EmbeddingResult.success(embedding, estimateTokenCount(text));
+        } catch (Exception e) {
+            LOG.errorf("Local embedding failed: %s", e.getMessage());
+            return EmbeddingResult.error("Local embedding failed: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<EmbeddingResult> embedBatch(List<String> texts, String model, String apiKey, String baseUrl) {
+        String useModel = model != null && MODELS.containsKey(model) ? model : DEFAULT_MODEL;
+        List<EmbeddingResult> results = new ArrayList<>();
+
+        try {
+            LoadedModel loaded = getOrLoadModel(useModel);
+
+            for (String text : texts) {
+                try {
+                    float[] embedding = computeEmbedding(loaded, text);
+                    results.add(EmbeddingResult.success(embedding, estimateTokenCount(text)));
+                } catch (Exception e) {
+                    results.add(EmbeddingResult.error(e.getMessage()));
+                }
+            }
+        } catch (Exception e) {
+            // Model loading failed - return errors for all
+            for (int i = 0; i < texts.size(); i++) {
+                results.add(EmbeddingResult.error("Model loading failed: " + e.getMessage()));
+            }
+        }
+
+        return results;
+    }
+
+    /**
+     * Get or load a model (lazy loading with caching).
+     */
+    private synchronized LoadedModel getOrLoadModel(String modelName) throws Exception {
+        if (loadedModels.containsKey(modelName)) {
+            return loadedModels.get(modelName);
+        }
+
+        LOG.infof("Loading local model: %s", modelName);
+        ModelConfig config = MODELS.get(modelName);
+
+        // Ensure cache directory exists
+        Files.createDirectories(CACHE_DIR);
+
+        // Download model if not cached
+        Path modelPath = CACHE_DIR.resolve(modelName + ".onnx");
+        Path tokenizerPath = CACHE_DIR.resolve(modelName + "_tokenizer.json");
+
+        if (!Files.exists(modelPath)) {
+            LOG.infof("Downloading model %s...", modelName);
+            downloadFile(config.modelUrl, modelPath);
+        }
+
+        if (!Files.exists(tokenizerPath)) {
+            LOG.infof("Downloading tokenizer for %s...", modelName);
+            downloadFile(config.tokenizerUrl, tokenizerPath);
+        }
+
+        // Load model and tokenizer
+        OrtSession.SessionOptions options = new OrtSession.SessionOptions();
+        options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.ALL_OPT);
+
+        OrtSession session = environment.createSession(modelPath.toString(), options);
+        HuggingFaceTokenizer tokenizer = HuggingFaceTokenizer.newInstance(tokenizerPath);
+
+        LoadedModel loaded = new LoadedModel(session, tokenizer, config.dimensions);
+        loadedModels.put(modelName, loaded);
+
+        LOG.infof("Model %s loaded successfully (%d dimensions)", modelName, config.dimensions);
+        return loaded;
+    }
+
+    /**
+     * Compute embedding for a single text.
+     */
+    private float[] computeEmbedding(LoadedModel model, String text) throws OrtException {
+        // Tokenize
+        var encoding = model.tokenizer.encode(text);
+        long[] inputIds = encoding.getIds();
+        long[] attentionMask = encoding.getAttentionMask();
+
+        // Prepare inputs
+        long[] shape = {1, inputIds.length};
+
+        try (OnnxTensor inputIdsTensor = OnnxTensor.createTensor(environment,
+                java.nio.LongBuffer.wrap(inputIds), shape);
+             OnnxTensor attentionMaskTensor = OnnxTensor.createTensor(environment,
+                java.nio.LongBuffer.wrap(attentionMask), shape)) {
+
+            Map<String, OnnxTensor> inputs = Map.of(
+                "input_ids", inputIdsTensor,
+                "attention_mask", attentionMaskTensor
+            );
+
+            // Run inference
+            try (OrtSession.Result result = model.session.run(inputs)) {
+                // Get the output (last_hidden_state or sentence_embedding)
+                float[][] output = (float[][]) result.get(0).getValue();
+
+                // Mean pooling over sequence length
+                float[] embedding = meanPooling(output, attentionMask);
+
+                // L2 normalize
+                normalize(embedding);
+
+                return embedding;
+            }
+        }
+    }
+
+    /**
+     * Mean pooling: average token embeddings weighted by attention mask.
+     */
+    private float[] meanPooling(float[][] tokenEmbeddings, long[] attentionMask) {
+        int seqLen = tokenEmbeddings.length;
+        int embDim = tokenEmbeddings[0].length;
+        float[] result = new float[embDim];
+        float maskSum = 0;
+
+        for (int i = 0; i < seqLen; i++) {
+            if (attentionMask[i] == 1) {
+                maskSum += 1;
+                for (int j = 0; j < embDim; j++) {
+                    result[j] += tokenEmbeddings[i][j];
+                }
+            }
+        }
+
+        if (maskSum > 0) {
+            for (int j = 0; j < embDim; j++) {
+                result[j] /= maskSum;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * L2 normalize embedding vector.
+     */
+    private void normalize(float[] embedding) {
+        float norm = 0;
+        for (float v : embedding) {
+            norm += v * v;
+        }
+        norm = (float) Math.sqrt(norm);
+
+        if (norm > 0) {
+            for (int i = 0; i < embedding.length; i++) {
+                embedding[i] /= norm;
+            }
+        }
+    }
+
+    /**
+     * Download file from URL to path.
+     */
+    private void downloadFile(String urlStr, Path target) throws IOException {
+        URL url = new URL(urlStr);
+        try (InputStream in = url.openStream()) {
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    /**
+     * Estimate token count (rough approximation).
+     */
+    private int estimateTokenCount(String text) {
+        // Rough estimate: ~4 characters per token
+        return text.length() / 4;
+    }
+
+    // ========================================================================
+    // Inner Classes
+    // ========================================================================
+
+    private static class ModelConfig {
+        final int dimensions;
+        final String modelUrl;
+        final String tokenizerUrl;
+
+        ModelConfig(int dimensions, String modelUrl, String tokenizerUrl) {
+            this.dimensions = dimensions;
+            this.modelUrl = modelUrl;
+            this.tokenizerUrl = tokenizerUrl;
+        }
+    }
+
+    private static class LoadedModel {
+        final OrtSession session;
+        final HuggingFaceTokenizer tokenizer;
+        final int dimensions;
+
+        LoadedModel(OrtSession session, HuggingFaceTokenizer tokenizer, int dimensions) {
+            this.session = session;
+            this.tokenizer = tokenizer;
+            this.dimensions = dimensions;
+        }
+    }
+}
+```
+
+**Usage in EMBEDDING Node:**
+```json
+{
+  "provider": "local",
+  "model": "all-MiniLM-L6-v2"
+}
+```
+
+No `apiKeyPath` or `apiUrlPath` needed!
+
+---
+
 ### Step 7: Embedding Provider Factory (Day 3)
 
 **File:** `src/main/java/com/nuraly/workflows/embedding/EmbeddingProviderFactory.java`
@@ -1587,8 +1959,9 @@ src/main/
 │   │   ├── EmbeddingProvider.java              # Interface
 │   │   ├── EmbeddingProviderFactory.java       # Factory
 │   │   └── providers/
-│   │       ├── OpenAiEmbeddingProvider.java    # OpenAI impl
-│   │       └── OllamaEmbeddingProvider.java    # Ollama impl
+│   │       ├── OpenAiEmbeddingProvider.java    # OpenAI (cloud)
+│   │       ├── OllamaEmbeddingProvider.java    # Ollama (local server)
+│   │       └── LocalOnnxEmbeddingProvider.java # Local ONNX (no server!)
 │   ├── vector/
 │   │   └── VectorStoreService.java             # Vector operations
 │   ├── entity/
@@ -1605,7 +1978,8 @@ src/test/java/com/nuraly/workflows/
 ├── embedding/
 │   ├── EmbeddingProviderFactoryTest.java
 │   └── providers/
-│       └── OpenAiEmbeddingProviderTest.java
+│       ├── OpenAiEmbeddingProviderTest.java
+│       └── LocalOnnxEmbeddingProviderTest.java
 └── vector/
     └── VectorStoreServiceTest.java
 ```
@@ -1622,11 +1996,37 @@ src/test/java/com/nuraly/workflows/
 | 2 | Embedding provider interface | EmbeddingProvider.java |
 | 3 | OpenAI provider | OpenAiEmbeddingProvider.java |
 | 3 | Ollama provider | OllamaEmbeddingProvider.java |
+| 3 | **Local ONNX provider** | LocalOnnxEmbeddingProvider.java |
 | 3 | Provider factory | EmbeddingProviderFactory.java |
 | 4 | EMBEDDING node executor | EmbeddingNodeExecutor.java |
 | 4 | Update NodeType enum | NodeType.java |
 | 5 | Tests | All test files |
 | 5 | Integration testing | Manual testing |
+
+---
+
+## Dependencies to Add (pom.xml)
+
+```xml
+<!-- PGVector support -->
+<dependency>
+    <groupId>com.pgvector</groupId>
+    <artifactId>pgvector</artifactId>
+    <version>0.1.4</version>
+</dependency>
+
+<!-- Local ONNX embeddings (no API key required!) -->
+<dependency>
+    <groupId>com.microsoft.onnxruntime</groupId>
+    <artifactId>onnxruntime</artifactId>
+    <version>1.17.0</version>
+</dependency>
+<dependency>
+    <groupId>ai.djl.huggingface</groupId>
+    <artifactId>tokenizers</artifactId>
+    <version>0.30.0</version>
+</dependency>
+```
 
 ---
 
@@ -1658,5 +2058,16 @@ After implementation, verify:
 - [ ] Embeddings table created: `\d embeddings`
 - [ ] OpenAI embedding works: Create test workflow with EMBEDDING node
 - [ ] Ollama embedding works: Test with local Ollama server
+- [ ] **Local ONNX embedding works: Test without any API key!**
 - [ ] Vector search returns results: Use VectorStoreService.search()
 - [ ] All tests pass: `./mvnw test`
+
+---
+
+## Provider Quick Reference
+
+| Provider | Config | API Key | Server | Best For |
+|----------|--------|---------|--------|----------|
+| `openai` | `{"provider": "openai", "model": "text-embedding-3-small", "apiKeyPath": "..."}` | Required | Cloud | Production quality |
+| `ollama` | `{"provider": "ollama", "model": "nomic-embed-text", "apiUrlPath": "..."}` | None | Local | Privacy, self-hosted |
+| `local` | `{"provider": "local", "model": "all-MiniLM-L6-v2"}` | **None** | **None** | Dev, testing, air-gapped |
