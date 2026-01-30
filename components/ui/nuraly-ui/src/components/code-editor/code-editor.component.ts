@@ -240,73 +240,43 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
 
     // Content change events
     this.editor.getModel()?.onDidChangeContent(() => {
-      const detail: CodeEditorChangeEventDetail = { value: this.getValue() };
-      this.dispatchEvent(
-        new CustomEvent('nr-change', {
-          detail,
-          bubbles: true,
-          composed: true,
-        })
-      );
+      this.emit('nr-change', { value: this.getValue() });
     });
 
     // Keyboard events
     this.editor.onKeyDown((e: monaco.IKeyboardEvent) => {
-      const detail: CodeEditorKeyEventDetail = {
-        event: e.browserEvent,
-        key: e.browserEvent.key,
-        code: e.browserEvent.code,
-        ctrlKey: e.browserEvent.ctrlKey,
-        shiftKey: e.browserEvent.shiftKey,
-        altKey: e.browserEvent.altKey,
-        metaKey: e.browserEvent.metaKey,
-      };
-      this.dispatchEvent(
-        new CustomEvent('nr-keydown', {
-          detail,
-          bubbles: true,
-          composed: true,
-        })
-      );
+      this.emit('nr-keydown', this.createKeyEventDetail(e));
     });
 
     this.editor.onKeyUp((e: monaco.IKeyboardEvent) => {
-      const detail: CodeEditorKeyEventDetail = {
-        event: e.browserEvent,
-        key: e.browserEvent.key,
-        code: e.browserEvent.code,
-        ctrlKey: e.browserEvent.ctrlKey,
-        shiftKey: e.browserEvent.shiftKey,
-        altKey: e.browserEvent.altKey,
-        metaKey: e.browserEvent.metaKey,
-      };
-      this.dispatchEvent(
-        new CustomEvent('nr-keyup', {
-          detail,
-          bubbles: true,
-          composed: true,
-        })
-      );
+      this.emit('nr-keyup', this.createKeyEventDetail(e));
     });
 
     // Focus events
-    this.editor.onDidFocusEditorWidget(() => {
-      this.dispatchEvent(
-        new CustomEvent('nr-focus', {
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    this.editor.onDidFocusEditorWidget(() => this.emit('nr-focus'));
+    this.editor.onDidBlurEditorWidget(() => this.emit('nr-blur'));
+  }
 
-    this.editor.onDidBlurEditorWidget(() => {
-      this.dispatchEvent(
-        new CustomEvent('nr-blur', {
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+  /** Helper to create keyboard event detail */
+  private createKeyEventDetail(e: monaco.IKeyboardEvent): CodeEditorKeyEventDetail {
+    return {
+      event: e.browserEvent,
+      key: e.browserEvent.key,
+      code: e.browserEvent.code,
+      ctrlKey: e.browserEvent.ctrlKey,
+      shiftKey: e.browserEvent.shiftKey,
+      altKey: e.browserEvent.altKey,
+      metaKey: e.browserEvent.metaKey,
+    };
+  }
+
+  /** Helper to emit custom events */
+  private emit(eventName: string, detail?: Record<string, unknown>): void {
+    this.dispatchEvent(new CustomEvent(eventName, {
+      detail,
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private setupThemeListener(): void {
@@ -364,39 +334,36 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
   }
 
   private setupCustomIntelliSense(): void {
-    // Add custom type definitions for TypeScript/JavaScript
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      databaseTypeDefinitions,
-      'database-types.d.ts'
-    );
+    const tsDefaults = monaco.languages.typescript.typescriptDefaults;
+    const jsDefaults = monaco.languages.typescript.javascriptDefaults;
 
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      databaseTypeDefinitions,
-      'database-types.d.ts'
-    );
+    // Add custom type definitions for both TypeScript and JavaScript
+    [tsDefaults, jsDefaults].forEach(defaults => {
+      defaults.addExtraLib(databaseTypeDefinitions, 'database-types.d.ts');
+    });
 
-    // Configure TypeScript compiler options
-    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    // Base compiler options shared between TS and JS
+    const baseCompilerOptions = {
       target: monaco.languages.typescript.ScriptTarget.ES2020,
       allowNonTsExtensions: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.CommonJS,
       noEmit: true,
       esModuleInterop: true,
+      allowJs: true,
+    };
+
+    // TypeScript-specific options
+    tsDefaults.setCompilerOptions({
+      ...baseCompilerOptions,
       jsx: monaco.languages.typescript.JsxEmit.React,
       reactNamespace: 'React',
-      allowJs: true,
       typeRoots: ['node_modules/@types'],
     });
 
-    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
-      allowNonTsExtensions: true,
-      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.CommonJS,
-      noEmit: true,
-      esModuleInterop: true,
-      allowJs: true,
+    // JavaScript-specific options
+    jsDefaults.setCompilerOptions({
+      ...baseCompilerOptions,
       checkJs: false,
     });
 
