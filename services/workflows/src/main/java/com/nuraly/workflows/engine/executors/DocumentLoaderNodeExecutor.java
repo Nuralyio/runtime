@@ -9,6 +9,7 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.monitoring.RagMetricsService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -64,6 +65,9 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
 
     @Inject
     DocumentLoaderFactory loaderFactory;
+
+    @Inject
+    RagMetricsService ragMetrics;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -122,6 +126,7 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
         }
 
         DocumentLoader.LoadedDocument loadedDoc;
+        long startTime = System.currentTimeMillis();
 
         try {
             switch (sourceType.toLowerCase()) {
@@ -164,6 +169,9 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
                 }
             }
         } catch (Exception e) {
+            long duration = System.currentTimeMillis() - startTime;
+            String docType = getFileExtension(filename);
+            ragMetrics.recordDocumentLoaded(docType, 0, duration, false);
             LOG.errorf(e, "Failed to load document: %s", filename);
             return NodeExecutionResult.failure("Failed to load document: " + e.getMessage(), true);
         }
@@ -194,6 +202,10 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
             output.put("isolationKey", isolationKey);
         }
 
+        // Record metrics
+        long duration = System.currentTimeMillis() - startTime;
+        ragMetrics.recordDocumentLoaded(loadedDoc.getSourceType(), loadedDoc.getCharacterCount(), duration, true);
+
         LOG.debugf("Loaded document '%s': %s, %d chars, %d pages",
                    filename, loadedDoc.getSourceType(),
                    loadedDoc.getCharacterCount(), loadedDoc.getPageCount());
@@ -220,5 +232,12 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
         metadata.put("httpStatus", response.statusCode());
 
         return loader.load(new ByteArrayInputStream(response.body()), filename, metadata);
+    }
+
+    private String getFileExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return "unknown";
+        }
+        return filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
     }
 }

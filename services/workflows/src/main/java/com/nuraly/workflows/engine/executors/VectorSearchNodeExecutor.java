@@ -78,6 +78,9 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     @Inject
     Configuration configuration;
 
+    @Inject
+    com.nuraly.workflows.monitoring.RagMetricsService ragMetrics;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -156,16 +159,28 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
                 metadataFilter.put(entry.getKey(), entry.getValue().asText()));
         }
 
-        // Perform search
-        List<VectorStoreService.VectorSearchResult> results = vectorStoreService.search(
-                workflowId,
-                isolationKey,
-                collectionName,
-                queryEmbedding,
-                topK,
-                minScore > 0 ? minScore : null,
-                metadataFilter
-        );
+        // Perform search with metrics
+        long searchStart = System.currentTimeMillis();
+        ragMetrics.recordSearchStart();
+        List<VectorStoreService.VectorSearchResult> results;
+
+        try {
+            results = vectorStoreService.search(
+                    workflowId,
+                    isolationKey,
+                    collectionName,
+                    queryEmbedding,
+                    topK,
+                    minScore > 0 ? minScore : null,
+                    metadataFilter
+            );
+            long searchDuration = System.currentTimeMillis() - searchStart;
+            ragMetrics.recordSearchComplete(collectionName, results.size(), searchDuration, true);
+        } catch (Exception e) {
+            long searchDuration = System.currentTimeMillis() - searchStart;
+            ragMetrics.recordSearchComplete(collectionName, 0, searchDuration, false);
+            throw e;
+        }
 
         // Build output
         ObjectNode output = objectMapper.createObjectNode();
