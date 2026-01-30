@@ -253,7 +253,7 @@ class ContextBuilderNodeExecutorTest {
         NodeExecutionResult result = executor.execute(context, node);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getMessage().contains("results"));
+        assertTrue(result.getErrorMessage().contains("results"));
     }
 
     // Helper methods
