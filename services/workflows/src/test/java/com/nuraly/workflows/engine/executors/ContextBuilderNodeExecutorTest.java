@@ -8,19 +8,29 @@ import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.monitoring.RagMetricsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class ContextBuilderNodeExecutorTest {
 
+    @Mock
+    private RagMetricsService ragMetrics;
+
+    @InjectMocks
     private ContextBuilderNodeExecutor executor;
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        executor = new ContextBuilderNodeExecutor();
         objectMapper = new ObjectMapper();
     }
 

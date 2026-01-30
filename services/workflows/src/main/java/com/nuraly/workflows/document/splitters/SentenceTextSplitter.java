@@ -44,7 +44,8 @@ public class SentenceTextSplitter implements TextSplitter {
                 int startOffset = text.indexOf(chunkText, textOffset);
                 if (startOffset == -1) startOffset = textOffset;
 
-                chunks.add(new TextChunk(chunkText, chunkIndex++, startOffset, startOffset + chunkText.length()));
+                int endOffset = Math.min(startOffset + chunkText.length(), text.length());
+                chunks.add(new TextChunk(chunkText, chunkIndex++, startOffset, endOffset));
 
                 // Handle overlap - keep some sentences for the next chunk
                 currentChunk = new StringBuilder();
@@ -76,7 +77,8 @@ public class SentenceTextSplitter implements TextSplitter {
             if (!chunkText.isEmpty()) {
                 int startOffset = text.indexOf(chunkText, textOffset);
                 if (startOffset == -1) startOffset = textOffset;
-                chunks.add(new TextChunk(chunkText, chunkIndex, startOffset, startOffset + chunkText.length()));
+                int endOffset = Math.min(startOffset + chunkText.length(), text.length());
+                chunks.add(new TextChunk(chunkText, chunkIndex, startOffset, endOffset));
             }
         }
 
