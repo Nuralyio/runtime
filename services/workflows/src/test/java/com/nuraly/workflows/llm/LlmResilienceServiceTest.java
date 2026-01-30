@@ -300,7 +300,8 @@ class LlmResilienceServiceTest {
     void testSkipFallbackWithoutApiKey() {
         // Arrange
         when(providerFactory.getProvider("openai")).thenReturn(primaryProvider);
-        when(providerFactory.getProvider("anthropic")).thenReturn(fallbackProvider);
+        // Note: we don't stub anthropic provider because the fallback should be skipped
+        // when no API key is provided for it
 
         when(primaryProvider.chat(any(), anyString())).thenReturn(
                 LlmResponse.error("Service unavailable")
