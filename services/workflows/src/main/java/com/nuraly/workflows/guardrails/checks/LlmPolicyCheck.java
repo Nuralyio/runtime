@@ -138,9 +138,9 @@ public class LlmPolicyCheck {
             }
 
             if (config.has("temperature")) {
-                requestBuilder.temperature(config.get("temperature").floatValue());
+                requestBuilder.temperature(config.get("temperature").doubleValue());
             } else {
-                requestBuilder.temperature(0.0f);  // Deterministic
+                requestBuilder.temperature(0.0);  // Deterministic
             }
 
             if (config.has("maxTokens")) {
@@ -154,7 +154,7 @@ public class LlmPolicyCheck {
             // Call LLM
             LlmResponse response = provider.chat(request, apiKey);
 
-            if (response.isError()) {
+            if (!response.isSuccess()) {
                 return GuardrailResult.fail("llm_policy",
                         "LLM policy check failed: " + response.getError());
             }
