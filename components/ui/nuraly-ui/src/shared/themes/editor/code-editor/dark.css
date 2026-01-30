@@ -1,0 +1,36 @@
+/**
+ * Editor Theme - Code Editor Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  /* Code Editor background */
+  --nuraly-code-editor-background: #1e1e1e;
+  --nuraly-code-editor-background-hover: #252729;
+  --nuraly-code-editor-background-focus: #252729;
+
+  /* Code Editor border */
+  --nuraly-code-editor-border-color: #3e4144;
+  --nuraly-code-editor-border-color-hover: #4e5154;
+  --nuraly-code-editor-border-color-focus: #4a90e2;
+  --nuraly-code-editor-border: 1px solid var(--nuraly-code-editor-border-color);
+
+  /* Code Editor text */
+  --nuraly-code-editor-text-color: #d4d4d4;
+  --nuraly-code-editor-line-number-color: #858585;
+  --nuraly-code-editor-selection-background: rgba(74, 144, 226, 0.3);
+
+  /* Code Editor gutter */
+  --nuraly-code-editor-gutter-background: #1e1e1e;
+  --nuraly-code-editor-gutter-border-color: #3e4144;
+
+  /* Code Editor scrollbar */
+  --nuraly-code-editor-scrollbar-background: #1e1e1e;
+  --nuraly-code-editor-scrollbar-thumb: #424242;
+  --nuraly-code-editor-scrollbar-thumb-hover: #4e4e4e;
+
+  /* Code Editor focus shadow */
+  --nuraly-code-editor-focus-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+
+  /* Monaco theme to use */
+  --nuraly-code-editor-monaco-theme: vs-dark;
+}
