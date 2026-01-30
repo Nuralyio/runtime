@@ -32,7 +32,8 @@ import java.util.List;
  *   "apiKeyPath": "openai/embedding-key",  // Not needed for "local"
  *   "apiUrlPath": "ollama/server-url",     // For Ollama
  *   "inputField": "text",                  // Field containing text(s) to embed
- *   "batchSize": 100                       // Max texts per API call
+ *   "batchSize": 100,                      // Max texts per API call
+ *   "isolationKey": "{{userId}}"           // Optional: user-defined isolation key for data partitioning
  * }
  *
  * Input:
@@ -41,11 +42,13 @@ import java.util.List;
  *   { "texts": ["Hello", "World"] }
  *   OR
  *   { "chunks": [{ "content": "Hello" }, { "content": "World" }] }
+ *   OR with isolationKey in input:
+ *   { "text": "Hello world", "isolationKey": "user-123" }
  *
  * Output:
- *   { "embedding": [0.1, 0.2, ...], "dimension": 1536, "tokenCount": 5 }
+ *   { "embedding": [0.1, 0.2, ...], "dimension": 1536, "tokenCount": 5, "isolationKey": "user-123" }
  *   OR
- *   { "embeddings": [[...], [...]], "dimension": 1536, "tokenCount": 10 }
+ *   { "embeddings": [[...], [...]], "dimension": 1536, "tokenCount": 10, "isolationKey": "user-123" }
  */
 @ApplicationScoped
 public class EmbeddingNodeExecutor implements NodeExecutor {
@@ -174,7 +177,31 @@ public class EmbeddingNodeExecutor implements NodeExecutor {
         output.put("provider", providerName);
         output.put("model", model);
 
+        // Pass through isolationKey if provided (from config or input)
+        String isolationKey = extractIsolationKey(context.getInput(), config);
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            output.put("isolationKey", isolationKey);
+        }
+
         return NodeExecutionResult.success(output);
+    }
+
+    /**
+     * Extract isolation key from input or config.
+     * Priority: input.isolationKey > config.isolationKey
+     */
+    private String extractIsolationKey(JsonNode input, JsonNode config) {
+        // Check input first (runtime value takes priority)
+        if (input.has("isolationKey") && input.get("isolationKey").isTextual()) {
+            return input.get("isolationKey").asText();
+        }
+
+        // Check config (static value)
+        if (config.has("isolationKey") && config.get("isolationKey").isTextual()) {
+            return config.get("isolationKey").asText();
+        }
+
+        return null;
     }
 
     /**

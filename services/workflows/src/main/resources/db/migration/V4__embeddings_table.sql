@@ -22,8 +22,12 @@ CREATE TABLE embeddings (
     -- Primary key
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-    -- Multi-tenancy: isolate embeddings by application
-    application_id UUID NOT NULL,
+    -- Isolate embeddings by workflow
+    workflow_id UUID NOT NULL,
+
+    -- Optional user-defined isolation key (e.g., user_id, tenant_id, session_id)
+    -- Allows further partitioning within a workflow
+    isolation_key VARCHAR(255),
 
     -- Collection for organizing embeddings (e.g., "knowledge-base", "faq")
     collection_name VARCHAR(255) NOT NULL,
@@ -72,14 +76,17 @@ CREATE INDEX idx_embeddings_vector ON embeddings
     USING ivfflat (embedding vector_cosine_ops)
     WITH (lists = 100);
 
--- Composite index for filtering by app and collection before vector search
-CREATE INDEX idx_embeddings_app_collection ON embeddings (application_id, collection_name);
+-- Composite index for filtering by workflow and collection before vector search
+CREATE INDEX idx_embeddings_workflow_collection ON embeddings (workflow_id, collection_name);
+
+-- Index for isolation key filtering (user-defined partitioning)
+CREATE INDEX idx_embeddings_isolation ON embeddings (workflow_id, isolation_key, collection_name);
 
 -- GIN index for JSONB metadata queries (e.g., filter by tags, category)
 CREATE INDEX idx_embeddings_metadata ON embeddings USING gin (metadata);
 
 -- Index for source lookups (deduplication, updates)
-CREATE INDEX idx_embeddings_source ON embeddings (application_id, collection_name, source_id);
+CREATE INDEX idx_embeddings_source ON embeddings (workflow_id, collection_name, source_id);
 
 -- ============================================================================
 -- Helper Functions
