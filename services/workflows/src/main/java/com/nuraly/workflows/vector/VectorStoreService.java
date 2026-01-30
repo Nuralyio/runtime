@@ -34,11 +34,11 @@ public class VectorStoreService {
 
         String sql = """
             INSERT INTO embeddings (
-                id, application_id, collection_name, content, embedding,
+                id, workflow_id, isolation_key, collection_name, content, embedding,
                 metadata, source_id, source_type, chunk_index, token_count,
                 created_at, updated_at
             ) VALUES (
-                :id, :appId, :collection, :content, :embedding::vector,
+                :id, :workflowId, :isolationKey, :collection, :content, :embedding::vector,
                 :metadata::jsonb, :sourceId, :sourceType, :chunkIndex, :tokenCount,
                 NOW(), NOW()
             )
@@ -46,7 +46,8 @@ public class VectorStoreService {
 
         entityManager.createNativeQuery(sql)
             .setParameter("id", id)
-            .setParameter("appId", embedding.applicationId)
+            .setParameter("workflowId", embedding.workflowId)
+            .setParameter("isolationKey", embedding.isolationKey)
             .setParameter("collection", embedding.collectionName)
             .setParameter("content", embedding.content)
             .setParameter("embedding", vectorToString(embedding.embedding))
@@ -78,7 +79,7 @@ public class VectorStoreService {
     /**
      * Search for similar embeddings using cosine similarity.
      *
-     * @param applicationId Application ID for multi-tenancy
+     * @param workflowId Workflow ID for multi-tenancy
      * @param collectionName Collection to search in
      * @param queryEmbedding Query vector
      * @param topK Number of results to return
@@ -87,7 +88,30 @@ public class VectorStoreService {
      * @return List of search results with scores
      */
     public List<VectorSearchResult> search(
-            UUID applicationId,
+            UUID workflowId,
+            String collectionName,
+            float[] queryEmbedding,
+            int topK,
+            Double minScore,
+            Map<String, Object> metadataFilter) {
+        return search(workflowId, null, collectionName, queryEmbedding, topK, minScore, metadataFilter);
+    }
+
+    /**
+     * Search for similar embeddings using cosine similarity with isolation key.
+     *
+     * @param workflowId Workflow ID for multi-tenancy
+     * @param isolationKey Optional user-defined isolation key (e.g., user_id, tenant_id)
+     * @param collectionName Collection to search in
+     * @param queryEmbedding Query vector
+     * @param topK Number of results to return
+     * @param minScore Minimum similarity score (0-1)
+     * @param metadataFilter Optional JSONB filter
+     * @return List of search results with scores
+     */
+    public List<VectorSearchResult> search(
+            UUID workflowId,
+            String isolationKey,
             String collectionName,
             float[] queryEmbedding,
             int topK,
@@ -105,9 +129,14 @@ public class VectorStoreService {
                 chunk_index,
                 1 - (embedding <=> :query::vector) as score
             FROM embeddings
-            WHERE application_id = :appId
+            WHERE workflow_id = :workflowId
               AND collection_name = :collection
             """);
+
+        // Add isolation key filter if provided
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            sql.append(" AND isolation_key = :isolationKey");
+        }
 
         // Add metadata filter if provided
         if (metadataFilter != null && !metadataFilter.isEmpty()) {
@@ -124,9 +153,13 @@ public class VectorStoreService {
 
         var query = entityManager.createNativeQuery(sql.toString())
             .setParameter("query", vectorToString(queryEmbedding))
-            .setParameter("appId", applicationId)
+            .setParameter("workflowId", workflowId)
             .setParameter("collection", collectionName)
             .setParameter("topK", topK);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            query.setParameter("isolationKey", isolationKey);
+        }
 
         if (metadataFilter != null && !metadataFilter.isEmpty()) {
             query.setParameter("metadataFilter", toJsonString(metadataFilter));
@@ -162,51 +195,107 @@ public class VectorStoreService {
      * Delete embeddings by source ID.
      */
     @Transactional
-    public int deleteBySource(UUID applicationId, String collectionName, String sourceId) {
-        return entityManager.createNativeQuery("""
+    public int deleteBySource(UUID workflowId, String collectionName, String sourceId) {
+        return deleteBySource(workflowId, null, collectionName, sourceId);
+    }
+
+    /**
+     * Delete embeddings by source ID with isolation key.
+     */
+    @Transactional
+    public int deleteBySource(UUID workflowId, String isolationKey, String collectionName, String sourceId) {
+        StringBuilder sql = new StringBuilder("""
             DELETE FROM embeddings
-            WHERE application_id = :appId
+            WHERE workflow_id = :workflowId
               AND collection_name = :collection
               AND source_id = :sourceId
-            """)
-            .setParameter("appId", applicationId)
+            """);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            sql.append(" AND isolation_key = :isolationKey");
+        }
+
+        var query = entityManager.createNativeQuery(sql.toString())
+            .setParameter("workflowId", workflowId)
             .setParameter("collection", collectionName)
-            .setParameter("sourceId", sourceId)
-            .executeUpdate();
+            .setParameter("sourceId", sourceId);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            query.setParameter("isolationKey", isolationKey);
+        }
+
+        return query.executeUpdate();
     }
 
     /**
      * Delete all embeddings in a collection.
      */
     @Transactional
-    public int deleteCollection(UUID applicationId, String collectionName) {
-        return entityManager.createNativeQuery("""
+    public int deleteCollection(UUID workflowId, String collectionName) {
+        return deleteCollection(workflowId, null, collectionName);
+    }
+
+    /**
+     * Delete all embeddings in a collection with isolation key.
+     */
+    @Transactional
+    public int deleteCollection(UUID workflowId, String isolationKey, String collectionName) {
+        StringBuilder sql = new StringBuilder("""
             DELETE FROM embeddings
-            WHERE application_id = :appId
+            WHERE workflow_id = :workflowId
               AND collection_name = :collection
-            """)
-            .setParameter("appId", applicationId)
-            .setParameter("collection", collectionName)
-            .executeUpdate();
+            """);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            sql.append(" AND isolation_key = :isolationKey");
+        }
+
+        var query = entityManager.createNativeQuery(sql.toString())
+            .setParameter("workflowId", workflowId)
+            .setParameter("collection", collectionName);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            query.setParameter("isolationKey", isolationKey);
+        }
+
+        return query.executeUpdate();
     }
 
     /**
      * Get collection statistics.
      */
-    public CollectionStats getCollectionStats(UUID applicationId, String collectionName) {
-        Object[] result = (Object[]) entityManager.createNativeQuery("""
+    public CollectionStats getCollectionStats(UUID workflowId, String collectionName) {
+        return getCollectionStats(workflowId, null, collectionName);
+    }
+
+    /**
+     * Get collection statistics with isolation key.
+     */
+    public CollectionStats getCollectionStats(UUID workflowId, String isolationKey, String collectionName) {
+        StringBuilder sql = new StringBuilder("""
             SELECT
                 COUNT(*) as count,
                 COUNT(DISTINCT source_id) as sources,
                 MIN(created_at) as first_created,
                 MAX(updated_at) as last_updated
             FROM embeddings
-            WHERE application_id = :appId
+            WHERE workflow_id = :workflowId
               AND collection_name = :collection
-            """)
-            .setParameter("appId", applicationId)
-            .setParameter("collection", collectionName)
-            .getSingleResult();
+            """);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            sql.append(" AND isolation_key = :isolationKey");
+        }
+
+        var query = entityManager.createNativeQuery(sql.toString())
+            .setParameter("workflowId", workflowId)
+            .setParameter("collection", collectionName);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            query.setParameter("isolationKey", isolationKey);
+        }
+
+        Object[] result = (Object[]) query.getSingleResult();
 
         CollectionStats stats = new CollectionStats();
         stats.embeddingCount = ((Number) result[0]).longValue();
@@ -219,18 +308,35 @@ public class VectorStoreService {
     /**
      * Check if a source already exists in a collection.
      */
-    public boolean sourceExists(UUID applicationId, String collectionName, String sourceId) {
-        Long count = (Long) entityManager.createNativeQuery("""
+    public boolean sourceExists(UUID workflowId, String collectionName, String sourceId) {
+        return sourceExists(workflowId, null, collectionName, sourceId);
+    }
+
+    /**
+     * Check if a source already exists in a collection with isolation key.
+     */
+    public boolean sourceExists(UUID workflowId, String isolationKey, String collectionName, String sourceId) {
+        StringBuilder sql = new StringBuilder("""
             SELECT COUNT(*) FROM embeddings
-            WHERE application_id = :appId
+            WHERE workflow_id = :workflowId
               AND collection_name = :collection
               AND source_id = :sourceId
-            """)
-            .setParameter("appId", applicationId)
-            .setParameter("collection", collectionName)
-            .setParameter("sourceId", sourceId)
-            .getSingleResult();
+            """);
 
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            sql.append(" AND isolation_key = :isolationKey");
+        }
+
+        var query = entityManager.createNativeQuery(sql.toString())
+            .setParameter("workflowId", workflowId)
+            .setParameter("collection", collectionName)
+            .setParameter("sourceId", sourceId);
+
+        if (isolationKey != null && !isolationKey.isEmpty()) {
+            query.setParameter("isolationKey", isolationKey);
+        }
+
+        Long count = (Long) query.getSingleResult();
         return count > 0;
     }
 

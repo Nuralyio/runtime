@@ -18,8 +18,8 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "embeddings", indexes = {
-    @Index(name = "idx_embeddings_app_collection", columnList = "application_id, collection_name"),
-    @Index(name = "idx_embeddings_source", columnList = "application_id, collection_name, source_id")
+    @Index(name = "idx_embeddings_workflow_collection", columnList = "workflow_id, collection_name"),
+    @Index(name = "idx_embeddings_source", columnList = "workflow_id, collection_name, source_id")
 })
 @Getter
 @Setter
@@ -29,8 +29,15 @@ public class EmbeddingEntity extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID id;
 
-    @Column(name = "application_id", nullable = false)
-    public UUID applicationId;
+    @Column(name = "workflow_id", nullable = false)
+    public UUID workflowId;
+
+    /**
+     * Optional user-defined isolation key for partitioning data.
+     * Examples: user_id, tenant_id, session_id, customer_id
+     */
+    @Column(name = "isolation_key", length = 255)
+    public String isolationKey;
 
     @Column(name = "collection_name", nullable = false, length = 255)
     public String collectionName;
@@ -88,30 +95,74 @@ public class EmbeddingEntity extends PanacheEntityBase {
     /**
      * Find all embeddings in a collection.
      */
-    public static List<EmbeddingEntity> findByCollection(UUID applicationId, String collectionName) {
-        return find("applicationId = ?1 and collectionName = ?2", applicationId, collectionName).list();
+    public static List<EmbeddingEntity> findByCollection(UUID workflowId, String collectionName) {
+        return find("workflowId = ?1 and collectionName = ?2", workflowId, collectionName).list();
+    }
+
+    /**
+     * Find all embeddings in a collection with isolation key.
+     */
+    public static List<EmbeddingEntity> findByCollection(UUID workflowId, String isolationKey, String collectionName) {
+        if (isolationKey == null || isolationKey.isEmpty()) {
+            return findByCollection(workflowId, collectionName);
+        }
+        return find("workflowId = ?1 and isolationKey = ?2 and collectionName = ?3",
+                    workflowId, isolationKey, collectionName).list();
     }
 
     /**
      * Find embeddings by source ID (for updates/deduplication).
      */
-    public static List<EmbeddingEntity> findBySource(UUID applicationId, String collectionName, String sourceId) {
-        return find("applicationId = ?1 and collectionName = ?2 and sourceId = ?3",
-                    applicationId, collectionName, sourceId).list();
+    public static List<EmbeddingEntity> findBySource(UUID workflowId, String collectionName, String sourceId) {
+        return find("workflowId = ?1 and collectionName = ?2 and sourceId = ?3",
+                    workflowId, collectionName, sourceId).list();
+    }
+
+    /**
+     * Find embeddings by source ID with isolation key.
+     */
+    public static List<EmbeddingEntity> findBySource(UUID workflowId, String isolationKey, String collectionName, String sourceId) {
+        if (isolationKey == null || isolationKey.isEmpty()) {
+            return findBySource(workflowId, collectionName, sourceId);
+        }
+        return find("workflowId = ?1 and isolationKey = ?2 and collectionName = ?3 and sourceId = ?4",
+                    workflowId, isolationKey, collectionName, sourceId).list();
     }
 
     /**
      * Delete all embeddings for a source (before re-ingestion).
      */
-    public static long deleteBySource(UUID applicationId, String collectionName, String sourceId) {
-        return delete("applicationId = ?1 and collectionName = ?2 and sourceId = ?3",
-                      applicationId, collectionName, sourceId);
+    public static long deleteBySource(UUID workflowId, String collectionName, String sourceId) {
+        return delete("workflowId = ?1 and collectionName = ?2 and sourceId = ?3",
+                      workflowId, collectionName, sourceId);
+    }
+
+    /**
+     * Delete all embeddings for a source with isolation key.
+     */
+    public static long deleteBySource(UUID workflowId, String isolationKey, String collectionName, String sourceId) {
+        if (isolationKey == null || isolationKey.isEmpty()) {
+            return deleteBySource(workflowId, collectionName, sourceId);
+        }
+        return delete("workflowId = ?1 and isolationKey = ?2 and collectionName = ?3 and sourceId = ?4",
+                      workflowId, isolationKey, collectionName, sourceId);
     }
 
     /**
      * Count embeddings in a collection.
      */
-    public static long countByCollection(UUID applicationId, String collectionName) {
-        return count("applicationId = ?1 and collectionName = ?2", applicationId, collectionName);
+    public static long countByCollection(UUID workflowId, String collectionName) {
+        return count("workflowId = ?1 and collectionName = ?2", workflowId, collectionName);
+    }
+
+    /**
+     * Count embeddings in a collection with isolation key.
+     */
+    public static long countByCollection(UUID workflowId, String isolationKey, String collectionName) {
+        if (isolationKey == null || isolationKey.isEmpty()) {
+            return countByCollection(workflowId, collectionName);
+        }
+        return count("workflowId = ?1 and isolationKey = ?2 and collectionName = ?3",
+                     workflowId, isolationKey, collectionName);
     }
 }
