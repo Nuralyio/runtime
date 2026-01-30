@@ -36,6 +36,15 @@ public enum NodeType {
     HUMAN_INPUT,    // Wait for human input in the workflow
     OUTPUT_PARSER,  // Parse LLM output into structured data
 
+    // RAG nodes (Retrieval-Augmented Generation)
+    EMBEDDING,      // Generate vector embeddings from text (OpenAI, Ollama, Local ONNX)
+    DOCUMENT_LOADER,// Load and parse documents (PDF, Word, HTML, etc.) - Phase 2
+    TEXT_SPLITTER,  // Split text into chunks for embedding - Phase 2
+    VECTOR_WRITE,   // Write vectors to PGVector store - Phase 2
+    VECTOR_SEARCH,  // Search vectors by similarity - Phase 3
+    CONTEXT_BUILDER,// Build context from retrieved documents - Phase 3
+    RERANKER,       // Re-rank search results - Phase 4
+
     // DB Designer nodes
     DB_TABLE,       // Database table definition
     DB_VIEW,        // Database view definition
