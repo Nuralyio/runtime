@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.llm.LlmProvider;
+import com.nuraly.workflows.llm.StreamingLlmProvider;
 import com.nuraly.workflows.llm.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -13,18 +14,23 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.jboss.logging.Logger;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * OpenAI LLM Provider implementation.
- * Supports GPT-4, GPT-4 Turbo, GPT-3.5 Turbo models.
+ * Supports GPT-4, GPT-4 Turbo, GPT-3.5 Turbo models with streaming.
  */
 @ApplicationScoped
-public class OpenAiProvider implements LlmProvider {
+public class OpenAiProvider implements StreamingLlmProvider {
 
+    private static final Logger LOG = Logger.getLogger(OpenAiProvider.class);
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private static final Set<String> SUPPORTED_MODELS = Set.of(
             "gpt-4", "gpt-4-turbo", "gpt-4-turbo-preview", "gpt-4o", "gpt-4o-mini",
@@ -246,6 +252,162 @@ public class OpenAiProvider implements LlmProvider {
             return responseBody;
         } catch (Exception e) {
             return responseBody;
+        }
+    }
+
+    @Override
+    public LlmResponse streamChat(LlmRequest request, String apiKey, Consumer<StreamToken> tokenCallback) {
+        try {
+            ObjectNode requestBody = buildRequestBody(request);
+            requestBody.put("stream", true);
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                HttpPost httpPost = new HttpPost(API_URL);
+                httpPost.addHeader("Content-Type", "application/json");
+                httpPost.addHeader("Authorization", "Bearer " + apiKey);
+                httpPost.setEntity(new StringEntity(objectMapper.writeValueAsString(requestBody), ContentType.APPLICATION_JSON));
+
+                var response = httpClient.execute(httpPost);
+                int statusCode = response.getCode();
+
+                if (statusCode < 200 || statusCode >= 300) {
+                    String errorBody = EntityUtils.toString(response.getEntity());
+                    String errorMsg = "OpenAI API error (status " + statusCode + "): " + extractErrorMessage(errorBody);
+                    tokenCallback.accept(StreamToken.error(errorMsg));
+                    return LlmResponse.error(errorMsg);
+                }
+
+                // Parse SSE stream
+                StringBuilder contentBuilder = new StringBuilder();
+                String finishReason = null;
+                LlmResponse.Usage usage = null;
+                String model = null;
+                List<ToolCall> toolCalls = new ArrayList<>();
+
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()))) {
+                    String line;
+                    StringBuilder toolCallArgsBuilder = new StringBuilder();
+                    String currentToolCallId = null;
+                    String currentToolCallName = null;
+
+                    while ((line = reader.readLine()) != null) {
+                        if (line.startsWith("data: ")) {
+                            String data = line.substring(6).trim();
+
+                            if ("[DONE]".equals(data)) {
+                                tokenCallback.accept(StreamToken.done(finishReason));
+                                break;
+                            }
+
+                            try {
+                                JsonNode chunk = objectMapper.readTree(data);
+
+                                // Get model from first chunk
+                                if (model == null && chunk.has("model")) {
+                                    model = chunk.get("model").asText();
+                                }
+
+                                if (chunk.has("choices") && chunk.get("choices").isArray() &&
+                                    chunk.get("choices").size() > 0) {
+                                    JsonNode choice = chunk.get("choices").get(0);
+                                    JsonNode delta = choice.get("delta");
+
+                                    // Content delta
+                                    if (delta != null && delta.has("content") && !delta.get("content").isNull()) {
+                                        String content = delta.get("content").asText();
+                                        contentBuilder.append(content);
+                                        tokenCallback.accept(StreamToken.content(content));
+                                    }
+
+                                    // Tool calls delta
+                                    if (delta != null && delta.has("tool_calls") && delta.get("tool_calls").isArray()) {
+                                        for (JsonNode tc : delta.get("tool_calls")) {
+                                            if (tc.has("id")) {
+                                                // New tool call starting
+                                                if (currentToolCallId != null && currentToolCallName != null) {
+                                                    // Save previous tool call
+                                                    try {
+                                                        toolCalls.add(ToolCall.builder()
+                                                                .id(currentToolCallId)
+                                                                .name(currentToolCallName)
+                                                                .arguments(objectMapper.readTree(toolCallArgsBuilder.toString()))
+                                                                .build());
+                                                    } catch (Exception e) {
+                                                        LOG.warnf("Failed to parse tool call args: %s", e.getMessage());
+                                                    }
+                                                }
+                                                currentToolCallId = tc.get("id").asText();
+                                                toolCallArgsBuilder = new StringBuilder();
+                                            }
+                                            if (tc.has("function")) {
+                                                JsonNode func = tc.get("function");
+                                                if (func.has("name")) {
+                                                    currentToolCallName = func.get("name").asText();
+                                                    tokenCallback.accept(StreamToken.toolCall(currentToolCallName));
+                                                }
+                                                if (func.has("arguments")) {
+                                                    toolCallArgsBuilder.append(func.get("arguments").asText());
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Finish reason
+                                    if (choice.has("finish_reason") && !choice.get("finish_reason").isNull()) {
+                                        finishReason = choice.get("finish_reason").asText();
+                                    }
+                                }
+
+                                // Usage (usually in last chunk)
+                                if (chunk.has("usage") && !chunk.get("usage").isNull()) {
+                                    JsonNode usageNode = chunk.get("usage");
+                                    usage = LlmResponse.Usage.builder()
+                                            .promptTokens(usageNode.has("prompt_tokens") ? usageNode.get("prompt_tokens").asInt() : 0)
+                                            .completionTokens(usageNode.has("completion_tokens") ? usageNode.get("completion_tokens").asInt() : 0)
+                                            .totalTokens(usageNode.has("total_tokens") ? usageNode.get("total_tokens").asInt() : 0)
+                                            .build();
+                                }
+                            } catch (Exception e) {
+                                LOG.debugf("Failed to parse SSE chunk: %s", e.getMessage());
+                            }
+                        }
+                    }
+
+                    // Save last tool call if any
+                    if (currentToolCallId != null && currentToolCallName != null && toolCallArgsBuilder.length() > 0) {
+                        try {
+                            toolCalls.add(ToolCall.builder()
+                                    .id(currentToolCallId)
+                                    .name(currentToolCallName)
+                                    .arguments(objectMapper.readTree(toolCallArgsBuilder.toString()))
+                                    .build());
+                        } catch (Exception e) {
+                            LOG.warnf("Failed to parse final tool call args: %s", e.getMessage());
+                        }
+                    }
+                }
+
+                // Build final response
+                LlmResponse.LlmResponseBuilder responseBuilder = LlmResponse.builder()
+                        .content(contentBuilder.length() > 0 ? contentBuilder.toString() : null)
+                        .finishReason(mapFinishReason(finishReason != null ? finishReason : "stop"))
+                        .model(model);
+
+                if (!toolCalls.isEmpty()) {
+                    responseBuilder.toolCalls(toolCalls);
+                }
+
+                if (usage != null) {
+                    responseBuilder.usage(usage);
+                }
+
+                return responseBuilder.build();
+            }
+        } catch (Exception e) {
+            String errorMsg = "OpenAI streaming request failed: " + e.getMessage();
+            tokenCallback.accept(StreamToken.error(errorMsg));
+            return LlmResponse.error(errorMsg);
         }
     }
 }
