@@ -47,6 +47,9 @@ public enum NodeType {
     CONTEXT_BUILDER,// Build context from retrieved documents - Phase 3
     RERANKER,       // Re-rank search results - Phase 4
 
+    // Storage nodes
+    FILE_STORAGE,   // Store files to S3, MinIO, or local filesystem
+
     // DB Designer nodes
     DB_TABLE,       // Database table definition
     DB_VIEW,        // Database view definition
