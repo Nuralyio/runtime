@@ -73,6 +73,7 @@ export default defineConfig({
        '@nuralyui/radio-group': path.join(nuralyUIPath, 'radio-group'),
        '@nuralyui/iconpicker': path.join(nuralyUIPath, 'iconpicker'),
        '@nuralyui/container': path.join(nuralyUIPath, 'container'),
+       '@nuralyui/code-editor': path.join(nuralyUIPath, 'code-editor'),
      }
    },
    build:{

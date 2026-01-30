@@ -10,7 +10,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
 import type { PageElement } from "../../../../runtime/redux/handlers/pages/page.interface";
-import "../../../../runtime/components/ui/components/advanced/CodeEditor/CodeEditor";
+import "@nuralyui/code-editor";
 import { COMPONENT_EVENTS } from "../../../core/properties/registry";
 import { updatePageHandler } from "../../../../runtime/redux/handlers/pages/handler";
 
@@ -56,8 +56,8 @@ export class NativeHandlersPanel extends LitElement {
       margin-top: 8px;
     }
 
-    .handler-editor code-editor {
-      --editor-height: 120px;
+    .handler-editor nr-code-editor {
+      --nuraly-code-editor-height: 120px;
       display: block;
     }
   `;
@@ -152,11 +152,11 @@ export class NativeHandlersPanel extends LitElement {
           <div class="handler-content">
             <nr-label size="small" variant="secondary">${event.description}</nr-label>
             <div class="handler-editor">
-              <code-editor
+              <nr-code-editor
                 language="javascript"
                 .code=${code || "// Enter JavaScript code..."}
-                @change=${(e: CustomEvent) => this.updatePageHandler(event.name, e.detail.value)}
-              ></code-editor>
+                @nr-change=${(e: CustomEvent) => this.updatePageHandler(event.name, e.detail.value)}
+              ></nr-code-editor>
             </div>
           </div>
         ` : ""}
@@ -190,11 +190,11 @@ export class NativeHandlersPanel extends LitElement {
           <div class="handler-content">
             <nr-label size="small" variant="secondary">${event.description}</nr-label>
             <div class="handler-editor">
-              <code-editor
+              <nr-code-editor
                 language="javascript"
                 .code=${code || "// Enter JavaScript code..."}
-                @change=${(e: CustomEvent) => this.updateHandler(event.name, e.detail.value)}
-              ></code-editor>
+                @nr-change=${(e: CustomEvent) => this.updateHandler(event.name, e.detail.value)}
+              ></nr-code-editor>
             </div>
           </div>
         ` : ""}
