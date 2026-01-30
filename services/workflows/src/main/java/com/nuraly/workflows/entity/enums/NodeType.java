@@ -29,6 +29,8 @@ public enum NodeType {
     AGENT,          // Autonomous AI agent that can use tools
     TOOL,           // A tool that can be used by an agent
     MEMORY,         // Conversation memory for agents
+    CONTEXT_MEMORY, // RAG-enhanced conversation memory (buffer, semantic, hybrid)
+    GUARDRAIL,      // Input/output validation and safety checks
     PROMPT,         // Prompt template for LLM
     RETRIEVER,      // Retrieve relevant documents from vector store
     CHAIN,          // Chain multiple LLM calls together
