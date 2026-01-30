@@ -2,6 +2,7 @@ package com.nuraly.workflows.test;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,9 @@ import java.util.Map;
  */
 public class PostgresVectorResource implements QuarkusTestResourceLifecycleManager {
 
-    private static final String PGVECTOR_IMAGE = "pgvector/pgvector:pg16";
+    private static final DockerImageName PGVECTOR_IMAGE = DockerImageName
+            .parse("pgvector/pgvector:pg16")
+            .asCompatibleSubstituteFor("postgres");
 
     private PostgreSQLContainer<?> postgres;
 
