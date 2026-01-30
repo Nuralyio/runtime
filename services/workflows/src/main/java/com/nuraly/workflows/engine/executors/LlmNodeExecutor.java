@@ -12,6 +12,8 @@ import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.LlmProviderFactory;
+import com.nuraly.workflows.llm.LlmResilienceService;
+import com.nuraly.workflows.llm.LlmResilienceService.ResilienceConfig;
 import com.nuraly.workflows.llm.dto.*;
 import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
@@ -62,6 +64,9 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     LlmProviderFactory providerFactory;
+
+    @Inject
+    LlmResilienceService resilienceService;
 
     @Inject
     NodeExecutorFactory nodeExecutorFactory;
@@ -155,6 +160,9 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
 
+        // Build resilience configuration
+        ResilienceConfig resilienceConfig = buildResilienceConfig(config);
+
         // Build initial messages
         List<LlmMessage> messages = new ArrayList<>();
 
@@ -242,9 +250,10 @@ public class LlmNodeExecutor implements NodeExecutor {
                 );
             }
 
-            // Call LLM
-            LOG.debugf("Calling LLM provider: %s, model: %s", providerName, model);
-            LlmResponse response = provider.chat(request, apiKey);
+            // Call LLM with resilience (retry + failover)
+            LOG.debugf("Calling LLM provider: %s, model: %s (with resilience)", providerName, model);
+            LlmResponse response = resilienceService.executeWithResilience(
+                    request, providerName, apiKey, resilienceConfig);
 
             // Emit LLM call completed event
             if (context.getExecution() != null) {
@@ -949,5 +958,68 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxMessages = 50;
         int maxTokens = 4000;
         String conversationId;
+    }
+
+    /**
+     * Build resilience configuration from node config.
+     *
+     * Supported configuration:
+     * {
+     *   "retry": {
+     *     "enabled": true,
+     *     "maxAttempts": 3,
+     *     "initialBackoffMs": 1000,
+     *     "maxBackoffMs": 30000
+     *   },
+     *   "fallback": {
+     *     "enabled": true,
+     *     "providers": ["anthropic", "ollama"]
+     *   },
+     *   "timeout": 60000
+     * }
+     */
+    private ResilienceConfig buildResilienceConfig(JsonNode config) {
+        ResilienceConfig.Builder builder = ResilienceConfig.builder();
+
+        // Parse retry configuration
+        if (config.has("retry") && config.get("retry").isObject()) {
+            JsonNode retryConfig = config.get("retry");
+
+            if (retryConfig.has("enabled") && !retryConfig.get("enabled").asBoolean()) {
+                builder.maxRetries(0);
+            } else {
+                if (retryConfig.has("maxAttempts")) {
+                    builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1); // -1 because maxRetries doesn't include initial attempt
+                }
+                if (retryConfig.has("initialBackoffMs")) {
+                    builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
+                }
+                if (retryConfig.has("maxBackoffMs")) {
+                    builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
+                }
+            }
+        }
+
+        // Parse fallback configuration
+        if (config.has("fallback") && config.get("fallback").isObject()) {
+            JsonNode fallbackConfig = config.get("fallback");
+
+            if (fallbackConfig.has("enabled") && fallbackConfig.get("enabled").asBoolean()) {
+                if (fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
+                    List<String> fallbackProviders = new ArrayList<>();
+                    for (JsonNode provider : fallbackConfig.get("providers")) {
+                        fallbackProviders.add(provider.asText());
+                    }
+                    builder.fallbackProviders(fallbackProviders);
+                }
+            }
+        }
+
+        // Parse timeout
+        if (config.has("timeout")) {
+            builder.timeoutMs(config.get("timeout").asLong());
+        }
+
+        return builder.build();
     }
 }
