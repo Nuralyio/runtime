@@ -8,6 +8,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * Factory for creating storage providers based on configuration or node settings.
  */
@@ -57,6 +59,26 @@ public class StorageProviderFactory {
                     "Unsupported storage provider: " + providerName +
                             ". Supported providers: s3, minio, local");
         };
+    }
+
+    /**
+     * Store a file using dynamic S3/MinIO configuration from KV store.
+     * This allows per-workflow/per-user storage configuration.
+     *
+     * @param config      Storage configuration from KV store
+     * @param data        File content as bytes
+     * @param filename    Original filename
+     * @param contentType MIME type
+     * @param bucket      Target bucket
+     * @param path        Path prefix within bucket
+     * @param metadata    Optional metadata
+     * @return StorageResult with URL and details
+     */
+    public StorageResult storeWithConfig(StorageConfig config, byte[] data, String filename,
+                                          String contentType, String bucket, String path,
+                                          Map<String, String> metadata) {
+        log.debug("Using dynamic S3 config: endpoint={}, region={}", config.getEndpoint(), config.getRegion());
+        return s3StorageProvider.storeWithConfig(config, data, filename, contentType, bucket, path, metadata);
     }
 
     /**

@@ -3,15 +3,21 @@ package com.nuraly.workflows.engine.executors;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.storage.StorageConfig;
 import com.nuraly.workflows.storage.StorageProvider;
 import com.nuraly.workflows.storage.StorageProviderFactory;
 import com.nuraly.workflows.storage.StorageResult;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.tika.Tika;
 import org.jboss.logging.Logger;
 
@@ -24,13 +30,24 @@ import java.util.Map;
  *
  * Node Configuration:
  * {
- *   "provider": "s3" | "minio" | "local",     // Storage provider (default: from config)
- *   "bucket": "my-documents",                  // Bucket name or folder
+ *   "provider": "s3" | "minio" | "local",     // Storage provider
+ *   "storageConfigPath": "storage/my-s3",     // KV store path for S3/MinIO credentials
+ *   "bucket": "my-documents",                  // Bucket name (can be overridden from KV)
  *   "path": "uploads/",                        // Optional path prefix
  *   "fileField": "file",                       // Field containing base64 file content
  *   "filenameField": "filename",               // Field containing filename
  *   "contentTypeField": "contentType",         // Field containing content type (optional)
  *   "metadataFields": ["userId", "category"]   // Fields to include as metadata
+ * }
+ *
+ * KV Store entry (storageConfigPath) format:
+ * {
+ *   "endpoint": "https://s3.amazonaws.com",    // S3/MinIO endpoint
+ *   "region": "us-east-1",                     // AWS region
+ *   "accessKey": "AKIAIOSFODNN7EXAMPLE",       // Access key
+ *   "secretKey": "wJalrXUtnFEMI/K7MDENG/...",  // Secret key
+ *   "bucket": "default-bucket",                // Default bucket (optional)
+ *   "pathStyleAccess": false                   // Use path-style access (for MinIO)
  * }
  *
  * Input:
@@ -62,6 +79,9 @@ public class FileStorageNodeExecutor implements NodeExecutor {
     @Inject
     StorageProviderFactory storageProviderFactory;
 
+    @Inject
+    Configuration configuration;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Tika tika = new Tika();
 
@@ -79,9 +99,32 @@ public class FileStorageNodeExecutor implements NodeExecutor {
         JsonNode config = objectMapper.readTree(node.configuration);
         JsonNode input = context.getInput();
 
-        // Get configuration values
-        String providerName = config.has("provider") ? config.get("provider").asText() : null;
-        String bucket = config.has("bucket") ? config.get("bucket").asText() : "default";
+        // Get provider type
+        String providerName = config.has("provider") ? config.get("provider").asText() : "local";
+
+        // For S3/MinIO, fetch credentials from KV store
+        StorageConfig storageConfig = null;
+        if ("s3".equalsIgnoreCase(providerName) || "minio".equalsIgnoreCase(providerName)) {
+            String storageConfigPath = config.has("storageConfigPath") ? config.get("storageConfigPath").asText() : null;
+            if (storageConfigPath == null || storageConfigPath.isEmpty()) {
+                return NodeExecutionResult.failure("storageConfigPath is required for S3/MinIO provider. " +
+                        "Configure your storage credentials in the KV store.");
+            }
+
+            storageConfig = fetchStorageConfig(storageConfigPath, context);
+            if (storageConfig == null) {
+                return NodeExecutionResult.failure("Failed to retrieve storage configuration from KV store: " + storageConfigPath);
+            }
+        }
+
+        // Get bucket - from node config, then from KV config, then default
+        String bucket = "default";
+        if (config.has("bucket") && !config.get("bucket").asText().isEmpty()) {
+            bucket = config.get("bucket").asText();
+        } else if (storageConfig != null && storageConfig.getBucket() != null) {
+            bucket = storageConfig.getBucket();
+        }
+
         String path = config.has("path") ? config.get("path").asText() : "";
 
         // Get field names from config
@@ -134,20 +177,20 @@ public class FileStorageNodeExecutor implements NodeExecutor {
             metadata.put("isolationKey", input.get("isolationKey").asText());
         }
 
-        // Get the storage provider
-        StorageProvider provider;
-        try {
-            provider = storageProviderFactory.getProvider(providerName);
-        } catch (IllegalArgumentException e) {
-            return NodeExecutionResult.failure("Invalid storage provider: " + e.getMessage());
-        }
-
-        // Store the file
+        // Get the storage provider and store the file
         StorageResult result;
         try {
-            result = provider.store(fileBytes, filename, contentType, bucket, path, metadata);
+            if (storageConfig != null) {
+                // Use dynamic S3/MinIO config from KV
+                result = storageProviderFactory.storeWithConfig(
+                        storageConfig, fileBytes, filename, contentType, bucket, path, metadata);
+            } else {
+                // Use default local storage
+                StorageProvider provider = storageProviderFactory.getProvider(providerName);
+                result = provider.store(fileBytes, filename, contentType, bucket, path, metadata);
+            }
         } catch (Exception e) {
-            LOG.errorf(e, "Failed to store file '%s' to %s", filename, provider.getName());
+            LOG.errorf(e, "Failed to store file '%s' to %s", filename, providerName);
             return NodeExecutionResult.failure("Failed to store file: " + e.getMessage(), true);
         }
 
@@ -173,14 +216,87 @@ public class FileStorageNodeExecutor implements NodeExecutor {
         }
 
         LOG.infof("Stored file '%s' to %s: %s (%d bytes)",
-                filename, provider.getName(), result.getUrl(), result.getSize());
+                filename, result.getProvider(), result.getUrl(), result.getSize());
 
         return NodeExecutionResult.success(output);
     }
 
+    /**
+     * Fetch storage configuration from KV store.
+     */
+    private StorageConfig fetchStorageConfig(String keyPath, ExecutionContext context) {
+        try {
+            String appId = context.getWorkflowId();
+            if (appId == null) {
+                appId = "default";
+            }
+
+            String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
+                    java.net.URLEncoder.encode(keyPath, "UTF-8") +
+                    "?applicationId=" + appId;
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+                HttpGet request = new HttpGet(kvServiceUrl);
+                request.addHeader("Content-Type", "application/json");
+
+                var response = httpClient.execute(request);
+                int statusCode = response.getCode();
+
+                if (statusCode >= 200 && statusCode < 300) {
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    JsonNode kvEntry = objectMapper.readTree(responseBody);
+
+                    if (kvEntry.has("value")) {
+                        String valueStr = kvEntry.get("value").asText();
+                        // The value might be a JSON string or already an object
+                        JsonNode configJson;
+                        if (valueStr.startsWith("{")) {
+                            configJson = objectMapper.readTree(valueStr);
+                        } else {
+                            configJson = kvEntry.get("value");
+                        }
+
+                        return StorageConfig.builder()
+                                .endpoint(getJsonString(configJson, "endpoint"))
+                                .region(getJsonString(configJson, "region", "us-east-1"))
+                                .accessKey(getJsonString(configJson, "accessKey"))
+                                .secretKey(getJsonString(configJson, "secretKey"))
+                                .bucket(getJsonString(configJson, "bucket"))
+                                .pathStyleAccess(getJsonBoolean(configJson, "pathStyleAccess", false))
+                                .build();
+                    }
+                } else {
+                    LOG.warnf("KV store returned status %d for path: %s", statusCode, keyPath);
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            LOG.warnf("Failed to fetch storage config from KV store (%s): %s", keyPath, e.getMessage());
+            return null;
+        }
+    }
+
+    private String getJsonString(JsonNode node, String field) {
+        return getJsonString(node, field, null);
+    }
+
+    private String getJsonString(JsonNode node, String field, String defaultValue) {
+        if (node.has(field) && !node.get(field).isNull()) {
+            return node.get(field).asText();
+        }
+        return defaultValue;
+    }
+
+    private boolean getJsonBoolean(JsonNode node, String field, boolean defaultValue) {
+        if (node.has(field) && !node.get(field).isNull()) {
+            return node.get(field).asBoolean();
+        }
+        return defaultValue;
+    }
+
     private String detectContentType(byte[] data, String filename) {
         try {
-            // Try to detect from content
             String detected = tika.detect(data);
             if (detected != null && !detected.equals("application/octet-stream")) {
                 return detected;
@@ -189,7 +305,6 @@ public class FileStorageNodeExecutor implements NodeExecutor {
             LOG.debugf("Failed to detect content type from bytes: %s", e.getMessage());
         }
 
-        // Fall back to filename-based detection
         try {
             String detected = tika.detect(filename);
             if (detected != null) {
