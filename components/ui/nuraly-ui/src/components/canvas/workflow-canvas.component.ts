@@ -37,6 +37,10 @@ import {
   KeyboardController,
   DragController,
   ConfigController,
+  MarqueeController,
+  ClipboardController,
+  UndoController,
+  type MarqueeState,
 } from './controllers/index.js';
 
 // Templates
@@ -208,6 +212,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private isPanning = false;
 
   @state()
+  private panStart: Position = { x: 0, y: 0 };
+
+  @state()
   private isHoveringDisabledOverlay = false;
 
   @state()
@@ -227,6 +234,12 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private previewNodeId: string | null = null;
+
+  @state()
+  private marqueeState: MarqueeState | null = null;
+
+  @state()
+  private lastMousePosition: Position | null = null;
 
   // Chatbot preview controller and provider for CHAT_START nodes
   private chatPreviewController: ChatbotCoreController | null = null;
@@ -275,6 +288,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private connectionController!: ConnectionController;
   private dragController!: DragController;
   private configController!: ConfigController;
+  private marqueeController!: MarqueeController;
+  private clipboardController!: ClipboardController;
+  private keyboardController!: KeyboardController;
+  private undoController!: UndoController;
 
   constructor() {
     super();
@@ -283,15 +300,29 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.selectionController = new SelectionController(this as unknown as CanvasHost & LitElement);
     this.connectionController = new ConnectionController(this as unknown as CanvasHost & LitElement);
     this.configController = new ConfigController(this as unknown as CanvasHost & LitElement);
-    // KeyboardController adds itself via addController, no need to store reference
-    new KeyboardController(
+    this.marqueeController = new MarqueeController(this as unknown as any);
+    this.clipboardController = new ClipboardController(this as unknown as any);
+    this.undoController = new UndoController(this as unknown as CanvasHost & LitElement);
+
+    // KeyboardController needs reference to clipboard and undo controllers
+    this.keyboardController = new KeyboardController(
       this as unknown as CanvasHost & LitElement,
       this.selectionController
     );
+    this.keyboardController.setClipboardController(this.clipboardController);
+    this.keyboardController.setUndoController(this.undoController);
+
     this.dragController = new DragController(
       this as unknown as CanvasHost & LitElement,
       this.viewportController
     );
+
+    // Set undo controller on all controllers that need it
+    this.selectionController.setUndoController(this.undoController);
+    this.dragController.setUndoController(this.undoController);
+    this.connectionController.setUndoController(this.undoController);
+    this.configController.setUndoController(this.undoController);
+    this.clipboardController.setUndoController(this.undoController);
   }
 
   // CanvasHost interface methods for controllers
@@ -304,6 +335,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     // Note: Keyboard and wheel events are now handled by controllers
     window.addEventListener('mouseup', this.handleGlobalMouseUp);
     window.addEventListener('mousemove', this.handleGlobalMouseMove);
+    this.addEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     await this.updateComplete;
     this.viewportController.updateTransform();
   }
@@ -312,21 +344,62 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     super.disconnectedCallback();
     window.removeEventListener('mouseup', this.handleGlobalMouseUp);
     window.removeEventListener('mousemove', this.handleGlobalMouseMove);
+    this.removeEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     // Clean up chat preview resources
     this.cleanupChatPreview();
   }
 
+  /**
+   * Handle test workflow request from config panel
+   */
+  private handleTestWorkflowRequest = () => {
+    if (this.configuredNode) {
+      const config = this.configuredNode.configuration || {};
+
+      // Extract test data from the node configuration
+      const testData = config.testFile || config.testDocument || null;
+
+      // Dispatch workflow-trigger event to run the workflow with test data
+      // The startFromNode flag indicates this node should be treated as the entry point
+      this.dispatchEvent(new CustomEvent('workflow-trigger', {
+        detail: {
+          node: this.configuredNode,
+          startFromNode: true,  // Treat this node as the start point
+          testData: testData,   // Include the test file/document data
+          workflow: this.workflow,  // Include full workflow for execution
+        },
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  };
+
   // Note: Keyboard handling is now in KeyboardController
 
-  private handleGlobalMouseUp = () => {
+  private handleGlobalMouseUp = (e: MouseEvent) => {
     if (this.disabled) return;
     this.dragController.stopDrag();
     this.viewportController.stopPan();
     this.connectionController.cancelConnection();
+
+    // End marquee selection
+    if (this.marqueeState) {
+      this.marqueeController.endSelection(e.shiftKey);
+    }
   };
 
   private handleGlobalMouseMove = (e: MouseEvent) => {
     if (this.disabled) return;
+
+    // Track mouse position for paste operations
+    if (this.canvasWrapper) {
+      const rect = this.canvasWrapper.getBoundingClientRect();
+      this.lastMousePosition = {
+        x: (e.clientX - rect.left - this.viewport.panX) / this.viewport.zoom,
+        y: (e.clientY - rect.top - this.viewport.panY) / this.viewport.zoom,
+      };
+    }
+
     if (this.dragState) {
       this.dragController.handleDrag(e);
     }
@@ -335,6 +408,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
     if (this.connectionState) {
       this.connectionController.updateConnectionPosition(e);
+    }
+    // Update marquee selection
+    if (this.marqueeState) {
+      this.marqueeController.updateSelection(e);
     }
   };
 
@@ -348,10 +425,18 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       e.preventDefault();
       this.viewportController.startPan(e);
     } else if (e.button === 0 && isCanvasBackground) {
-      // Left click on empty canvas - start panning (like n8n)
       e.preventDefault();
-      this.viewportController.startPan(e);
-      this.selectionController.clearSelection();
+
+      // Check if Ctrl/Cmd is held - if so, start panning
+      if (e.ctrlKey || e.metaKey) {
+        this.viewportController.startPan(e);
+        if (!e.shiftKey) {
+          this.selectionController.clearSelection();
+        }
+      } else {
+        // Start marquee selection for box select
+        this.marqueeController.startSelection(e, e.shiftKey);
+      }
     }
   };
 
@@ -375,13 +460,17 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (this.disabled) return;
     const { node, event } = e.detail;
 
-    if (!event.shiftKey) {
-      if (!this.selectedNodeIds.has(node.id)) {
-        this.selectionController.clearSelection();
-      }
-    }
+    const isAlreadySelected = this.selectedNodeIds.has(node.id);
 
-    this.selectionController.selectNode(node.id, event.shiftKey);
+    if (event.shiftKey) {
+      // Shift+click: toggle selection (add or remove from selection)
+      this.selectionController.selectNode(node.id, true);
+    } else if (!isAlreadySelected) {
+      // Click on unselected node: clear selection and select this node
+      this.selectionController.clearSelection();
+      this.selectionController.selectNode(node.id, false);
+    }
+    // If already selected without shift: keep current selection for multi-drag
 
     // Update config panel if it's open
     if (this.configuredNode) {
@@ -788,6 +877,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
     const newNode = createNodeFromTemplate(type, pos);
     if (newNode) {
+      // Record for undo before making changes
+      this.undoController.recordNodeAdded(newNode);
+
       this.workflow = {
         ...this.workflow,
         nodes: [...this.workflow.nodes, newNode],
@@ -930,6 +1022,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       hasSelection: this.selectedNodeIds.size > 0 || this.selectedEdgeIds.size > 0,
       hasSingleSelection: this.selectedNodeIds.size === 1,
       readonly: this.readonly,
+      canUndo: this.undoController.canUndo(),
+      canRedo: this.undoController.canRedo(),
+      undoTooltip: this.undoController.getUndoTooltip(),
+      redoTooltip: this.undoController.getRedoTooltip(),
       onModeChange: (mode) => { this.mode = mode; },
       onTogglePalette: () => this.togglePalette(),
       onZoomIn: () => this.viewportController.zoomIn(),
@@ -937,6 +1033,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       onResetView: () => this.viewportController.resetView(),
       onOpenConfig: () => this.selectionController.openConfigForSelected(),
       onDelete: () => this.selectionController.deleteSelected(),
+      onUndo: () => this.undoController.performUndo(),
+      onRedo: () => this.undoController.performRedo(),
     });
   }
 
@@ -969,6 +1067,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     return renderContextMenuTemplate({
       contextMenu: this.contextMenu,
       readonly: this.readonly,
+      hasSelection: this.selectedNodeIds.size > 0,
       onClose: () => { this.contextMenu = null; },
       onAddNode: () => this.togglePalette(),
       onSelectAll: () => this.selectionController.selectAll(),
@@ -976,6 +1075,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       onConfigure: () => this.selectionController.openConfigForSelected(),
       onDuplicate: () => this.selectionController.duplicateSelected(),
       onDelete: () => this.selectionController.deleteSelected(),
+      onCopy: () => this.clipboardController.copySelected(),
+      onCut: () => this.clipboardController.cutSelected(),
+      onPaste: () => this.clipboardController.pasteFromClipboard(),
     });
   }
 
@@ -1000,6 +1102,24 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           <span>Double click to enter preview mode</span>
         </div>
       </div>
+    `;
+  }
+
+  private renderMarqueeBox() {
+    if (!this.marqueeState) return html``;
+
+    const rect = this.marqueeController.getSelectionRect();
+
+    // Convert canvas coordinates to viewport coordinates
+    const style = {
+      left: `${rect.x * this.viewport.zoom + this.viewport.panX}px`,
+      top: `${rect.y * this.viewport.zoom + this.viewport.panY}px`,
+      width: `${rect.width * this.viewport.zoom}px`,
+      height: `${rect.height * this.viewport.zoom}px`,
+    };
+
+    return html`
+      <div class="selection-box" style=${styleMap(style)}></div>
     `;
   }
 
@@ -1337,6 +1457,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           </div>
         </div>
 
+        ${this.renderMarqueeBox()}
         ${this.renderEmptyState()}
         ${this.renderDisabledOverlay()}
         ${this.renderToolbar()}

@@ -8,13 +8,23 @@ import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost } from '../interfaces/index.js';
 import { WorkflowNode } from '../workflow-canvas.types.js';
+import type { UndoController } from './undo.controller.js';
 
 /**
  * Controller for managing node configuration panel
  */
 export class ConfigController extends BaseCanvasController {
+  private undoController: UndoController | null = null;
+
   constructor(host: CanvasHost & ReactiveControllerHost) {
     super(host);
+  }
+
+  /**
+   * Set the undo controller (called after initialization)
+   */
+  setUndoController(controller: UndoController): void {
+    this.undoController = controller;
   }
 
   /**
@@ -52,6 +62,10 @@ export class ConfigController extends BaseCanvasController {
     const node = this._host.configuredNode;
     if (!node) return;
 
+    const previousState = {
+      configuration: { ...node.configuration },
+    };
+
     const updatedNode = {
       ...node,
       configuration: {
@@ -59,6 +73,15 @@ export class ConfigController extends BaseCanvasController {
         [key]: value,
       },
     };
+
+    // Record for undo before making changes
+    if (this.undoController) {
+      this.undoController.recordNodeConfigUpdated(
+        node.id,
+        { configuration: updatedNode.configuration },
+        previousState
+      );
+    }
 
     this.applyNodeUpdate(updatedNode);
   }
@@ -70,10 +93,21 @@ export class ConfigController extends BaseCanvasController {
     const node = this._host.configuredNode;
     if (!node) return;
 
+    const previousState = { name: node.name };
+
     const updatedNode = {
       ...node,
       name,
     };
+
+    // Record for undo before making changes
+    if (this.undoController) {
+      this.undoController.recordNodeConfigUpdated(
+        node.id,
+        { name },
+        previousState
+      );
+    }
 
     this.applyNodeUpdate(updatedNode);
   }
@@ -85,6 +119,10 @@ export class ConfigController extends BaseCanvasController {
     const node = this._host.configuredNode;
     if (!node) return;
 
+    const previousState = {
+      metadata: { ...node.metadata },
+    };
+
     const updatedNode = {
       ...node,
       metadata: {
@@ -92,6 +130,15 @@ export class ConfigController extends BaseCanvasController {
         description,
       },
     };
+
+    // Record for undo before making changes
+    if (this.undoController) {
+      this.undoController.recordNodeConfigUpdated(
+        node.id,
+        { metadata: updatedNode.metadata },
+        previousState
+      );
+    }
 
     this.applyNodeUpdate(updatedNode);
   }

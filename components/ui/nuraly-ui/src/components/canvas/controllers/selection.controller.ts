@@ -7,14 +7,24 @@
 import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost } from '../interfaces/index.js';
-import { WorkflowNode, WorkflowEdge } from '../workflow-canvas.types.js';
+import type { WorkflowNode, WorkflowEdge } from '../workflow-canvas.types.js';
+import type { UndoController } from './undo.controller.js';
 
 /**
  * Controller for managing selection state (nodes and edges)
  */
 export class SelectionController extends BaseCanvasController {
+  private undoController: UndoController | null = null;
+
   constructor(host: CanvasHost & ReactiveControllerHost) {
     super(host);
+  }
+
+  /**
+   * Set the undo controller (called after initialization)
+   */
+  setUndoController(controller: UndoController): void {
+    this.undoController = controller;
   }
 
   /**
@@ -112,6 +122,20 @@ export class SelectionController extends BaseCanvasController {
     const nodeIdsToDelete = this._host.selectedNodeIds;
     const edgeIdsToDelete = this._host.selectedEdgeIds;
 
+    // Get the nodes and edges being deleted for undo
+    const nodesToDelete = this._host.workflow.nodes.filter(n => nodeIdsToDelete.has(n.id));
+    const edgesToDelete = this._host.workflow.edges.filter(
+      e =>
+        edgeIdsToDelete.has(e.id) ||
+        nodeIdsToDelete.has(e.sourceNodeId) ||
+        nodeIdsToDelete.has(e.targetNodeId)
+    );
+
+    // Record for undo before making changes
+    if (this.undoController && (nodesToDelete.length > 0 || edgesToDelete.length > 0)) {
+      this.undoController.recordBulkDeleted(nodesToDelete, edgesToDelete);
+    }
+
     this._host.setWorkflow({
       ...this._host.workflow,
       nodes: this._host.workflow.nodes.filter(n => !nodeIdsToDelete.has(n.id)),
@@ -128,7 +152,7 @@ export class SelectionController extends BaseCanvasController {
   }
 
   /**
-   * Duplicate selected nodes
+   * Duplicate selected nodes and their connecting edges
    */
   duplicateSelected(): void {
     if (this._host.readonly || this._host.selectedNodeIds.size === 0) return;
@@ -136,37 +160,103 @@ export class SelectionController extends BaseCanvasController {
     const nodesToDuplicate = this._host.workflow.nodes.filter(n =>
       this._host.selectedNodeIds.has(n.id)
     );
-    const newNodes: WorkflowNode[] = [];
 
+    // Map from old node ID to new node ID
+    const idMap = new Map<string, string>();
+    const newNodes: WorkflowNode[] = [];
+    const newEdges: WorkflowEdge[] = [];
+
+    // Duplicate nodes
     for (const node of nodesToDuplicate) {
       const newId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      idMap.set(node.id, newId);
+
       newNodes.push({
         ...node,
         id: newId,
-        name: `${node.name} (copy)`,
+        name: this.generateUniqueName(node.name),
         position: {
           x: node.position.x + 40,
           y: node.position.y + 40,
         },
         ports: {
           inputs: node.ports.inputs.map(p => ({ ...p })),
+          configs: node.ports.configs?.map(p => ({ ...p })),
           outputs: node.ports.outputs.map(p => ({ ...p })),
         },
       });
     }
 
+    // Duplicate edges that connect the selected nodes
+    const edgesToDuplicate = this._host.workflow.edges.filter(e =>
+      this._host.selectedNodeIds.has(e.sourceNodeId) &&
+      this._host.selectedNodeIds.has(e.targetNodeId)
+    );
+
+    for (const edge of edgesToDuplicate) {
+      const newSourceId = idMap.get(edge.sourceNodeId);
+      const newTargetId = idMap.get(edge.targetNodeId);
+
+      if (newSourceId && newTargetId) {
+        newEdges.push({
+          ...edge,
+          id: `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          sourceNodeId: newSourceId,
+          targetNodeId: newTargetId,
+        });
+      }
+    }
+
+    // Record for undo before making changes
+    if (this.undoController) {
+      this.undoController.recordNodesDuplicated(newNodes, newEdges);
+    }
+
+    // Set selection before workflow update
+    const newNodeIds = new Set(newNodes.map(n => n.id));
+    const newEdgeIds = new Set(newEdges.map(e => e.id));
+    this._host.selectedNodeIds = newNodeIds;
+    this._host.selectedEdgeIds = newEdgeIds;
+
     this._host.setWorkflow({
       ...this._host.workflow,
       nodes: [...this._host.workflow.nodes, ...newNodes],
+      edges: [...this._host.workflow.edges, ...newEdges],
     });
 
-    // Select the new nodes
-    this.clearSelection();
-    for (const node of newNodes) {
-      this._host.selectedNodeIds.add(node.id);
-    }
-    this._host.selectedNodeIds = new Set(this._host.selectedNodeIds);
     this._host.dispatchWorkflowChanged();
+
+    // Ensure selection persists after workflow update
+    this._host.updateComplete.then(() => {
+      this._host.selectedNodeIds = newNodeIds;
+      this._host.selectedEdgeIds = newEdgeIds;
+      this._host.requestUpdate();
+    });
+  }
+
+  /**
+   * Generate a unique name for a duplicated node
+   */
+  private generateUniqueName(originalName: string): string {
+    // Remove any existing " (copy)" or " (copy N)" suffix
+    let baseName = originalName.replace(/ \(copy(?: \d+)?\)$/, '');
+
+    const existingNames = new Set(
+      this._host.workflow.nodes.map(n => n.name)
+    );
+
+    // Try "Name (copy)" first
+    let newName = `${baseName} (copy)`;
+    if (!existingNames.has(newName)) {
+      return newName;
+    }
+
+    // Then try "Name (copy 2)", "Name (copy 3)", etc.
+    let counter = 2;
+    while (existingNames.has(`${baseName} (copy ${counter})`)) {
+      counter++;
+    }
+    return `${baseName} (copy ${counter})`;
   }
 
   /**

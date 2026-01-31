@@ -1,19 +1,15 @@
 export const enum ButtonType {
   Primary = 'primary',
   Secondary = 'secondary',
-  Tertiary = 'tertiary', // Carbon Ghost equivalent
   Danger = 'danger',
-  Ghost = 'ghost', // Alias for tertiary for backward compatibility
+  Ghost = 'ghost',
   Default = 'default',
-  Text = 'text',
-  Link = 'link',
 }
 
 export const enum ButtonSize {
-  Small = 'small', // 32px -  small
-  Medium = 'medium', // 40px -  medium (default)
-  Large = 'large', // 48px -  large
-  Default = 'medium', // Default to medium for better UX
+  Small = 'small', // 32px
+  Medium = 'medium', // 40px (default)
+  Large = 'large', // 48px
 }
 
 export const enum ButtonShape {

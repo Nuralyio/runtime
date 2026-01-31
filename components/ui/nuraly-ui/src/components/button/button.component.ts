@@ -64,8 +64,8 @@ export class NrButtonElement extends NuralyUIBaseMixin(LitElement) implements Bu
   @property({ type: String })
   size: ButtonSize | '' = EMPTY_STRING;
 
-  /** Button type (default, primary, secondary, danger, ghost, link) */
-  @property({ type: String })
+  /** Button type (default, primary, secondary, danger, ghost) */
+  @property({ type: String, reflect: true })
   type: ButtonType = ButtonType.Default;
 
   /** Button shape (default, circle, round) */

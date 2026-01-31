@@ -11,6 +11,7 @@ import type {
   CanvasViewport,
   CanvasMode,
 } from '../workflow-canvas.types.js';
+import type { MarqueeState } from '../controllers/marquee.controller.js';
 
 // Re-export for convenience
 export type { CanvasViewport } from '../workflow-canvas.types.js';
@@ -76,6 +77,8 @@ export interface CanvasHost extends EventTarget {
   isPanning: boolean;
   panStart: Position;
   hoveredEdgeId: string | null;
+  marqueeState: MarqueeState | null;
+  lastMousePosition: Position | null;
 
   // Config state
   configuredNode: WorkflowNode | null;

@@ -3,9 +3,10 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { UploadFile } from './types.js';
 import { styles } from './styles.js';
 import { fileUtils } from './utils.js';
+import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 
 @customElement('nr-file-upload')
-export class FileUpload extends LitElement {
+export class FileUpload extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
   @property({ type: String }) accept: string = '';
@@ -25,11 +26,28 @@ export class FileUpload extends LitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this._updateThemeAttribute();
     if (this.drag) {
       document.addEventListener('dragenter', this._onDocumentDragEnter);
       document.addEventListener('dragleave', this._onDocumentDragLeave);
       document.addEventListener('drop', this._onDocumentDrop);
       document.addEventListener('dragover', this._onDocumentDragOver);
+    }
+  }
+
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    this._updateThemeAttribute();
+  }
+
+  private _updateThemeAttribute() {
+    // Use explicitTheme from mixin - only data-theme attribute, no system preference fallback
+    const theme = this.explicitTheme;
+
+    if (theme) {
+      this.setAttribute('data-theme', theme);
+    } else {
+      this.removeAttribute('data-theme');
     }
   }
 

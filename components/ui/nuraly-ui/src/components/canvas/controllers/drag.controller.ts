@@ -7,18 +7,28 @@
 import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost, DragState } from '../interfaces/index.js';
-import { WorkflowNode } from '../workflow-canvas.types.js';
+import { WorkflowNode, Position } from '../workflow-canvas.types.js';
 import { ViewportController } from './viewport.controller.js';
+import type { UndoController } from './undo.controller.js';
 
 /**
  * Controller for managing node dragging
  */
 export class DragController extends BaseCanvasController {
   private viewportController: ViewportController;
+  private undoController: UndoController | null = null;
+  private dragStartPositions: Map<string, Position> = new Map();
 
   constructor(host: CanvasHost & ReactiveControllerHost, viewportController: ViewportController) {
     super(host);
     this.viewportController = viewportController;
+  }
+
+  /**
+   * Set the undo controller (called after initialization)
+   */
+  setUndoController(controller: UndoController): void {
+    this.undoController = controller;
   }
 
   /**
@@ -34,6 +44,15 @@ export class DragController extends BaseCanvasController {
       offsetX: pos.x - node.position.x,
       offsetY: pos.y - node.position.y,
     };
+
+    // Record start positions for all selected nodes
+    this.dragStartPositions.clear();
+    this._host.selectedNodeIds.forEach(nodeId => {
+      const n = this._host.workflow.nodes.find(x => x.id === nodeId);
+      if (n) {
+        this.dragStartPositions.set(nodeId, { ...n.position });
+      }
+    });
   }
 
   /**
@@ -95,6 +114,30 @@ export class DragController extends BaseCanvasController {
    */
   stopDrag(): void {
     if (this._host.dragState) {
+      // Record move for undo
+      if (this.undoController && this.dragStartPositions.size > 0) {
+        const moves: Array<{ nodeId: string; oldPosition: Position; newPosition: Position }> = [];
+
+        this._host.selectedNodeIds.forEach(nodeId => {
+          const node = this._host.workflow.nodes.find(n => n.id === nodeId);
+          const oldPos = this.dragStartPositions.get(nodeId);
+          if (node && oldPos) {
+            // Only record if position actually changed
+            if (node.position.x !== oldPos.x || node.position.y !== oldPos.y) {
+              moves.push({
+                nodeId,
+                oldPosition: oldPos,
+                newPosition: { ...node.position },
+              });
+            }
+          }
+        });
+
+        if (moves.length > 0) {
+          this.undoController.recordNodesMoved(moves);
+        }
+      }
+
       // Dispatch node-moved event for each moved node
       this._host.selectedNodeIds.forEach(nodeId => {
         const node = this._host.workflow.nodes.find(n => n.id === nodeId);
@@ -104,6 +147,7 @@ export class DragController extends BaseCanvasController {
       });
 
       this._host.dragState = null;
+      this.dragStartPositions.clear();
       this._host.dispatchWorkflowChanged();
     }
   }
