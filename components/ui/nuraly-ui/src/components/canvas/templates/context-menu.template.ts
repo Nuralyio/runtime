@@ -13,6 +13,7 @@ import { ContextMenuState } from '../interfaces/index.js';
 export interface ContextMenuTemplateData {
   contextMenu: ContextMenuState | null;
   readonly?: boolean;
+  hasSelection?: boolean;
   onClose: () => void;
   onAddNode: () => void;
   onSelectAll: () => void;
@@ -20,6 +21,9 @@ export interface ContextMenuTemplateData {
   onConfigure: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  onCopy?: () => void;
+  onCut?: () => void;
+  onPaste?: () => void;
 }
 
 /**
@@ -45,6 +49,14 @@ export function renderContextMenuTemplate(data: ContextMenuTemplateData): Templa
           <nr-icon name="check-square" size="small"></nr-icon>
           Select All
         </div>
+        ${!data.readonly && data.onPaste ? html`
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" @click=${data.onPaste}>
+            <nr-icon name="clipboard" size="small"></nr-icon>
+            Paste
+            <span class="context-menu-shortcut">⌘V</span>
+          </div>
+        ` : nothing}
         <div class="context-menu-divider"></div>
         <div class="context-menu-item" @click=${data.onResetView}>
           <nr-icon name="maximize" size="small"></nr-icon>
@@ -56,10 +68,26 @@ export function renderContextMenuTemplate(data: ContextMenuTemplateData): Templa
           <nr-icon name="settings" size="small"></nr-icon>
           Configure
         </div>
-        ${!data.readonly ? html`
-          <div class="context-menu-item" @click=${data.onDuplicate}>
+        ${data.onCopy ? html`
+          <div class="context-menu-divider"></div>
+          <div class="context-menu-item" @click=${data.onCopy}>
             <nr-icon name="copy" size="small"></nr-icon>
+            Copy
+            <span class="context-menu-shortcut">⌘C</span>
+          </div>
+        ` : nothing}
+        ${!data.readonly ? html`
+          ${data.onCut ? html`
+            <div class="context-menu-item" @click=${data.onCut}>
+              <nr-icon name="scissors" size="small"></nr-icon>
+              Cut
+              <span class="context-menu-shortcut">⌘X</span>
+            </div>
+          ` : nothing}
+          <div class="context-menu-item" @click=${data.onDuplicate}>
+            <nr-icon name="layers" size="small"></nr-icon>
             Duplicate
+            <span class="context-menu-shortcut">⌘D</span>
           </div>
           <div class="context-menu-divider"></div>
           <div class="context-menu-item danger" @click=${data.onDelete}>

@@ -38,6 +38,20 @@ import {
   renderChatStartFields,
   renderChatOutputFields,
   renderOcrFields,
+  // Web nodes
+  renderWebSearchFields,
+  renderWebCrawlFields,
+  // Storage nodes
+  renderFileStorageFields,
+  // RAG nodes
+  renderEmbeddingFields,
+  renderDocumentLoaderFields,
+  renderTextSplitterFields,
+  renderVectorWriteFields,
+  renderVectorSearchFields,
+  renderContextBuilderFields,
+  // Safety nodes
+  renderGuardrailFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -106,6 +120,40 @@ export function renderTypeFields(
 
     case WorkflowNodeType.OCR:
       return renderOcrFields(config, onUpdate);
+
+    // Web nodes
+    case WorkflowNodeType.WEB_SEARCH:
+      return renderWebSearchFields(config, onUpdate);
+
+    case WorkflowNodeType.WEB_CRAWL:
+      return renderWebCrawlFields(config, onUpdate);
+
+    // Storage nodes
+    case WorkflowNodeType.FILE_STORAGE:
+      return renderFileStorageFields(config, onUpdate);
+
+    // RAG nodes
+    case WorkflowNodeType.EMBEDDING:
+      return renderEmbeddingFields(config, onUpdate);
+
+    case WorkflowNodeType.DOCUMENT_LOADER:
+      return renderDocumentLoaderFields(config, onUpdate);
+
+    case WorkflowNodeType.TEXT_SPLITTER:
+      return renderTextSplitterFields(config, onUpdate);
+
+    case WorkflowNodeType.VECTOR_WRITE:
+      return renderVectorWriteFields(config, onUpdate);
+
+    case WorkflowNodeType.VECTOR_SEARCH:
+      return renderVectorSearchFields(config, onUpdate);
+
+    case WorkflowNodeType.CONTEXT_BUILDER:
+      return renderContextBuilderFields(config, onUpdate);
+
+    // Safety nodes
+    case WorkflowNodeType.GUARDRAIL:
+      return renderGuardrailFields(config, onUpdate);
 
     // Agent nodes
     case AgentNodeType.AGENT:

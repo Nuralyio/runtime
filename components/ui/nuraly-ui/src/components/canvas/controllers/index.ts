@@ -24,3 +24,12 @@ export { DragController } from './drag.controller.js';
 
 // Config controller for node configuration panel
 export { ConfigController } from './config.controller.js';
+
+// Marquee controller for box selection
+export { MarqueeController, type MarqueeState, type MarqueeHost } from './marquee.controller.js';
+
+// Clipboard controller for copy/cut/paste
+export { ClipboardController, type ClipboardData, type ClipboardHost } from './clipboard.controller.js';
+
+// Undo controller for undo/redo operations
+export { UndoController } from './undo.controller.js';

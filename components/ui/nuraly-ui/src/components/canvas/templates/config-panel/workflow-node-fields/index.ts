@@ -29,3 +29,17 @@ export { renderVariableFields } from './variable-fields.js';
 export { renderEmailFields } from './email-fields.js';
 export { renderChatStartFields, renderChatOutputFields } from './chat-fields.js';
 export { renderOcrFields } from './ocr-fields.js';
+// Web nodes
+export { renderWebSearchFields } from './web-search-fields.js';
+export { renderWebCrawlFields } from './web-crawl-fields.js';
+// Storage nodes
+export { renderFileStorageFields } from './file-storage-fields.js';
+// RAG nodes
+export { renderEmbeddingFields } from './embedding-fields.js';
+export { renderDocumentLoaderFields } from './document-loader-fields.js';
+export { renderTextSplitterFields } from './text-splitter-fields.js';
+export { renderVectorWriteFields } from './vector-write-fields.js';
+export { renderVectorSearchFields } from './vector-search-fields.js';
+export { renderContextBuilderFields } from './context-builder-fields.js';
+// Safety nodes
+export { renderGuardrailFields } from './guardrail-fields.js';

@@ -34,6 +34,20 @@ export enum WorkflowNodeType {
   DEBUG = 'DEBUG',
   LLM = 'LLM',
   OCR = 'OCR',
+  // Web nodes
+  WEB_SEARCH = 'WEB_SEARCH',
+  WEB_CRAWL = 'WEB_CRAWL',
+  // Storage nodes
+  FILE_STORAGE = 'FILE_STORAGE',
+  // RAG nodes
+  EMBEDDING = 'EMBEDDING',
+  DOCUMENT_LOADER = 'DOCUMENT_LOADER',
+  TEXT_SPLITTER = 'TEXT_SPLITTER',
+  VECTOR_WRITE = 'VECTOR_WRITE',
+  VECTOR_SEARCH = 'VECTOR_SEARCH',
+  CONTEXT_BUILDER = 'CONTEXT_BUILDER',
+  // Safety nodes
+  GUARDRAIL = 'GUARDRAIL',
 }
 
 /**
@@ -453,6 +467,20 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DEBUG]: '#f97316',
   [WorkflowNodeType.LLM]: '#22d3ee',
   [WorkflowNodeType.OCR]: '#0d9488',
+  // Web nodes
+  [WorkflowNodeType.WEB_SEARCH]: '#3b82f6',
+  [WorkflowNodeType.WEB_CRAWL]: '#6366f1',
+  // Storage nodes
+  [WorkflowNodeType.FILE_STORAGE]: '#f59e0b',
+  // RAG nodes
+  [WorkflowNodeType.EMBEDDING]: '#8b5cf6',
+  [WorkflowNodeType.DOCUMENT_LOADER]: '#ec4899',
+  [WorkflowNodeType.TEXT_SPLITTER]: '#14b8a6',
+  [WorkflowNodeType.VECTOR_WRITE]: '#10b981',
+  [WorkflowNodeType.VECTOR_SEARCH]: '#06b6d4',
+  [WorkflowNodeType.CONTEXT_BUILDER]: '#a855f7',
+  // Safety nodes
+  [WorkflowNodeType.GUARDRAIL]: '#ef4444',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -500,6 +528,20 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DEBUG]: 'bug',
   [WorkflowNodeType.LLM]: 'brain',
   [WorkflowNodeType.OCR]: 'scan',
+  // Web nodes
+  [WorkflowNodeType.WEB_SEARCH]: 'search',
+  [WorkflowNodeType.WEB_CRAWL]: 'globe',
+  // Storage nodes
+  [WorkflowNodeType.FILE_STORAGE]: 'hard-drive',
+  // RAG nodes
+  [WorkflowNodeType.EMBEDDING]: 'hash',
+  [WorkflowNodeType.DOCUMENT_LOADER]: 'file-text',
+  [WorkflowNodeType.TEXT_SPLITTER]: 'scissors',
+  [WorkflowNodeType.VECTOR_WRITE]: 'database',
+  [WorkflowNodeType.VECTOR_SEARCH]: 'search',
+  [WorkflowNodeType.CONTEXT_BUILDER]: 'layers',
+  // Safety nodes
+  [WorkflowNodeType.GUARDRAIL]: 'shield',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -914,6 +956,221 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
     },
   },
+  // Web nodes
+  {
+    type: WorkflowNodeType.WEB_SEARCH,
+    name: 'Web Search',
+    description: 'Search the web using Google, Bing, Brave, or DuckDuckGo',
+    icon: NODE_ICONS[WorkflowNodeType.WEB_SEARCH],
+    color: NODE_COLORS[WorkflowNodeType.WEB_SEARCH],
+    category: 'web',
+    defaultConfig: {
+      provider: 'google',
+      queryField: 'query',
+      numResults: 10,
+      safeSearch: true,
+      timeout: 30000,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Results' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.WEB_CRAWL,
+    name: 'Web Crawl',
+    description: 'Crawl web pages and extract text content',
+    icon: NODE_ICONS[WorkflowNodeType.WEB_CRAWL],
+    color: NODE_COLORS[WorkflowNodeType.WEB_CRAWL],
+    category: 'web',
+    defaultConfig: {
+      urlField: 'url',
+      maxDepth: 1,
+      maxPages: 10,
+      sameDomainOnly: true,
+      renderJs: false,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Pages' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Storage nodes
+  {
+    type: WorkflowNodeType.FILE_STORAGE,
+    name: 'File Storage',
+    description: 'Store files to S3, MinIO, or local filesystem',
+    icon: NODE_ICONS[WorkflowNodeType.FILE_STORAGE],
+    color: NODE_COLORS[WorkflowNodeType.FILE_STORAGE],
+    category: 'storage',
+    defaultConfig: {
+      provider: 'local',
+      bucket: 'default',
+      path: '',
+      fileField: 'file',
+      filenameField: 'filename',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // RAG nodes
+  {
+    type: WorkflowNodeType.EMBEDDING,
+    name: 'Embedding',
+    description: 'Convert text to vector embeddings',
+    icon: NODE_ICONS[WorkflowNodeType.EMBEDDING],
+    color: NODE_COLORS[WorkflowNodeType.EMBEDDING],
+    category: 'rag',
+    defaultConfig: {
+      provider: 'openai',
+      model: 'text-embedding-3-small',
+      inputField: 'text',
+      batchSize: 100,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Text' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Embedding' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.DOCUMENT_LOADER,
+    name: 'Document Loader',
+    description: 'Load and parse documents (PDF, Word, HTML, etc.)',
+    icon: NODE_ICONS[WorkflowNodeType.DOCUMENT_LOADER],
+    color: NODE_COLORS[WorkflowNodeType.DOCUMENT_LOADER],
+    category: 'rag',
+    defaultConfig: {
+      sourceType: 'text',
+      contentField: 'content',
+      filenameField: 'filename',
+      defaultType: 'txt',
+      timeout: 30000,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Document' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Content' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.TEXT_SPLITTER,
+    name: 'Text Splitter',
+    description: 'Split text into chunks for embedding',
+    icon: NODE_ICONS[WorkflowNodeType.TEXT_SPLITTER],
+    color: NODE_COLORS[WorkflowNodeType.TEXT_SPLITTER],
+    category: 'rag',
+    defaultConfig: {
+      strategy: 'recursive',
+      chunkSize: 1000,
+      chunkOverlap: 200,
+      contentField: 'content',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Text' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Chunks' }],
+    },
+  },
+  {
+    type: WorkflowNodeType.VECTOR_WRITE,
+    name: 'Vector Write',
+    description: 'Store embeddings in vector database',
+    icon: NODE_ICONS[WorkflowNodeType.VECTOR_WRITE],
+    color: NODE_COLORS[WorkflowNodeType.VECTOR_WRITE],
+    category: 'rag',
+    defaultConfig: {
+      collectionName: '',
+      upsertMode: 'replace',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Embeddings' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.VECTOR_SEARCH,
+    name: 'Vector Search',
+    description: 'Search for similar documents in vector store',
+    icon: NODE_ICONS[WorkflowNodeType.VECTOR_SEARCH],
+    color: NODE_COLORS[WorkflowNodeType.VECTOR_SEARCH],
+    category: 'rag',
+    defaultConfig: {
+      collectionName: '',
+      topK: 5,
+      minScore: 0.7,
+      includeContent: true,
+      includeMetadata: true,
+      provider: 'openai',
+      model: 'text-embedding-3-small',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Query' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Results' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.CONTEXT_BUILDER,
+    name: 'Context Builder',
+    description: 'Format retrieved documents into LLM-ready context',
+    icon: NODE_ICONS[WorkflowNodeType.CONTEXT_BUILDER],
+    color: NODE_COLORS[WorkflowNodeType.CONTEXT_BUILDER],
+    category: 'rag',
+    defaultConfig: {
+      template: 'default',
+      maxTokens: 4000,
+      maxDocuments: 10,
+      includeSourceInfo: true,
+      includeSimilarityScore: false,
+      separator: '\n\n---\n\n',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Results' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Context' }],
+    },
+  },
+  // Safety nodes
+  {
+    type: WorkflowNodeType.GUARDRAIL,
+    name: 'Guardrail',
+    description: 'Validate and filter LLM inputs/outputs for safety',
+    icon: NODE_ICONS[WorkflowNodeType.GUARDRAIL],
+    color: NODE_COLORS[WorkflowNodeType.GUARDRAIL],
+    category: 'safety',
+    defaultConfig: {
+      mode: 'input',
+      contentField: 'content',
+      onFail: 'block',
+      checks: [],
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Passed' },
+        { id: 'blocked', type: PortType.ERROR, label: 'Blocked' },
+      ],
+    },
+  },
   // Agent nodes
   {
     type: AgentNodeType.AGENT,
@@ -926,6 +1183,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [
         { id: 'in', type: PortType.INPUT, label: 'Input' },
+        { id: 'retriever', type: PortType.INPUT, label: 'Retriever' },
       ],
       configs: [
         { id: 'llm', type: PortType.CONFIG, label: 'LLM' },
@@ -1237,6 +1495,48 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.DATABASE,
       WorkflowNodeType.VARIABLE,
       WorkflowNodeType.DEBUG,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'web',
+    name: 'Web',
+    icon: 'globe',
+    nodeTypes: [
+      WorkflowNodeType.WEB_SEARCH,
+      WorkflowNodeType.WEB_CRAWL,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'storage',
+    name: 'Storage',
+    icon: 'hard-drive',
+    nodeTypes: [
+      WorkflowNodeType.FILE_STORAGE,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'rag',
+    name: 'RAG',
+    icon: 'layers',
+    nodeTypes: [
+      WorkflowNodeType.DOCUMENT_LOADER,
+      WorkflowNodeType.TEXT_SPLITTER,
+      WorkflowNodeType.EMBEDDING,
+      WorkflowNodeType.VECTOR_WRITE,
+      WorkflowNodeType.VECTOR_SEARCH,
+      WorkflowNodeType.CONTEXT_BUILDER,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'safety',
+    name: 'Safety',
+    icon: 'shield',
+    nodeTypes: [
+      WorkflowNodeType.GUARDRAIL,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

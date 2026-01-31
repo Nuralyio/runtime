@@ -13,6 +13,7 @@ import { LitElement } from 'lit';
  */
 export interface ThemeAware {
   currentTheme: string;
+  explicitTheme: string | null;
   currentDesignSystem: 'carbon' | 'default';
 }
 
@@ -61,9 +62,8 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
      */
     get currentTheme(): string {
       // Check for data-theme attribute starting from this element and going up
-      const dataTheme = this.closest('[data-theme]')?.getAttribute('data-theme') ||
-                       document.documentElement.getAttribute('data-theme');
-      
+      const dataTheme = this.explicitTheme;
+
       if (dataTheme) {
         return dataTheme;
       }
@@ -72,8 +72,18 @@ export const ThemeAwareMixin = <T extends Constructor<LitElement>>(superClass: T
       if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
         return 'dark';
       }
-      
+
       return 'light';
+    }
+
+    /**
+     * Gets the explicit theme from data-theme attribute only (no system fallback)
+     * Returns null if no data-theme is set in the DOM hierarchy
+     */
+    get explicitTheme(): string | null {
+      return this.closest('[data-theme]')?.getAttribute('data-theme') ||
+             document.documentElement.getAttribute('data-theme') ||
+             null;
     }
 
     /**

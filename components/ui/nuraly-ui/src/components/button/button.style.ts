@@ -223,27 +223,25 @@ export const buttonStyles = css`
     }
   }
 
-  /* Tertiary/Ghost Button - Carbon Design System compliant */
-  :host([type="tertiary"]), :host([type="ghost"]) button {
+  /* Ghost Button - Transparent with border */
+  :host([type="ghost"]) button {
     background-color: var(--nuraly-color-button-outline, transparent);
     border-color: var(--nuraly-color-button-outline-border, var(--nuraly-color-border));
-    color: var(--nuraly-color-button-outline-text, var(--nuraly-color-button-tertiary, var(--nuraly-color-button-primary)));
+    color: var(--nuraly-color-button-outline-text, var(--nuraly-color-button-primary));
 
     &:hover:not(:disabled) {
       background-color: var(--nuraly-color-button-outline-hover, var(--nuraly-color-background-hover));
-      border-color: var(--nuraly-color-button-outline-border-hover, var(--nuraly-color-button-tertiary-hover, var(--nuraly-color-button-primary)));
-      color: var(--nuraly-color-button-outline-text-hover, var(--nuraly-color-button-tertiary-hover, var(--nuraly-color-button-primary-hover)));
+      border-color: var(--nuraly-color-button-outline-border-hover, var(--nuraly-color-button-primary));
+      color: var(--nuraly-color-button-outline-text-hover, var(--nuraly-color-button-primary-hover));
     }
 
     &:active:not(:disabled) {
       background-color: var(--nuraly-color-button-outline-active, var(--nuraly-color-background-active));
-      border-color: var(--nuraly-color-button-outline-border-active, var(--nuraly-color-button-tertiary-active, var(--nuraly-color-button-primary-active)));
-      color: var(--nuraly-color-button-outline-text-active, var(--nuraly-color-button-tertiary-active, var(--nuraly-color-button-primary-active)));
+      border-color: var(--nuraly-color-button-outline-border-active, var(--nuraly-color-button-primary-active));
+      color: var(--nuraly-color-button-outline-text-active, var(--nuraly-color-button-primary-active));
     }
 
     &:focus:not(:disabled) {
-      /* outline: 2px solid var(--nuraly-color-button-focus-outline, var(--nuraly-focus-color)); */
-      /* outline-offset: 2px; */
       box-shadow: var(--nuraly-shadow-button-focus, 0 0 0 2px var(--nuraly-color-button-focus-ring));
     }
 
@@ -252,7 +250,7 @@ export const buttonStyles = css`
       border-color: var(--nuraly-color-button-disabled-border, var(--nuraly-color-button-disabled));
       color: var(--nuraly-color-button-disabled-text);
       cursor: not-allowed;
-      opacity: 1; /* Reset opacity for proper disabled state */
+      opacity: 1;
     }
   }
 
@@ -346,24 +344,44 @@ export const buttonStyles = css`
   }
 
   /* Shape variants */
+
+  /* Round - Pill-shaped with rounded ends */
   :host([shape="round"]) button {
+    border-radius: 9999px;
+    padding: var(--nuraly-spacing-2) var(--nuraly-spacing-5);
+  }
+
+  :host([shape="round"][size="small"]) button {
+    padding: var(--nuraly-spacing-1-5) var(--nuraly-spacing-4);
+  }
+
+  :host([shape="round"][size="large"]) button {
+    padding: var(--nuraly-spacing-3) var(--nuraly-spacing-6);
+  }
+
+  /* Circle - Perfect circle for icon-only buttons */
+  :host([shape="circle"]) button {
     border-radius: 50%;
     min-width: auto;
     width: var(--nuraly-size-md);
+    height: var(--nuraly-size-md);
     aspect-ratio: 1;
     padding: 0;
   }
 
-  :host([shape="round"][size="small"]) button {
+  :host([shape="circle"][size="small"]) button {
     width: var(--nuraly-size-sm);
+    height: var(--nuraly-size-sm);
   }
 
-  :host([shape="round"][size="medium"]) button {
+  :host([shape="circle"][size="medium"]) button {
     width: var(--nuraly-size-md);
+    height: var(--nuraly-size-md);
   }
 
-  :host([shape="round"][size="large"]) button {
+  :host([shape="circle"][size="large"]) button {
     width: var(--nuraly-size-lg);
+    height: var(--nuraly-size-lg);
   }
 
   /* Enhanced Ripple Effect Animation - Theme-aware */
@@ -406,9 +424,8 @@ export const buttonStyles = css`
     opacity: 0.1;
   }
 
-  :host([type="ghost"]) .ripple,
-  :host([type="tertiary"]) .ripple {
-    background: var(--nuraly-color-button-tertiary, #0f62fe);
+  :host([type="ghost"]) .ripple {
+    background: var(--nuraly-color-button-primary, #0f62fe);
     opacity: 0.2;
   }
 
@@ -422,9 +439,8 @@ export const buttonStyles = css`
     opacity: 0.1;
   }
 
-  [data-theme="carbon-dark"] :host([type="ghost"]) .ripple,
-  [data-theme="carbon-dark"] :host([type="tertiary"]) .ripple {
-    background: var(--nuraly-color-button-tertiary, #78a9ff);
+  [data-theme="carbon-dark"] :host([type="ghost"]) .ripple {
+    background: var(--nuraly-color-button-primary, #78a9ff);
     opacity: 0.2;
   }
 

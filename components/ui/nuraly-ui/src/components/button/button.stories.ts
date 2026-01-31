@@ -21,12 +21,12 @@ import type { ButtonIconConfig } from './button.types.js';
  * - Do not use buttons as navigational elements. Instead, use links when the desired action is to take the user to a new page
  * 
  * ### Variants
- * Each button variant has a particular function and its design signals that function to the user. 
+ * Each button variant has a particular function and its design signals that function to the user.
  * It is important that the different variants are implemented consistently across products.
- * 
+ *
  * - **Primary**: For the principal call to action on the page
  * - **Secondary**: For secondary actions on each page. Can only be used in conjunction with a primary button
- * - **Tertiary**: For less prominent, and sometimes independent, actions
+ * - **Default**: For less prominent, and sometimes independent, actions
  * - **Ghost**: For the least pronounced actions; often used in conjunction with a primary button
  * - **Danger**: For actions that could have destructive effects on the user's data
  */
@@ -46,7 +46,7 @@ const meta: Meta = {
     // Core Properties
     type: {
       control: { type: 'select' },
-      options: ['default', 'primary', 'secondary', 'danger', 'ghost', 'text', 'link'],
+      options: ['default', 'primary', 'secondary', 'danger', 'ghost'],
       description: 'Button variant that determines the visual style and semantic meaning',
       table: {
         category: 'Appearance',
@@ -130,7 +130,7 @@ const meta: Meta = {
     // Link Properties
     href: {
       control: { type: 'text' },
-      description: 'URL for link-type buttons (automatically set to example.com when type is "link")',
+      description: 'URL that makes the button behave as a link',
       table: {
         category: 'Link',
         defaultValue: { summary: '""' },
@@ -242,7 +242,7 @@ export const Default: Story = {
       ?dashed="${args.dashed}"
       .icon="${args.icon}"
       icon-position="${args.iconPosition}"
-      href="${args.type === 'link' ? (args.href || 'https://example.com') : args.href}"
+      href="${args.href}"
       target="${args.target}"
       button-aria-label="${args.buttonAriaLabel}"
       aria-described-by="${args.ariaDescribedBy}"
@@ -300,14 +300,6 @@ export const AllVariants: Story = {
         <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
           <nr-button type="danger">Danger</nr-button>
           <span style="font-size: 0.875rem; color: #6f6f6f;">Destructive actions - delete, remove, stop</span>
-        </div>
-        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-          <nr-button type="text">Text</nr-button>
-          <span style="font-size: 0.875rem; color: #6f6f6f;">Text-only actions</span>
-        </div>
-        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-          <nr-button type="link" href="https://example.com">Link</nr-button>
-          <span style="font-size: 0.875rem; color: #6f6f6f;">Navigation actions</span>
         </div>
       </div>
     </div>
@@ -375,11 +367,11 @@ export const Secondary: Story = {
 };
 
 /**
- * Tertiary buttons are for less prominent, and sometimes independent, actions.
- * Tertiary buttons can be used in isolation or paired with a primary button when there are multiple calls to action.
+ * Default buttons are for less prominent, and sometimes independent, actions.
+ * Default buttons can be used in isolation or paired with a primary button when there are multiple calls to action.
  * They can also be used for sub-tasks on a page where a primary button for the main and final action is present.
  */
-export const Tertiary: Story = {
+export const DefaultButton: Story = {
   parameters: {
     layout: 'centered',
     docs: {
@@ -389,8 +381,8 @@ export const Tertiary: Story = {
     },
   },
   args: {
-    type: 'default', // Using 'default' as our tertiary equivalent
-    default: 'Tertiary',
+    type: 'default',
+    default: 'Default',
   },
   render: (args: any) => html`
     <nr-button

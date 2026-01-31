@@ -6,7 +6,6 @@
 
 import { LinkController } from '../interfaces/index.js';
 import { BaseButtonController } from './base.controller.js';
-import { ButtonType } from '../button.types.js';
 
 /**
  * Link controller manages link behavior for button components
@@ -15,10 +14,10 @@ import { ButtonType } from '../button.types.js';
 export class ButtonLinkController extends BaseButtonController implements LinkController {
 
   /**
-   * Check if the button should render as a link
+   * Check if the button should render as a link (has href attribute)
    */
   isLinkType(): boolean {
-    return this.host.type === ButtonType.Link && !!this.host.href;
+    return !!this.host.href;
   }
   
   /**

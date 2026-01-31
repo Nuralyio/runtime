@@ -8,13 +8,23 @@ import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost, ConnectionState } from '../interfaces/index.js';
 import { WorkflowNode, WorkflowEdge, NodePort, Position } from '../workflow-canvas.types.js';
+import type { UndoController } from './undo.controller.js';
 
 /**
  * Controller for managing edge connections
  */
 export class ConnectionController extends BaseCanvasController {
+  private undoController: UndoController | null = null;
+
   constructor(host: CanvasHost & ReactiveControllerHost) {
     super(host);
+  }
+
+  /**
+   * Set the undo controller (called after initialization)
+   */
+  setUndoController(controller: UndoController): void {
+    this.undoController = controller;
   }
 
   /**
@@ -89,6 +99,11 @@ export class ConnectionController extends BaseCanvasController {
         targetNodeId,
         targetPortId,
       };
+
+      // Record for undo before making changes
+      if (this.undoController) {
+        this.undoController.recordEdgeAdded(newEdge);
+      }
 
       this._host.setWorkflow({
         ...this._host.workflow,
@@ -178,6 +193,14 @@ export class ConnectionController extends BaseCanvasController {
    */
   deleteEdge(edgeId: string): void {
     if (this._host.readonly) return;
+
+    // Get the edge for undo
+    const edgeToDelete = this._host.workflow.edges.find(e => e.id === edgeId);
+
+    // Record for undo before making changes
+    if (this.undoController && edgeToDelete) {
+      this.undoController.recordEdgeDeleted(edgeToDelete);
+    }
 
     this._host.setWorkflow({
       ...this._host.workflow,
