@@ -82,4 +82,20 @@ public class Configuration {
 
     @ConfigProperty(name = "workflows.memory.ttl-seconds", defaultValue = "86400")
     public long memoryTtlSeconds; // Default 24 hours
+
+    // Service Queues (OCR, Crawl, etc.)
+    @ConfigProperty(name = "rabbitmq.queue.ocr", defaultValue = "ocr-requests")
+    public String rabbitmqOcrQueue;
+
+    @ConfigProperty(name = "rabbitmq.routing-key.ocr", defaultValue = "service.ocr")
+    public String rabbitmqOcrRoutingKey;
+
+    @ConfigProperty(name = "rabbitmq.queue.crawl", defaultValue = "crawl-requests")
+    public String rabbitmqCrawlQueue;
+
+    @ConfigProperty(name = "rabbitmq.routing-key.crawl", defaultValue = "service.crawl")
+    public String rabbitmqCrawlRoutingKey;
+
+    @ConfigProperty(name = "workflows.service.timeout", defaultValue = "120000")
+    public long serviceTimeout; // Default 2 minutes
 }

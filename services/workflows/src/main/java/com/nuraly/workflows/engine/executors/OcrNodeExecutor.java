@@ -2,26 +2,23 @@ package com.nuraly.workflows.engine.executors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.messaging.ServiceProducer;
+import com.nuraly.workflows.messaging.ServiceRequestMessage;
+import com.nuraly.workflows.messaging.ServiceResponseMessage;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import java.util.Base64;
-import java.util.Optional;
+import jakarta.inject.Inject;
+import org.jboss.logging.Logger;
 
 /**
- * OCR Node Executor - Extracts text from images/documents using PaddleOCR
+ * OCR Node Executor - Extracts text from images/documents via RabbitMQ.
+ *
+ * Sends requests to external OCR service via RabbitMQ for scaling.
  *
  * Configuration options:
  * - imageUrl: URL of the image to process (supports ${variables.x} expressions)
@@ -39,16 +36,15 @@ import java.util.Optional;
 @ApplicationScoped
 public class OcrNodeExecutor implements NodeExecutor {
 
+    private static final Logger LOG = Logger.getLogger(OcrNodeExecutor.class);
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @ConfigProperty(name = "ocr.service.url", defaultValue = "http://ocr:8000")
-    Optional<String> ocrServiceUrlConfig;
+    @Inject
+    ServiceProducer serviceProducer;
 
-    private String getOcrServiceUrl() {
-        return ocrServiceUrlConfig.orElse(
-            System.getenv("OCR_SERVICE_URL") != null ? System.getenv("OCR_SERVICE_URL") : "http://ocr:8000"
-        );
-    }
+    @Inject
+    Configuration configuration;
 
     @Override
     public NodeType getType() {
@@ -67,17 +63,14 @@ public class OcrNodeExecutor implements NodeExecutor {
         String imageBase64 = null;
         String imageUrl = null;
 
-        // Check imageBase64 config - but only use if it's a valid, non-empty value
+        // Check imageBase64 config
         if (config.has("imageBase64")) {
             String base64Value = config.get("imageBase64").asText();
             if (base64Value != null && !base64Value.isEmpty() && !base64Value.equals("null")) {
                 imageBase64 = context.resolveExpression(base64Value);
-                // Only use if resolved to a meaningful value (base64 images are > 100 chars typically)
                 if (imageBase64 == null || imageBase64.length() < 100) {
-                    System.out.println("[OCR] imageBase64 config resolved to invalid value, trying imageField");
+                    LOG.debug("imageBase64 config resolved to invalid value, trying imageField");
                     imageBase64 = null;
-                } else {
-                    System.out.println("[OCR] Using imageBase64 config, length: " + imageBase64.length());
                 }
             }
         }
@@ -86,9 +79,7 @@ public class OcrNodeExecutor implements NodeExecutor {
         if (imageBase64 == null && config.has("imageField")) {
             String fieldExpression = config.get("imageField").asText();
             if (fieldExpression != null && !fieldExpression.isEmpty() && !fieldExpression.equals("null")) {
-                System.out.println("[OCR] Resolving imageField expression: " + fieldExpression);
                 imageBase64 = context.resolveExpression(fieldExpression);
-                System.out.println("[OCR] Resolved imageBase64 length: " + (imageBase64 != null ? imageBase64.length() : "null"));
             }
         }
 
@@ -97,109 +88,100 @@ public class OcrNodeExecutor implements NodeExecutor {
             String urlValue = config.get("imageUrl").asText();
             if (urlValue != null && !urlValue.isEmpty() && !urlValue.equals("null")) {
                 imageUrl = context.resolveExpression(urlValue);
-                System.out.println("[OCR] Using imageUrl: " + imageUrl);
             }
         }
 
         if ((imageBase64 == null || imageBase64.length() < 100) && imageUrl == null) {
-            return NodeExecutionResult.failure("Either imageUrl, imageBase64, or imageField is required (imageBase64 must be > 100 chars)");
+            return NodeExecutionResult.failure("Either imageUrl, imageBase64, or imageField is required");
         }
 
         // Get language configuration
         String language = config.has("language") ? config.get("language").asText() : "fr";
         boolean detectLayout = config.has("detectLayout") && config.get("detectLayout").asBoolean();
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            // Build request to OCR service
-            ObjectNode requestBody = objectMapper.createObjectNode();
-
-            if (imageBase64 != null) {
-                // Remove data URL prefix if present
-                if (imageBase64.contains(",")) {
-                    imageBase64 = imageBase64.substring(imageBase64.indexOf(",") + 1);
-                }
-                requestBody.put("image_base64", imageBase64);
-            } else {
-                requestBody.put("image_url", imageUrl);
+        // Build request payload
+        ObjectNode requestPayload = objectMapper.createObjectNode();
+        if (imageBase64 != null) {
+            // Remove data URL prefix if present
+            if (imageBase64.contains(",")) {
+                imageBase64 = imageBase64.substring(imageBase64.indexOf(",") + 1);
             }
-
-            requestBody.put("language", language);
-            requestBody.put("detect_layout", detectLayout);
-
-            HttpPost request = new HttpPost(getOcrServiceUrl() + "/ocr");
-            request.setHeader("Content-Type", "application/json");
-            request.setEntity(new StringEntity(
-                objectMapper.writeValueAsString(requestBody),
-                ContentType.APPLICATION_JSON
-            ));
-
-            var response = httpClient.execute(request);
-            int statusCode = response.getCode();
-            String responseBody = response.getEntity() != null ? EntityUtils.toString(response.getEntity()) : "";
-
-            System.out.println("[OCR] Response status: " + statusCode);
-            System.out.println("[OCR] Response body length: " + responseBody.length());
-
-            if (statusCode >= 200 && statusCode < 300) {
-                JsonNode ocrResult = objectMapper.readTree(responseBody);
-
-                ObjectNode output = objectMapper.createObjectNode();
-
-                // Extract full text
-                if (ocrResult.has("text")) {
-                    String extractedText = ocrResult.get("text").asText();
-                    System.out.println("[OCR] Extracted text length: " + extractedText.length());
-                    System.out.println("[OCR] Extracted text preview: " + (extractedText.length() > 100 ? extractedText.substring(0, 100) + "..." : extractedText));
-                    output.put("text", extractedText);
-                } else {
-                    System.out.println("[OCR] No 'text' field in response");
-                }
-
-                // Extract lines with confidence
-                if (ocrResult.has("lines")) {
-                    output.set("lines", ocrResult.get("lines"));
-                }
-
-                // Add metadata
-                output.put("language", language);
-                output.put("success", true);
-
-                // Store bounding boxes if available (for invoice field extraction)
-                if (ocrResult.has("boxes")) {
-                    output.set("boxes", ocrResult.get("boxes"));
-                }
-
-                // Map output to variable - use specified name or default to 'ocrResult'
-                String varName = config.has("outputVariable") && !config.get("outputVariable").asText().isEmpty()
-                    ? config.get("outputVariable").asText()
-                    : "ocrResult";
-                System.out.println("[OCR] Storing result in variable: " + varName);
-                context.setVariable(varName, output);
-                System.out.println("[OCR] Variables after storing: " + context.getVariablesAsString().substring(0, Math.min(500, context.getVariablesAsString().length())) + "...");
-
-                // Also support outputMapping for consistency with other nodes
-                if (config.has("outputMapping")) {
-                    JsonNode outputMapping = config.get("outputMapping");
-                    outputMapping.fields().forEachRemaining(entry -> {
-                        String variablePath = entry.getKey();
-                        if (variablePath.startsWith("$.variables.")) {
-                            String mappedVarName = variablePath.substring(12);
-                            context.setVariable(mappedVarName, output);
-                        }
-                    });
-                }
-
-                return NodeExecutionResult.success(output);
-            } else if (statusCode >= 500) {
-                // Server error - retryable
-                return NodeExecutionResult.failure("OCR service error: " + responseBody, true);
-            } else {
-                // Client error - not retryable
-                return NodeExecutionResult.failure("OCR request failed: " + responseBody);
-            }
-        } catch (Exception e) {
-            // Network errors are retryable
-            return NodeExecutionResult.failure("OCR service connection failed: " + e.getMessage(), true);
+            requestPayload.put("image_base64", imageBase64);
+        } else {
+            requestPayload.put("image_url", imageUrl);
         }
+        requestPayload.put("language", language);
+        requestPayload.put("detect_layout", detectLayout);
+
+        // Create service request
+        ServiceRequestMessage request = new ServiceRequestMessage("ocr", objectMapper.writeValueAsString(requestPayload));
+        request.setWorkflowId(context.getWorkflowId());
+        request.setExecutionId(context.getExecutionId());
+        request.setUserId(context.getUserId());
+
+        JsonNode input = context.getInput();
+        if (input.has("isolationKey")) {
+            request.setIsolationKey(input.get("isolationKey").asText());
+        }
+
+        LOG.infof("Sending OCR request via RabbitMQ: requestId=%s", request.getRequestId());
+
+        // Send request and wait for response
+        ServiceResponseMessage response = serviceProducer.sendRequest("ocr", request, configuration.serviceTimeout);
+
+        if (!response.isSuccess()) {
+            boolean retryable = response.getErrorMessage() != null &&
+                    (response.getErrorMessage().contains("timeout") ||
+                     response.getErrorMessage().contains("connection"));
+            return NodeExecutionResult.failure("OCR service error: " + response.getErrorMessage(), retryable);
+        }
+
+        // Parse response payload
+        JsonNode ocrResult = objectMapper.readTree(response.getPayload());
+
+        ObjectNode output = objectMapper.createObjectNode();
+
+        // Extract full text
+        if (ocrResult.has("text")) {
+            output.put("text", ocrResult.get("text").asText());
+        }
+
+        // Extract lines with confidence
+        if (ocrResult.has("lines")) {
+            output.set("lines", ocrResult.get("lines"));
+        }
+
+        // Add metadata
+        output.put("language", language);
+        output.put("success", true);
+
+        // Store bounding boxes if available
+        if (ocrResult.has("boxes")) {
+            output.set("boxes", ocrResult.get("boxes"));
+        }
+
+        // Map output to variable
+        String varName = config.has("outputVariable") && !config.get("outputVariable").asText().isEmpty()
+                ? config.get("outputVariable").asText()
+                : "ocrResult";
+        context.setVariable(varName, output);
+
+        // Support outputMapping for consistency
+        if (config.has("outputMapping")) {
+            JsonNode outputMapping = config.get("outputMapping");
+            outputMapping.fields().forEachRemaining(entry -> {
+                String variablePath = entry.getKey();
+                if (variablePath.startsWith("$.variables.")) {
+                    String mappedVarName = variablePath.substring(12);
+                    context.setVariable(mappedVarName, output);
+                }
+            });
+        }
+
+        LOG.infof("OCR completed: requestId=%s, text length=%d",
+                request.getRequestId(),
+                output.has("text") ? output.get("text").asText().length() : 0);
+
+        return NodeExecutionResult.success(output);
     }
 }
