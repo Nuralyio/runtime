@@ -115,9 +115,9 @@ public class OcrNodeExecutor implements NodeExecutor {
 
         // Create service request
         ServiceRequestMessage request = new ServiceRequestMessage("ocr", objectMapper.writeValueAsString(requestPayload));
-        request.setWorkflowId(context.getWorkflowId());
-        request.setExecutionId(context.getExecutionId());
-        request.setUserId(context.getUserId());
+        request.setWorkflowId(context.getExecution().workflow.id.toString());
+        request.setExecutionId(context.getExecution().id.toString());
+        request.setUserId(context.getExecution().triggeredBy);
 
         JsonNode input = context.getInput();
         if (input.has("isolationKey")) {

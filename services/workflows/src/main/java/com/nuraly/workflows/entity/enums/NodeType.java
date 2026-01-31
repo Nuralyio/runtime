@@ -51,6 +51,7 @@ public enum NodeType {
     FILE_STORAGE,   // Store files to S3, MinIO, or local filesystem
 
     // Web nodes
+    WEB_SEARCH,     // Search the web using multiple providers (Google, Bing, SerpAPI, Brave, DuckDuckGo)
     WEB_CRAWL,      // Crawl web pages and extract text content
 
     // DB Designer nodes
