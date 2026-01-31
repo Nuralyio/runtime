@@ -22,37 +22,21 @@ import java.util.List;
 /**
  * WEB_CRAWL Node Executor - Crawls web pages via RabbitMQ.
  *
- * Sends requests to external crawl service via RabbitMQ for scaling.
- * The crawl service handles the actual crawling (SSRF protection, rate limiting, JS rendering).
+ * <p>Sends requests to external crawl service via RabbitMQ for scaling.
+ * The crawl service handles the actual crawling (SSRF protection, rate limiting, JS rendering).</p>
  *
- * Node Configuration:
- * {
- *   "urlField": "url",                       // Input field containing URL(s) to crawl
- *   "maxDepth": 1,                           // Max link depth to follow
- *   "maxPages": 10,                          // Max total pages to crawl
- *   "renderJs": false,                       // Use headless browser for JS pages
- *   "sameDomainOnly": true,                  // Only follow links on same domain
- *   "includePatterns": [".*"],               // Regex patterns for URLs to include
- *   "excludePatterns": [".*/login.*"],       // Regex patterns to exclude
- *   "extractSelectors": {                    // CSS selectors for targeted extraction
- *     "title": "h1",
- *     "content": "article, .content, main"
- *   },
- *   "removeSelectors": ["nav", "footer"]     // Elements to remove before extraction
- * }
- *
- * Input:
- *   { "url": "https://example.com" }
- *   or
- *   { "url": ["https://example.com/page1", "https://example.com/page2"] }
- *
- * Output:
- *   {
- *     "pages": [...],
- *     "totalPages": 1,
- *     "totalCharacters": 5000,
- *     "errors": []
- *   }
+ * <p>Node Configuration:</p>
+ * <ul>
+ *   <li>urlField - Input field containing URL(s) to crawl (default: "url")</li>
+ *   <li>maxDepth - Max link depth to follow (default: 1)</li>
+ *   <li>maxPages - Max total pages to crawl (default: 10)</li>
+ *   <li>renderJs - Use headless browser for JS pages (default: false)</li>
+ *   <li>sameDomainOnly - Only follow links on same domain (default: true)</li>
+ *   <li>includePatterns - Regex patterns for URLs to include</li>
+ *   <li>excludePatterns - Regex patterns to exclude</li>
+ *   <li>extractSelectors - CSS selectors for targeted extraction</li>
+ *   <li>removeSelectors - Elements to remove before extraction</li>
+ * </ul>
  */
 @ApplicationScoped
 public class WebCrawlNodeExecutor implements NodeExecutor {
