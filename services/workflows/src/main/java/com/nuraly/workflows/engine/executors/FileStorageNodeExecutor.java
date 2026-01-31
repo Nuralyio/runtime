@@ -226,10 +226,9 @@ public class FileStorageNodeExecutor implements NodeExecutor {
      */
     private StorageConfig fetchStorageConfig(String keyPath, ExecutionContext context) {
         try {
-            String appId = context.getWorkflowId();
-            if (appId == null) {
-                appId = "default";
-            }
+            String appId = context.getExecution() != null && context.getExecution().workflow != null
+                    ? context.getExecution().workflow.id.toString()
+                    : "default";
 
             String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
                     java.net.URLEncoder.encode(keyPath, "UTF-8") +
