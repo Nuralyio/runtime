@@ -197,6 +197,13 @@
             <version>3.0.1</version>
         </dependency>
 
+        <!-- Apache POI for Word/Excel document parsing -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.5</version>
+        </dependency>
+
         <!-- JSoup for HTML parsing -->
         <dependency>
             <groupId>org.jsoup</groupId>

@@ -37,7 +37,8 @@ import java.util.List;
  * - 'in': User prompt/message
  * - 'llm': Connected LLM node (required) - provides model, API key, etc.
  * - 'prompt': Connected Prompt node (optional) - system prompt template
- * - 'memory' or 'context': Connected Memory node (optional) - provides conversation history
+ * - 'memory': Connected Memory node (optional) - provides conversation history
+ * - 'retriever': RAG context input (optional) - from Context Builder node, injected into prompt
  * - 'tools': Connected Tool nodes (optional) - tools for function calling
  */
 @ApplicationScoped
@@ -136,6 +137,88 @@ public class AgentNodeExecutor implements NodeExecutor {
             if (llmConfig.has("systemPrompt")) {
                 systemPrompt = llmConfig.get("systemPrompt").asText();
             }
+        }
+
+        // Check for RAG context from retriever port (Context Builder or Vector Search)
+        String ragContext = null;
+        JsonNode retrieverOutput = null;
+        String retrieverQuery = null;
+        WorkflowNodeEntity retrieverNode = findConnectedNode(node, "retriever");
+        if (retrieverNode != null) {
+            // Get the output of the retriever node from execution context
+            retrieverOutput = context.getNodeOutput(retrieverNode.id);
+            if (retrieverOutput != null) {
+                ragContext = extractRagContext(retrieverOutput);
+                LOG.debugf("Got RAG context from retriever node '%s': %d chars",
+                           retrieverNode.name, ragContext != null ? ragContext.length() : 0);
+
+                // Extract the original query from retriever output
+                if (retrieverOutput.has("query")) {
+                    retrieverQuery = retrieverOutput.get("query").asText();
+                } else if (retrieverOutput.has("message")) {
+                    retrieverQuery = retrieverOutput.get("message").asText();
+                }
+            }
+        }
+
+        // Fallback: check input for context (if Context Builder connected to 'in' port)
+        if (ragContext == null || ragContext.isEmpty()) {
+            ragContext = extractRagContext(context.getInput());
+        }
+
+        // Get user message from multiple sources (for join pattern with multiple INPUT ports)
+        String userMessage = extractUserPrompt(context);
+
+        // If not found in current input, check the "in" port source node output
+        if (userMessage == null || userMessage.isEmpty()) {
+            WorkflowNodeEntity inPortNode = findConnectedNode(node, "in");
+            if (inPortNode != null) {
+                JsonNode inPortOutput = context.getNodeOutput(inPortNode.id);
+                if (inPortOutput != null) {
+                    userMessage = extractUserPromptFromJson(inPortOutput);
+                    if (userMessage != null && !userMessage.isEmpty()) {
+                        LOG.debugf("Found user message from 'in' port source node: %s", inPortNode.name);
+                    }
+                }
+            }
+        }
+
+        // Fallback: use query from retriever
+        if ((userMessage == null || userMessage.isEmpty()) && retrieverQuery != null) {
+            userMessage = retrieverQuery;
+            LOG.debugf("Using query from retriever as user message: %s", userMessage);
+        }
+
+        // Ensure the input has the query so LLM executor can find it
+        if (userMessage != null && !userMessage.isEmpty()) {
+            JsonNode currentInput = context.getInput();
+            if (currentInput == null || currentInput.isNull() || currentInput.isEmpty()) {
+                ObjectNode newInput = objectMapper.createObjectNode();
+                newInput.put("query", userMessage);
+                context.setInput(newInput);
+            } else if (currentInput.isObject()) {
+                // Only add if not already present
+                if (!currentInput.has("query") && !currentInput.has("message") && !currentInput.has("prompt")) {
+                    ((ObjectNode) currentInput).put("query", userMessage);
+                }
+            }
+        }
+
+        // Inject RAG context into system prompt if available
+        if (ragContext != null && !ragContext.isEmpty()) {
+            if (systemPrompt != null && !systemPrompt.isEmpty()) {
+                // Append context to system prompt
+                systemPrompt = systemPrompt + "\n\n## Retrieved Context\n\n" + ragContext +
+                               "\n\n## Instructions\n\nUse the above context to answer the user's question. " +
+                               "If the context doesn't contain relevant information, say so.";
+            } else {
+                // Use context as the system prompt
+                systemPrompt = "You are a helpful assistant. Use the following context to answer the user's question.\n\n" +
+                               "## Retrieved Context\n\n" + ragContext +
+                               "\n\n## Instructions\n\nAnswer based on the above context. " +
+                               "If the context doesn't contain relevant information, say so.";
+            }
+            LOG.debugf("Injected RAG context into system prompt (%d chars)", ragContext.length());
         }
 
         if (systemPrompt != null && !systemPrompt.isEmpty()) {
@@ -319,10 +402,9 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         // Save new messages to memory (Agent handles this, not LLM)
         if (memoryNode != null && conversationId != null && !conversationId.isEmpty()) {
-            // Get user prompt to save
-            String userPrompt = extractUserPrompt(context);
-            if (userPrompt != null && !userPrompt.isEmpty()) {
-                contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
+            // Get user prompt to save - use the userMessage we already extracted
+            if (userMessage != null && !userMessage.isEmpty()) {
+                contextMemoryStore.addMessage(conversationId, LlmMessage.user(userMessage));
             }
 
             // Get assistant response to save
@@ -477,7 +559,13 @@ public class AgentNodeExecutor implements NodeExecutor {
      * Extract user prompt from context input.
      */
     private String extractUserPrompt(ExecutionContext context) {
-        JsonNode input = context.getInput();
+        return extractUserPromptFromJson(context.getInput());
+    }
+
+    /**
+     * Extract user prompt from a JSON node.
+     */
+    private String extractUserPromptFromJson(JsonNode input) {
         if (input == null) {
             return null;
         }
@@ -497,6 +585,51 @@ public class AgentNodeExecutor implements NodeExecutor {
             for (String field : fields) {
                 if (body.has(field) && !body.get(field).isNull()) {
                     return body.get(field).asText();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract RAG context from input (from Context Builder node).
+     * Looks for 'context' field which contains formatted retrieved documents.
+     */
+    private String extractRagContext(JsonNode input) {
+        if (input == null) {
+            return null;
+        }
+
+        // Primary: 'context' field from Context Builder
+        if (input.has("context") && input.get("context").isTextual()) {
+            String context = input.get("context").asText();
+            if (!context.isEmpty()) {
+                return context;
+            }
+        }
+
+        // Alternative: Build context from 'results' array (direct from Vector Search)
+        if (input.has("results") && input.get("results").isArray()) {
+            JsonNode results = input.get("results");
+            if (!results.isEmpty()) {
+                StringBuilder contextBuilder = new StringBuilder();
+                for (int i = 0; i < results.size(); i++) {
+                    JsonNode result = results.get(i);
+                    if (result.has("content")) {
+                        if (i > 0) {
+                            contextBuilder.append("\n\n---\n\n");
+                        }
+                        contextBuilder.append("[").append(i + 1).append("] ");
+                        contextBuilder.append(result.get("content").asText());
+                        if (result.has("sourceId")) {
+                            contextBuilder.append("\n(Source: ").append(result.get("sourceId").asText()).append(")");
+                        }
+                    }
+                }
+                String context = contextBuilder.toString();
+                if (!context.isEmpty()) {
+                    return context;
                 }
             }
         }
