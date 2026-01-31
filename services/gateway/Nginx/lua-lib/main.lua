@@ -22,9 +22,6 @@ local function toToken(res)
   end
   
   local jwt_obj = jwt:load_jwt(res.access_token)
-    
-  ngx.log(ngx.STDERR, toJson(jwt_obj))
-  
 
   local roles = {}
   -- Safely extract roles from the JWT token
