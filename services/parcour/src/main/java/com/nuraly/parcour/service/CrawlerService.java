@@ -1,16 +1,16 @@
-package com.nuraly.crawler.service;
+package com.nuraly.parcour.service;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
-import com.nuraly.crawler.configuration.CrawlerConfiguration;
-import com.nuraly.crawler.dto.CrawlRequestDTO;
-import com.nuraly.crawler.dto.CrawlResultDTO;
-import com.nuraly.crawler.dto.CrawledPageDTO;
-import com.nuraly.crawler.exception.BrowserException;
-import com.nuraly.crawler.security.UrlValidationResult;
-import com.nuraly.crawler.security.UrlValidator;
+import com.nuraly.parcour.configuration.CrawlerConfiguration;
+import com.nuraly.parcour.dto.CrawlRequestDTO;
+import com.nuraly.parcour.dto.CrawlResultDTO;
+import com.nuraly.parcour.dto.CrawledPageDTO;
+import com.nuraly.parcour.exception.BrowserException;
+import com.nuraly.parcour.security.UrlValidationResult;
+import com.nuraly.parcour.security.UrlValidator;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

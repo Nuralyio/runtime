@@ -1,4 +1,4 @@
-package com.nuraly.crawler.exception;
+package com.nuraly.parcour.exception;
 
 public class CrawlException extends Exception {
 

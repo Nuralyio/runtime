@@ -1,14 +1,14 @@
-package com.nuraly.crawler.messaging;
+package com.nuraly.parcour.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nuraly.crawler.configuration.CrawlerConfiguration;
-import com.nuraly.crawler.dto.CrawlRequestDTO;
-import com.nuraly.crawler.dto.CrawlResponseDTO;
-import com.nuraly.crawler.dto.CrawlResultDTO;
-import com.nuraly.crawler.dto.CrawledPageDTO;
-import com.nuraly.crawler.service.CrawlerService;
+import com.nuraly.parcour.configuration.CrawlerConfiguration;
+import com.nuraly.parcour.dto.CrawlRequestDTO;
+import com.nuraly.parcour.dto.CrawlResponseDTO;
+import com.nuraly.parcour.dto.CrawlResultDTO;
+import com.nuraly.parcour.dto.CrawledPageDTO;
+import com.nuraly.parcour.service.CrawlerService;
 import com.rabbitmq.client.*;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;

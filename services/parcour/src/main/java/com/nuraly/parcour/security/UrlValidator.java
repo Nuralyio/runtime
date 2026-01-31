@@ -1,6 +1,6 @@
-package com.nuraly.crawler.security;
+package com.nuraly.parcour.security;
 
-import com.nuraly.crawler.configuration.CrawlerConfiguration;
+import com.nuraly.parcour.configuration.CrawlerConfiguration;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
