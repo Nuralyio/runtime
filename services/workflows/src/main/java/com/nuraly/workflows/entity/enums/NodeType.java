@@ -50,6 +50,9 @@ public enum NodeType {
     // Storage nodes
     FILE_STORAGE,   // Store files to S3, MinIO, or local filesystem
 
+    // Web nodes
+    WEB_CRAWL,      // Crawl web pages and extract text content
+
     // DB Designer nodes
     DB_TABLE,       // Database table definition
     DB_VIEW,        // Database view definition
