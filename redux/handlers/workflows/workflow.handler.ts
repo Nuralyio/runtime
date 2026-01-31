@@ -135,10 +135,15 @@ export async function handleEdgeRemoved(edgeId: string): Promise<boolean> {
  * Execute a workflow
  * @param input - Optional input data for the workflow
  * @param workflowId - Optional workflow ID (uses $currentWorkflow if not provided)
+ * @param options - Optional execution options (e.g., startNodeId for partial execution)
  * @returns The execution result with id for real-time tracking, or null if failed
  */
-export async function handleExecuteWorkflow(input?: Record<string, unknown>, workflowId?: string): Promise<{ id: string; status: string } | null> {
-  const result = await storeExecuteWorkflow(input, workflowId);
+export async function handleExecuteWorkflow(
+  input?: Record<string, unknown>,
+  workflowId?: string,
+  options?: { startNodeId?: string }
+): Promise<{ id: string; status: string } | null> {
+  const result = await storeExecuteWorkflow(input, workflowId, options);
 
   if (result) {
     if (result.status === 'COMPLETED') {
