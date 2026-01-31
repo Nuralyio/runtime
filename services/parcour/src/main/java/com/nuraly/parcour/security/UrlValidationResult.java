@@ -1,4 +1,4 @@
-package com.nuraly.crawler.security;
+package com.nuraly.parcour.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

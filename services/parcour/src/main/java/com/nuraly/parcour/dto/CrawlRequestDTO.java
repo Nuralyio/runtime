@@ -1,4 +1,4 @@
-package com.nuraly.crawler.dto;
+package com.nuraly.parcour.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

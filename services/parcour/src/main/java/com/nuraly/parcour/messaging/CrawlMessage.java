@@ -1,4 +1,4 @@
-package com.nuraly.crawler.messaging;
+package com.nuraly.parcour.messaging;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

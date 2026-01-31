@@ -1,8 +1,8 @@
-package com.nuraly.crawler.api.rest;
+package com.nuraly.parcour.api.rest;
 
-import com.nuraly.crawler.dto.CrawlRequestDTO;
-import com.nuraly.crawler.dto.CrawlResultDTO;
-import com.nuraly.crawler.service.CrawlerService;
+import com.nuraly.parcour.dto.CrawlRequestDTO;
+import com.nuraly.parcour.dto.CrawlResultDTO;
+import com.nuraly.parcour.service.CrawlerService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;

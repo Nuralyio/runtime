@@ -1,4 +1,4 @@
-package com.nuraly.crawler.configuration;
+package com.nuraly.parcour.configuration;
 
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

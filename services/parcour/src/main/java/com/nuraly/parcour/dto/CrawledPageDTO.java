@@ -1,4 +1,4 @@
-package com.nuraly.crawler.dto;
+package com.nuraly.parcour.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
