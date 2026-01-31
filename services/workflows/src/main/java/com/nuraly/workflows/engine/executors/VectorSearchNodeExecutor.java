@@ -33,6 +33,7 @@ import java.util.*;
  *   "includeContent": true,                  // Include document content in results
  *   "includeMetadata": true,                 // Include metadata in results
  *   "isolationKey": "{{userId}}",            // Optional isolation key
+ *   "inputField": "message",                 // Field name to read query from (default: "query")
  *
  *   // Embedding settings (to embed the query)
  *   "provider": "openai",                    // Embedding provider
@@ -41,7 +42,7 @@ import java.util.*;
  * }
  *
  * Input:
- *   { "query": "What is the return policy?" }
+ *   { "query": "What is the return policy?" }  // or custom field via inputField config
  *   OR
  *   { "embedding": [0.1, 0.2, ...] }  // Pre-computed embedding
  *
@@ -126,6 +127,11 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
             isolationKey = config.get("isolationKey").asText();
         }
 
+        // Get configurable input field name (defaults to "query")
+        String inputField = config.has("inputField") && !config.get("inputField").asText().isEmpty()
+                ? config.get("inputField").asText()
+                : "query";
+
         // Get or compute query embedding
         float[] queryEmbedding;
         String queryText = null;
@@ -133,8 +139,21 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         if (input.has("embedding") && input.get("embedding").isArray()) {
             // Use pre-computed embedding
             queryEmbedding = jsonArrayToFloatArray(input.get("embedding"));
-        } else if (input.has("query") && input.get("query").isTextual()) {
-            // Compute embedding from query text
+        } else if (input.has(inputField) && input.get(inputField).isTextual()) {
+            // Compute embedding from query text (using configured input field)
+            queryText = input.get(inputField).asText();
+            if (queryText.isEmpty()) {
+                return NodeExecutionResult.failure("Query text is empty (field: " + inputField + ")");
+            }
+
+            try {
+                queryEmbedding = computeQueryEmbedding(queryText, config, context);
+            } catch (Exception e) {
+                LOG.errorf(e, "Failed to compute query embedding");
+                return NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
+            }
+        } else if (!inputField.equals("query") && input.has("query") && input.get("query").isTextual()) {
+            // Fallback to "query" field if custom inputField not found
             queryText = input.get("query").asText();
             if (queryText.isEmpty()) {
                 return NodeExecutionResult.failure("Query text is empty");
@@ -148,7 +167,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
             }
         } else {
             return NodeExecutionResult.failure(
-                    "Input must contain either 'query' (text) or 'embedding' (vector array)");
+                    "Input must contain either '" + inputField + "' (text), 'query' (text), or 'embedding' (vector array)");
         }
 
         // Get metadata filter if provided

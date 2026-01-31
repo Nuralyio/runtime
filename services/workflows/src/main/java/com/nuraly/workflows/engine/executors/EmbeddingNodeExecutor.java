@@ -176,19 +176,35 @@ public class EmbeddingNodeExecutor implements NodeExecutor {
                 embeddingArray.add(v);
             }
             output.set("embedding", embeddingArray);
+            output.put("content", texts.get(0)); // Pass through the content
             output.put("dimension", dimension);
             output.put("tokenCount", totalTokens);
         } else {
-            // Multiple embeddings
+            // Multiple embeddings - build chunks array with content + embedding
+            ArrayNode chunksArray = objectMapper.createArrayNode();
             ArrayNode embeddingsArray = objectMapper.createArrayNode();
-            for (EmbeddingProvider.EmbeddingResult result : results) {
+
+            for (int i = 0; i < results.size(); i++) {
+                EmbeddingProvider.EmbeddingResult result = results.get(i);
+
+                // Build embedding array
                 ArrayNode embeddingArray = objectMapper.createArrayNode();
                 for (float v : result.getEmbedding()) {
                     embeddingArray.add(v);
                 }
                 embeddingsArray.add(embeddingArray);
+
+                // Build chunk with content + embedding
+                ObjectNode chunk = objectMapper.createObjectNode();
+                chunk.put("content", texts.get(i));
+                chunk.put("index", i);
+                chunk.put("tokenCount", result.getTokenCount());
+                chunk.set("embedding", embeddingArray);
+                chunksArray.add(chunk);
             }
-            output.set("embeddings", embeddingsArray);
+
+            output.set("chunks", chunksArray); // Chunks with content + embedding for Vector Write
+            output.set("embeddings", embeddingsArray); // Also include raw embeddings array
             output.put("count", results.size());
             output.put("dimension", dimension);
             output.put("tokenCount", totalTokens);
@@ -201,6 +217,19 @@ public class EmbeddingNodeExecutor implements NodeExecutor {
         String isolationKey = extractIsolationKey(context.getInput(), config);
         if (isolationKey != null && !isolationKey.isEmpty()) {
             output.put("isolationKey", isolationKey);
+        }
+
+        // Pass through sourceId and sourceType for Vector Write
+        JsonNode input = context.getInput();
+        if (input.has("sourceId") && input.get("sourceId").isTextual()) {
+            output.put("sourceId", input.get("sourceId").asText());
+        }
+        if (input.has("sourceType") && input.get("sourceType").isTextual()) {
+            output.put("sourceType", input.get("sourceType").asText());
+        }
+        // Pass through metadata if present
+        if (input.has("metadata")) {
+            output.set("metadata", input.get("metadata"));
         }
 
         return NodeExecutionResult.success(output);

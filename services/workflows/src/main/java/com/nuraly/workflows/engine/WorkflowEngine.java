@@ -196,6 +196,79 @@ public class WorkflowEngine {
     }
 
     /**
+     * Execute workflow starting from a specific node (partial execution).
+     * Used for testing specific workflow branches (e.g., Document Loader with test data).
+     */
+    @Transactional
+    public void executeFromStartNode(WorkflowExecutionEntity execution, UUID startNodeId) throws WorkflowExecutionException {
+        metricsService.recordExecutionStart();
+        long startTime = System.currentTimeMillis();
+
+        ExecutionContext context = new ExecutionContext(execution);
+
+        // Load revision snapshot if executing a specific revision
+        if (execution.revision != null) {
+            try {
+                RevisionSnapshotDTO snapshot = revisionService.getRevisionSnapshot(
+                        execution.workflow.id, execution.revision);
+                context.setRevisionSnapshot(snapshot);
+                LOG.infof("Executing workflow %s with revision %d snapshot from node %s",
+                        execution.workflow.id, execution.revision, startNodeId);
+            } catch (RevisionNotFoundException e) {
+                throw new WorkflowExecutionException(
+                        "Revision " + execution.revision + " not found for workflow " + execution.workflow.id);
+            }
+        }
+
+        // Find the specific start node
+        WorkflowNodeEntity startNode = findNodeById(execution.workflow, startNodeId);
+        if (startNode == null) {
+            throw new WorkflowExecutionException("Start node not found with id: " + startNodeId);
+        }
+
+        LOG.infof("Starting partial execution of workflow %s from node '%s' (%s)",
+                execution.workflow.id, startNode.name, startNode.type);
+
+        execution.status = ExecutionStatus.RUNNING;
+        execution.persist();
+
+        try {
+            executeFromNode(context, startNode);
+
+            // Mark as completed
+            execution.status = ExecutionStatus.COMPLETED;
+            execution.outputData = context.getVariablesAsString();
+            execution.variables = context.getVariablesAsString();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            // Clean up checkpoint
+            checkpointService.deleteCheckpoint(execution.id);
+
+            // Cache workflow for future executions
+            workflowCacheService.cacheWorkflow(execution.workflow);
+
+            eventService.logExecutionCompleted(execution);
+            metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
+                    System.currentTimeMillis() - startTime);
+
+        } catch (Exception e) {
+            execution.status = ExecutionStatus.FAILED;
+            execution.errorMessage = e.getMessage();
+            execution.completedAt = Instant.now();
+            execution.durationMs = execution.completedAt.toEpochMilli() - execution.startedAt.toEpochMilli();
+            execution.persist();
+
+            eventService.logExecutionFailed(execution, e.getMessage());
+            metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
+                    System.currentTimeMillis() - startTime);
+
+            throw new WorkflowExecutionException("Workflow execution from node failed: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Retry a specific node within an execution.
      * Restores the execution context from before the node failed and re-executes it.
      */
@@ -486,6 +559,7 @@ public class WorkflowEngine {
      * Find next nodes to execute.
      * - For CONDITION nodes: returns ALL nodes connected to the matching path (true or false)
      * - For other nodes: returns ALL connected nodes for execution
+     * - For nodes with multiple INPUT ports: only returns node if ALL INPUT ports have received data
      */
     private List<WorkflowNodeEntity> findNextNodes(ExecutionContext context, WorkflowNodeEntity currentNode,
                                                     String preferredLabel) {
@@ -506,27 +580,96 @@ public class WorkflowEngine {
                     .toList();
 
             if (!matchingNodes.isEmpty()) {
-                return matchingNodes;
+                // Filter by join readiness
+                return matchingNodes.stream()
+                        .filter(node -> areAllInputPortsReady(context, node))
+                        .toList();
             }
             // Fallback to first edge if no match
-            return List.of(outgoingEdges.get(0).targetNode);
+            WorkflowNodeEntity fallbackNode = outgoingEdges.get(0).targetNode;
+            if (areAllInputPortsReady(context, fallbackNode)) {
+                return List.of(fallbackNode);
+            }
+            return List.of();
         }
 
         // For all other nodes, return ALL connected nodes for execution
+        // but only if their INPUT ports are all ready (join pattern)
         List<WorkflowNodeEntity> nextNodes = new ArrayList<>();
         for (WorkflowEdgeEntity edge : outgoingEdges) {
             // If edge has a condition, only include if condition matches
             if (edge.condition != null && !edge.condition.isEmpty()) {
                 if (evaluateEdgeCondition(context, edge.condition)) {
-                    nextNodes.add(edge.targetNode);
+                    // Check if all INPUT ports are ready for this target node
+                    if (areAllInputPortsReady(context, edge.targetNode)) {
+                        nextNodes.add(edge.targetNode);
+                    }
                 }
             } else {
-                // No condition - always include
-                nextNodes.add(edge.targetNode);
+                // No condition - check if all INPUT ports are ready
+                if (areAllInputPortsReady(context, edge.targetNode)) {
+                    nextNodes.add(edge.targetNode);
+                }
             }
         }
 
         return nextNodes;
+    }
+
+    /**
+     * Check if all INPUT ports of a node have received data.
+     * This implements "join" semantics for nodes with multiple input connections.
+     *
+     * INPUT ports are data-flow ports (like "in", "retriever") that must all have data.
+     * CONFIG ports (like "llm", "prompt", "memory", "tools") are optional configuration connections.
+     */
+    private boolean areAllInputPortsReady(ExecutionContext context, WorkflowNodeEntity targetNode) {
+        // Find all edges targeting this node
+        List<WorkflowEdgeEntity> incomingEdges = targetNode.workflow.edges.stream()
+                .filter(e -> e.targetNode.id.equals(targetNode.id))
+                .toList();
+
+        if (incomingEdges.isEmpty()) {
+            return true; // No incoming edges, ready to execute
+        }
+
+        // Group edges by target port - we only care about INPUT ports, not CONFIG ports
+        // INPUT ports: "in", "retriever", "input", or any port that's not a known CONFIG port
+        // CONFIG ports: "llm", "prompt", "memory", "tools", "config"
+        Set<String> configPorts = Set.of("llm", "prompt", "memory", "tools", "config");
+
+        // Find all unique INPUT port connections (non-config ports)
+        Set<UUID> inputSourceNodes = new HashSet<>();
+        for (WorkflowEdgeEntity edge : incomingEdges) {
+            String portId = edge.targetPortId;
+            // If no portId specified, assume it's the main input
+            if (portId == null || portId.isEmpty()) {
+                portId = "in";
+            }
+
+            // Only track INPUT ports, not CONFIG ports
+            if (!configPorts.contains(portId.toLowerCase())) {
+                inputSourceNodes.add(edge.sourceNode.id);
+            }
+        }
+
+        // If only 0 or 1 INPUT sources, no join needed
+        if (inputSourceNodes.size() <= 1) {
+            return true;
+        }
+
+        // Check if ALL INPUT source nodes have completed (have output in context)
+        for (UUID sourceNodeId : inputSourceNodes) {
+            if (context.getNodeOutput(sourceNodeId) == null) {
+                LOG.debugf("Node %s waiting for input from node %s (join pattern)",
+                        targetNode.name, sourceNodeId);
+                return false;
+            }
+        }
+
+        LOG.debugf("Node %s has all %d INPUT ports ready, proceeding with execution",
+                targetNode.name, inputSourceNodes.size());
+        return true;
     }
 
     private boolean evaluateEdgeCondition(ExecutionContext context, String condition) {

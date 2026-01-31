@@ -31,18 +31,21 @@ public class VectorStoreService {
     @Transactional
     public UUID store(EmbeddingEntity embedding) {
         UUID id = UUID.randomUUID();
+        String vectorStr = vectorToString(embedding.embedding);
+        String metadataStr = embedding.metadata != null ? embedding.metadata : "{}";
 
-        String sql = """
+        // Use string formatting for vector and jsonb to avoid Hibernate parameter binding issues
+        String sql = String.format("""
             INSERT INTO embeddings (
                 id, workflow_id, isolation_key, collection_name, content, embedding,
                 metadata, source_id, source_type, chunk_index, token_count,
                 created_at, updated_at
             ) VALUES (
-                :id, :workflowId, :isolationKey, :collection, :content, :embedding::vector,
-                :metadata::jsonb, :sourceId, :sourceType, :chunkIndex, :tokenCount,
+                :id, :workflowId, :isolationKey, :collection, :content, '%s'::vector,
+                '%s'::jsonb, :sourceId, :sourceType, :chunkIndex, :tokenCount,
                 NOW(), NOW()
             )
-            """;
+            """, vectorStr, metadataStr.replace("'", "''"));
 
         entityManager.createNativeQuery(sql)
             .setParameter("id", id)
@@ -50,8 +53,6 @@ public class VectorStoreService {
             .setParameter("isolationKey", embedding.isolationKey)
             .setParameter("collection", embedding.collectionName)
             .setParameter("content", embedding.content)
-            .setParameter("embedding", vectorToString(embedding.embedding))
-            .setParameter("metadata", embedding.metadata != null ? embedding.metadata : "{}")
             .setParameter("sourceId", embedding.sourceId)
             .setParameter("sourceType", embedding.sourceType)
             .setParameter("chunkIndex", embedding.chunkIndex != null ? embedding.chunkIndex : 0)
@@ -71,8 +72,8 @@ public class VectorStoreService {
             return new ArrayList<>();
         }
 
-        // For small batches, use simple insert
-        if (embeddings.size() <= 5) {
+        // For small batches, use simple insert (avoids complex SQL building)
+        if (embeddings.size() <= 10) {
             List<UUID> ids = new ArrayList<>();
             for (EmbeddingEntity embedding : embeddings) {
                 ids.add(store(embedding));
@@ -80,7 +81,7 @@ public class VectorStoreService {
             return ids;
         }
 
-        // For larger batches, use batch INSERT
+        // For larger batches, use batch INSERT with string formatting for vector/jsonb
         List<UUID> ids = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
             INSERT INTO embeddings (
@@ -92,6 +93,13 @@ public class VectorStoreService {
 
         // Build VALUES clause for all embeddings
         for (int i = 0; i < embeddings.size(); i++) {
+            EmbeddingEntity embedding = embeddings.get(i);
+            UUID id = UUID.randomUUID();
+            ids.add(id);
+
+            String vectorStr = vectorToString(embedding.embedding);
+            String metadataStr = (embedding.metadata != null ? embedding.metadata : "{}").replace("'", "''");
+
             if (i > 0) {
                 sql.append(",\n");
             }
@@ -100,8 +108,8 @@ public class VectorStoreService {
                .append(", :isolationKey").append(i)
                .append(", :collection").append(i)
                .append(", :content").append(i)
-               .append(", :embedding").append(i).append("::vector")
-               .append(", :metadata").append(i).append("::jsonb")
+               .append(", '").append(vectorStr).append("'::vector")
+               .append(", '").append(metadataStr).append("'::jsonb")
                .append(", :sourceId").append(i)
                .append(", :sourceType").append(i)
                .append(", :chunkIndex").append(i)
@@ -111,19 +119,15 @@ public class VectorStoreService {
 
         var query = entityManager.createNativeQuery(sql.toString());
 
-        // Set parameters for all embeddings
+        // Set parameters for all embeddings (except vector and metadata which are inlined)
         for (int i = 0; i < embeddings.size(); i++) {
             EmbeddingEntity embedding = embeddings.get(i);
-            UUID id = UUID.randomUUID();
-            ids.add(id);
 
-            query.setParameter("id" + i, id)
+            query.setParameter("id" + i, ids.get(i))
                  .setParameter("workflowId" + i, embedding.workflowId)
                  .setParameter("isolationKey" + i, embedding.isolationKey)
                  .setParameter("collection" + i, embedding.collectionName)
                  .setParameter("content" + i, embedding.content)
-                 .setParameter("embedding" + i, vectorToString(embedding.embedding))
-                 .setParameter("metadata" + i, embedding.metadata != null ? embedding.metadata : "{}")
                  .setParameter("sourceId" + i, embedding.sourceId)
                  .setParameter("sourceType" + i, embedding.sourceType)
                  .setParameter("chunkIndex" + i, embedding.chunkIndex != null ? embedding.chunkIndex : 0)
@@ -200,8 +204,13 @@ public class VectorStoreService {
             Double minScore,
             Map<String, Object> metadataFilter) {
 
-        // Build the query
-        StringBuilder sql = new StringBuilder("""
+        String vectorStr = vectorToString(queryEmbedding);
+
+        LOG.infof("Vector search: workflowId=%s, collection=%s, queryDimension=%d, topK=%d, minScore=%s",
+                  workflowId, collectionName, queryEmbedding != null ? queryEmbedding.length : 0, topK, minScore);
+
+        // Build the query with vector inlined to avoid Hibernate binding issues
+        StringBuilder sql = new StringBuilder(String.format("""
             SELECT
                 id,
                 content,
@@ -209,11 +218,11 @@ public class VectorStoreService {
                 source_id,
                 source_type,
                 chunk_index,
-                1 - (embedding <=> :query::vector) as score
+                1 - (embedding <=> '%s'::vector) as score
             FROM embeddings
             WHERE workflow_id = :workflowId
               AND collection_name = :collection
-            """);
+            """, vectorStr));
 
         // Add isolation key filter if provided
         if (isolationKey != null && !isolationKey.isEmpty()) {
@@ -222,29 +231,25 @@ public class VectorStoreService {
 
         // Add metadata filter if provided
         if (metadataFilter != null && !metadataFilter.isEmpty()) {
-            sql.append(" AND metadata @> :metadataFilter::jsonb");
+            String metadataJson = toJsonString(metadataFilter).replace("'", "''");
+            sql.append(String.format(" AND metadata @> '%s'::jsonb", metadataJson));
         }
 
         // Add minimum score filter
         if (minScore != null && minScore > 0) {
-            sql.append(" AND 1 - (embedding <=> :query::vector) >= :minScore");
+            sql.append(String.format(" AND 1 - (embedding <=> '%s'::vector) >= :minScore", vectorStr));
         }
 
-        sql.append(" ORDER BY embedding <=> :query::vector");
+        sql.append(String.format(" ORDER BY embedding <=> '%s'::vector", vectorStr));
         sql.append(" LIMIT :topK");
 
         var query = entityManager.createNativeQuery(sql.toString())
-            .setParameter("query", vectorToString(queryEmbedding))
             .setParameter("workflowId", workflowId)
             .setParameter("collection", collectionName)
             .setParameter("topK", topK);
 
         if (isolationKey != null && !isolationKey.isEmpty()) {
             query.setParameter("isolationKey", isolationKey);
-        }
-
-        if (metadataFilter != null && !metadataFilter.isEmpty()) {
-            query.setParameter("metadataFilter", toJsonString(metadataFilter));
         }
 
         if (minScore != null && minScore > 0) {

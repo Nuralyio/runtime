@@ -200,6 +200,10 @@ public class WorkflowExecutionConsumer {
             if (isNodeRetry) {
                 LOG.infof("Retrying node %s in execution %s", message.getRetryNodeId(), message.getExecutionId());
                 workflowEngine.retryNode(execution, message.getRetryNodeId());
+            } else if (message.getStartNodeId() != null) {
+                // Partial execution starting from a specific node (e.g., testing Document Loader)
+                LOG.infof("Starting execution from node %s in execution %s", message.getStartNodeId(), message.getExecutionId());
+                workflowEngine.executeFromStartNode(execution, message.getStartNodeId());
             } else {
                 workflowEngine.execute(execution);
             }

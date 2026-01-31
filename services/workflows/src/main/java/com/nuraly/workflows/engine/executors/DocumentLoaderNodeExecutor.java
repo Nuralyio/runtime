@@ -88,8 +88,18 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
         JsonNode config = objectMapper.readTree(node.configuration);
         JsonNode input = context.getInput();
 
-        // Determine source type
-        String sourceType = config.has("sourceType") ? config.get("sourceType").asText() : "text";
+        // Check if this is test data (uploaded via "Test Workflow" button)
+        // Test data is always base64 encoded, so override sourceType
+        boolean isTestData = input.has("_isTestData") && input.get("_isTestData").asBoolean();
+
+        // Determine source type (use _sourceType from input if test data)
+        String sourceType;
+        if (isTestData && input.has("_sourceType")) {
+            sourceType = input.get("_sourceType").asText();
+            LOG.debugf("Using test data sourceType: %s", sourceType);
+        } else {
+            sourceType = config.has("sourceType") ? config.get("sourceType").asText() : "text";
+        }
 
         // Get filename for type detection
         String filenameField = config.has("filenameField") ? config.get("filenameField").asText() : "filename";
@@ -141,8 +151,17 @@ public class DocumentLoaderNodeExecutor implements NodeExecutor {
                 }
                 case "base64" -> {
                     String contentField = config.has("contentField") ? config.get("contentField").asText() : "documentContent";
+                    // For test data, content is always in "content" field
+                    if (isTestData && input.has("content")) {
+                        contentField = "content";
+                    }
                     if (!input.has(contentField)) {
-                        return NodeExecutionResult.failure("Content field '" + contentField + "' not found in input");
+                        // Try common field names
+                        if (input.has("content")) {
+                            contentField = "content";
+                        } else {
+                            return NodeExecutionResult.failure("Content field '" + contentField + "' not found in input");
+                        }
                     }
                     String base64Content = input.get(contentField).asText();
                     byte[] bytes = Base64.getDecoder().decode(base64Content);

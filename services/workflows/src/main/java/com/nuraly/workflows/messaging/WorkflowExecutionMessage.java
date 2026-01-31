@@ -23,6 +23,9 @@ public class WorkflowExecutionMessage implements Serializable {
     // Field for node retry
     private UUID retryNodeId;      // Node ID to retry (null = full execution)
 
+    // Field for partial execution (start from specific node)
+    private UUID startNodeId;      // Start execution from this node (null = all start nodes)
+
     public WorkflowExecutionMessage() {
     }
 
@@ -156,6 +159,14 @@ public class WorkflowExecutionMessage implements Serializable {
 
     public void setRetryNodeId(UUID retryNodeId) {
         this.retryNodeId = retryNodeId;
+    }
+
+    public UUID getStartNodeId() {
+        return startNodeId;
+    }
+
+    public void setStartNodeId(UUID startNodeId) {
+        this.startNodeId = startNodeId;
     }
 
     @Override
