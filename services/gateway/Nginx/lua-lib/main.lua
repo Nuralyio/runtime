@@ -126,9 +126,9 @@ local function authenticateWithKeycloak()
     
     if err then
         if string.find(err, "no session state found") then
-            ngx.redirect(ngx.var.request_uri)
+            ngx.redirect("/dashboard")
         elseif string.find(err, "state from argument does not") then
-            ngx.redirect("/")
+            ngx.redirect("/dashboard")
         else
             ngx.log(ngx.ERR, err)
             ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
