@@ -4,29 +4,32 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
-import com.nuraly.workflows.messaging.CrawlProducer;
-import com.nuraly.workflows.messaging.CrawlRequestMessage;
-import com.nuraly.workflows.messaging.CrawlResponseMessage;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.util.Timeout;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
- * WEB_CRAWL Node Executor - Sends crawl requests to external crawl service via RabbitMQ.
+ * WEB_CRAWL Node Executor - Crawls web pages via external crawl service.
  *
- * This node delegates crawling to an external isolated crawl service for:
- * - Security isolation (SSRF prevention at service level)
- * - Resource isolation (separate memory/CPU for heavy crawling)
- * - JS rendering support (Browserless integration in crawl service)
- * - Rate limiting per tenant
- * - Async processing via message queue
+ * Similar pattern to OCR node - calls external service via HTTP.
+ * The crawl service handles the actual crawling (with SSRF protection, rate limiting, JS rendering).
  *
  * Node Configuration:
  * {
@@ -35,7 +38,7 @@ import java.util.*;
  *   "maxPages": 10,                          // Max total pages to crawl
  *   "renderJs": false,                       // Use headless browser for JS pages
  *   "sameDomainOnly": true,                  // Only follow links on same domain
- *   "timeout": 120000,                       // Timeout waiting for crawl response (ms)
+ *   "timeout": 120000,                       // Request timeout in ms
  *   "includePatterns": [".*"],               // Regex patterns for URLs to include
  *   "excludePatterns": [".*/login.*"],       // Regex patterns to exclude
  *   "extractSelectors": {                    // CSS selectors for targeted extraction
@@ -50,19 +53,9 @@ import java.util.*;
  *   or
  *   { "url": ["https://example.com/page1", "https://example.com/page2"] }
  *
- * Output (from crawl service):
+ * Output:
  *   {
- *     "pages": [
- *       {
- *         "url": "https://example.com",
- *         "title": "Example Page",
- *         "content": "Extracted text content...",
- *         "description": "Meta description",
- *         "links": ["https://example.com/page2"],
- *         "characterCount": 5000,
- *         "crawledAt": "2024-01-15T10:30:00Z"
- *       }
- *     ],
+ *     "pages": [...],
  *     "totalPages": 1,
  *     "totalCharacters": 5000,
  *     "errors": []
@@ -74,14 +67,18 @@ public class WebCrawlNodeExecutor implements NodeExecutor {
     private static final Logger LOG = Logger.getLogger(WebCrawlNodeExecutor.class);
     private static final int DEFAULT_MAX_DEPTH = 1;
     private static final int DEFAULT_MAX_PAGES = 10;
-
-    @Inject
-    Configuration configuration;
-
-    @Inject
-    CrawlProducer crawlProducer;
+    private static final int DEFAULT_TIMEOUT_MS = 120000;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @ConfigProperty(name = "crawl.service.url", defaultValue = "http://crawl:8000")
+    Optional<String> crawlServiceUrlConfig;
+
+    private String getCrawlServiceUrl() {
+        return crawlServiceUrlConfig.orElse(
+            System.getenv("CRAWL_SERVICE_URL") != null ? System.getenv("CRAWL_SERVICE_URL") : "http://crawl:8000"
+        );
+    }
 
     @Override
     public NodeType getType() {
@@ -103,7 +100,7 @@ public class WebCrawlNodeExecutor implements NodeExecutor {
         int maxPages = config.has("maxPages") ? config.get("maxPages").asInt() : DEFAULT_MAX_PAGES;
         boolean sameDomainOnly = !config.has("sameDomainOnly") || config.get("sameDomainOnly").asBoolean();
         boolean renderJs = config.has("renderJs") && config.get("renderJs").asBoolean();
-        long timeout = config.has("timeout") ? config.get("timeout").asLong() : configuration.crawlTimeout;
+        int timeout = config.has("timeout") ? config.get("timeout").asInt() : DEFAULT_TIMEOUT_MS;
 
         // Get starting URLs
         List<String> startUrls = getStartUrls(input, urlField);
@@ -111,111 +108,106 @@ public class WebCrawlNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("No URLs found in field '" + urlField + "'");
         }
 
-        // Build crawl request message
-        CrawlRequestMessage crawlRequest = new CrawlRequestMessage();
-        crawlRequest.setRequestId(UUID.randomUUID().toString());
-        crawlRequest.setUrls(startUrls);
-        crawlRequest.setMaxDepth(maxDepth);
-        crawlRequest.setMaxPages(maxPages);
-        crawlRequest.setSameDomainOnly(sameDomainOnly);
-        crawlRequest.setRenderJs(renderJs);
+        // Build request to crawl service
+        ObjectNode requestBody = objectMapper.createObjectNode();
+        ArrayNode urlsArray = objectMapper.createArrayNode();
+        startUrls.forEach(urlsArray::add);
+        requestBody.set("urls", urlsArray);
+        requestBody.put("max_depth", maxDepth);
+        requestBody.put("max_pages", maxPages);
+        requestBody.put("same_domain_only", sameDomainOnly);
+        requestBody.put("render_js", renderJs);
 
-        // Set patterns if specified
+        // Pass through patterns if specified
         if (config.has("includePatterns") && config.get("includePatterns").isArray()) {
-            crawlRequest.setIncludePatterns(jsonArrayToList(config.get("includePatterns")));
+            requestBody.set("include_patterns", config.get("includePatterns"));
         }
         if (config.has("excludePatterns") && config.get("excludePatterns").isArray()) {
-            crawlRequest.setExcludePatterns(jsonArrayToList(config.get("excludePatterns")));
-        }
-        if (config.has("removeSelectors") && config.get("removeSelectors").isArray()) {
-            crawlRequest.setRemoveSelectors(jsonArrayToList(config.get("removeSelectors")));
+            requestBody.set("exclude_patterns", config.get("excludePatterns"));
         }
         if (config.has("extractSelectors") && config.get("extractSelectors").isObject()) {
-            crawlRequest.setExtractSelectors(jsonObjectToMap(config.get("extractSelectors")));
+            requestBody.set("extract_selectors", config.get("extractSelectors"));
+        }
+        if (config.has("removeSelectors") && config.get("removeSelectors").isArray()) {
+            requestBody.set("remove_selectors", config.get("removeSelectors"));
         }
 
-        // Set tenant/isolation info
+        // Add isolation info
         if (input.has("isolationKey")) {
-            crawlRequest.setIsolationKey(input.get("isolationKey").asText());
+            requestBody.put("isolation_key", input.get("isolationKey").asText());
         }
-        crawlRequest.setWorkflowId(context.getWorkflowId());
-        crawlRequest.setUserId(context.getUserId());
+        requestBody.put("workflow_id", context.getWorkflowId());
+        requestBody.put("user_id", context.getUserId());
 
-        LOG.infof("Sending crawl request via RabbitMQ: requestId=%s, urls=%d, renderJs=%s",
-                crawlRequest.getRequestId(), startUrls.size(), renderJs);
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+                .setResponseTimeout(Timeout.of(timeout, TimeUnit.MILLISECONDS))
+                .build();
 
-        // Send request and wait for response
-        CrawlResponseMessage response = crawlProducer.sendCrawlRequest(crawlRequest, timeout);
+        try (CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
+                .build()) {
 
-        if (response == null) {
-            return NodeExecutionResult.failure("No response from crawl service", true);
-        }
+            HttpPost request = new HttpPost(getCrawlServiceUrl() + "/crawl");
+            request.setHeader("Content-Type", "application/json");
+            request.setEntity(new StringEntity(
+                objectMapper.writeValueAsString(requestBody),
+                ContentType.APPLICATION_JSON
+            ));
 
-        if (!response.isSuccess()) {
-            return NodeExecutionResult.failure("Crawl service error: " + response.getErrorMessage(), true);
-        }
+            LOG.infof("Sending crawl request to %s for %d URLs", getCrawlServiceUrl(), startUrls.size());
 
-        // Convert response to output JSON
-        ObjectNode output = convertResponseToOutput(response, input);
+            var response = httpClient.execute(request);
+            int statusCode = response.getCode();
+            String responseBody = response.getEntity() != null ? EntityUtils.toString(response.getEntity()) : "";
 
-        LOG.infof("Crawl completed: requestId=%s, pages=%d, characters=%d",
-                response.getRequestId(), response.getTotalPages(), response.getTotalCharacters());
+            if (statusCode >= 200 && statusCode < 300) {
+                JsonNode crawlResult = objectMapper.readTree(responseBody);
 
-        return NodeExecutionResult.success(output);
-    }
+                ObjectNode output = objectMapper.createObjectNode();
 
-    private ObjectNode convertResponseToOutput(CrawlResponseMessage response, JsonNode input) {
-        ObjectNode output = objectMapper.createObjectNode();
-
-        // Convert pages
-        ArrayNode pagesArray = objectMapper.createArrayNode();
-        if (response.getPages() != null) {
-            for (CrawlResponseMessage.CrawledPage page : response.getPages()) {
-                ObjectNode pageNode = objectMapper.createObjectNode();
-                pageNode.put("url", page.getUrl());
-                pageNode.put("title", page.getTitle());
-                pageNode.put("content", page.getContent());
-                if (page.getDescription() != null) {
-                    pageNode.put("description", page.getDescription());
+                // Copy response fields
+                if (crawlResult.has("pages")) {
+                    output.set("pages", crawlResult.get("pages"));
                 }
-                pageNode.put("characterCount", page.getCharacterCount());
-                pageNode.put("crawledAt", page.getCrawledAt());
-
-                // Add links
-                if (page.getLinks() != null) {
-                    ArrayNode linksArray = objectMapper.createArrayNode();
-                    page.getLinks().forEach(linksArray::add);
-                    pageNode.set("links", linksArray);
+                if (crawlResult.has("total_pages")) {
+                    output.put("totalPages", crawlResult.get("total_pages").asInt());
+                } else if (crawlResult.has("totalPages")) {
+                    output.put("totalPages", crawlResult.get("totalPages").asInt());
+                }
+                if (crawlResult.has("total_characters")) {
+                    output.put("totalCharacters", crawlResult.get("total_characters").asInt());
+                } else if (crawlResult.has("totalCharacters")) {
+                    output.put("totalCharacters", crawlResult.get("totalCharacters").asInt());
+                }
+                if (crawlResult.has("errors")) {
+                    output.set("errors", crawlResult.get("errors"));
                 }
 
-                // Add extracted fields
-                if (page.getExtracted() != null && !page.getExtracted().isEmpty()) {
-                    ObjectNode extractedNode = objectMapper.createObjectNode();
-                    page.getExtracted().forEach(extractedNode::put);
-                    pageNode.set("extracted", extractedNode);
+                // Pass through isolationKey
+                if (input.has("isolationKey")) {
+                    output.put("isolationKey", input.get("isolationKey").asText());
                 }
 
-                pagesArray.add(pageNode);
+                int pageCount = output.has("totalPages") ? output.get("totalPages").asInt() : 0;
+                int charCount = output.has("totalCharacters") ? output.get("totalCharacters").asInt() : 0;
+                LOG.infof("Crawl completed: %d pages, %d characters", pageCount, charCount);
+
+                return NodeExecutionResult.success(output);
+
+            } else if (statusCode >= 500) {
+                // Server error - retryable
+                return NodeExecutionResult.failure("Crawl service error: " + responseBody, true);
+            } else {
+                // Client error - not retryable
+                return NodeExecutionResult.failure("Crawl request failed: " + responseBody);
             }
+
+        } catch (Exception e) {
+            // Network errors are retryable
+            LOG.errorf(e, "Crawl service connection failed");
+            return NodeExecutionResult.failure("Crawl service connection failed: " + e.getMessage(), true);
         }
-        output.set("pages", pagesArray);
-
-        output.put("totalPages", response.getTotalPages());
-        output.put("totalCharacters", response.getTotalCharacters());
-
-        // Add errors
-        ArrayNode errorsArray = objectMapper.createArrayNode();
-        if (response.getErrors() != null) {
-            response.getErrors().forEach(errorsArray::add);
-        }
-        output.set("errors", errorsArray);
-
-        // Pass through isolationKey
-        if (input.has("isolationKey")) {
-            output.put("isolationKey", input.get("isolationKey").asText());
-        }
-
-        return output;
     }
 
     private List<String> getStartUrls(JsonNode input, String urlField) {
@@ -235,20 +227,5 @@ public class WebCrawlNodeExecutor implements NodeExecutor {
         }
 
         return urls;
-    }
-
-    private List<String> jsonArrayToList(JsonNode arrayNode) {
-        List<String> list = new ArrayList<>();
-        for (JsonNode item : arrayNode) {
-            list.add(item.asText());
-        }
-        return list;
-    }
-
-    private Map<String, String> jsonObjectToMap(JsonNode objectNode) {
-        Map<String, String> map = new HashMap<>();
-        objectNode.fields().forEachRemaining(entry ->
-                map.put(entry.getKey(), entry.getValue().asText()));
-        return map;
     }
 }
