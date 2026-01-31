@@ -51,17 +51,11 @@
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
 
-        <!-- RabbitMQ Messaging -->
+        <!-- RabbitMQ Messaging (standard Java client) -->
         <dependency>
-            <groupId>io.quarkiverse.rabbitmqclient</groupId>
-            <artifactId>quarkus-rabbitmq-client</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
-        <!-- TLS Registry (required by RabbitMQ client) -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-tls-registry</artifactId>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.20.0</version>
         </dependency>
 
         <!-- HTML Parsing -->
