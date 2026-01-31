@@ -275,11 +275,24 @@ export const workflowService = {
   },
 
   // Execution
-  async executeWorkflow(workflowId: string, input?: Record<string, unknown>): Promise<ExecutionResult> {
+  async executeWorkflow(
+    workflowId: string,
+    input?: Record<string, unknown>,
+    options?: { startNodeId?: string }
+  ): Promise<ExecutionResult> {
+    const body: Record<string, unknown> = {
+      input: input || {},
+    };
+
+    // Add startNodeId if provided (for partial execution from a specific node)
+    if (options?.startNodeId) {
+      body.startNodeId = options.startNodeId;
+    }
+
     const response = await fetch(APIS_URL.executeWorkflow(workflowId), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: input ? JSON.stringify(input) : '{}' }),
+      body: JSON.stringify(body),
     });
     return handleResponse<ExecutionResult>(response);
   },

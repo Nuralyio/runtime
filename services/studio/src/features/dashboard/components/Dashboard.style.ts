@@ -4,8 +4,15 @@ export const dashboardStyles = css`
   :host {
     display: block;
     height: 100vh;
-    background: var(--nuraly-color-background);
+    background: var(--nuraly-color-background, #f8fafc);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+
+    /* Dashboard-specific CSS variables */
+    --nuraly-dashboard-sider-width: 220px;
+    --nuraly-dashboard-header-height: 48px;
+    --nuraly-dashboard-transition: 150ms ease;
+    --nuraly-dashboard-logo-color: var(--nuraly-color-primary, #14144b);
   }
 
   /* Main Layout */
@@ -16,10 +23,10 @@ export const dashboardStyles = css`
 
   /* Sidebar Styles */
   .dashboard-sider {
-    width: 220px;
-    min-width: 220px;
-    background: var(--nuraly-color-surface);
-    border-right: 1px solid var(--nuraly-color-border);
+    width: var(--nuraly-dashboard-sider-width);
+    min-width: var(--nuraly-dashboard-sider-width);
+    background: var(--nuraly-color-surface, #ffffff);
+    border-right: 1px solid var(--nuraly-color-border, #e8e8f0);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -27,7 +34,7 @@ export const dashboardStyles = css`
 
   .sider-header {
     padding: 12px 16px;
-    border-bottom: 1px solid var(--nuraly-color-border-subtle);
+    border-bottom: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
   }
 
   .logo {
@@ -39,12 +46,13 @@ export const dashboardStyles = css`
   .logo-icon {
     width: 28px;
     height: 28px;
+    color: var(--nuraly-dashboard-logo-color);
   }
 
   .logo-text {
     font-size: 15px;
     font-weight: 600;
-    color: var(--nuraly-color-primary);
+    color: var(--nuraly-color-primary, #14144b);
     letter-spacing: -0.3px;
   }
 
@@ -54,26 +62,26 @@ export const dashboardStyles = css`
     overflow-y: auto;
   }
 
-  /* Override menu styles to match studio */
+  /* Override menu styles to match Nuraly brand */
   .sider-nav nr-menu {
     --nuraly-menu-font-size: 13px;
     --nuraly-menu-link-padding: 8px 12px;
     --nuraly-menu-border-radius: 6px;
-    --nuraly-menu-link-color: var(--nuraly-color-text-secondary);
+    --nuraly-menu-link-color: var(--nuraly-color-text-secondary, #5c5c7a);
     --nuraly-menu-link-background-color: transparent;
-    --nuraly-menu-hover-link-background-color: var(--nuraly-color-background-hover);
-    --nuraly-menu-hover-link-color: var(--nuraly-color-text);
-    --nuraly-menu-selected-link-background-color: var(--nuraly-color-primary-light);
-    --nuraly-menu-selected-color: var(--nuraly-color-primary);
-    --nuraly-menu-selected-link-border: 4px solid var(--nuraly-color-primary);
+    --nuraly-menu-hover-link-background-color: var(--nuraly-color-background-hover, #f1f5f9);
+    --nuraly-menu-hover-link-color: var(--nuraly-color-text, #0f0f3c);
+    --nuraly-menu-selected-link-background-color: var(--nuraly-color-primary-bg, #f0f0f8);
+    --nuraly-menu-selected-color: var(--nuraly-color-primary, #14144b);
+    --nuraly-menu-selected-link-border: 4px solid var(--nuraly-color-primary, #14144b);
     --nuraly-menu-icon-size: 16px;
-    --nuraly-menu-link-icon-color: var(--nuraly-color-text-tertiary);
-    --nuraly-menu-selected-link-icon-color: var(--nuraly-color-primary);
+    --nuraly-menu-link-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    --nuraly-menu-selected-link-icon-color: var(--nuraly-color-primary, #14144b);
   }
 
   .sider-footer {
     padding: 12px 16px;
-    border-top: 1px solid var(--nuraly-color-border-subtle);
+    border-top: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
     margin-top: auto;
   }
 
@@ -93,12 +101,12 @@ export const dashboardStyles = css`
   .stat-value {
     font-size: 16px;
     font-weight: 600;
-    color: var(--nuraly-color-text);
+    color: var(--nuraly-color-text, #0f0f3c);
   }
 
   .stat-label {
     font-size: 10px;
-    color: var(--nuraly-color-text-tertiary);
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
@@ -109,15 +117,15 @@ export const dashboardStyles = css`
     display: flex;
     flex-direction: column;
     min-width: 0;
-    background: var(--nuraly-color-background);
+    background: var(--nuraly-color-background, #f8fafc);
   }
 
   /* Header Styles */
   .dashboard-header {
-    height: 48px;
-    min-height: 48px;
-    background: var(--nuraly-color-surface);
-    border-bottom: 1px solid var(--nuraly-color-border);
+    height: var(--nuraly-dashboard-header-height);
+    min-height: var(--nuraly-dashboard-header-height);
+    background: var(--nuraly-color-surface, #ffffff);
+    border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
     padding: 0 20px;
   }
 
@@ -125,7 +133,7 @@ export const dashboardStyles = css`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 48px;
+    height: var(--nuraly-dashboard-header-height);
   }
 
   .header-title {
@@ -137,7 +145,7 @@ export const dashboardStyles = css`
   .header-title h1 {
     font-size: 15px;
     font-weight: 500;
-    color: var(--nuraly-color-text);
+    color: var(--nuraly-color-text, #0f0f3c);
     margin: 0;
   }
 
@@ -151,7 +159,7 @@ export const dashboardStyles = css`
   .dashboard-content {
     flex: 1;
     padding: 20px;
-    background: var(--nuraly-color-background);
+    background: var(--nuraly-color-background, #f8fafc);
     overflow-y: auto;
   }
 
@@ -168,8 +176,8 @@ export const dashboardStyles = css`
   .loading-spinner {
     width: 32px;
     height: 32px;
-    border: 2px solid var(--nuraly-color-border);
-    border-top-color: var(--nuraly-color-primary);
+    border: 2px solid var(--nuraly-color-border, #e8e8f0);
+    border-top-color: var(--nuraly-color-primary, #14144b);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -182,7 +190,7 @@ export const dashboardStyles = css`
 
   .loading-text {
     font-size: 13px;
-    color: var(--nuraly-color-text-tertiary);
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
   }
 
   /* Error Styles */
@@ -195,27 +203,27 @@ export const dashboardStyles = css`
     gap: 12px;
     padding: 24px;
     text-align: center;
-    background: var(--nuraly-color-surface);
+    background: var(--nuraly-color-surface, #ffffff);
     border-radius: 8px;
-    border: 1px solid var(--nuraly-color-border);
+    border: 1px solid var(--nuraly-color-border, #e8e8f0);
   }
 
   .error-icon {
     width: 40px;
     height: 40px;
-    color: var(--nuraly-color-danger);
+    color: var(--nuraly-color-danger, #dc2626);
   }
 
   .error-title {
     font-size: 14px;
     font-weight: 500;
-    color: var(--nuraly-color-text);
+    color: var(--nuraly-color-text, #0f0f3c);
     margin: 0;
   }
 
   .error-message {
     font-size: 13px;
-    color: var(--nuraly-color-text-tertiary);
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
     margin: 0;
     max-width: 360px;
   }

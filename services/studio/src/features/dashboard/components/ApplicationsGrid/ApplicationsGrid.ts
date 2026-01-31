@@ -12,6 +12,7 @@ import type { ApplicationWithStatus } from '../../services/dashboard.service';
 import '../../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../../runtime/components/ui/nuraly-ui/src/components/input';
 import '../../../runtime/components/ui/nuraly-ui/src/components/select';
+import '../../../runtime/components/ui/nuraly-ui/src/components/tag';
 
 type StatusFilter = 'all' | 'published' | 'draft';
 
@@ -55,6 +56,14 @@ export class ApplicationsGrid extends LitElement {
     });
   }
 
+  private get publishedApplications(): ApplicationWithStatus[] {
+    return this.filteredApplications.filter(app => app.isPublished);
+  }
+
+  private get draftApplications(): ApplicationWithStatus[] {
+    return this.filteredApplications.filter(app => !app.isPublished);
+  }
+
   private get statusOptions() {
     return [
       { value: 'all', label: 'All Status' },
@@ -94,8 +103,28 @@ export class ApplicationsGrid extends LitElement {
     `;
   }
 
+  private renderSection(title: string, apps: ApplicationWithStatus[], status: 'success' | 'warning' | 'default') {
+    if (apps.length === 0) return '';
+
+    return html`
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">${title}</h2>
+          <nr-tag size="small" status=${status}>${apps.length}</nr-tag>
+        </div>
+        <div class="applications-grid">
+          ${apps.map(app => html`
+            <application-card .application=${app}></application-card>
+          `)}
+        </div>
+      </div>
+    `;
+  }
+
   render() {
     const filtered = this.filteredApplications;
+    const published = this.publishedApplications;
+    const drafts = this.draftApplications;
     const hasApplications = this.applications.length > 0;
     const hasResults = filtered.length > 0;
 
@@ -133,10 +162,9 @@ export class ApplicationsGrid extends LitElement {
         : !hasResults
           ? this.renderNoResults()
           : html`
-              <div class="applications-grid">
-                ${filtered.map(app => html`
-                  <application-card .application=${app}></application-card>
-                `)}
+              <div class="sections-container">
+                ${this.renderSection('Published', published, 'success')}
+                ${this.renderSection('Drafts', drafts, 'warning')}
               </div>
             `
       }

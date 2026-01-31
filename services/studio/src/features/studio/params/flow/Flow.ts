@@ -377,6 +377,9 @@ export class FlowPage extends LitElement {
   @state()
   private executionError: string | null = null;
 
+  // Track partial execution start node (for selective node status reset)
+  private partialExecutionStartNodeId: string | null = null;
+
   // Socket instance managed by handlers (typed as any since created via handler code)
   public flowSocket: any = null;
 
@@ -470,7 +473,12 @@ export class FlowPage extends LitElement {
       .on('execution:started', (data: any) => {
         console.log('[Flow] Execution started:', data);
         this.executionError = null;
-        this.resetNodeStatuses();
+        // Use selective reset for partial execution, full reset otherwise
+        if (this.partialExecutionStartNodeId) {
+          this.resetNodeStatusesFromNode(this.partialExecutionStartNodeId);
+        } else {
+          this.resetNodeStatuses();
+        }
         this.setExecutionState(true, data.executionId);
       })
       .on('execution:node-started', (data: any) => {
@@ -508,15 +516,18 @@ export class FlowPage extends LitElement {
       })
       .on('execution:completed', (data: any) => {
         console.log('[Flow] Execution completed:', data);
+        this.partialExecutionStartNodeId = null; // Clear partial execution tracking
         this.setExecutionState(false, null);
       })
       .on('execution:failed', (data: any) => {
         console.log('[Flow] Execution failed:', data);
         this.executionError = data.data?.errorMessage || data.data?.error || 'Execution failed';
+        this.partialExecutionStartNodeId = null; // Clear partial execution tracking
         this.setExecutionState(false, null);
       })
       .on('execution:cancelled', (data: any) => {
         console.log('[Flow] Execution cancelled:', data);
+        this.partialExecutionStartNodeId = null; // Clear partial execution tracking
         this.setExecutionState(false, null);
       })
       .on('execution:llm-call-started', (data: any) => {
@@ -771,15 +782,111 @@ export class FlowPage extends LitElement {
   }
 
   /**
-   * Handle workflow trigger from START node click
+   * Handle workflow trigger from START node click or Test Workflow button
    */
-  private handleWorkflowTrigger(event: CustomEvent<{ node: any }>) {
-    const { node } = event.detail;
+  private handleWorkflowTrigger(event: CustomEvent<{ node: any; startFromNode?: boolean; testData?: any }>) {
+    const { node, startFromNode, testData } = event.detail;
     console.log('[Flow] Workflow triggered from node:', node.name, node.type, node.id);
+    console.log('[Flow] Start from node:', startFromNode, 'Test data:', testData ? 'present' : 'none');
     console.log('[Flow] Current workflow:', this.workflow?.id, this.workflow?.name);
 
-    // Execute the workflow
-    this.handleExecute();
+    if (startFromNode && node?.id) {
+      // Execute starting from the specific node (partial execution)
+      this.handleExecuteFromNode(node.id, testData);
+    } else {
+      // Execute the entire workflow
+      this.handleExecute();
+    }
+  }
+
+  /**
+   * Execute workflow starting from a specific node
+   */
+  private async handleExecuteFromNode(startNodeId: string, testData?: any) {
+    this.isExecuting = true;
+    this.executionError = null;
+    // Track partial execution for selective node status reset when socket events arrive
+    this.partialExecutionStartNodeId = startNodeId;
+    // Reset node statuses before execution (only nodes connected to this start node)
+    this.resetNodeStatusesFromNode(startNodeId);
+
+    try {
+      // Build input data from test data if provided
+      // Format it to match what the node expects (e.g., Document Loader expects 'content' and 'filename' fields)
+      let input: Record<string, unknown> | undefined;
+      if (testData) {
+        input = {
+          // For Document Loader: provide content as base64 and filename
+          content: testData.base64 || testData.content,
+          filename: testData.filename,
+          contentType: testData.contentType,
+          // Signal that this is test data with base64 content (overrides sourceType)
+          _isTestData: true,
+          _sourceType: 'base64',
+          // Also include the raw testData for other node types that might need it
+          testData,
+        };
+      }
+
+      // Pass the startNodeId to execute only the subgraph from that node
+      const result = await handleExecuteWorkflow(input, this.workflow?.id, { startNodeId });
+
+      if (result?.id) {
+        this.currentExecutionId = result.id;
+        // Subscribe to real-time execution updates
+        this.subscribeToExecution(result.id);
+
+        // If execution completed synchronously, update UI
+        if (result.status === 'COMPLETED' || result.status === 'FAILED') {
+          this.isExecuting = false;
+        }
+      } else {
+        this.isExecuting = false;
+      }
+    } catch (error) {
+      console.error('[Flow] Execution from node error:', error);
+      this.isExecuting = false;
+      this.partialExecutionStartNodeId = null; // Clear on error
+    }
+  }
+
+  /**
+   * Reset node statuses for nodes reachable from a specific start node
+   */
+  private resetNodeStatusesFromNode(startNodeId: string): void {
+    if (!this.workflow?.nodes || !this.workflow?.edges) {
+      this.nodeStatuses = {};
+      return;
+    }
+
+    // Build adjacency list from edges
+    const adjacency = new Map<string, string[]>();
+    for (const edge of this.workflow.edges) {
+      const targets = adjacency.get(edge.sourceNodeId) || [];
+      targets.push(edge.targetNodeId);
+      adjacency.set(edge.sourceNodeId, targets);
+    }
+
+    // BFS to find all reachable nodes from the start node
+    const reachable = new Set<string>([startNodeId]);
+    const queue = [startNodeId];
+    while (queue.length > 0) {
+      const nodeId = queue.shift()!;
+      const targets = adjacency.get(nodeId) || [];
+      for (const targetId of targets) {
+        if (!reachable.has(targetId)) {
+          reachable.add(targetId);
+          queue.push(targetId);
+        }
+      }
+    }
+
+    // Set PENDING only for reachable nodes
+    const statuses: Record<string, 'PENDING'> = {};
+    for (const nodeId of reachable) {
+      statuses[nodeId] = 'PENDING';
+    }
+    this.nodeStatuses = statuses;
   }
 
   private async handleExecute() {
