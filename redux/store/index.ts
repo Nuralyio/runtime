@@ -119,6 +119,9 @@ export {
 } from './kv';
 export type { KvEntry, KvEntryVersion, KvData, KvValueType, FetchEntriesOptions, SetEntryRequest } from './kv';
 
+// Undo/Redo Store
+export * from './undo/index';
+
 // Type Definitions
 export type { ComponentElement } from './component/component.interface';
 export type { PageElement } from '../handlers/pages/page.interface';

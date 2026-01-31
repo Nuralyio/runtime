@@ -186,6 +186,10 @@ function createSocketInstance(): SocketInstance {
         'user:left',
         'user:updated',
         'presence:sync',
+        // Workflow operation events (undo/redo sync)
+        'workflow:operation',
+        'workflow:undo',
+        'workflow:redo',
       ];
 
       coreEvents.forEach((event) => {
