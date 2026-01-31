@@ -115,7 +115,7 @@ public class ServiceProducer {
     }
 
     private void publishRequest(ServiceRequestMessage message, String queueName, String routingKey,
-                                 String replyTo, String correlationId) throws IOException {
+                                 String replyTo, String correlationId) throws IOException, java.util.concurrent.TimeoutException {
         try (Channel channel = connectionManager.createChannel()) {
             String messageJson = objectMapper.writeValueAsString(message);
 
