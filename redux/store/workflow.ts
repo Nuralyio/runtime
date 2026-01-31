@@ -505,8 +505,13 @@ export async function deleteEdge(edgeId: string): Promise<boolean> {
  * Execute a workflow
  * @param input - Optional input data for the workflow
  * @param workflowId - Optional workflow ID (uses $currentWorkflow if not provided)
+ * @param options - Optional execution options (e.g., startNodeId for partial execution)
  */
-export async function executeWorkflow(input?: Record<string, unknown>, workflowId?: string): Promise<ExecutionResult | null> {
+export async function executeWorkflow(
+  input?: Record<string, unknown>,
+  workflowId?: string,
+  options?: { startNodeId?: string }
+): Promise<ExecutionResult | null> {
   const workflow = $currentWorkflow.get();
   const targetWorkflowId = workflowId || workflow?.id;
   if (!targetWorkflowId) return null;
@@ -519,7 +524,7 @@ export async function executeWorkflow(input?: Record<string, unknown>, workflowI
   });
 
   try {
-    const result = await workflowService.executeWorkflow(targetWorkflowId, input);
+    const result = await workflowService.executeWorkflow(targetWorkflowId, input, options);
 
     $workflowExecution.set({
       ...currentState,
