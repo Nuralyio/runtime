@@ -156,23 +156,77 @@ try {
     switch (occurredError) {
       case "not-found":
         return (
-          <div class="flex flex-col justify-center items-center h-screen text-gray-800 bg-gray-100 space-y-4">
-            <h1 class="text-2xl font-bold">Application Not Found</h1>
-            <p>Please check the application ID or try again later.</p>
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">404</div>
+                <h1 class="error-title">Application Not Found</h1>
+                <p class="error-message">
+                  The application you're looking for doesn't exist or may have been removed.
+                  Please check the application ID or try again later.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="javascript:location.reload()" class="btn btn-secondary">TRY AGAIN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
           </div>
         );
       case "authorization":
         return (
-          <div class="flex justify-center items-center h-screen text-gray-800 bg-gray-100">
-            <h1 class="text-2xl font-bold">Unauthorized</h1>
-            <p>You do not have permission to access this application.</p>
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">403</div>
+                <h1 class="error-title">Unauthorized</h1>
+                <p class="error-message">
+                  You do not have permission to access this application.
+                  Please contact the application owner if you believe this is a mistake.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="/login" class="btn btn-secondary">SIGN IN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
           </div>
         );
       case "unknown":
         return (
-          <div class="flex flex-col justify-center items-center h-screen text-gray-800 bg-gray-100 space-y-4">
-            <h1 class="text-2xl font-bold">Unexpected Error</h1>
-            <p>Something went wrong. Please try again later.</p>
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">500</div>
+                <h1 class="error-title">Unexpected Error</h1>
+                <p class="error-message">
+                  Something went wrong on our end. Our team has been notified.
+                  Please try again in a few moments.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="javascript:location.reload()" class="btn btn-secondary">TRY AGAIN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
           </div>
         );
       default:
@@ -198,6 +252,157 @@ try {
 
 
 <style>
+  /* Error Page Styles - Matching 502 nginx style */
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .error-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 24px 80px;
+  }
+
+  .error-inner {
+    text-align: center;
+    max-width: 560px;
+  }
+
+  .error-code {
+    font-size: clamp(100px, 15vw, 180px);
+    font-weight: 700;
+    color: #14144b;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .error-title {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 600;
+    color: #0f0f3c;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .error-message {
+    font-size: 16px;
+    color: #5c5c7a;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 2px solid transparent;
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  }
+
+  .btn-primary {
+    background: #0f0f3c;
+    color: white;
+    border-color: #0f0f3c;
+  }
+
+  .btn-primary:hover {
+    background: #5c5c7a;
+    border-color: #5c5c7a;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #0f0f3c;
+    border-color: #0f0f3c;
+  }
+
+  .btn-secondary:hover {
+    background: #0f0f3c;
+    color: white;
+  }
+
+  .error-footer {
+    background: #0a0a32;
+    padding: 32px 24px;
+  }
+
+  .error-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .footer-copyright {
+    font-size: 14px;
+    color: #6666a0;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .error-footer-inner {
+      flex-direction: column;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .error-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .error-actions .btn {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+
+  /* Original styles below */
   .flex {
   display: flex;
 }

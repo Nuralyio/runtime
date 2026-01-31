@@ -17,18 +17,28 @@ export class ApplicationCard extends LitElement {
   static styles = css`
     :host {
       display: block;
+      /* Dashboard card CSS variables - aligned with Nuraly design system */
+      --nuraly-dashboard-card-padding: 14px;
+      --nuraly-dashboard-card-radius: 8px;
+      --nuraly-dashboard-card-border: var(--nuraly-color-border, #e8e8f0);
+      --nuraly-dashboard-card-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --nuraly-dashboard-card-name-color: var(--nuraly-color-text, #0f0f3c);
+      --nuraly-dashboard-card-desc-color: var(--nuraly-color-text-secondary, #5c5c7a);
+      --nuraly-dashboard-card-meta-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+      --nuraly-dashboard-card-footer-border: var(--nuraly-color-border-subtle, #f0f0f0);
+      --nuraly-dashboard-transition: 150ms ease;
     }
 
     nr-card {
       cursor: pointer;
-      transition: box-shadow 0.15s;
-      --nuraly-card-padding: 14px;
-      --nuraly-card-border-radius: 8px;
-      --nuraly-card-border-color: #e8e8e8;
+      transition: box-shadow var(--nuraly-dashboard-transition);
+      --nuraly-card-padding: var(--nuraly-dashboard-card-padding);
+      --nuraly-card-border-radius: var(--nuraly-dashboard-card-radius);
+      --nuraly-card-border-color: var(--nuraly-dashboard-card-border);
     }
 
     nr-card:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--nuraly-dashboard-card-shadow-hover);
     }
 
     .card-header {
@@ -41,7 +51,7 @@ export class ApplicationCard extends LitElement {
     .app-name {
       font-size: 14px;
       font-weight: 500;
-      color: #262626;
+      color: var(--nuraly-dashboard-card-name-color);
       margin: 0;
       flex: 1;
       overflow: hidden;
@@ -51,7 +61,7 @@ export class ApplicationCard extends LitElement {
 
     .app-description {
       font-size: 12px;
-      color: #8c8c8c;
+      color: var(--nuraly-dashboard-card-desc-color);
       margin: 10px 0 14px 0;
       line-height: 1.5;
       display: -webkit-box;
@@ -66,7 +76,7 @@ export class ApplicationCard extends LitElement {
       justify-content: space-between;
       align-items: center;
       padding-top: 10px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--nuraly-dashboard-card-footer-border);
     }
 
     .meta-item {
@@ -74,7 +84,7 @@ export class ApplicationCard extends LitElement {
       align-items: center;
       gap: 5px;
       font-size: 11px;
-      color: #bfbfbf;
+      color: var(--nuraly-dashboard-card-meta-color);
     }
 
     .meta-item svg {
@@ -86,7 +96,7 @@ export class ApplicationCard extends LitElement {
       display: flex;
       gap: 6px;
       opacity: 0;
-      transition: opacity 0.15s;
+      transition: opacity var(--nuraly-dashboard-transition);
     }
 
     nr-card:hover .card-actions {
@@ -139,11 +149,11 @@ export class ApplicationCard extends LitElement {
             </div>
 
             <div class="card-actions">
-              <nr-button type="primary" size="small" @click=${this.openInStudio}>
+              <nr-button type="primary" size="small" iconLeft="SquarePen" @click=${this.openInStudio}>
                 Edit
               </nr-button>
               ${isPublished ? html`
-                <nr-button type="default" size="small" @click=${this.handlePreview}>
+                <nr-button type="default" size="small" iconLeft="ExternalLink" @click=${this.handlePreview}>
                   Preview
                 </nr-button>
               ` : ''}
