@@ -90,6 +90,11 @@ public class RabbitMQConnectionManager {
             channel.queueDeclare(configuration.rabbitmqEventsQueue, true, false, false, null);
             channel.queueBind(configuration.rabbitmqEventsQueue, configuration.rabbitmqExchange, "workflow.event");
 
+            // Declare crawl requests queue (consumed by external crawl service)
+            channel.queueDeclare(configuration.rabbitmqCrawlRequestsQueue, true, false, false, null);
+            channel.queueBind(configuration.rabbitmqCrawlRequestsQueue, configuration.rabbitmqExchange,
+                    configuration.rabbitmqCrawlRoutingKey);
+
             LOG.info("RabbitMQ exchange and queues declared successfully");
         }
     }
