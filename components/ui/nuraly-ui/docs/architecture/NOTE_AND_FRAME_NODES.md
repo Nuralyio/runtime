@@ -1002,3 +1002,1143 @@ This architecture provides:
 - **Frame Node**: Resizable container rectangles that visually group nodes with labels
 
 Both are implemented as special node types that are skipped during execution, maintaining consistency with the existing architecture while providing powerful organizational tools for complex workflows.
+
+---
+
+## 11. Technical Implementation Details
+
+### 11.1 Complete Type Definitions
+
+```typescript
+// ==========================================
+// FILE: workflow-canvas.types.ts (additions)
+// ==========================================
+
+// Add to WorkflowNodeType enum
+export enum WorkflowNodeType {
+  // ... existing types ...
+  NOTE = 'NOTE',
+  FRAME = 'FRAME',
+}
+
+// Note node configuration
+export interface NoteConfiguration {
+  content: string;
+  backgroundColor: string;
+  textColor: string;
+  fontSize: 'small' | 'medium' | 'large';
+  showBorder: boolean;
+}
+
+// Frame node configuration
+export interface FrameConfiguration {
+  label: string;
+  width: number;
+  height: number;
+  backgroundColor: string;
+  borderColor: string;
+  labelPosition: 'top-left' | 'top-center' | 'top-right';
+  labelPlacement: 'inside' | 'outside';
+  showLabel: boolean;
+  collapsed: boolean;
+  /** Stored dimensions when collapsed (for restore) */
+  _expandedWidth?: number;
+  _expandedHeight?: number;
+}
+
+// Extended WorkflowNode for frame support
+export interface WorkflowNode {
+  id: string;
+  name: string;
+  type: NodeType;
+  position: Position;
+  configuration: NodeConfiguration;
+  ports: {
+    inputs: NodePort[];
+    configs?: NodePort[];
+    outputs: NodePort[];
+  };
+  metadata?: NodeMetadata;
+  status?: ExecutionStatus;
+  selected?: boolean;
+  error?: string;
+  agentActivity?: AgentActivity;
+
+  // Frame-specific properties
+  /** For FRAME nodes: IDs of nodes visually contained within this frame */
+  containedNodeIds?: string[];
+  /** For regular nodes: ID of the frame that contains this node (if any) */
+  parentFrameId?: string | null;
+}
+
+// Aggregated port for collapsed frames
+export interface AggregatedPort {
+  id: string;
+  originalEdgeId: string;
+  internalNodeId: string;
+  internalPortId: string;
+  label?: string;
+  /** Direction relative to frame */
+  direction: 'incoming' | 'outgoing';
+}
+
+// Frame resize state
+export interface FrameResizeState {
+  frameId: string;
+  handle: ResizeHandle;
+  startX: number;
+  startY: number;
+  startWidth: number;
+  startHeight: number;
+  startPosition: Position;
+}
+
+export type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w';
+
+// Color presets
+export const NOTE_COLOR_PRESETS: ColorPreset[] = [
+  { name: 'Yellow', bg: '#fef08a', text: '#713f12' },
+  { name: 'Blue', bg: '#bfdbfe', text: '#1e3a5f' },
+  { name: 'Green', bg: '#bbf7d0', text: '#14532d' },
+  { name: 'Pink', bg: '#fbcfe8', text: '#831843' },
+  { name: 'Orange', bg: '#fed7aa', text: '#7c2d12' },
+  { name: 'Purple', bg: '#ddd6fe', text: '#4c1d95' },
+  { name: 'Gray', bg: '#e5e7eb', text: '#374151' },
+];
+
+export const FRAME_COLOR_PRESETS: FrameColorPreset[] = [
+  { name: 'Indigo', bg: 'rgba(99, 102, 241, 0.05)', border: 'rgba(99, 102, 241, 0.3)', solid: '#6366f1' },
+  { name: 'Blue', bg: 'rgba(59, 130, 246, 0.05)', border: 'rgba(59, 130, 246, 0.3)', solid: '#3b82f6' },
+  { name: 'Green', bg: 'rgba(34, 197, 94, 0.05)', border: 'rgba(34, 197, 94, 0.3)', solid: '#22c55e' },
+  { name: 'Orange', bg: 'rgba(249, 115, 22, 0.05)', border: 'rgba(249, 115, 22, 0.3)', solid: '#f97316' },
+  { name: 'Red', bg: 'rgba(239, 68, 68, 0.05)', border: 'rgba(239, 68, 68, 0.3)', solid: '#ef4444' },
+  { name: 'Purple', bg: 'rgba(168, 85, 247, 0.05)', border: 'rgba(168, 85, 247, 0.3)', solid: '#a855f7' },
+  { name: 'Gray', bg: 'rgba(107, 114, 128, 0.05)', border: 'rgba(107, 114, 128, 0.3)', solid: '#6b7280' },
+];
+
+interface ColorPreset {
+  name: string;
+  bg: string;
+  text: string;
+}
+
+interface FrameColorPreset {
+  name: string;
+  bg: string;
+  border: string;
+  solid: string; // Used for collapsed node border
+}
+```
+
+### 11.2 Frame Controller Implementation
+
+```typescript
+// ==========================================
+// FILE: controllers/frame.controller.ts
+// ==========================================
+
+import { BaseCanvasController } from './base.controller.js';
+import {
+  WorkflowNode,
+  Position,
+  FrameConfiguration,
+  FrameResizeState,
+  ResizeHandle,
+  AggregatedPort,
+  WorkflowNodeType,
+} from '../workflow-canvas.types.js';
+
+export class FrameController extends BaseCanvasController {
+  private resizeState: FrameResizeState | null = null;
+  private readonly MIN_FRAME_WIDTH = 200;
+  private readonly MIN_FRAME_HEIGHT = 150;
+  private readonly CONTAINMENT_PADDING = 20;
+
+  // ===== RESIZE OPERATIONS =====
+
+  /**
+   * Start resizing a frame from a specific handle
+   */
+  startResize(event: MouseEvent, frame: WorkflowNode, handle: ResizeHandle): void {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const config = frame.configuration as FrameConfiguration;
+
+    this.resizeState = {
+      frameId: frame.id,
+      handle,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: config.width,
+      startHeight: config.height,
+      startPosition: { ...frame.position },
+    };
+
+    // Add global listeners
+    document.addEventListener('mousemove', this.handleResizeDrag);
+    document.addEventListener('mouseup', this.stopResize);
+  }
+
+  private handleResizeDrag = (event: MouseEvent): void => {
+    if (!this.resizeState) return;
+
+    const { handle, startX, startY, startWidth, startHeight, startPosition, frameId } = this.resizeState;
+    const frame = this.host.workflow.nodes.find(n => n.id === frameId);
+    if (!frame) return;
+
+    const deltaX = (event.clientX - startX) / this.host.viewport.zoom;
+    const deltaY = (event.clientY - startY) / this.host.viewport.zoom;
+
+    let newWidth = startWidth;
+    let newHeight = startHeight;
+    let newX = startPosition.x;
+    let newY = startPosition.y;
+
+    // Calculate new dimensions based on handle
+    switch (handle) {
+      case 'se':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth + deltaX);
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight + deltaY);
+        break;
+      case 'sw':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth - deltaX);
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight + deltaY);
+        newX = startPosition.x + (startWidth - newWidth);
+        break;
+      case 'ne':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth + deltaX);
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight - deltaY);
+        newY = startPosition.y + (startHeight - newHeight);
+        break;
+      case 'nw':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth - deltaX);
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight - deltaY);
+        newX = startPosition.x + (startWidth - newWidth);
+        newY = startPosition.y + (startHeight - newHeight);
+        break;
+      case 'n':
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight - deltaY);
+        newY = startPosition.y + (startHeight - newHeight);
+        break;
+      case 's':
+        newHeight = Math.max(this.MIN_FRAME_HEIGHT, startHeight + deltaY);
+        break;
+      case 'e':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth + deltaX);
+        break;
+      case 'w':
+        newWidth = Math.max(this.MIN_FRAME_WIDTH, startWidth - deltaX);
+        newX = startPosition.x + (startWidth - newWidth);
+        break;
+    }
+
+    // Snap to grid
+    newX = this.snapToGrid(newX);
+    newY = this.snapToGrid(newY);
+    newWidth = this.snapToGrid(newWidth);
+    newHeight = this.snapToGrid(newHeight);
+
+    // Update frame
+    frame.position = { x: newX, y: newY };
+    (frame.configuration as FrameConfiguration).width = newWidth;
+    (frame.configuration as FrameConfiguration).height = newHeight;
+
+    this.host.requestUpdate();
+  };
+
+  stopResize = (): void => {
+    if (!this.resizeState) return;
+
+    const frame = this.host.workflow.nodes.find(n => n.id === this.resizeState!.frameId);
+    if (frame) {
+      // Update containment after resize
+      this.updateFrameContainment(frame);
+
+      // Record for undo
+      this.host.undoController?.recordFrameResized(
+        frame,
+        this.resizeState.startWidth,
+        this.resizeState.startHeight,
+        this.resizeState.startPosition
+      );
+    }
+
+    this.resizeState = null;
+    document.removeEventListener('mousemove', this.handleResizeDrag);
+    document.removeEventListener('mouseup', this.stopResize);
+
+    this.host.dispatchWorkflowChanged();
+  };
+
+  // ===== CONTAINMENT DETECTION =====
+
+  /**
+   * Check if a node's bounds are within a frame's bounds
+   */
+  isNodeInFrame(node: WorkflowNode, frame: WorkflowNode): boolean {
+    if (node.type === WorkflowNodeType.FRAME || node.type === WorkflowNodeType.NOTE) {
+      return false; // Frames and notes cannot be contained
+    }
+
+    const config = frame.configuration as FrameConfiguration;
+    const nodeWidth = 200; // Standard node width
+    const nodeHeight = 80; // Standard node height
+
+    const frameLeft = frame.position.x;
+    const frameTop = frame.position.y;
+    const frameRight = frameLeft + config.width;
+    const frameBottom = frameTop + config.height;
+
+    const nodeLeft = node.position.x;
+    const nodeTop = node.position.y;
+    const nodeRight = nodeLeft + nodeWidth;
+    const nodeBottom = nodeTop + nodeHeight;
+
+    // Node center must be inside frame
+    const nodeCenterX = nodeLeft + nodeWidth / 2;
+    const nodeCenterY = nodeTop + nodeHeight / 2;
+
+    return (
+      nodeCenterX >= frameLeft &&
+      nodeCenterX <= frameRight &&
+      nodeCenterY >= frameTop &&
+      nodeCenterY <= frameBottom
+    );
+  }
+
+  /**
+   * Update frame's containedNodeIds based on current node positions
+   */
+  updateFrameContainment(frame: WorkflowNode): void {
+    const containedIds: string[] = [];
+
+    for (const node of this.host.workflow.nodes) {
+      if (node.id === frame.id) continue;
+      if (node.type === WorkflowNodeType.FRAME) continue;
+
+      if (this.isNodeInFrame(node, frame)) {
+        containedIds.push(node.id);
+        node.parentFrameId = frame.id;
+      } else if (node.parentFrameId === frame.id) {
+        node.parentFrameId = null;
+      }
+    }
+
+    frame.containedNodeIds = containedIds;
+  }
+
+  /**
+   * Update all frames' containment after node move
+   */
+  updateAllFrameContainments(): void {
+    const frames = this.host.workflow.nodes.filter(n => n.type === WorkflowNodeType.FRAME);
+    for (const frame of frames) {
+      this.updateFrameContainment(frame);
+    }
+  }
+
+  /**
+   * Get all nodes contained in a frame
+   */
+  getContainedNodes(frame: WorkflowNode): WorkflowNode[] {
+    const ids = new Set(frame.containedNodeIds || []);
+    return this.host.workflow.nodes.filter(n => ids.has(n.id));
+  }
+
+  // ===== MOVE WITH CONTENTS =====
+
+  /**
+   * Move a frame and all its contained nodes by delta
+   */
+  moveFrameWithContents(frame: WorkflowNode, deltaX: number, deltaY: number): void {
+    // Move frame
+    frame.position.x += deltaX;
+    frame.position.y += deltaY;
+
+    // Move contained nodes
+    const containedNodes = this.getContainedNodes(frame);
+    for (const node of containedNodes) {
+      node.position.x += deltaX;
+      node.position.y += deltaY;
+    }
+  }
+
+  // ===== COLLAPSE / EXPAND =====
+
+  /**
+   * Toggle frame collapsed state
+   */
+  toggleCollapsed(frame: WorkflowNode): void {
+    const config = frame.configuration as FrameConfiguration;
+
+    if (config.collapsed) {
+      // Expand: restore original dimensions
+      config.width = config._expandedWidth || 400;
+      config.height = config._expandedHeight || 300;
+      config.collapsed = false;
+
+      // Show contained nodes
+      this.setContainedNodesVisibility(frame, true);
+    } else {
+      // Collapse: save dimensions and collapse
+      config._expandedWidth = config.width;
+      config._expandedHeight = config.height;
+      config.collapsed = true;
+
+      // Hide contained nodes
+      this.setContainedNodesVisibility(frame, false);
+    }
+
+    this.host.requestUpdate();
+    this.host.dispatchWorkflowChanged();
+  }
+
+  /**
+   * Set visibility of nodes contained in a frame
+   */
+  private setContainedNodesVisibility(frame: WorkflowNode, visible: boolean): void {
+    const containedNodes = this.getContainedNodes(frame);
+    for (const node of containedNodes) {
+      // Use a metadata flag for visibility
+      node.metadata = node.metadata || {};
+      (node.metadata as any)._hiddenByFrame = !visible;
+    }
+
+    // Also handle edges between contained nodes
+    const containedIds = new Set(frame.containedNodeIds || []);
+    for (const edge of this.host.workflow.edges) {
+      const sourceInside = containedIds.has(edge.sourceNodeId);
+      const targetInside = containedIds.has(edge.targetNodeId);
+
+      // Internal edges (both nodes inside) should be hidden
+      if (sourceInside && targetInside) {
+        (edge as any)._hiddenByFrame = !visible;
+      }
+    }
+  }
+
+  // ===== AGGREGATED PORTS =====
+
+  /**
+   * Calculate aggregated ports for a collapsed frame
+   */
+  getAggregatedPorts(frame: WorkflowNode): { inputs: AggregatedPort[]; outputs: AggregatedPort[] } {
+    const containedIds = new Set(frame.containedNodeIds || []);
+    const inputs: AggregatedPort[] = [];
+    const outputs: AggregatedPort[] = [];
+
+    for (const edge of this.host.workflow.edges) {
+      const sourceInside = containedIds.has(edge.sourceNodeId);
+      const targetInside = containedIds.has(edge.targetNodeId);
+
+      // External → Internal = Input
+      if (!sourceInside && targetInside) {
+        const sourceNode = this.host.workflow.nodes.find(n => n.id === edge.sourceNodeId);
+        inputs.push({
+          id: `agg-in-${edge.id}`,
+          originalEdgeId: edge.id,
+          internalNodeId: edge.targetNodeId,
+          internalPortId: edge.targetPortId,
+          label: sourceNode?.name || 'Input',
+          direction: 'incoming',
+        });
+      }
+
+      // Internal → External = Output
+      if (sourceInside && !targetInside) {
+        const targetNode = this.host.workflow.nodes.find(n => n.id === edge.targetNodeId);
+        outputs.push({
+          id: `agg-out-${edge.id}`,
+          originalEdgeId: edge.id,
+          internalNodeId: edge.sourceNodeId,
+          internalPortId: edge.sourcePortId,
+          label: targetNode?.name || 'Output',
+          direction: 'outgoing',
+        });
+      }
+    }
+
+    return { inputs, outputs };
+  }
+
+  // ===== FIT TO CONTENTS =====
+
+  /**
+   * Auto-resize frame to fit its contained nodes with padding
+   */
+  fitToContents(frame: WorkflowNode, padding: number = 40): void {
+    const containedNodes = this.getContainedNodes(frame);
+    if (containedNodes.length === 0) return;
+
+    const nodeWidth = 200;
+    const nodeHeight = 80;
+
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+
+    for (const node of containedNodes) {
+      minX = Math.min(minX, node.position.x);
+      minY = Math.min(minY, node.position.y);
+      maxX = Math.max(maxX, node.position.x + nodeWidth);
+      maxY = Math.max(maxY, node.position.y + nodeHeight);
+    }
+
+    const config = frame.configuration as FrameConfiguration;
+    frame.position = {
+      x: minX - padding,
+      y: minY - padding - (config.labelPlacement === 'outside' ? 24 : 0),
+    };
+    config.width = maxX - minX + padding * 2;
+    config.height = maxY - minY + padding * 2 + (config.labelPlacement === 'outside' ? 24 : 0);
+
+    this.host.requestUpdate();
+    this.host.dispatchWorkflowChanged();
+  }
+
+  // ===== CREATE FRAME FROM SELECTION =====
+
+  /**
+   * Create a new frame around currently selected nodes
+   */
+  createFrameFromSelection(): WorkflowNode | null {
+    const selectedNodes = this.host.workflow.nodes.filter(
+      n => this.host.selectedNodeIds.has(n.id) &&
+           n.type !== WorkflowNodeType.FRAME &&
+           n.type !== WorkflowNodeType.NOTE
+    );
+
+    if (selectedNodes.length === 0) return null;
+
+    const nodeWidth = 200;
+    const nodeHeight = 80;
+    const padding = 40;
+
+    // Calculate bounds
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+
+    for (const node of selectedNodes) {
+      minX = Math.min(minX, node.position.x);
+      minY = Math.min(minY, node.position.y);
+      maxX = Math.max(maxX, node.position.x + nodeWidth);
+      maxY = Math.max(maxY, node.position.y + nodeHeight);
+    }
+
+    // Create frame node
+    const frame: WorkflowNode = {
+      id: `frame-${Date.now()}`,
+      name: 'Group',
+      type: WorkflowNodeType.FRAME,
+      position: {
+        x: minX - padding,
+        y: minY - padding - 24, // Account for outside label
+      },
+      configuration: {
+        label: 'Group',
+        width: maxX - minX + padding * 2,
+        height: maxY - minY + padding * 2 + 24,
+        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+        borderColor: 'rgba(99, 102, 241, 0.3)',
+        labelPosition: 'top-left',
+        labelPlacement: 'outside',
+        showLabel: true,
+        collapsed: false,
+      },
+      ports: { inputs: [], outputs: [] },
+      containedNodeIds: selectedNodes.map(n => n.id),
+    };
+
+    // Update node parentFrameId
+    for (const node of selectedNodes) {
+      node.parentFrameId = frame.id;
+    }
+
+    // Add frame to workflow (at beginning so it renders behind)
+    this.host.workflow.nodes.unshift(frame);
+
+    this.host.requestUpdate();
+    this.host.dispatchWorkflowChanged();
+
+    return frame;
+  }
+}
+```
+
+### 11.3 Edge Rendering with Collapsed Frames
+
+```typescript
+// ==========================================
+// FILE: templates/edges.template.ts (additions)
+// ==========================================
+
+/**
+ * Render edges, handling collapsed frames
+ */
+export function renderEdges(
+  edges: WorkflowEdge[],
+  nodes: WorkflowNode[],
+  viewport: CanvasViewport,
+  selectedEdgeIds: Set<string>,
+  frameController: FrameController
+): TemplateResult {
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+  const collapsedFrames = nodes.filter(
+    n => n.type === WorkflowNodeType.FRAME &&
+         (n.configuration as FrameConfiguration).collapsed
+  );
+
+  // Build set of nodes hidden by collapsed frames
+  const hiddenNodeIds = new Set<string>();
+  for (const frame of collapsedFrames) {
+    for (const nodeId of frame.containedNodeIds || []) {
+      hiddenNodeIds.add(nodeId);
+    }
+  }
+
+  return svg`
+    <g class="edges-layer">
+      ${edges.map(edge => {
+        // Skip hidden internal edges
+        if ((edge as any)._hiddenByFrame) return nothing;
+
+        const sourceNode = nodeMap.get(edge.sourceNodeId);
+        const targetNode = nodeMap.get(edge.targetNodeId);
+        if (!sourceNode || !targetNode) return nothing;
+
+        const sourceHidden = hiddenNodeIds.has(edge.sourceNodeId);
+        const targetHidden = hiddenNodeIds.has(edge.targetNodeId);
+
+        // Both hidden = internal edge, skip
+        if (sourceHidden && targetHidden) return nothing;
+
+        // Determine actual source/target positions
+        let sourcePos: Position;
+        let targetPos: Position;
+
+        if (sourceHidden) {
+          // Source is inside collapsed frame, connect from frame's output port
+          const frame = findContainingFrame(sourceNode, collapsedFrames);
+          if (!frame) return nothing;
+          sourcePos = getCollapsedFramePortPosition(frame, edge.id, 'output', frameController);
+        } else {
+          sourcePos = getPortPosition(sourceNode, edge.sourcePortId, 'output');
+        }
+
+        if (targetHidden) {
+          // Target is inside collapsed frame, connect to frame's input port
+          const frame = findContainingFrame(targetNode, collapsedFrames);
+          if (!frame) return nothing;
+          targetPos = getCollapsedFramePortPosition(frame, edge.id, 'input', frameController);
+        } else {
+          targetPos = getPortPosition(targetNode, edge.targetPortId, 'input');
+        }
+
+        return renderEdgePath(edge, sourcePos, targetPos, selectedEdgeIds.has(edge.id));
+      })}
+    </g>
+  `;
+}
+
+function findContainingFrame(node: WorkflowNode, frames: WorkflowNode[]): WorkflowNode | undefined {
+  return frames.find(f => f.containedNodeIds?.includes(node.id));
+}
+
+function getCollapsedFramePortPosition(
+  frame: WorkflowNode,
+  edgeId: string,
+  type: 'input' | 'output',
+  frameController: FrameController
+): Position {
+  const aggregated = frameController.getAggregatedPorts(frame);
+  const ports = type === 'input' ? aggregated.inputs : aggregated.outputs;
+  const portIndex = ports.findIndex(p => p.originalEdgeId === edgeId);
+
+  const collapsedWidth = 220;
+  const collapsedHeight = 80;
+  const portSpacing = 16;
+  const totalPorts = ports.length;
+  const startY = (collapsedHeight - (totalPorts - 1) * portSpacing) / 2;
+
+  return {
+    x: frame.position.x + (type === 'input' ? 0 : collapsedWidth),
+    y: frame.position.y + startY + portIndex * portSpacing,
+  };
+}
+```
+
+### 11.4 Undo/Redo Operations
+
+```typescript
+// ==========================================
+// FILE: controllers/undo.controller.ts (additions)
+// ==========================================
+
+interface FrameResizedAction {
+  type: 'frame-resized';
+  frameId: string;
+  prevWidth: number;
+  prevHeight: number;
+  prevPosition: Position;
+  newWidth: number;
+  newHeight: number;
+  newPosition: Position;
+}
+
+interface FrameCollapsedAction {
+  type: 'frame-collapsed';
+  frameId: string;
+  prevCollapsed: boolean;
+  prevContainedVisibility: Map<string, boolean>;
+}
+
+interface NodesAddedToFrameAction {
+  type: 'nodes-added-to-frame';
+  frameId: string;
+  nodeIds: string[];
+  prevParentFrameIds: Map<string, string | null>;
+}
+
+// Add to UndoController class:
+
+recordFrameResized(
+  frame: WorkflowNode,
+  prevWidth: number,
+  prevHeight: number,
+  prevPosition: Position
+): void {
+  const config = frame.configuration as FrameConfiguration;
+  this.pushAction({
+    type: 'frame-resized',
+    frameId: frame.id,
+    prevWidth,
+    prevHeight,
+    prevPosition,
+    newWidth: config.width,
+    newHeight: config.height,
+    newPosition: { ...frame.position },
+  });
+}
+
+recordFrameCollapsed(frame: WorkflowNode, prevCollapsed: boolean): void {
+  const containedNodes = this.host.frameController?.getContainedNodes(frame) || [];
+  const prevVisibility = new Map<string, boolean>();
+  for (const node of containedNodes) {
+    prevVisibility.set(node.id, !(node.metadata as any)?._hiddenByFrame);
+  }
+
+  this.pushAction({
+    type: 'frame-collapsed',
+    frameId: frame.id,
+    prevCollapsed,
+    prevContainedVisibility: prevVisibility,
+  });
+}
+
+private undoFrameResized(action: FrameResizedAction): void {
+  const frame = this.host.workflow.nodes.find(n => n.id === action.frameId);
+  if (!frame) return;
+
+  const config = frame.configuration as FrameConfiguration;
+  config.width = action.prevWidth;
+  config.height = action.prevHeight;
+  frame.position = { ...action.prevPosition };
+
+  this.host.frameController?.updateFrameContainment(frame);
+}
+
+private redoFrameResized(action: FrameResizedAction): void {
+  const frame = this.host.workflow.nodes.find(n => n.id === action.frameId);
+  if (!frame) return;
+
+  const config = frame.configuration as FrameConfiguration;
+  config.width = action.newWidth;
+  config.height = action.newHeight;
+  frame.position = { ...action.newPosition };
+
+  this.host.frameController?.updateFrameContainment(frame);
+}
+```
+
+### 11.5 Drag Controller Integration
+
+```typescript
+// ==========================================
+// FILE: controllers/drag.controller.ts (modifications)
+// ==========================================
+
+// In handleDrag method, add frame-aware logic:
+
+handleDrag(event: MouseEvent): void {
+  if (!this.dragState) return;
+
+  const deltaX = (event.clientX - this.dragState.startX) / this.host.viewport.zoom;
+  const deltaY = (event.clientY - this.dragState.startY) / this.host.viewport.zoom;
+
+  const snappedDeltaX = this.snapToGrid(deltaX);
+  const snappedDeltaY = this.snapToGrid(deltaY);
+
+  for (const nodeId of this.host.selectedNodeIds) {
+    const node = this.host.workflow.nodes.find(n => n.id === nodeId);
+    if (!node) continue;
+
+    const startPos = this.dragState.startPositions.get(nodeId);
+    if (!startPos) continue;
+
+    // Check if this is a frame node
+    if (node.type === WorkflowNodeType.FRAME) {
+      // Move frame with all its contents
+      const frameDeltaX = startPos.x + snappedDeltaX - node.position.x;
+      const frameDeltaY = startPos.y + snappedDeltaY - node.position.y;
+
+      this.host.frameController?.moveFrameWithContents(node, frameDeltaX, frameDeltaY);
+    } else {
+      // Regular node movement
+      node.position = {
+        x: startPos.x + snappedDeltaX,
+        y: startPos.y + snappedDeltaY,
+      };
+    }
+  }
+
+  this.host.requestUpdate();
+}
+
+// In stopDrag method, update frame containments:
+
+stopDrag(): void {
+  if (!this.dragState) return;
+
+  // Update all frame containments after drag
+  this.host.frameController?.updateAllFrameContainments();
+
+  // Record for undo
+  // ... existing undo logic ...
+
+  this.dragState = null;
+  this.host.dispatchWorkflowChanged();
+}
+```
+
+### 11.6 Workflow Serialization
+
+```typescript
+// ==========================================
+// Serialization considerations
+// ==========================================
+
+/**
+ * When saving/loading workflows, ensure:
+ * 1. Frame nodes are serialized with containedNodeIds
+ * 2. Regular nodes preserve parentFrameId reference
+ * 3. Collapsed state and dimensions are preserved
+ */
+
+interface SerializedWorkflow {
+  // ... existing fields ...
+  nodes: SerializedNode[];
+}
+
+interface SerializedNode {
+  // ... existing fields ...
+  containedNodeIds?: string[];  // For FRAME nodes
+  parentFrameId?: string | null; // For regular nodes
+}
+
+/**
+ * On workflow load, validate and repair frame relationships:
+ * - Remove invalid containedNodeIds (nodes that don't exist)
+ * - Clear parentFrameId for nodes not in any frame's containedNodeIds
+ * - Ensure no circular containment
+ */
+function validateFrameRelationships(workflow: Workflow): void {
+  const nodeIds = new Set(workflow.nodes.map(n => n.id));
+  const frames = workflow.nodes.filter(n => n.type === WorkflowNodeType.FRAME);
+
+  for (const frame of frames) {
+    // Filter out invalid containedNodeIds
+    frame.containedNodeIds = (frame.containedNodeIds || []).filter(id => nodeIds.has(id));
+  }
+
+  // Build containment map
+  const nodeToFrame = new Map<string, string>();
+  for (const frame of frames) {
+    for (const nodeId of frame.containedNodeIds || []) {
+      nodeToFrame.set(nodeId, frame.id);
+    }
+  }
+
+  // Update parentFrameId on nodes
+  for (const node of workflow.nodes) {
+    if (node.type === WorkflowNodeType.FRAME) continue;
+    node.parentFrameId = nodeToFrame.get(node.id) || null;
+  }
+}
+```
+
+### 11.7 Performance Optimizations
+
+```typescript
+// ==========================================
+// Performance considerations
+// ==========================================
+
+/**
+ * 1. Memoize containment calculations
+ */
+class FrameController {
+  private containmentCache = new Map<string, string[]>();
+  private containmentCacheValid = false;
+
+  invalidateContainmentCache(): void {
+    this.containmentCacheValid = false;
+    this.containmentCache.clear();
+  }
+
+  getContainedNodesOptimized(frame: WorkflowNode): WorkflowNode[] {
+    if (!this.containmentCacheValid) {
+      this.rebuildContainmentCache();
+    }
+    const ids = this.containmentCache.get(frame.id) || [];
+    return ids.map(id => this.host.workflow.nodes.find(n => n.id === id)!).filter(Boolean);
+  }
+
+  private rebuildContainmentCache(): void {
+    this.containmentCache.clear();
+    const frames = this.host.workflow.nodes.filter(n => n.type === WorkflowNodeType.FRAME);
+    for (const frame of frames) {
+      this.containmentCache.set(frame.id, [...(frame.containedNodeIds || [])]);
+    }
+    this.containmentCacheValid = true;
+  }
+}
+
+/**
+ * 2. Debounce containment updates during drag
+ */
+private updateContainmentDebounced = debounce(() => {
+  this.updateAllFrameContainments();
+}, 100);
+
+/**
+ * 3. Use CSS containment for frame rendering
+ */
+.frame-node {
+  contain: layout style;
+}
+
+.collapsed-frame-node {
+  contain: layout style paint;
+}
+
+/**
+ * 4. Virtualize hidden nodes in collapsed frames
+ * - Don't render DOM for hidden nodes
+ * - Only render edges that connect to/from frame
+ */
+private renderNodes() {
+  return this.workflow.nodes
+    .filter(node => !(node.metadata as any)?._hiddenByFrame)
+    .map(node => this.renderNode(node));
+}
+```
+
+### 11.8 Edge Cases and Validation
+
+```typescript
+// ==========================================
+// Edge cases to handle
+// ==========================================
+
+/**
+ * 1. Deleting a frame
+ * - Option A: Keep contained nodes (default)
+ * - Option B: Delete contained nodes (with confirmation)
+ */
+deleteFrame(frame: WorkflowNode, deleteContents: boolean = false): void {
+  if (deleteContents) {
+    // Delete all contained nodes and their edges
+    const containedIds = new Set(frame.containedNodeIds || []);
+    this.host.workflow.edges = this.host.workflow.edges.filter(
+      e => !containedIds.has(e.sourceNodeId) && !containedIds.has(e.targetNodeId)
+    );
+    this.host.workflow.nodes = this.host.workflow.nodes.filter(
+      n => n.id !== frame.id && !containedIds.has(n.id)
+    );
+  } else {
+    // Only delete frame, clear parentFrameId on contained nodes
+    for (const nodeId of frame.containedNodeIds || []) {
+      const node = this.host.workflow.nodes.find(n => n.id === nodeId);
+      if (node) node.parentFrameId = null;
+    }
+    this.host.workflow.nodes = this.host.workflow.nodes.filter(n => n.id !== frame.id);
+  }
+}
+
+/**
+ * 2. Copy/paste frame with contents
+ */
+pasteFrameWithContents(frame: WorkflowNode, offset: Position): WorkflowNode {
+  const newFrame = deepClone(frame);
+  newFrame.id = generateId();
+  newFrame.position.x += offset.x;
+  newFrame.position.y += offset.y;
+
+  // Clone contained nodes
+  const idMap = new Map<string, string>();
+  const newContainedIds: string[] = [];
+
+  for (const oldId of frame.containedNodeIds || []) {
+    const oldNode = this.host.workflow.nodes.find(n => n.id === oldId);
+    if (!oldNode) continue;
+
+    const newNode = deepClone(oldNode);
+    newNode.id = generateId();
+    newNode.position.x += offset.x;
+    newNode.position.y += offset.y;
+    newNode.parentFrameId = newFrame.id;
+
+    idMap.set(oldId, newNode.id);
+    newContainedIds.push(newNode.id);
+    this.host.workflow.nodes.push(newNode);
+  }
+
+  newFrame.containedNodeIds = newContainedIds;
+
+  // Clone internal edges with new IDs
+  for (const edge of this.host.workflow.edges) {
+    const newSourceId = idMap.get(edge.sourceNodeId);
+    const newTargetId = idMap.get(edge.targetNodeId);
+
+    if (newSourceId && newTargetId) {
+      // Internal edge - clone it
+      const newEdge = deepClone(edge);
+      newEdge.id = generateId();
+      newEdge.sourceNodeId = newSourceId;
+      newEdge.targetNodeId = newTargetId;
+      this.host.workflow.edges.push(newEdge);
+    }
+  }
+
+  this.host.workflow.nodes.push(newFrame);
+  return newFrame;
+}
+
+/**
+ * 3. Prevent invalid operations
+ */
+canContainNode(frame: WorkflowNode, node: WorkflowNode): boolean {
+  // Cannot contain frames
+  if (node.type === WorkflowNodeType.FRAME) return false;
+
+  // Cannot contain itself
+  if (node.id === frame.id) return false;
+
+  // Cannot contain notes (optional - could allow)
+  if (node.type === WorkflowNodeType.NOTE) return false;
+
+  return true;
+}
+
+/**
+ * 4. Handle frame overlap
+ * - When a node is in bounds of multiple frames, use the smallest frame
+ */
+findContainingFrame(node: WorkflowNode): WorkflowNode | null {
+  const frames = this.host.workflow.nodes.filter(n => n.type === WorkflowNodeType.FRAME);
+  const containingFrames = frames.filter(f => this.isNodeInFrame(node, f));
+
+  if (containingFrames.length === 0) return null;
+  if (containingFrames.length === 1) return containingFrames[0];
+
+  // Return smallest frame by area
+  return containingFrames.reduce((smallest, frame) => {
+    const config = frame.configuration as FrameConfiguration;
+    const smallestConfig = smallest.configuration as FrameConfiguration;
+    const area = config.width * config.height;
+    const smallestArea = smallestConfig.width * smallestConfig.height;
+    return area < smallestArea ? frame : smallest;
+  });
+}
+```
+
+---
+
+## 12. Context Menu Integration
+
+```typescript
+// ==========================================
+// Context menu options for frames
+// ==========================================
+
+const frameContextMenuItems = [
+  {
+    id: 'collapse',
+    label: (frame: WorkflowNode) => {
+      const config = frame.configuration as FrameConfiguration;
+      return config.collapsed ? 'Expand' : 'Collapse';
+    },
+    icon: (frame: WorkflowNode) => {
+      const config = frame.configuration as FrameConfiguration;
+      return config.collapsed ? 'maximize-2' : 'minimize-2';
+    },
+    action: (frame: WorkflowNode) => this.frameController.toggleCollapsed(frame),
+  },
+  {
+    id: 'fit-contents',
+    label: 'Fit to Contents',
+    icon: 'maximize',
+    action: (frame: WorkflowNode) => this.frameController.fitToContents(frame),
+    disabled: (frame: WorkflowNode) => (frame.containedNodeIds?.length || 0) === 0,
+  },
+  { type: 'separator' },
+  {
+    id: 'edit-label',
+    label: 'Edit Label',
+    icon: 'edit-2',
+    action: (frame: WorkflowNode) => this.startInlineLabelEdit(frame),
+  },
+  {
+    id: 'change-color',
+    label: 'Change Color',
+    icon: 'palette',
+    submenu: FRAME_COLOR_PRESETS.map(preset => ({
+      id: `color-${preset.name}`,
+      label: preset.name,
+      color: preset.solid,
+      action: (frame: WorkflowNode) => this.setFrameColor(frame, preset),
+    })),
+  },
+  { type: 'separator' },
+  {
+    id: 'delete-frame-only',
+    label: 'Delete Frame Only',
+    icon: 'trash-2',
+    action: (frame: WorkflowNode) => this.frameController.deleteFrame(frame, false),
+  },
+  {
+    id: 'delete-with-contents',
+    label: 'Delete with Contents',
+    icon: 'trash',
+    variant: 'danger',
+    action: (frame: WorkflowNode) => {
+      if (confirm(`Delete frame and ${frame.containedNodeIds?.length || 0} contained nodes?`)) {
+        this.frameController.deleteFrame(frame, true);
+      }
+    },
+  },
+];
+
+// Canvas context menu addition
+const canvasContextMenuItems = [
+  // ... existing items ...
+  { type: 'separator' },
+  {
+    id: 'create-frame',
+    label: 'Create Frame from Selection',
+    icon: 'square',
+    disabled: () => this.selectedNodeIds.size === 0,
+    action: () => this.frameController.createFrameFromSelection(),
+  },
+];
+```
