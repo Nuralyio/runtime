@@ -878,7 +878,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     icon: NODE_ICONS[WorkflowNodeType.EMAIL],
     color: NODE_COLORS[WorkflowNodeType.EMAIL],
     category: 'action',
-    defaultConfig: { to: '', subject: '', body: '' },
+    defaultConfig: { to: '', cc: '', bcc: '', subject: '', body: '', bodyType: 'text', fromName: '', replyTo: '', priority: 'normal' },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
