@@ -2312,6 +2312,92 @@ export const workflowCanvasStyles = css`
   .canvas-wrapper[data-theme="default"] .resize-handle.corner {
     border-color: var(--nuraly-color-layer-01, #ffffff);
   }
+
+  /* ===== COLLAPSED FRAME STATUS INDICATORS ===== */
+
+  /* Status indicator badge */
+  .frame-status-indicator {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+  }
+
+  .frame-status-indicator nr-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Running status - blue with spinning animation */
+  .frame-status-indicator.status-running {
+    background: var(--nuraly-color-interactive, #3b82f6);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  .frame-status-indicator.status-running .spinning {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Failed status - red */
+  .frame-status-indicator.status-failed {
+    background: var(--nuraly-color-danger, #ef4444);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  }
+
+  /* Completed status - green */
+  .frame-status-indicator.status-completed {
+    background: var(--nuraly-color-success, #22c55e);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+  }
+
+  /* Pending status - yellow/amber */
+  .frame-status-indicator.status-pending,
+  .frame-status-indicator.status-waiting {
+    background: var(--nuraly-color-warning, #f59e0b);
+    color: white;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  }
+
+  /* Collapsed frame border glow for active statuses */
+  .collapsed-frame-node.status-running {
+    box-shadow: 0 0 0 2px var(--nuraly-color-interactive, #3b82f6),
+                0 4px 12px rgba(59, 130, 246, 0.2);
+    animation: pulse-blue 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-blue {
+    0%, 100% { box-shadow: 0 0 0 2px var(--nuraly-color-interactive, #3b82f6), 0 4px 12px rgba(59, 130, 246, 0.2); }
+    50% { box-shadow: 0 0 0 4px var(--nuraly-color-interactive, #3b82f6), 0 4px 16px rgba(59, 130, 246, 0.4); }
+  }
+
+  .collapsed-frame-node.status-failed {
+    border-color: var(--nuraly-color-danger, #ef4444);
+    box-shadow: 0 0 0 2px var(--nuraly-color-danger, #ef4444),
+                0 4px 12px rgba(239, 68, 68, 0.2);
+  }
+
+  .collapsed-frame-node.status-completed {
+    border-color: var(--nuraly-color-success, #22c55e);
+  }
+
+  .collapsed-frame-node.status-pending,
+  .collapsed-frame-node.status-waiting {
+    border-color: var(--nuraly-color-warning, #f59e0b);
+  }
 `;
 
 export const styles = workflowCanvasStyles;
