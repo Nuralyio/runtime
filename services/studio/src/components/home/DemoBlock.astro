@@ -14,6 +14,7 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || '';
     <div class="demo-header" data-animate>
       <p class="section-label">Try it</p>
       <h2>See it in action</h2>
+      <p class="demo-caption">This demo showcases a Retrieval-Augmented Generation (RAG) agent using the ReAct pattern for reasoning and tool use.</p>
     </div>
 
     <div class="demo-container" data-animate id="demo-micro-app-container">
@@ -21,6 +22,19 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || '';
     </div>
   </div>
 </section>
+
+<style>
+  .demo-caption {
+    text-align: center;
+    font-size: 18px;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 12px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+</style>
 
 <script is:inline define:vars={{ demoAppUuid, apiBaseUrl }}>
   window.__DEMO_APP_UUID__ = demoAppUuid;
