@@ -206,8 +206,64 @@ interface FrameConfiguration {
   labelPlacement?: 'inside' | 'outside';
   /** Show/hide the label */
   showLabel?: boolean;
-  /** Collapsed state - hide contents and show only label */
+  /** Collapsed state - transforms frame into a compact group node */
   collapsed?: boolean;
+}
+```
+
+### 2.4.1 Collapsed Frame as Group Node
+
+When a frame is collapsed, it transforms into a **compact group node** representation:
+
+```
+┌─────────────────────────────┐
+│  ○  │ 📦 Authentication     │  ○ →
+│  ○  │    (5 nodes)          │
+└─────────────────────────────┘
+      Input ports              Output port
+      (aggregated)             (aggregated)
+```
+
+**Collapsed Group Node Features:**
+- **Fixed dimensions**: Compact node size (~220x80px) instead of frame dimensions
+- **Title**: Shows frame label as node title
+- **Node preview row**: Shows icons of contained nodes (first 5-6 icons, "+N more" if overflow)
+- **Aggregated ports**:
+  - Input ports: One port for each external edge coming INTO any contained node
+  - Output ports: One port for each external edge going OUT from any contained node
+- **Icon**: Group/layers icon to indicate it's a collapsed frame
+- **Double-click**: Expands the frame back to full size
+- **Hover tooltip**: Shows full list of contained node names
+
+**Visual representation:**
+```
+┌──────────────────────────────────────┐
+│  ○  │ 📦 Authentication              │  ○ →
+│  ○  │ [🔐][📧][⚡][🔀][📤] +2 more   │
+└──────────────────────────────────────┘
+       └── Node type icons preview ──┘
+```
+
+```typescript
+interface CollapsedFrameState {
+  /** Original frame dimensions (restored on expand) */
+  expandedWidth: number;
+  expandedHeight: number;
+  /** Aggregated input connections from outside the frame */
+  aggregatedInputs: AggregatedPort[];
+  /** Aggregated output connections to outside the frame */
+  aggregatedOutputs: AggregatedPort[];
+}
+
+interface AggregatedPort {
+  /** Virtual port ID for the collapsed view */
+  id: string;
+  /** Original edge that this port represents */
+  originalEdgeId: string;
+  /** The actual node inside the frame that has the connection */
+  internalNodeId: string;
+  /** The actual port on the internal node */
+  internalPortId: string;
 }
 ```
 
@@ -299,22 +355,27 @@ private renderFrameNode(frame: WorkflowNode) {
   const config = frame.configuration as FrameConfiguration;
   const isSelected = this.selectedNodeIds.has(frame.id);
 
+  // Render as collapsed group node or expanded frame
+  if (config.collapsed) {
+    return this.renderCollapsedFrame(frame, isSelected);
+  }
+
   return html`
     <div
       class=${classMap({
         'frame-node': true,
         'selected': isSelected,
-        'collapsed': config.collapsed,
       })}
       style=${styleMap({
         left: `${frame.position.x}px`,
         top: `${frame.position.y}px`,
         width: `${config.width}px`,
-        height: config.collapsed ? 'auto' : `${config.height}px`,
+        height: `${config.height}px`,
         backgroundColor: config.backgroundColor,
         borderColor: config.borderColor,
       })}
       @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
+      @dblclick=${(e: MouseEvent) => this.toggleFrameCollapsed(e, frame)}
     >
       ${config.showLabel ? html`
         <div class="frame-label ${config.labelPosition} ${config.labelPlacement}">
@@ -323,7 +384,7 @@ private renderFrameNode(frame: WorkflowNode) {
       ` : nothing}
 
       <!-- Resize handles (when selected) -->
-      ${isSelected && !config.collapsed ? html`
+      ${isSelected ? html`
         <div class="resize-handle resize-se" @mousedown=${(e: MouseEvent) => this.startFrameResize(e, frame, 'se')}></div>
         <div class="resize-handle resize-sw" @mousedown=${(e: MouseEvent) => this.startFrameResize(e, frame, 'sw')}></div>
         <div class="resize-handle resize-ne" @mousedown=${(e: MouseEvent) => this.startFrameResize(e, frame, 'ne')}></div>
@@ -331,6 +392,150 @@ private renderFrameNode(frame: WorkflowNode) {
       ` : nothing}
     </div>
   `;
+}
+```
+
+#### 2.7.3 Collapsed Frame as Group Node Rendering
+
+When collapsed, the frame renders as a compact node with aggregated ports:
+
+```typescript
+private renderCollapsedFrame(frame: WorkflowNode, isSelected: boolean) {
+  const config = frame.configuration as FrameConfiguration;
+  const containedNodes = this.getContainedNodes(frame);
+  const aggregatedPorts = this.getAggregatedPorts(frame);
+
+  // Get node icons for preview (show max 5, then "+N more")
+  const maxPreviewIcons = 5;
+  const previewNodes = containedNodes.slice(0, maxPreviewIcons);
+  const overflowCount = containedNodes.length - maxPreviewIcons;
+
+  return html`
+    <div
+      class=${classMap({
+        'collapsed-frame-node': true,
+        'selected': isSelected,
+      })}
+      style=${styleMap({
+        left: `${frame.position.x}px`,
+        top: `${frame.position.y}px`,
+        '--node-color': config.borderColor || '#6366f1',
+      })}
+      @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
+      @dblclick=${(e: MouseEvent) => this.toggleFrameCollapsed(e, frame)}
+      title=${this.getContainedNodesTitle(containedNodes)}
+    >
+      <!-- Aggregated input ports -->
+      <div class="ports ports-left">
+        ${aggregatedPorts.inputs.map(port => html`
+          <div
+            class="port port-input"
+            data-port-id=${port.id}
+            title=${port.label || 'Input'}
+          ></div>
+        `)}
+      </div>
+
+      <!-- Node body -->
+      <div class="node-body">
+        <div class="node-header">
+          <nly-icon name="layers" size="16"></nly-icon>
+          <span class="node-title">${config.label}</span>
+        </div>
+
+        <!-- Node icons preview row -->
+        <div class="node-icons-preview">
+          ${previewNodes.map(node => html`
+            <div
+              class="preview-icon"
+              style="background-color: ${NODE_COLORS[node.type]}20"
+              title=${node.name}
+            >
+              <nly-icon
+                name=${NODE_ICONS[node.type]}
+                size="14"
+                style="color: ${NODE_COLORS[node.type]}"
+              ></nly-icon>
+            </div>
+          `)}
+          ${overflowCount > 0 ? html`
+            <span class="overflow-count">+${overflowCount}</span>
+          ` : nothing}
+        </div>
+      </div>
+
+      <!-- Aggregated output ports -->
+      <div class="ports ports-right">
+        ${aggregatedPorts.outputs.map(port => html`
+          <div
+            class="port port-output"
+            data-port-id=${port.id}
+            title=${port.label || 'Output'}
+          ></div>
+        `)}
+      </div>
+
+      <!-- Expand indicator -->
+      <div class="expand-hint" title="Double-click to expand">
+        <nly-icon name="maximize-2" size="12"></nly-icon>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Get contained nodes for a frame
+ */
+private getContainedNodes(frame: WorkflowNode): WorkflowNode[] {
+  const containedIds = new Set(frame.containedNodeIds || []);
+  return this.workflow.nodes.filter(n => containedIds.has(n.id));
+}
+
+/**
+ * Generate tooltip showing all contained node names
+ */
+private getContainedNodesTitle(nodes: WorkflowNode[]): string {
+  if (nodes.length === 0) return 'Empty group';
+  return `Contains:\n${nodes.map(n => `• ${n.name}`).join('\n')}\n\nDouble-click to expand`;
+}
+
+/**
+ * Calculate aggregated ports for a collapsed frame.
+ * These represent external connections to/from contained nodes.
+ */
+private getAggregatedPorts(frame: WorkflowNode): { inputs: AggregatedPort[]; outputs: AggregatedPort[] } {
+  const containedIds = new Set(frame.containedNodeIds || []);
+  const inputs: AggregatedPort[] = [];
+  const outputs: AggregatedPort[] = [];
+
+  for (const edge of this.workflow.edges) {
+    const sourceInside = containedIds.has(edge.sourceNodeId);
+    const targetInside = containedIds.has(edge.targetNodeId);
+
+    // Edge from outside INTO the frame = aggregated input
+    if (!sourceInside && targetInside) {
+      inputs.push({
+        id: `agg-in-${edge.id}`,
+        originalEdgeId: edge.id,
+        internalNodeId: edge.targetNodeId,
+        internalPortId: edge.targetPortId,
+        label: this.getNodeName(edge.sourceNodeId),
+      });
+    }
+
+    // Edge from inside OUT of the frame = aggregated output
+    if (sourceInside && !targetInside) {
+      outputs.push({
+        id: `agg-out-${edge.id}`,
+        originalEdgeId: edge.id,
+        internalNodeId: edge.sourceNodeId,
+        internalPortId: edge.sourcePortId,
+        label: this.getNodeName(edge.targetNodeId),
+      });
+    }
+  }
+
+  return { inputs, outputs };
 }
 ```
 
@@ -397,9 +602,120 @@ type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w';
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.frame-node.collapsed {
-  min-height: 40px;
-  background: rgba(99, 102, 241, 0.1) !important;
+/* Collapsed frame as group node */
+.collapsed-frame-node {
+  position: absolute;
+  display: flex;
+  align-items: stretch;
+  min-width: 220px;
+  background: white;
+  border: 2px solid var(--node-color, #6366f1);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: move;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.collapsed-frame-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.collapsed-frame-node.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.collapsed-frame-node .node-body {
+  flex: 1;
+  padding: 8px 12px;
+}
+
+.collapsed-frame-node .node-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.collapsed-frame-node .node-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Node icons preview row */
+.collapsed-frame-node .node-icons-preview {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.collapsed-frame-node .preview-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  transition: transform 0.15s;
+}
+
+.collapsed-frame-node .preview-icon:hover {
+  transform: scale(1.1);
+}
+
+.collapsed-frame-node .overflow-count {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* Expand hint */
+.collapsed-frame-node .expand-hint {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  color: #9ca3af;
+  transition: opacity 0.2s;
+}
+
+.collapsed-frame-node:hover .expand-hint {
+  opacity: 1;
+}
+
+/* Aggregated ports on collapsed frame */
+.collapsed-frame-node .ports {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.collapsed-frame-node .ports-left {
+  padding-left: 4px;
+}
+
+.collapsed-frame-node .ports-right {
+  padding-right: 4px;
+}
+
+.collapsed-frame-node .port {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--node-color, #6366f1);
+  cursor: crosshair;
+  transition: transform 0.15s, background-color 0.15s;
+}
+
+.collapsed-frame-node .port:hover {
+  transform: scale(1.3);
+  background: var(--node-color, #6366f1);
 }
 
 /* Frame label */
