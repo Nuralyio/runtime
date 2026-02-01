@@ -23,6 +23,24 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
         <p class="hero-subtitle">
           The AI Agentic platform for building autonomous workflows, intelligent chatbots, and LLM-powered applications. Visual design meets enterprise-grade AI infrastructure.
         </p>
+        <div class="hero-deployment">
+          <span class="deployment-badge">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1L1 5v6l7 4 7-4V5L8 1z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M1 5l7 4 7-4M8 9v6" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Cloud
+          </span>
+          <span class="deployment-divider">or</span>
+          <span class="deployment-badge">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="4" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              <path d="M5 7h6M5 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            On-Premise
+          </span>
+          <span class="deployment-label">for Enterprise</span>
+        </div>
         <div class="hero-actions">
           <a href="https://calendly.com/aymen-nuraly" class="btn btn-primary">
             TALK TO US
@@ -355,6 +373,41 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
     max-width: 480px;
   }
 
+  .hero-deployment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .deployment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--color-surface, #f8fafc);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text, #1a1a1a);
+  }
+
+  .deployment-badge svg {
+    color: var(--color-primary, #8b5cf6);
+  }
+
+  .deployment-divider {
+    font-size: 13px;
+    color: var(--color-text-secondary, #64748b);
+  }
+
+  .deployment-label {
+    font-size: 13px;
+    color: var(--color-text-secondary, #64748b);
+  }
+
   .hero-actions {
     display: flex;
     gap: 12px;
@@ -396,6 +449,10 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
     }
 
     .hero-actions {
+      justify-content: center;
+    }
+
+    .hero-deployment {
       justify-content: center;
     }
 
