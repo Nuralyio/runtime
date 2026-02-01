@@ -33,3 +33,6 @@ export { ClipboardController, type ClipboardData, type ClipboardHost } from './c
 
 // Undo controller for undo/redo operations
 export { UndoController } from './undo.controller.js';
+
+// Frame controller for frame node operations
+export { FrameController } from './frame.controller.js';

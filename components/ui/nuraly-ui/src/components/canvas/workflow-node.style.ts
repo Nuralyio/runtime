@@ -604,6 +604,74 @@ export const workflowNodeStyles = css`
     color: var(--nuraly-color-text-secondary, #525252);
   }
 
+  /* ========================================
+   * NOTE NODE STYLES (Sticky note style)
+   * ======================================== */
+
+  .node-container.note-node {
+    min-width: 150px;
+    min-height: 80px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .node-container.note-node:hover {
+    border: none;
+    box-shadow: none;
+  }
+
+  .node-container.note-node.selected {
+    border: none;
+  }
+
+  .node-container.note-node.selected .note-content {
+    box-shadow: 0 0 0 2px var(--nuraly-color-interactive, #3b82f6),
+                2px 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .node-container.note-node.dragging {
+    transform: scale(1.02);
+  }
+
+  .note-content {
+    min-width: 150px;
+    min-height: 80px;
+    max-width: 300px;
+    padding: 12px 14px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+    cursor: grab;
+    transition: box-shadow var(--nuraly-transition-fast, 0.15s) ease,
+                transform var(--nuraly-transition-fast, 0.1s) ease;
+  }
+
+  .note-content:hover {
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .node-container.note-node.dragging .note-content {
+    cursor: grabbing;
+    box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Note node - Font sizes */
+  .note-content.font-small {
+    font-size: 12px;
+  }
+
+  .note-content.font-medium {
+    font-size: 14px;
+  }
+
+  .note-content.font-large {
+    font-size: 16px;
+  }
+
 `;
 
 export const styles = workflowNodeStyles;

@@ -16,6 +16,7 @@ import {
   NODE_COLORS,
   NODE_ICONS,
   isAgentNode,
+  isNoteNode,
   WorkflowNodeType,
   DbDesignerNodeType,
 } from './workflow-canvas.types.js';
@@ -107,6 +108,65 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
 
   private isDbTableNode(): boolean {
     return this.node.type === DbDesignerNodeType.TABLE;
+  }
+
+  private isNoteNode(): boolean {
+    return isNoteNode(this.node.type);
+  }
+
+  private getNoteFontSize(): string {
+    const fontSize = this.node.configuration?.noteFontSize || 'medium';
+    switch (fontSize) {
+      case 'small': return '12px';
+      case 'large': return '16px';
+      default: return '14px';
+    }
+  }
+
+  /**
+   * Render a Note node - sticky note style annotation
+   */
+  private renderNoteNode() {
+    const config = this.node.configuration || {};
+    const bgColor = config.noteBackgroundColor || '#fef08a';
+    const textColor = config.noteTextColor || '#713f12';
+    const content = config.noteContent || 'Add your note here...';
+    const showBorder = config.noteShowBorder || false;
+
+    const containerClasses = {
+      'node-container': true,
+      'note-node': true,
+      selected: this.selected,
+      dragging: this.dragging,
+    };
+
+    const containerStyles = {
+      '--note-bg': bgColor,
+      '--note-text': textColor,
+      left: `${this.node.position.x}px`,
+      top: `${this.node.position.y}px`,
+    };
+
+    const noteStyles = {
+      backgroundColor: bgColor,
+      color: textColor,
+      fontSize: this.getNoteFontSize(),
+      border: showBorder ? `1px solid ${textColor}30` : 'none',
+    };
+
+    return html`
+      <div
+        class=${classMap(containerClasses)}
+        style=${styleMap(containerStyles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="note-content" style=${styleMap(noteStyles)}>
+          ${content}
+        </div>
+      </div>
+    `;
   }
 
   private handleTriggerClick(e: MouseEvent) {
@@ -339,6 +399,11 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     // Use special rendering for DB Table nodes
     if (this.isDbTableNode()) {
       return this.renderDbTableNode();
+    }
+
+    // Use special rendering for Note nodes
+    if (this.isNoteNode()) {
+      return this.renderNoteNode();
     }
 
     const nodeColor = this.getNodeColor();

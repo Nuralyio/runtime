@@ -19,6 +19,7 @@ import {
   WorkflowNodeType,
   NodeConfiguration,
   createNodeFromTemplate,
+  isFrameNode,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-canvas.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -40,6 +41,7 @@ import {
   MarqueeController,
   ClipboardController,
   UndoController,
+  FrameController,
   type MarqueeState,
 } from './controllers/index.js';
 
@@ -292,6 +294,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private clipboardController!: ClipboardController;
   private keyboardController!: KeyboardController;
   private undoController!: UndoController;
+  private frameController!: FrameController;
 
   constructor() {
     super();
@@ -303,6 +306,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.marqueeController = new MarqueeController(this as unknown as any);
     this.clipboardController = new ClipboardController(this as unknown as any);
     this.undoController = new UndoController(this as unknown as CanvasHost & LitElement);
+    this.frameController = new FrameController(this as unknown as CanvasHost & LitElement);
 
     // KeyboardController needs reference to clipboard and undo controllers
     this.keyboardController = new KeyboardController(
@@ -323,6 +327,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.connectionController.setUndoController(this.undoController);
     this.configController.setUndoController(this.undoController);
     this.clipboardController.setUndoController(this.undoController);
+
+    // Set frame controller on drag controller for frame-aware movement
+    this.dragController.setFrameController(this.frameController);
   }
 
   // CanvasHost interface methods for controllers
@@ -997,6 +1004,217 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
+  /**
+   * Get frame nodes (for rendering behind other nodes)
+   */
+  private getFrameNodes(): WorkflowNode[] {
+    return this.getNodesWithStatuses().filter(node => isFrameNode(node.type));
+  }
+
+  /**
+   * Get non-frame nodes that are visible (not hidden by collapsed frame)
+   */
+  private getVisibleNonFrameNodes(): WorkflowNode[] {
+    return this.getNodesWithStatuses().filter(node => {
+      // Filter out frame nodes (they render separately)
+      if (isFrameNode(node.type)) return false;
+      // Filter out nodes hidden by collapsed frames
+      if ((node.metadata as Record<string, unknown>)?._hiddenByFrame) return false;
+      return true;
+    });
+  }
+
+  /**
+   * Render expanded frame nodes
+   */
+  private renderExpandedFrame(frame: WorkflowNode) {
+    const config = frame.configuration || {};
+    const collapsed = config.frameCollapsed as boolean;
+    if (collapsed) return null;
+
+    const width = (config.frameWidth as number) || 400;
+    const height = (config.frameHeight as number) || 300;
+    const bgColor = (config.frameBackgroundColor as string) || 'rgba(99, 102, 241, 0.05)';
+    const borderColor = (config.frameBorderColor as string) || 'rgba(99, 102, 241, 0.3)';
+    const label = (config.frameLabel as string) || 'Group';
+    const labelPosition = (config.frameLabelPosition as string) || 'top-left';
+    const labelPlacement = (config.frameLabelPlacement as string) || 'outside';
+    const showLabel = config.frameShowLabel !== false;
+    const isSelected = this.selectedNodeIds.has(frame.id);
+
+    const frameStyles = {
+      left: `${frame.position.x}px`,
+      top: `${frame.position.y}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      backgroundColor: bgColor,
+      borderColor: borderColor,
+    };
+
+    return html`
+      <div
+        class="frame-node ${isSelected ? 'selected' : ''}"
+        style=${styleMap(frameStyles)}
+        data-frame-id=${frame.id}
+        @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
+        @dblclick=${(e: MouseEvent) => this.handleFrameDblClick(e, frame)}
+      >
+        ${showLabel ? html`
+          <div class="frame-label ${labelPosition} ${labelPlacement}">
+            ${label}
+          </div>
+        ` : null}
+        ${isSelected ? html`
+          <div class="resize-handle resize-se" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'se')}></div>
+          <div class="resize-handle resize-sw" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'sw')}></div>
+          <div class="resize-handle resize-ne" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'ne')}></div>
+          <div class="resize-handle resize-nw" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'nw')}></div>
+        ` : null}
+      </div>
+    `;
+  }
+
+  /**
+   * Render collapsed frame as group node
+   */
+  private renderCollapsedFrame(frame: WorkflowNode) {
+    const config = frame.configuration || {};
+    const collapsed = config.frameCollapsed as boolean;
+    if (!collapsed) return null;
+
+    const label = (config.frameLabel as string) || 'Group';
+    const borderColor = (config.frameBorderColor as string) || 'rgba(99, 102, 241, 0.3)';
+    const isSelected = this.selectedNodeIds.has(frame.id);
+    const containedNodes = this.frameController.getContainedNodes(frame);
+    const previews = this.frameController.getContainedNodePreviews(frame, 5);
+    const overflowCount = containedNodes.length - 5;
+    const aggregatedPorts = this.frameController.getAggregatedPorts(frame);
+
+    const nodeStyles = {
+      left: `${frame.position.x}px`,
+      top: `${frame.position.y}px`,
+      '--node-color': borderColor.replace('0.3)', '1)').replace('rgba', 'rgb').split(',').slice(0, 3).join(',') + ')',
+    };
+
+    // Generate tooltip
+    const tooltipContent = containedNodes.length === 0
+      ? 'Empty group'
+      : `Contains:\n${containedNodes.map(n => `• ${n.name}`).join('\n')}\n\nDouble-click to expand`;
+
+    return html`
+      <div
+        class="collapsed-frame-node ${isSelected ? 'selected' : ''}"
+        style=${styleMap(nodeStyles)}
+        data-frame-id=${frame.id}
+        title=${tooltipContent}
+        @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
+        @dblclick=${(e: MouseEvent) => this.handleFrameDblClick(e, frame)}
+      >
+        <!-- Aggregated input ports -->
+        ${aggregatedPorts.inputs.length > 0 ? html`
+          <div class="ports ports-left">
+            ${aggregatedPorts.inputs.map(port => html`
+              <div
+                class="port port-input"
+                data-port-id=${port.id}
+                title=${port.label || 'Input'}
+              ></div>
+            `)}
+          </div>
+        ` : null}
+
+        <!-- Node body -->
+        <div class="collapsed-frame-body">
+          <div class="collapsed-frame-header">
+            <nr-icon name="layers" size="small"></nr-icon>
+            <span class="collapsed-frame-title">${label}</span>
+          </div>
+
+          <!-- Node icons preview row -->
+          ${previews.length > 0 ? html`
+            <div class="node-icons-preview">
+              ${previews.map(preview => html`
+                <div
+                  class="preview-icon"
+                  style="background-color: ${preview.color}20"
+                  title=${preview.name}
+                >
+                  <nr-icon
+                    name=${preview.icon}
+                    size="small"
+                    style="color: ${preview.color}"
+                  ></nr-icon>
+                </div>
+              `)}
+              ${overflowCount > 0 ? html`
+                <span class="overflow-count">+${overflowCount}</span>
+              ` : null}
+            </div>
+          ` : html`
+            <div class="node-icons-preview empty">
+              <span class="empty-text">Empty</span>
+            </div>
+          `}
+        </div>
+
+        <!-- Aggregated output ports -->
+        ${aggregatedPorts.outputs.length > 0 ? html`
+          <div class="ports ports-right">
+            ${aggregatedPorts.outputs.map(port => html`
+              <div
+                class="port port-output"
+                data-port-id=${port.id}
+                title=${port.label || 'Output'}
+              ></div>
+            `)}
+          </div>
+        ` : null}
+
+        <!-- Expand indicator -->
+        <div class="expand-hint" title="Double-click to expand">
+          <nr-icon name="maximize-2" size="small"></nr-icon>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Handle frame mousedown (for selection and dragging)
+   */
+  private handleFrameMouseDown(e: MouseEvent, frame: WorkflowNode) {
+    e.stopPropagation();
+
+    // Select frame
+    if (!e.shiftKey) {
+      this.selectedNodeIds.clear();
+      this.selectedEdgeIds.clear();
+    }
+    this.selectedNodeIds.add(frame.id);
+
+    // Start drag via existing drag controller
+    this.handleNodeMouseDown({
+      detail: { node: frame, event: e },
+    } as CustomEvent);
+
+    this.requestUpdate();
+  }
+
+  /**
+   * Handle frame double-click (toggle collapse or open config)
+   */
+  private handleFrameDblClick(e: MouseEvent, frame: WorkflowNode) {
+    e.stopPropagation();
+    this.frameController.toggleCollapsed(frame);
+  }
+
+  /**
+   * Handle frame resize
+   */
+  private handleFrameResize(e: MouseEvent, frame: WorkflowNode, handle: string) {
+    e.stopPropagation();
+    this.frameController.startResize(e, frame, handle as any);
+  }
+
   // Note: Edge rendering is now in edges.template.ts
   private renderEdges() {
     return renderEdgesTemplate({
@@ -1439,9 +1657,19 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
             ${this.renderEdges()}
           </svg>
 
+          <!-- Frame nodes layer (rendered behind regular nodes) -->
+          <div class="frames-layer">
+            ${this.getFrameNodes().map(frame => {
+              const config = frame.configuration || {};
+              return config.frameCollapsed
+                ? this.renderCollapsedFrame(frame)
+                : this.renderExpandedFrame(frame);
+            })}
+          </div>
+
           <!-- Nodes layer -->
           <div class="nodes-layer">
-            ${this.getNodesWithStatuses().map(node => html`
+            ${this.getVisibleNonFrameNodes().map(node => html`
               <workflow-node
                 .node=${node}
                 ?selected=${this.selectedNodeIds.has(node.id)}
