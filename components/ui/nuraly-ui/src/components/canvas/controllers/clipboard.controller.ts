@@ -159,11 +159,11 @@ export class ClipboardController extends BaseCanvasController {
           x: this.snapToGrid(node.position.x + offsetX, node.position.y + offsetY).x,
           y: this.snapToGrid(node.position.x + offsetX, node.position.y + offsetY).y,
         },
-        // Deep clone ports to avoid reference issues
+        // Deep clone ports to avoid reference issues (with fallbacks for missing arrays)
         ports: {
-          inputs: node.ports.inputs.map(p => ({ ...p })),
-          configs: node.ports.configs?.map(p => ({ ...p })),
-          outputs: node.ports.outputs.map(p => ({ ...p })),
+          inputs: (node.ports?.inputs || []).map(p => ({ ...p })),
+          configs: node.ports?.configs?.map(p => ({ ...p })),
+          outputs: (node.ports?.outputs || []).map(p => ({ ...p })),
         },
       });
     }
