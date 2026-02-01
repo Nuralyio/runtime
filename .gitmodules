@@ -43,3 +43,7 @@
 	path = libs/shared-java-library
 	url = https://github.com/Nuralyio/shared-java-library.git
 	branch = main
+[submodule "services/parcour"]
+	path = services/parcour
+	url = https://github.com/Nuralyio/parcour.git
+	branch = main

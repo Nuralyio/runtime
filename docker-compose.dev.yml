@@ -224,6 +224,34 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # Parcour - Web Crawler Service
+  parcour:
+    build:
+      context: ./services/parcour
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7007:7007"
+    volumes:
+      - ./services/parcour:/app
+      - parcour_maven_cache:/root/.m2
+    environment:
+      - NODE_ENV=development
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_QUEUE=crawl-requests
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/dev.env
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # TextLens - OCR Worker Service
   textlens-worker:
     build:
@@ -453,6 +481,7 @@ volumes:
   kv_maven_cache:
   conduit_maven_cache:
   journal_maven_cache:
+  parcour_maven_cache:
 
 networks:
   nuraly-network:
