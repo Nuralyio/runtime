@@ -390,24 +390,23 @@ const categories = [...new Set(agents.map(a => a.category))];
         transform: translate(-50%, -50%);
         z-index: 10;
         text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 32px 48px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(20, 20, 75, 0.15);
       }
 
       .coming-soon-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-        color: white;
-        padding: 18px 36px;
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        border-radius: 10px;
-        box-shadow: 0 10px 40px rgba(20, 20, 75, 0.35);
-        margin-bottom: 12px;
+        display: block;
+        color: var(--color-primary);
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
       }
 
       .coming-soon-text {
-        font-size: 16px;
+        font-size: 15px;
         color: var(--color-text-secondary);
       }
 
