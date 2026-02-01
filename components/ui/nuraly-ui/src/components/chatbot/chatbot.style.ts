@@ -603,11 +603,13 @@ export default css`
       flex-wrap: wrap;
       gap: var(--nuraly-spacing-chatbot-suggestion-gap);
       margin-top: var(--nuraly-spacing-chatbot-suggestion-container-margin-top);
-      max-width: var(--nuraly-size-chatbot-suggestions-max-width);
+      max-width: 100%;
       margin-left: auto;
       margin-right: auto;
       justify-content: center;
       padding: 0 var(--nuraly-spacing-chatbot-container-padding);
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .suggestion {
@@ -625,9 +627,12 @@ export default css`
       cursor: pointer;
       transition: all var(--nuraly-animation-chatbot-transition-duration) var(--nuraly-animation-chatbot-transition-timing);
       user-select: none;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
       text-decoration: none;
       outline: none;
+      max-width: 100%;
+      text-align: center;
     }
 
     .suggestion:hover {
@@ -638,8 +643,7 @@ export default css`
     }
 
     .suggestion:focus {
-      outline: var(--nuraly-spacing-02, 0.25rem) solid var(--nuraly-color-chatbot-suggestion-focus);
-      outline-offset: var(--nuraly-spacing-02, 0.25rem);
+      outline: none;
     }
 
     .suggestion:active {
