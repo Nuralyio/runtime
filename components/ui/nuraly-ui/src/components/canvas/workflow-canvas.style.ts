@@ -36,6 +36,15 @@ export const workflowCanvasStyles = css`
     touch-action: none;
   }
 
+  /* PAN mode cursor */
+  .canvas-wrapper[data-mode="PAN"] {
+    cursor: grab;
+  }
+
+  .canvas-wrapper[data-mode="PAN"]:active {
+    cursor: grabbing;
+  }
+
   /* Grid background */
   .canvas-grid {
     position: absolute;

@@ -427,8 +427,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     } else if (e.button === 0 && isCanvasBackground) {
       e.preventDefault();
 
-      // Check if Ctrl/Cmd is held - if so, start panning
-      if (e.ctrlKey || e.metaKey) {
+      // Check if Ctrl/Cmd is held or in PAN mode - if so, start panning
+      if (e.ctrlKey || e.metaKey || this.mode === CanvasMode.PAN) {
         this.viewportController.startPan(e);
         if (!e.shiftKey) {
           this.selectionController.clearSelection();
@@ -1425,6 +1425,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       <div
         class="canvas-wrapper"
         data-theme=${this.currentTheme}
+        data-mode=${this.mode}
         @mousedown=${this.handleCanvasMouseDown}
         @contextmenu=${this.handleCanvasContextMenu}
         @drop=${this.handleCanvasDrop}
