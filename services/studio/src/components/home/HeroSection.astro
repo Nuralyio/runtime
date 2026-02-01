@@ -413,22 +413,31 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
   function initTypewriter() {
     const words = (window as any).__TYPEWRITER_WORDS__ || ["apps", "agents"];
     const textEl = document.querySelector('.typewriter-text');
-    if (!textEl) return;
+    const typewriterEl = document.querySelector('.typewriter');
+    if (!textEl || !typewriterEl) return;
 
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
     let isPausing = false;
+    let isVisible = true;
+    let pendingTimeout: number | null = null;
 
     const typeSpeed = 100;
     const deleteSpeed = 60;
     const pauseTime = 2000;
 
     function type() {
+      // Don't run if not visible - the animation will resume when visible again
+      if (!isVisible) {
+        pendingTimeout = null;
+        return;
+      }
+
       const currentWord = words[wordIndex];
 
       if (isPausing) {
-        setTimeout(() => {
+        pendingTimeout = window.setTimeout(() => {
           isPausing = false;
           isDeleting = true;
           type();
@@ -443,7 +452,7 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
         if (charIndex === 0) {
           isDeleting = false;
           wordIndex = (wordIndex + 1) % words.length;
-          setTimeout(type, 200);
+          pendingTimeout = window.setTimeout(type, 200);
           return;
         }
       } else {
@@ -452,13 +461,30 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
 
         if (charIndex === currentWord.length) {
           isPausing = true;
-          setTimeout(type, 100);
+          pendingTimeout = window.setTimeout(type, 100);
           return;
         }
       }
 
-      setTimeout(type, isDeleting ? deleteSpeed : typeSpeed);
+      pendingTimeout = window.setTimeout(type, isDeleting ? deleteSpeed : typeSpeed);
     }
+
+    // Set up IntersectionObserver to pause when not visible
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        const wasVisible = isVisible;
+        isVisible = entry.isIntersecting;
+
+        // Resume typing when becoming visible again
+        if (isVisible && !wasVisible && pendingTimeout === null) {
+          type();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(typewriterEl);
 
     type();
   }
