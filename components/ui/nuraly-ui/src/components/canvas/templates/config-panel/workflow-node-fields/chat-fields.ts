@@ -6,6 +6,10 @@
 
 import { html, nothing, TemplateResult } from 'lit';
 import { NodeConfiguration } from '../../../workflow-canvas.types.js';
+import { SuggestionConfig } from '../../../chatbot-trigger/chatbot-trigger.types.js';
+
+// Import chatbot trigger field components
+import '../../../chatbot-trigger/chatbot-trigger-fields.component.js';
 
 /**
  * Render Chat Start node fields
@@ -110,6 +114,33 @@ export function renderChatStartFields(
             </label>
           </div>
         </div>
+      ` : nothing}
+    </div>
+
+    <!-- Suggestions Section -->
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">Suggestions</span>
+        <span class="config-section-desc">Quick reply suggestions for users</span>
+      </div>
+
+      <div class="config-field">
+        <label class="checkbox-label">
+          <nr-checkbox
+            ?checked=${config.enableSuggestions === true}
+            @nr-change=${(e: CustomEvent) => onUpdate('enableSuggestions', e.detail.checked)}
+          ></nr-checkbox>
+          Enable Suggestions
+        </label>
+        <span class="field-description">Show quick reply buttons to users</span>
+      </div>
+
+      ${config.enableSuggestions ? html`
+        <nr-suggestion-list
+          label="Suggestion Items"
+          .value=${(config.suggestions as SuggestionConfig[]) || []}
+          @value-change=${(e: CustomEvent) => onUpdate('suggestions', e.detail.value)}
+        ></nr-suggestion-list>
       ` : nothing}
     </div>
 

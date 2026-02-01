@@ -6,6 +6,7 @@
 
 import { html, nothing, TemplateResult } from 'lit';
 import { NodeConfiguration } from '../../workflow-canvas.types.js';
+import { SuggestionConfig } from '../../chatbot-trigger/chatbot-trigger.types.js';
 
 // Import chatbot trigger field components
 import '../../chatbot-trigger/chatbot-trigger-fields.component.js';
@@ -97,8 +98,8 @@ export function renderChatbotTriggerFields(
       <nr-feature-toggle
         label="Typing Indicator"
         description="Show typing animation when waiting for response"
-        .checked=${config.enableTypingIndicator !== false}
-        @toggle-change=${(e: CustomEvent) => onUpdate('enableTypingIndicator', e.detail.checked)}
+        .value=${config.enableTypingIndicator !== false}
+        @value-change=${(e: CustomEvent) => onUpdate('enableTypingIndicator', e.detail.value)}
       ></nr-feature-toggle>
 
       <nr-loading-type-select
@@ -110,8 +111,8 @@ export function renderChatbotTriggerFields(
       <nr-feature-toggle
         label="Always Open Plan"
         description="Show execution plan before running the workflow"
-        .checked=${config.alwaysOpenPlan === true}
-        @toggle-change=${(e: CustomEvent) => onUpdate('alwaysOpenPlan', e.detail.checked)}
+        .value=${config.alwaysOpenPlan === true}
+        @value-change=${(e: CustomEvent) => onUpdate('alwaysOpenPlan', e.detail.value)}
       ></nr-feature-toggle>
     </div>
 
@@ -125,8 +126,8 @@ export function renderChatbotTriggerFields(
       <nr-feature-toggle
         label="Enable File Upload"
         description="Allow users to attach files to messages"
-        .checked=${config.enableFileUpload === true}
-        @toggle-change=${(e: CustomEvent) => onUpdate('enableFileUpload', e.detail.checked)}
+        .value=${config.enableFileUpload === true}
+        @value-change=${(e: CustomEvent) => onUpdate('enableFileUpload', e.detail.value)}
       ></nr-feature-toggle>
 
       ${config.enableFileUpload ? html`
@@ -203,14 +204,14 @@ export function renderChatbotTriggerFields(
       <nr-feature-toggle
         label="Enable Suggestions"
         description="Show quick reply buttons to users"
-        .checked=${config.enableSuggestions === true}
-        @toggle-change=${(e: CustomEvent) => onUpdate('enableSuggestions', e.detail.checked)}
+        .value=${config.enableSuggestions === true}
+        @value-change=${(e: CustomEvent) => onUpdate('enableSuggestions', e.detail.value)}
       ></nr-feature-toggle>
 
       ${config.enableSuggestions ? html`
         <nr-suggestion-list
           label="Suggestion Items"
-          .value=${(config.suggestions as string[]) || []}
+          .value=${(config.suggestions as SuggestionConfig[]) || []}
           @value-change=${(e: CustomEvent) => onUpdate('suggestions', e.detail.value)}
         ></nr-suggestion-list>
       ` : nothing}
