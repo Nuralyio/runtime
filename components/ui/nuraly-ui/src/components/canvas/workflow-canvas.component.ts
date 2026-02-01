@@ -1075,6 +1075,45 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   /**
+   * Get aggregated execution status for a collapsed frame
+   * Priority: RUNNING > FAILED > PENDING/WAITING > COMPLETED > IDLE
+   */
+  private getAggregatedFrameStatus(containedNodes: WorkflowNode[]): ExecutionStatus {
+    if (containedNodes.length === 0) return ExecutionStatus.IDLE;
+
+    let hasRunning = false;
+    let hasFailed = false;
+    let hasPending = false;
+    let hasCompleted = false;
+
+    for (const node of containedNodes) {
+      const status = node.status || ExecutionStatus.IDLE;
+      switch (status) {
+        case ExecutionStatus.RUNNING:
+          hasRunning = true;
+          break;
+        case ExecutionStatus.FAILED:
+          hasFailed = true;
+          break;
+        case ExecutionStatus.PENDING:
+        case ExecutionStatus.WAITING:
+          hasPending = true;
+          break;
+        case ExecutionStatus.COMPLETED:
+          hasCompleted = true;
+          break;
+      }
+    }
+
+    // Priority order
+    if (hasRunning) return ExecutionStatus.RUNNING;
+    if (hasFailed) return ExecutionStatus.FAILED;
+    if (hasPending) return ExecutionStatus.PENDING;
+    if (hasCompleted) return ExecutionStatus.COMPLETED;
+    return ExecutionStatus.IDLE;
+  }
+
+  /**
    * Render collapsed frame as group node
    */
   private renderCollapsedFrame(frame: WorkflowNode) {
@@ -1090,6 +1129,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     const overflowCount = containedNodes.length - 5;
     const aggregatedPorts = this.frameController.getAggregatedPorts(frame);
 
+    // Get aggregated execution status for contained nodes
+    const aggregatedStatus = this.getAggregatedFrameStatus(containedNodes);
+
     const nodeStyles = {
       left: `${frame.position.x}px`,
       top: `${frame.position.y}px`,
@@ -1101,15 +1143,36 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       ? 'Empty group'
       : `Contains:\n${containedNodes.map(n => `• ${n.name}`).join('\n')}\n\nDouble-click to expand`;
 
+    // Map status to CSS class
+    const statusClass = aggregatedStatus !== ExecutionStatus.IDLE
+      ? `status-${aggregatedStatus.toLowerCase()}`
+      : '';
+
     return html`
       <div
-        class="collapsed-frame-node ${isSelected ? 'selected' : ''}"
+        class="collapsed-frame-node ${isSelected ? 'selected' : ''} ${statusClass}"
         style=${styleMap(nodeStyles)}
         data-frame-id=${frame.id}
+        data-status=${aggregatedStatus}
         title=${tooltipContent}
         @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
         @dblclick=${(e: MouseEvent) => this.handleFrameDblClick(e, frame)}
       >
+        <!-- Status indicator -->
+        ${aggregatedStatus !== ExecutionStatus.IDLE ? html`
+          <div class="frame-status-indicator status-${aggregatedStatus.toLowerCase()}">
+            ${aggregatedStatus === ExecutionStatus.RUNNING ? html`
+              <nr-icon name="loader" size="small" class="spinning"></nr-icon>
+            ` : aggregatedStatus === ExecutionStatus.FAILED ? html`
+              <nr-icon name="alert-circle" size="small"></nr-icon>
+            ` : aggregatedStatus === ExecutionStatus.COMPLETED ? html`
+              <nr-icon name="check-circle" size="small"></nr-icon>
+            ` : aggregatedStatus === ExecutionStatus.PENDING ? html`
+              <nr-icon name="clock" size="small"></nr-icon>
+            ` : null}
+          </div>
+        ` : null}
+
         <!-- Aggregated input ports -->
         ${aggregatedPorts.inputs.length > 0 ? html`
           <div class="ports ports-left">
