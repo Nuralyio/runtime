@@ -10,8 +10,57 @@ import {
   WorkflowNode,
   Position,
   ExecutionStatus,
+  WorkflowNodeType,
 } from '../workflow-canvas.types.js';
 import type { ConnectionState } from '../interfaces/index.js';
+
+/**
+ * Check if a node is inside a collapsed frame
+ */
+function isNodeInCollapsedFrame(node: WorkflowNode, nodes: WorkflowNode[]): WorkflowNode | null {
+  if (!node.parentFrameId) return null;
+
+  const parentFrame = nodes.find(n => n.id === node.parentFrameId);
+  if (!parentFrame) return null;
+
+  const isCollapsed = parentFrame.configuration?.frameCollapsed as boolean;
+  return isCollapsed ? parentFrame : null;
+}
+
+/**
+ * Get position for a port on a collapsed frame
+ * Ports are vertically centered on the left/right edges of the frame
+ */
+function getCollapsedFramePortPosition(
+  frame: WorkflowNode,
+  isInput: boolean,
+  portIndex: number = 0,
+  totalPorts: number = 1
+): Position {
+  const frameWidth = 180; // Collapsed frame min-width from CSS
+  // Collapsed frame height: header (~44px) + icons preview (~48px) = ~92px
+  const frameHeight = 92;
+  const portSpacing = 16; // gap: 8px + port height 10px
+
+  // Calculate vertical center position
+  const totalPortsHeight = (totalPorts - 1) * portSpacing;
+  const centerY = frame.position.y + frameHeight / 2;
+  const offsetY = (portIndex - (totalPorts - 1) / 2) * portSpacing;
+
+  if (isInput) {
+    // Input ports on left side - port sticks out 5px (margin-left: -5px)
+    return {
+      x: frame.position.x,
+      y: centerY + offsetY,
+    };
+  } else {
+    // Output ports on right side - port sticks out 5px (margin-right: -5px)
+    return {
+      x: frame.position.x + frameWidth,
+      y: centerY + offsetY,
+    };
+  }
+}
 
 /**
  * Callbacks for edge interactions
@@ -132,13 +181,43 @@ export function renderEdgeTemplate(
   currentTheme: string | undefined,
   callbacks: EdgeCallbacks
 ): SVGTemplateResult | typeof nothing {
+  // Check if edge is hidden by a collapsed frame (both ends inside same frame)
+  if ((edge as unknown as Record<string, unknown>)._hiddenByFrame) {
+    return nothing;
+  }
+
   const sourceNode = nodes.find(n => n.id === edge.sourceNodeId);
   const targetNode = nodes.find(n => n.id === edge.targetNodeId);
 
   if (!sourceNode || !targetNode) return nothing;
 
-  const start = callbacks.getPortPosition(sourceNode, edge.sourcePortId, false);
-  const end = callbacks.getPortPosition(targetNode, edge.targetPortId, true);
+  // Check if source or target is inside a collapsed frame
+  const sourceCollapsedFrame = isNodeInCollapsedFrame(sourceNode, nodes);
+  const targetCollapsedFrame = isNodeInCollapsedFrame(targetNode, nodes);
+
+  // If both are in the same collapsed frame, don't render (internal edge)
+  if (sourceCollapsedFrame && targetCollapsedFrame && sourceCollapsedFrame.id === targetCollapsedFrame.id) {
+    return nothing;
+  }
+
+  // Calculate start position - redirect to frame if source is in collapsed frame
+  let start: Position;
+  if (sourceCollapsedFrame) {
+    // For collapsed frame, position ports vertically centered
+    // Use a fixed position since we render one aggregated port per crossing edge
+    start = getCollapsedFramePortPosition(sourceCollapsedFrame, false, 0, 1);
+  } else {
+    start = callbacks.getPortPosition(sourceNode, edge.sourcePortId, false);
+  }
+
+  // Calculate end position - redirect to frame if target is in collapsed frame
+  let end: Position;
+  if (targetCollapsedFrame) {
+    // For collapsed frame, position ports vertically centered
+    end = getCollapsedFramePortPosition(targetCollapsedFrame, true, 0, 1);
+  } else {
+    end = callbacks.getPortPosition(targetNode, edge.targetPortId, true);
+  }
 
   // Calculate bezier curve control points
   const dx = end.x - start.x;
