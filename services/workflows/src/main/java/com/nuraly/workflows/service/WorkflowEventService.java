@@ -269,6 +269,74 @@ public class WorkflowEventService {
         sendEvent("CHAT_MESSAGE", data);
     }
 
+    // ========================================================================
+    // Streaming Chat Events - Token-by-token streaming from LLM to chat
+    // ========================================================================
+
+    /**
+     * Start a streaming chat session - emitted when LLM streaming begins
+     */
+    public void sendChatStreamStart(WorkflowExecutionEntity execution, String nodeId, String nodeName, String streamId) {
+        sendEvent("CHAT_STREAM_START", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "nodeName", nodeName,
+                "streamId", streamId,
+                "sender", "bot"
+        ));
+    }
+
+    /**
+     * Send a streaming chat token - emitted for each token from LLM
+     */
+    public void sendChatStreamToken(WorkflowExecutionEntity execution, String nodeId, String streamId, String token) {
+        sendEvent("CHAT_STREAM_TOKEN", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "streamId", streamId,
+                "token", token,
+                "sender", "bot"
+        ));
+    }
+
+    /**
+     * End a streaming chat session - emitted when LLM streaming completes
+     */
+    public void sendChatStreamEnd(WorkflowExecutionEntity execution, String nodeId, String streamId,
+                                   String fullContent, Map<String, Object> usage) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("executionId", String.valueOf(execution.id));
+        data.put("workflowId", String.valueOf(execution.workflow.id));
+        data.put("applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "");
+        data.put("nodeId", nodeId);
+        data.put("streamId", streamId);
+        data.put("content", fullContent);
+        data.put("sender", "bot");
+        if (usage != null) {
+            data.put("usage", usage);
+        }
+        sendEvent("CHAT_STREAM_END", data);
+    }
+
+    /**
+     * Signal a streaming error
+     */
+    public void sendChatStreamError(WorkflowExecutionEntity execution, String nodeId, String streamId, String error) {
+        sendEvent("CHAT_STREAM_ERROR", Map.of(
+                "executionId", String.valueOf(execution.id),
+                "workflowId", String.valueOf(execution.workflow.id),
+                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
+                "nodeId", nodeId,
+                "streamId", streamId,
+                "error", error,
+                "sender", "bot"
+        ));
+    }
+
     private void sendEvent(String eventType, Map<String, Object> data) {
         try {
             Map<String, Object> event = new HashMap<>();
