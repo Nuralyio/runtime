@@ -60,5 +60,9 @@ public enum NodeType {
     DB_INDEX,       // Database index definition
     DB_RELATIONSHIP,// Foreign key relationship
     DB_CONSTRAINT,  // Database constraint
-    DB_QUERY        // Saved query or stored procedure
+    DB_QUERY,       // Saved query or stored procedure
+
+    // Annotation nodes (visual only, no execution)
+    NOTE,           // Text annotation for documenting workflows
+    FRAME           // Visual grouping container for organizing nodes
 }
