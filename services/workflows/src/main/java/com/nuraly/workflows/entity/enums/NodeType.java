@@ -29,12 +29,30 @@ public enum NodeType {
     AGENT,          // Autonomous AI agent that can use tools
     TOOL,           // A tool that can be used by an agent
     MEMORY,         // Conversation memory for agents
+    CONTEXT_MEMORY, // RAG-enhanced conversation memory (buffer, semantic, hybrid)
+    GUARDRAIL,      // Input/output validation and safety checks
     PROMPT,         // Prompt template for LLM
     RETRIEVER,      // Retrieve relevant documents from vector store
     CHAIN,          // Chain multiple LLM calls together
     ROUTER,         // Route to different chains based on input
     HUMAN_INPUT,    // Wait for human input in the workflow
     OUTPUT_PARSER,  // Parse LLM output into structured data
+
+    // RAG nodes (Retrieval-Augmented Generation)
+    EMBEDDING,      // Generate vector embeddings from text (OpenAI, Ollama, Local ONNX)
+    DOCUMENT_LOADER,// Load and parse documents (PDF, Word, HTML, etc.) - Phase 2
+    TEXT_SPLITTER,  // Split text into chunks for embedding - Phase 2
+    VECTOR_WRITE,   // Write vectors to PGVector store - Phase 2
+    VECTOR_SEARCH,  // Search vectors by similarity - Phase 3
+    CONTEXT_BUILDER,// Build context from retrieved documents - Phase 3
+    RERANKER,       // Re-rank search results - Phase 4
+
+    // Storage nodes
+    FILE_STORAGE,   // Store files to S3, MinIO, or local filesystem
+
+    // Web nodes
+    WEB_SEARCH,     // Search the web using multiple providers (Google, Bing, SerpAPI, Brave, DuckDuckGo)
+    WEB_CRAWL,      // Crawl web pages and extract text content
 
     // DB Designer nodes
     DB_TABLE,       // Database table definition

@@ -12,6 +12,10 @@ import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.LlmProvider;
 import com.nuraly.workflows.llm.LlmProviderFactory;
+import com.nuraly.workflows.llm.LlmResilienceService;
+import com.nuraly.workflows.llm.LlmResilienceService.ResilienceConfig;
+import com.nuraly.workflows.llm.StreamingLlmProvider;
+import com.nuraly.workflows.llm.StreamingLlmProvider.StreamToken;
 import com.nuraly.workflows.llm.dto.*;
 import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
@@ -34,6 +38,10 @@ import java.util.*;
  * 3. If the LLM requests tool calls, executing the corresponding workflow nodes
  * 4. Returning tool results to the LLM and continuing until the LLM provides a final response
  *
+ * STREAMING MODE:
+ * When "streaming": true is configured, tokens are streamed directly to the chat frontend
+ * via CHAT_STREAM_TOKEN events. This provides real-time token-by-token output.
+ *
  * Node Configuration:
  * {
  *   "provider": "openai" | "anthropic" | "gemini" | "ollama",
@@ -44,6 +52,8 @@ import java.util.*;
  *   "temperature": 0.7,
  *   "maxTokens": 4096,
  *   "maxToolIterations": 10,
+ *   "streaming": true,              // Enable token-by-token streaming to chat
+ *   "streamToChat": true,           // Stream output directly to chat (default: true when streaming)
  *   "tools": [
  *     {
  *       "name": "get_weather",
@@ -62,6 +72,9 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     LlmProviderFactory providerFactory;
+
+    @Inject
+    LlmResilienceService resilienceService;
 
     @Inject
     NodeExecutorFactory nodeExecutorFactory;
@@ -155,6 +168,13 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
 
+        // Build resilience configuration
+        ResilienceConfig resilienceConfig = buildResilienceConfig(config);
+
+        // Check for streaming mode
+        boolean streamingEnabled = config.has("streaming") && config.get("streaming").asBoolean();
+        boolean streamToChat = !config.has("streamToChat") || config.get("streamToChat").asBoolean();
+
         // Build initial messages
         List<LlmMessage> messages = new ArrayList<>();
 
@@ -242,9 +262,31 @@ public class LlmNodeExecutor implements NodeExecutor {
                 );
             }
 
-            // Call LLM
-            LOG.debugf("Calling LLM provider: %s, model: %s", providerName, model);
-            LlmResponse response = provider.chat(request, apiKey);
+            LlmResponse response;
+
+            // Check if we should use streaming (only for final response, not tool calls)
+            boolean useStreaming = streamingEnabled &&
+                                   tools.isEmpty() &&  // No streaming with tool calls (need full response)
+                                   iterations == 1 &&   // Only on first iteration
+                                   provider instanceof StreamingLlmProvider;
+
+            if (useStreaming) {
+                // STREAMING MODE: Stream tokens directly to chat
+                LOG.debugf("Calling LLM provider: %s, model: %s (STREAMING)", providerName, model);
+                response = executeStreamingLlmCall(
+                    (StreamingLlmProvider) provider,
+                    request,
+                    apiKey,
+                    context,
+                    node,
+                    streamToChat
+                );
+            } else {
+                // NON-STREAMING MODE: Use resilience service
+                LOG.debugf("Calling LLM provider: %s, model: %s (with resilience)", providerName, model);
+                response = resilienceService.executeWithResilience(
+                        request, providerName, apiKey, resilienceConfig);
+            }
 
             // Emit LLM call completed event
             if (context.getExecution() != null) {
@@ -602,6 +644,97 @@ public class LlmNodeExecutor implements NodeExecutor {
         return null;
     }
 
+    /**
+     * Execute a streaming LLM call and emit tokens to chat in real-time.
+     */
+    private LlmResponse executeStreamingLlmCall(
+            StreamingLlmProvider provider,
+            LlmRequest request,
+            String apiKey,
+            ExecutionContext context,
+            WorkflowNodeEntity node,
+            boolean streamToChat) {
+
+        String streamId = UUID.randomUUID().toString();
+        StringBuilder contentBuilder = new StringBuilder();
+
+        // Emit stream start event
+        if (streamToChat && context.getExecution() != null) {
+            eventService.sendChatStreamStart(
+                context.getExecution(),
+                node.id.toString(),
+                node.name,
+                streamId
+            );
+        }
+
+        try {
+            // Execute streaming call with token callback
+            LlmResponse response = provider.streamChat(request, apiKey, token -> {
+                if (token.isContent() && token.getContent() != null) {
+                    String tokenContent = token.getContent();
+                    contentBuilder.append(tokenContent);
+
+                    // Emit token to chat
+                    if (streamToChat && context.getExecution() != null) {
+                        eventService.sendChatStreamToken(
+                            context.getExecution(),
+                            node.id.toString(),
+                            streamId,
+                            tokenContent
+                        );
+                    }
+                } else if (token.isError()) {
+                    LOG.warnf("Streaming error: %s", token.getContent());
+                    if (streamToChat && context.getExecution() != null) {
+                        eventService.sendChatStreamError(
+                            context.getExecution(),
+                            node.id.toString(),
+                            streamId,
+                            token.getContent()
+                        );
+                    }
+                }
+            });
+
+            // Emit stream end event
+            if (streamToChat && context.getExecution() != null) {
+                Map<String, Object> usage = null;
+                if (response != null && response.getUsage() != null) {
+                    usage = Map.of(
+                        "promptTokens", response.getUsage().getPromptTokens(),
+                        "completionTokens", response.getUsage().getCompletionTokens(),
+                        "totalTokens", response.getUsage().getTotalTokens()
+                    );
+                }
+                eventService.sendChatStreamEnd(
+                    context.getExecution(),
+                    node.id.toString(),
+                    streamId,
+                    contentBuilder.toString(),
+                    usage
+                );
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            LOG.errorf(e, "Streaming LLM call failed");
+
+            // Emit error event
+            if (streamToChat && context.getExecution() != null) {
+                eventService.sendChatStreamError(
+                    context.getExecution(),
+                    node.id.toString(),
+                    streamId,
+                    e.getMessage()
+                );
+            }
+
+            return LlmResponse.error("Streaming failed: " + e.getMessage());
+        }
+    }
+
     private String executeToolCall(ToolCall toolCall, Map<String, ToolContext> toolContextMap,
                                    ExecutionContext context, WorkflowNodeEntity parentNode) {
         LOG.debugf("Executing tool call: %s with arguments: %s", toolCall.getName(), toolCall.getArguments());
@@ -949,5 +1082,68 @@ public class LlmNodeExecutor implements NodeExecutor {
         int maxMessages = 50;
         int maxTokens = 4000;
         String conversationId;
+    }
+
+    /**
+     * Build resilience configuration from node config.
+     *
+     * Supported configuration:
+     * {
+     *   "retry": {
+     *     "enabled": true,
+     *     "maxAttempts": 3,
+     *     "initialBackoffMs": 1000,
+     *     "maxBackoffMs": 30000
+     *   },
+     *   "fallback": {
+     *     "enabled": true,
+     *     "providers": ["anthropic", "ollama"]
+     *   },
+     *   "timeout": 60000
+     * }
+     */
+    private ResilienceConfig buildResilienceConfig(JsonNode config) {
+        ResilienceConfig.Builder builder = ResilienceConfig.builder();
+
+        // Parse retry configuration
+        if (config.has("retry") && config.get("retry").isObject()) {
+            JsonNode retryConfig = config.get("retry");
+
+            if (retryConfig.has("enabled") && !retryConfig.get("enabled").asBoolean()) {
+                builder.maxRetries(0);
+            } else {
+                if (retryConfig.has("maxAttempts")) {
+                    builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1); // -1 because maxRetries doesn't include initial attempt
+                }
+                if (retryConfig.has("initialBackoffMs")) {
+                    builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
+                }
+                if (retryConfig.has("maxBackoffMs")) {
+                    builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
+                }
+            }
+        }
+
+        // Parse fallback configuration
+        if (config.has("fallback") && config.get("fallback").isObject()) {
+            JsonNode fallbackConfig = config.get("fallback");
+
+            if (fallbackConfig.has("enabled") && fallbackConfig.get("enabled").asBoolean()) {
+                if (fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
+                    List<String> fallbackProviders = new ArrayList<>();
+                    for (JsonNode provider : fallbackConfig.get("providers")) {
+                        fallbackProviders.add(provider.asText());
+                    }
+                    builder.fallbackProviders(fallbackProviders);
+                }
+            }
+        }
+
+        // Parse timeout
+        if (config.has("timeout")) {
+            builder.timeoutMs(config.get("timeout").asLong());
+        }
+
+        return builder.build();
     }
 }

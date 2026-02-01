@@ -100,6 +100,12 @@ public class WorkflowExecutionService {
                     inputData,
                     variables
             );
+
+            // Set startNodeId if provided (for partial execution from a specific node)
+            if (request != null && request.getStartNodeId() != null) {
+                message.setStartNodeId(request.getStartNodeId());
+            }
+
             executionProducer.publishExecution(message);
 
             // Update status to QUEUED

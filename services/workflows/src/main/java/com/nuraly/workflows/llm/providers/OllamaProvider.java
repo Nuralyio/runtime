@@ -63,9 +63,12 @@ public class OllamaProvider implements LlmProvider {
                     return true;
                 }
             }
+            return false;
         }
-        // Fallback: accept any model name (Ollama will return an error if not found)
-        return true;
+        // If server not available, only accept common Ollama model prefixes
+        return model.startsWith("llama") || model.startsWith("mistral") ||
+               model.startsWith("codellama") || model.startsWith("phi") ||
+               model.startsWith("qwen") || model.startsWith("deepseek");
     }
 
     /**

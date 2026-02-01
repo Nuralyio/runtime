@@ -90,6 +90,16 @@ public class RabbitMQConnectionManager {
             channel.queueDeclare(configuration.rabbitmqEventsQueue, true, false, false, null);
             channel.queueBind(configuration.rabbitmqEventsQueue, configuration.rabbitmqExchange, "workflow.event");
 
+            // Declare OCR service queue (consumed by OCR service)
+            channel.queueDeclare(configuration.rabbitmqOcrQueue, true, false, false, null);
+            channel.queueBind(configuration.rabbitmqOcrQueue, configuration.rabbitmqExchange,
+                    configuration.rabbitmqOcrRoutingKey);
+
+            // Declare Crawl service queue (consumed by Crawl service)
+            channel.queueDeclare(configuration.rabbitmqCrawlQueue, true, false, false, null);
+            channel.queueBind(configuration.rabbitmqCrawlQueue, configuration.rabbitmqExchange,
+                    configuration.rabbitmqCrawlRoutingKey);
+
             LOG.info("RabbitMQ exchange and queues declared successfully");
         }
     }
