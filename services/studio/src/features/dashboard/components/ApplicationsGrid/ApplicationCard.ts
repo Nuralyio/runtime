@@ -149,11 +149,11 @@ export class ApplicationCard extends LitElement {
             </div>
 
             <div class="card-actions">
-              <nr-button type="primary" size="small" iconLeft="SquarePen" @click=${this.openInStudio}>
+              <nr-button type="primary" size="small" iconLeft="pencil" @click=${this.openInStudio}>
                 Edit
               </nr-button>
               ${isPublished ? html`
-                <nr-button type="default" size="small" iconLeft="ExternalLink" @click=${this.handlePreview}>
+                <nr-button type="default" size="small" iconLeft="eye" @click=${this.handlePreview}>
                   Preview
                 </nr-button>
               ` : ''}

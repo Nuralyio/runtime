@@ -6,7 +6,7 @@
  */
 
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, state, property } from "lit/decorators.js";
 import { ExecuteInstance } from '@nuraly/runtime';
 import { $currentApplication, $editorState, $applicationPages, $currentPageId, setSelectedComponents, $selectedComponents } from '@nuraly/runtime/redux/store';
 import { $applicationComponents } from '@nuraly/runtime/redux/store';
@@ -55,10 +55,9 @@ export class StudioLeftPanel extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      width: 300px;
+      width: 100%;
       height: 100%;
       background: var(--panel-bg, white);
-      border-right: 1px solid var(--panel-border, #e0e0e0);
     }
 
     .panel-container {
