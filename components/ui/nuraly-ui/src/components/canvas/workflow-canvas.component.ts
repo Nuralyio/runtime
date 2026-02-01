@@ -89,14 +89,55 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   set workflow(value: Workflow) {
     const oldValue = this._workflow;
     // Normalize node status values to uppercase
+    let nodes = value.nodes.map(node => ({
+      ...node,
+      status: node.status
+        ? (node.status.toUpperCase() as ExecutionStatus)
+        : undefined,
+    }));
+
+    // Compute frame containment synchronously to avoid flash of "Empty"
+    const frames = nodes.filter(n => isFrameNode(n.type));
+    for (const frame of frames) {
+      const config = frame.configuration || {};
+      const frameWidth = (config.frameWidth as number) || 400;
+      const frameHeight = (config.frameHeight as number) || 300;
+      const frameLeft = frame.position.x;
+      const frameTop = frame.position.y;
+      const frameRight = frameLeft + frameWidth;
+      const frameBottom = frameTop + frameHeight;
+      const isCollapsed = config.frameCollapsed as boolean;
+
+      const containedIds: string[] = [];
+      const nodeWidth = 180;
+      const nodeHeight = 80;
+
+      for (const node of nodes) {
+        if (node.id === frame.id) continue;
+        if (isFrameNode(node.type) || node.type === WorkflowNodeType.NOTE) continue;
+
+        // Check if node center is inside frame
+        const nodeCenterX = node.position.x + nodeWidth / 2;
+        const nodeCenterY = node.position.y + nodeHeight / 2;
+
+        if (nodeCenterX >= frameLeft && nodeCenterX <= frameRight &&
+            nodeCenterY >= frameTop && nodeCenterY <= frameBottom) {
+          containedIds.push(node.id);
+          node.parentFrameId = frame.id;
+          // If frame is collapsed, hide the contained node
+          if (isCollapsed) {
+            node.metadata = node.metadata || {};
+            (node.metadata as Record<string, unknown>)._hiddenByFrame = true;
+          }
+        }
+      }
+
+      frame.containedNodeIds = containedIds;
+    }
+
     this._workflow = {
       ...value,
-      nodes: value.nodes.map(node => ({
-        ...node,
-        status: node.status
-          ? (node.status.toUpperCase() as ExecutionStatus)
-          : undefined,
-      })),
+      nodes,
     };
     this.requestUpdate('workflow', oldValue);
 
@@ -120,6 +161,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         });
       }
     }
+
   }
 
   @property({ type: Boolean })
@@ -274,6 +316,14 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Current execution ID for retry functionality
   @state()
   private currentExecutionId: string | null = null;
+
+  // Frame label being edited (null if not editing)
+  @state()
+  private editingFrameLabelId: string | null = null;
+
+  // Note node being edited (null if not editing)
+  @state()
+  private editingNoteId: string | null = null;
 
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
@@ -506,6 +556,23 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private async handleNodeDblClick(e: CustomEvent) {
     if (this.disabled) return;
     const { node } = e.detail;
+
+    // For NOTE nodes, enter inline edit mode instead of opening config panel
+    if (node.type === WorkflowNodeType.NOTE) {
+      if (this.readonly) return;
+      this.editingNoteId = node.id;
+      // Focus the textarea after render
+      this.updateComplete.then(() => {
+        const nodeEl = this.shadowRoot?.querySelector(`workflow-node[data-node-id="${node.id}"]`);
+        const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea') as HTMLTextAreaElement;
+        if (textarea) {
+          textarea.focus();
+          textarea.select();
+        }
+      });
+      return;
+    }
+
     // Open configuration panel
     this.configuredNode = node;
 
@@ -887,10 +954,22 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       // Record for undo before making changes
       this.undoController.recordNodeAdded(newNode);
 
-      this.workflow = {
-        ...this.workflow,
-        nodes: [...this.workflow.nodes, newNode],
-      };
+      // For FRAME nodes, add at the beginning so they render behind other nodes
+      if (isFrameNode(type)) {
+        this.workflow = {
+          ...this.workflow,
+          nodes: [newNode, ...this.workflow.nodes],
+        };
+        // Update containment to detect any nodes already inside the new frame
+        this.frameController.updateFrameContainment(newNode);
+      } else {
+        this.workflow = {
+          ...this.workflow,
+          nodes: [...this.workflow.nodes, newNode],
+        };
+        // Update all frames to check if this new node is inside any of them
+        this.frameController.updateAllFrameContainments();
+      }
       this.dispatchWorkflowChanged();
     }
   }
@@ -1061,7 +1140,27 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       >
         ${showLabel ? html`
           <div class="frame-label ${labelPosition} ${labelPlacement}">
-            ${label}
+            ${this.editingFrameLabelId === frame.id ? html`
+              <input
+                type="text"
+                class="frame-label-input"
+                .value=${label}
+                @blur=${(e: FocusEvent) => this.handleFrameLabelBlur(e, frame)}
+                @keydown=${(e: KeyboardEvent) => this.handleFrameLabelKeydown(e, frame)}
+                @click=${(e: MouseEvent) => e.stopPropagation()}
+                @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              />
+            ` : html`
+              <span class="frame-label-text">
+                ${label}
+                <nr-icon
+                  name="edit-2"
+                  size="small"
+                  class="frame-label-edit-icon"
+                  @click=${(e: MouseEvent) => this.startEditingFrameLabel(e, frame)}
+                ></nr-icon>
+              </span>
+            `}
           </div>
         ` : null}
         ${isSelected ? html`
@@ -1190,7 +1289,28 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         <div class="collapsed-frame-body">
           <div class="collapsed-frame-header">
             <nr-icon name="layers" size="small"></nr-icon>
-            <span class="collapsed-frame-title">${label}</span>
+            ${this.editingFrameLabelId === frame.id ? html`
+              <input
+                type="text"
+                class="collapsed-frame-title-input"
+                .value=${label}
+                @blur=${(e: FocusEvent) => this.handleFrameLabelBlur(e, frame)}
+                @keydown=${(e: KeyboardEvent) => this.handleFrameLabelKeydown(e, frame)}
+                @click=${(e: MouseEvent) => e.stopPropagation()}
+                @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+                @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+              />
+            ` : html`
+              <span class="collapsed-frame-title">
+                ${label}
+                <nr-icon
+                  name="edit-2"
+                  size="small"
+                  class="frame-label-edit-icon"
+                  @click=${(e: MouseEvent) => this.startEditingFrameLabel(e, frame)}
+                ></nr-icon>
+              </span>
+            `}
           </div>
 
           <!-- Node icons preview row -->
@@ -1233,10 +1353,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           </div>
         ` : null}
 
-        <!-- Expand indicator -->
-        <div class="expand-hint" title="Double-click to expand">
-          <nr-icon name="maximize-2" size="small"></nr-icon>
-        </div>
       </div>
     `;
   }
@@ -1277,6 +1393,185 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     e.stopPropagation();
     this.frameController.startResize(e, frame, handle as any);
   }
+
+  /**
+   * Start editing frame label
+   */
+  private startEditingFrameLabel(e: MouseEvent, frame: WorkflowNode) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (this.readonly) return;
+
+    this.editingFrameLabelId = frame.id;
+
+    // Focus the input after render
+    this.updateComplete.then(() => {
+      const input = this.shadowRoot?.querySelector('.frame-label-input, .collapsed-frame-title-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
+  }
+
+  /**
+   * Handle frame label input blur (save)
+   */
+  private handleFrameLabelBlur(e: FocusEvent, frame: WorkflowNode) {
+    const input = e.target as HTMLInputElement;
+    const newLabel = input.value.trim() || 'Group';
+
+    this.saveFrameLabel(frame, newLabel);
+    this.editingFrameLabelId = null;
+  }
+
+  /**
+   * Handle frame label input keydown
+   */
+  private handleFrameLabelKeydown(e: KeyboardEvent, frame: WorkflowNode) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const input = e.target as HTMLInputElement;
+      const newLabel = input.value.trim() || 'Group';
+      this.saveFrameLabel(frame, newLabel);
+      this.editingFrameLabelId = null;
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      this.editingFrameLabelId = null;
+    }
+  }
+
+  /**
+   * Save the frame label
+   */
+  private saveFrameLabel(frame: WorkflowNode, newLabel: string) {
+    const updatedNodes = this.workflow.nodes.map(node => {
+      if (node.id === frame.id) {
+        return {
+          ...node,
+          name: newLabel,
+          configuration: {
+            ...node.configuration,
+            frameLabel: newLabel,
+          },
+        };
+      }
+      return node;
+    });
+
+    this.setWorkflow({
+      ...this.workflow,
+      nodes: updatedNodes,
+    });
+
+    this.dispatchWorkflowChanged();
+  }
+
+  // ===== NOTE NODE EDITING =====
+
+  /**
+   * Handle note content change
+   */
+  private handleNoteContentChange(e: CustomEvent) {
+    const { node, content } = e.detail;
+    const updatedNodes = this.workflow.nodes.map(n => {
+      if (n.id === node.id) {
+        return {
+          ...n,
+          configuration: {
+            ...n.configuration,
+            noteContent: content,
+          },
+        };
+      }
+      return n;
+    });
+
+    this.setWorkflow({
+      ...this.workflow,
+      nodes: updatedNodes,
+    });
+
+    this.dispatchWorkflowChanged();
+  }
+
+  /**
+   * Handle note edit end
+   */
+  private handleNoteEditEnd(_e: CustomEvent) {
+    this.editingNoteId = null;
+  }
+
+  /**
+   * Handle note settings click - open config panel
+   */
+  private handleNoteSettings(e: CustomEvent) {
+    const { node } = e.detail;
+    this.configuredNode = node;
+  }
+
+  /**
+   * Handle note resize start
+   */
+  private handleNoteResizeStart(e: CustomEvent) {
+    const { node, event } = e.detail;
+    this.startNoteResize(node, event);
+  }
+
+  private noteResizeState: {
+    nodeId: string;
+    startX: number;
+    startY: number;
+    startWidth: number;
+    startHeight: number;
+  } | null = null;
+
+  private startNoteResize(node: WorkflowNode, event: MouseEvent) {
+    const config = node.configuration || {};
+    this.noteResizeState = {
+      nodeId: node.id,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: (config.noteWidth as number) || 200,
+      startHeight: (config.noteHeight as number) || 100,
+    };
+
+    document.addEventListener('mousemove', this.handleNoteResizeDrag);
+    document.addEventListener('mouseup', this.stopNoteResize);
+  }
+
+  private handleNoteResizeDrag = (event: MouseEvent) => {
+    if (!this.noteResizeState) return;
+
+    const { nodeId, startX, startY, startWidth, startHeight } = this.noteResizeState;
+    const node = this.workflow.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const deltaX = (event.clientX - startX) / this.viewport.zoom;
+    const deltaY = (event.clientY - startY) / this.viewport.zoom;
+
+    const newWidth = Math.max(100, startWidth + deltaX);
+    const newHeight = Math.max(50, startHeight + deltaY);
+
+    // Update node configuration directly for smooth resizing
+    node.configuration = {
+      ...node.configuration,
+      noteWidth: newWidth,
+      noteHeight: newHeight,
+    };
+
+    this.requestUpdate();
+  };
+
+  private stopNoteResize = () => {
+    if (!this.noteResizeState) return;
+
+    this.noteResizeState = null;
+    document.removeEventListener('mousemove', this.handleNoteResizeDrag);
+    document.removeEventListener('mouseup', this.stopNoteResize);
+
+    this.dispatchWorkflowChanged();
+  };
 
   // Note: Edge rendering is now in edges.template.ts
   private renderEdges() {
@@ -1734,9 +2029,11 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           <div class="nodes-layer">
             ${this.getVisibleNonFrameNodes().map(node => html`
               <workflow-node
+                data-node-id=${node.id}
                 .node=${node}
                 ?selected=${this.selectedNodeIds.has(node.id)}
                 ?dragging=${this.dragState?.nodeId === node.id}
+                ?editing=${this.editingNoteId === node.id}
                 .connectingPortId=${this.connectionState?.sourcePortId || null}
                 @node-mousedown=${this.handleNodeMouseDown}
                 @node-dblclick=${this.handleNodeDblClick}
@@ -1744,6 +2041,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
                 @node-trigger=${this.handleNodeTrigger}
                 @port-mousedown=${this.handlePortMouseDown}
                 @port-mouseup=${this.handlePortMouseUp}
+                @note-content-change=${this.handleNoteContentChange}
+                @note-edit-end=${this.handleNoteEditEnd}
+                @note-resize-start=${this.handleNoteResizeStart}
+                @note-settings=${this.handleNoteSettings}
               ></workflow-node>
             `)}
           </div>

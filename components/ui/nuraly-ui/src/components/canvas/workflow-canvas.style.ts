@@ -605,6 +605,38 @@ export const workflowCanvasStyles = css`
     margin: var(--nuraly-spacing-2, 8px) 0;
   }
 
+  /* Note color presets */
+  .note-color-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .note-color-preset {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .note-color-preset:hover {
+    transform: scale(1.1);
+  }
+
+  .note-color-preset.active {
+    border-color: var(--nuraly-color-interactive, #3b82f6);
+  }
+
+  .note-color-preset nr-icon {
+    width: 14px;
+    height: 14px;
+  }
+
   .field-hint {
     font-family: var(--nuraly-font-family);
     font-size: var(--nuraly-font-size-xs, 10px);
@@ -2011,6 +2043,54 @@ export const workflowCanvasStyles = css`
   .frame-label.top-center { left: 50%; transform: translateX(-50%); }
   .frame-label.top-right { left: auto; right: 0; }
 
+  /* Frame Label Text (with edit icon) */
+  .frame-label-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+
+  .frame-label-edit-icon {
+    opacity: 0;
+    width: 14px;
+    height: 14px;
+    padding: 2px;
+    color: var(--nuraly-color-text-secondary, #a0a0a0);
+    cursor: pointer;
+    border-radius: 3px;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .frame-label-text:hover .frame-label-edit-icon,
+  .collapsed-frame-header:hover .frame-label-edit-icon {
+    opacity: 0.7;
+  }
+
+  .frame-label-edit-icon:hover {
+    opacity: 1 !important;
+    background: var(--nuraly-color-layer-hover, rgba(255, 255, 255, 0.1));
+    color: var(--nuraly-color-interactive, #3b82f6);
+  }
+
+  /* Frame Label Input */
+  .frame-label-input {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    background: var(--nuraly-color-layer-02, #2a2a2a);
+    border: 1px solid var(--nuraly-color-interactive, #3b82f6);
+    border-radius: 4px;
+    padding: 2px 6px;
+    outline: none;
+    min-width: 80px;
+    max-width: 200px;
+  }
+
+  .frame-label-input:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+
   /* Frame Collapse Button */
   .frame-collapse-btn {
     position: absolute;
@@ -2109,6 +2189,51 @@ export const workflowCanvasStyles = css`
                 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
+  /* Collapsed Frame Ports */
+  .collapsed-frame-node .ports {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .collapsed-frame-node .ports-left {
+    left: 0;
+  }
+
+  .collapsed-frame-node .ports-right {
+    right: 0;
+  }
+
+  .collapsed-frame-node .port {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    cursor: crosshair;
+    pointer-events: auto;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .collapsed-frame-node .port-input {
+    margin-left: -5px;
+    background: var(--nuraly-color-border-strong, #6b7280);
+    border: 2px solid var(--nuraly-color-layer-02, #2a2a2a);
+  }
+
+  .collapsed-frame-node .port-output {
+    margin-right: -5px;
+    background: var(--nuraly-color-interactive, #3b82f6);
+    border: 2px solid var(--nuraly-color-layer-02, #2a2a2a);
+  }
+
+  .collapsed-frame-node .port:hover {
+    transform: scale(1.3);
+  }
+
   /* Collapsed Frame Header */
   .collapsed-frame-header {
     display: flex;
@@ -2136,12 +2261,39 @@ export const workflowCanvasStyles = css`
 
   .collapsed-frame-title {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-size: 13px;
     font-weight: 600;
     color: var(--nuraly-color-text-primary, #e5e5e5);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  .collapsed-frame-title .frame-label-edit-icon {
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  /* Collapsed Frame Title Input */
+  .collapsed-frame-title-input {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    background: var(--nuraly-color-layer-03, #3a3a3a);
+    border: 1px solid var(--nuraly-color-interactive, #3b82f6);
+    border-radius: 4px;
+    padding: 2px 6px;
+    outline: none;
+    min-width: 60px;
+  }
+
+  .collapsed-frame-title-input:focus {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
   }
 
   .collapsed-frame-count {
@@ -2296,6 +2448,19 @@ export const workflowCanvasStyles = css`
   .canvas-wrapper[data-theme="default-light"] .collapsed-frame-title,
   .canvas-wrapper[data-theme="default"] .collapsed-frame-title {
     color: var(--nuraly-color-text-primary, #161616);
+  }
+
+  /* Light theme for label inputs */
+  .canvas-wrapper[data-theme="light"] .frame-label-input,
+  .canvas-wrapper[data-theme="carbon-light"] .frame-label-input,
+  .canvas-wrapper[data-theme="default-light"] .frame-label-input,
+  .canvas-wrapper[data-theme="default"] .frame-label-input,
+  .canvas-wrapper[data-theme="light"] .collapsed-frame-title-input,
+  .canvas-wrapper[data-theme="carbon-light"] .collapsed-frame-title-input,
+  .canvas-wrapper[data-theme="default-light"] .collapsed-frame-title-input,
+  .canvas-wrapper[data-theme="default"] .collapsed-frame-title-input {
+    color: var(--nuraly-color-text-primary, #161616);
+    background: var(--nuraly-color-layer-01, #ffffff);
   }
 
   .canvas-wrapper[data-theme="light"] .frame-collapse-btn,

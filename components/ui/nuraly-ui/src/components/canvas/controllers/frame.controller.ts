@@ -204,11 +204,26 @@ export class FrameController extends BaseCanvasController {
 
   /**
    * Update all frames' containment after node move
+   * @param triggerUpdate If true, triggers a workflow update after containment changes
    */
-  updateAllFrameContainments(): void {
+  updateAllFrameContainments(triggerUpdate: boolean = false): void {
     const frames = this._host.workflow.nodes.filter(n => n.type === WorkflowNodeType.FRAME);
+    let hasChanges = false;
+
     for (const frame of frames) {
+      const oldIds = new Set(frame.containedNodeIds || []);
       this.updateFrameContainment(frame);
+      const newIds = new Set(frame.containedNodeIds || []);
+
+      // Check if containment changed
+      if (oldIds.size !== newIds.size || ![...oldIds].every(id => newIds.has(id))) {
+        hasChanges = true;
+      }
+    }
+
+    // If changes occurred and update is requested, trigger a re-render
+    if (hasChanges && triggerUpdate) {
+      this._host.requestUpdate();
     }
   }
 
@@ -247,31 +262,76 @@ export class FrameController extends BaseCanvasController {
     const config = frame.configuration || {};
     const collapsed = config.frameCollapsed as boolean;
 
+    // Build new configuration
+    let newConfig: typeof config;
     if (collapsed) {
       // Expand: restore original dimensions
-      frame.configuration = {
+      newConfig = {
         ...config,
         frameWidth: (config._frameExpandedWidth as number) || 400,
         frameHeight: (config._frameExpandedHeight as number) || 300,
         frameCollapsed: false,
       };
-
-      // Show contained nodes
-      this.setContainedNodesVisibility(frame, true);
     } else {
       // Collapse: save dimensions and collapse
-      frame.configuration = {
+      newConfig = {
         ...config,
         _frameExpandedWidth: config.frameWidth,
         _frameExpandedHeight: config.frameHeight,
         frameCollapsed: true,
       };
-
-      // Hide contained nodes
-      this.setContainedNodesVisibility(frame, false);
     }
 
-    this._host.requestUpdate();
+    // Determine visibility for contained nodes
+    // collapsed=true (currently collapsed) means we're expanding -> show nodes (visible=true)
+    // collapsed=false (currently expanded) means we're collapsing -> hide nodes (visible=false)
+    const shouldHide = !collapsed; // Hide when collapsing
+    const containedIds = new Set(frame.containedNodeIds || []);
+
+    // Create immutable workflow update to ensure Lit detects the change
+    const updatedNodes = this._host.workflow.nodes.map(node => {
+      if (node.id === frame.id) {
+        return {
+          ...node,
+          configuration: newConfig,
+          // Preserve containedNodeIds
+          containedNodeIds: frame.containedNodeIds,
+        };
+      }
+      // Update contained nodes' metadata immutably
+      if (containedIds.has(node.id)) {
+        return {
+          ...node,
+          metadata: {
+            ...node.metadata,
+            _hiddenByFrame: shouldHide,
+          },
+        };
+      }
+      return node;
+    });
+
+    // Update edges between contained nodes immutably
+    const updatedEdges = this._host.workflow.edges.map(edge => {
+      const sourceInside = containedIds.has(edge.sourceNodeId);
+      const targetInside = containedIds.has(edge.targetNodeId);
+
+      // Internal edges (both nodes inside) should be hidden when collapsed
+      if (sourceInside && targetInside) {
+        return {
+          ...edge,
+          _hiddenByFrame: shouldHide,
+        } as typeof edge;
+      }
+      return edge;
+    });
+
+    this._host.setWorkflow({
+      ...this._host.workflow,
+      nodes: updatedNodes,
+      edges: updatedEdges,
+    });
+
     this._host.dispatchWorkflowChanged();
   }
 

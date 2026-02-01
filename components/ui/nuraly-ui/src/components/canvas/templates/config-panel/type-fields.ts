@@ -61,6 +61,7 @@ import {
   renderToolFields,
   renderRetrieverFields,
 } from './agent-node-fields.js';
+import { renderNoteFields } from './note-node-fields.js';
 
 /**
  * Render type-specific config fields
@@ -154,6 +155,10 @@ export function renderTypeFields(
     // Safety nodes
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
+
+    // Annotation nodes
+    case WorkflowNodeType.NOTE:
+      return renderNoteFields(config, onUpdate);
 
     // Agent nodes
     case AgentNodeType.AGENT:
