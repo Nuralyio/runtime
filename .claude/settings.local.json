@@ -41,7 +41,8 @@
       "Bash(npm run:*)",
       "Bash(git checkout:*)",
       "Bash(xargs:*)",
-      "Bash(npx vite build)"
+      "Bash(npx vite build)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []
