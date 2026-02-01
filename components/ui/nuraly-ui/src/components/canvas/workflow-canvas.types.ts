@@ -48,6 +48,9 @@ export enum WorkflowNodeType {
   CONTEXT_BUILDER = 'CONTEXT_BUILDER',
   // Safety nodes
   GUARDRAIL = 'GUARDRAIL',
+  // Annotation nodes
+  NOTE = 'NOTE',
+  FRAME = 'FRAME',
 }
 
 /**
@@ -290,6 +293,25 @@ export interface NodeConfiguration {
   allowText?: boolean;
   allowAudio?: boolean;
   allowVideo?: boolean;
+  // Note node
+  noteContent?: string;
+  noteBackgroundColor?: string;
+  noteTextColor?: string;
+  noteFontSize?: 'small' | 'medium' | 'large';
+  noteShowBorder?: boolean;
+  // Frame node
+  frameLabel?: string;
+  frameWidth?: number;
+  frameHeight?: number;
+  frameBackgroundColor?: string;
+  frameBorderColor?: string;
+  frameLabelPosition?: 'top-left' | 'top-center' | 'top-right';
+  frameLabelPlacement?: 'inside' | 'outside';
+  frameShowLabel?: boolean;
+  frameCollapsed?: boolean;
+  /** Stored dimensions when collapsed (for restore) */
+  _frameExpandedWidth?: number;
+  _frameExpandedHeight?: number;
 }
 
 /**
@@ -323,6 +345,10 @@ export interface WorkflowNode {
     name?: string;
     active: boolean;
   };
+  /** For FRAME nodes: IDs of nodes visually contained within this frame */
+  containedNodeIds?: string[];
+  /** For regular nodes: ID of the frame that contains this node (if any) */
+  parentFrameId?: string | null;
 }
 
 /**
@@ -481,6 +507,9 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.CONTEXT_BUILDER]: '#a855f7',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: '#ef4444',
+  // Annotation nodes
+  [WorkflowNodeType.NOTE]: '#fef08a',
+  [WorkflowNodeType.FRAME]: '#6366f1',
   // Agent nodes
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
@@ -542,6 +571,9 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.CONTEXT_BUILDER]: 'layers',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: 'shield',
+  // Annotation nodes
+  [WorkflowNodeType.NOTE]: 'sticky-note',
+  [WorkflowNodeType.FRAME]: 'square',
   // Agent nodes
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
@@ -1171,6 +1203,49 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // Annotation nodes
+  {
+    type: WorkflowNodeType.NOTE,
+    name: 'Note',
+    description: 'Add annotations and comments to your workflow',
+    icon: NODE_ICONS[WorkflowNodeType.NOTE],
+    color: NODE_COLORS[WorkflowNodeType.NOTE],
+    category: 'annotation',
+    defaultConfig: {
+      noteContent: 'Add your note here...',
+      noteBackgroundColor: '#fef08a',
+      noteTextColor: '#713f12',
+      noteFontSize: 'medium',
+      noteShowBorder: false,
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [],
+    },
+  },
+  {
+    type: WorkflowNodeType.FRAME,
+    name: 'Frame',
+    description: 'Group related nodes together with a labeled container',
+    icon: NODE_ICONS[WorkflowNodeType.FRAME],
+    color: NODE_COLORS[WorkflowNodeType.FRAME],
+    category: 'annotation',
+    defaultConfig: {
+      frameLabel: 'Group',
+      frameWidth: 400,
+      frameHeight: 300,
+      frameBackgroundColor: 'rgba(99, 102, 241, 0.05)',
+      frameBorderColor: 'rgba(99, 102, 241, 0.3)',
+      frameLabelPosition: 'top-left',
+      frameLabelPlacement: 'outside',
+      frameShowLabel: true,
+      frameCollapsed: false,
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [],
+    },
+  },
   // Agent nodes
   {
     type: AgentNodeType.AGENT,
@@ -1541,6 +1616,16 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     canvasType: CanvasType.WORKFLOW,
   },
   {
+    id: 'annotation',
+    name: 'Annotations',
+    icon: 'message-square',
+    nodeTypes: [
+      WorkflowNodeType.NOTE,
+      WorkflowNodeType.FRAME,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
     id: 'agent',
     name: 'AI Agents',
     icon: 'cpu',
@@ -1659,3 +1744,99 @@ export function createNodeFromTemplate(
     selected: false,
   };
 }
+
+/**
+ * Color preset for note nodes
+ */
+export interface NoteColorPreset {
+  name: string;
+  bg: string;
+  text: string;
+}
+
+/**
+ * Color preset for frame nodes
+ */
+export interface FrameColorPreset {
+  name: string;
+  bg: string;
+  border: string;
+  solid: string;
+}
+
+/**
+ * Predefined color presets for note nodes
+ */
+export const NOTE_COLOR_PRESETS: NoteColorPreset[] = [
+  { name: 'Yellow', bg: '#fef08a', text: '#713f12' },
+  { name: 'Blue', bg: '#bfdbfe', text: '#1e3a5f' },
+  { name: 'Green', bg: '#bbf7d0', text: '#14532d' },
+  { name: 'Pink', bg: '#fbcfe8', text: '#831843' },
+  { name: 'Orange', bg: '#fed7aa', text: '#7c2d12' },
+  { name: 'Purple', bg: '#ddd6fe', text: '#4c1d95' },
+  { name: 'Gray', bg: '#e5e7eb', text: '#374151' },
+];
+
+/**
+ * Predefined color presets for frame nodes
+ */
+export const FRAME_COLOR_PRESETS: FrameColorPreset[] = [
+  { name: 'Indigo', bg: 'rgba(99, 102, 241, 0.05)', border: 'rgba(99, 102, 241, 0.3)', solid: '#6366f1' },
+  { name: 'Blue', bg: 'rgba(59, 130, 246, 0.05)', border: 'rgba(59, 130, 246, 0.3)', solid: '#3b82f6' },
+  { name: 'Green', bg: 'rgba(34, 197, 94, 0.05)', border: 'rgba(34, 197, 94, 0.3)', solid: '#22c55e' },
+  { name: 'Orange', bg: 'rgba(249, 115, 22, 0.05)', border: 'rgba(249, 115, 22, 0.3)', solid: '#f97316' },
+  { name: 'Red', bg: 'rgba(239, 68, 68, 0.05)', border: 'rgba(239, 68, 68, 0.3)', solid: '#ef4444' },
+  { name: 'Purple', bg: 'rgba(168, 85, 247, 0.05)', border: 'rgba(168, 85, 247, 0.3)', solid: '#a855f7' },
+  { name: 'Gray', bg: 'rgba(107, 114, 128, 0.05)', border: 'rgba(107, 114, 128, 0.3)', solid: '#6b7280' },
+];
+
+/**
+ * Helper to check if node type is an annotation node (NOTE or FRAME)
+ */
+export function isAnnotationNode(type: NodeType): boolean {
+  return type === WorkflowNodeType.NOTE || type === WorkflowNodeType.FRAME;
+}
+
+/**
+ * Helper to check if node type is a frame node
+ */
+export function isFrameNode(type: NodeType): boolean {
+  return type === WorkflowNodeType.FRAME;
+}
+
+/**
+ * Helper to check if node type is a note node
+ */
+export function isNoteNode(type: NodeType): boolean {
+  return type === WorkflowNodeType.NOTE;
+}
+
+/**
+ * Aggregated port for collapsed frames
+ */
+export interface AggregatedPort {
+  id: string;
+  originalEdgeId: string;
+  internalNodeId: string;
+  internalPortId: string;
+  label?: string;
+  direction: 'incoming' | 'outgoing';
+}
+
+/**
+ * Frame resize state
+ */
+export interface FrameResizeState {
+  frameId: string;
+  handle: ResizeHandle;
+  startX: number;
+  startY: number;
+  startWidth: number;
+  startHeight: number;
+  startPosition: Position;
+}
+
+/**
+ * Resize handle type
+ */
+export type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w';

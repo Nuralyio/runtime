@@ -7,9 +7,10 @@
 import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost, DragState } from '../interfaces/index.js';
-import { WorkflowNode, Position } from '../workflow-canvas.types.js';
+import { WorkflowNode, Position, WorkflowNodeType } from '../workflow-canvas.types.js';
 import { ViewportController } from './viewport.controller.js';
 import type { UndoController } from './undo.controller.js';
+import type { FrameController } from './frame.controller.js';
 
 /**
  * Controller for managing node dragging
@@ -17,7 +18,10 @@ import type { UndoController } from './undo.controller.js';
 export class DragController extends BaseCanvasController {
   private viewportController: ViewportController;
   private undoController: UndoController | null = null;
+  private frameController: FrameController | null = null;
   private dragStartPositions: Map<string, Position> = new Map();
+  // Track nodes being moved due to frame drag (contained nodes)
+  private frameContainedNodeIds: Set<string> = new Set();
 
   constructor(host: CanvasHost & ReactiveControllerHost, viewportController: ViewportController) {
     super(host);
@@ -29,6 +33,13 @@ export class DragController extends BaseCanvasController {
    */
   setUndoController(controller: UndoController): void {
     this.undoController = controller;
+  }
+
+  /**
+   * Set the frame controller (called after initialization)
+   */
+  setFrameController(controller: FrameController): void {
+    this.frameController = controller;
   }
 
   /**
@@ -47,10 +58,26 @@ export class DragController extends BaseCanvasController {
 
     // Record start positions for all selected nodes
     this.dragStartPositions.clear();
+    this.frameContainedNodeIds.clear();
+
     this._host.selectedNodeIds.forEach(nodeId => {
       const n = this._host.workflow.nodes.find(x => x.id === nodeId);
       if (n) {
         this.dragStartPositions.set(nodeId, { ...n.position });
+
+        // If dragging a frame, also record positions of contained nodes
+        if (n.type === WorkflowNodeType.FRAME && n.containedNodeIds) {
+          for (const containedId of n.containedNodeIds) {
+            // Skip if already selected (will be moved as part of selection)
+            if (this._host.selectedNodeIds.has(containedId)) continue;
+
+            const containedNode = this._host.workflow.nodes.find(x => x.id === containedId);
+            if (containedNode) {
+              this.frameContainedNodeIds.add(containedId);
+              this.dragStartPositions.set(containedId, { ...containedNode.position });
+            }
+          }
+        }
       }
     });
   }
@@ -76,10 +103,21 @@ export class DragController extends BaseCanvasController {
     this._host.setWorkflow({
       ...this._host.workflow,
       nodes: this._host.workflow.nodes.map(node => {
+        // Move selected nodes
         if (this._host.selectedNodeIds.has(node.id)) {
           if (node.id === dragState.nodeId) {
             return { ...node, position: { x: snapped.x, y: snapped.y } };
           }
+          return {
+            ...node,
+            position: {
+              x: node.position.x + deltaX,
+              y: node.position.y + deltaY,
+            },
+          };
+        }
+        // Move contained nodes (when dragging a frame)
+        if (this.frameContainedNodeIds.has(node.id)) {
           return {
             ...node,
             position: {
@@ -114,11 +152,17 @@ export class DragController extends BaseCanvasController {
    */
   stopDrag(): void {
     if (this._host.dragState) {
-      // Record move for undo
+      // Record move for undo (includes selected nodes and frame contained nodes)
       if (this.undoController && this.dragStartPositions.size > 0) {
         const moves: Array<{ nodeId: string; oldPosition: Position; newPosition: Position }> = [];
 
-        this._host.selectedNodeIds.forEach(nodeId => {
+        // Collect all node IDs that were moved
+        const movedNodeIds = new Set([
+          ...this._host.selectedNodeIds,
+          ...this.frameContainedNodeIds,
+        ]);
+
+        movedNodeIds.forEach(nodeId => {
           const node = this._host.workflow.nodes.find(n => n.id === nodeId);
           const oldPos = this.dragStartPositions.get(nodeId);
           if (node && oldPos) {
@@ -139,15 +183,25 @@ export class DragController extends BaseCanvasController {
       }
 
       // Dispatch node-moved event for each moved node
-      this._host.selectedNodeIds.forEach(nodeId => {
+      const movedNodeIds = new Set([
+        ...this._host.selectedNodeIds,
+        ...this.frameContainedNodeIds,
+      ]);
+      movedNodeIds.forEach(nodeId => {
         const node = this._host.workflow.nodes.find(n => n.id === nodeId);
         if (node) {
           this._host.dispatchNodeMoved(node, node.position);
         }
       });
 
+      // Update frame containment for all frames after move
+      if (this.frameController) {
+        this.frameController.updateAllFrameContainments();
+      }
+
       this._host.dragState = null;
       this.dragStartPositions.clear();
+      this.frameContainedNodeIds.clear();
       this._host.dispatchWorkflowChanged();
     }
   }
