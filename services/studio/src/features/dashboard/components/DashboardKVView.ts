@@ -41,6 +41,36 @@ export class DashboardKVView extends LitElement {
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+      background: transparent;
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .back-button:hover {
+      color: var(--nuraly-color-text, #0f0f3c);
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+    }
+
+    .back-button svg {
+      width: 14px;
+      height: 14px;
+    }
+
     .header-title {
       font-size: 18px;
       font-weight: 600;
@@ -261,13 +291,17 @@ export class DashboardKVView extends LitElement {
     this.searchQuery = input.value;
   }
 
-  private handleAppClick(appId: string, appName: string) {
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'app',
-        resourceId: appId,
-        label: appName
-      },
+  private goBack() {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: '/dashboard' },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private handleAppClick(appId: string) {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/app/${appId}` },
       bubbles: true,
       composed: true
     }));
@@ -289,7 +323,15 @@ export class DashboardKVView extends LitElement {
     return html`
       <div class="kv-view">
         <div class="kv-header">
-          <h2 class="header-title">KV Store</h2>
+          <div class="header-left">
+            <button class="back-button" @click=${this.goBack}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <h2 class="header-title">KV Store</h2>
+          </div>
           <nr-button type="default" size="small" iconLeft="RefreshCw" @click=${this.loadData}>
             Refresh
           </nr-button>
@@ -355,7 +397,7 @@ export class DashboardKVView extends LitElement {
                     </td>
                     <td
                       class="app-cell"
-                      @click=${() => this.handleAppClick(entry.applicationId || '', entry.applicationName || '')}
+                      @click=${() => this.handleAppClick(entry.applicationId || '')}
                     >
                       ${entry.applicationName || 'Unknown'}
                     </td>

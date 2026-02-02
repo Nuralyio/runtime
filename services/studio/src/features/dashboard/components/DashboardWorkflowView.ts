@@ -37,6 +37,36 @@ export class DashboardWorkflowView extends LitElement {
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+      background: transparent;
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .back-button:hover {
+      color: var(--nuraly-color-text, #0f0f3c);
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+    }
+
+    .back-button svg {
+      width: 14px;
+      height: 14px;
+    }
+
     .workflow-info {
       display: flex;
       flex-direction: column;
@@ -263,15 +293,19 @@ export class DashboardWorkflowView extends LitElement {
     }
   }
 
-  private openAppTab() {
+  private goBack() {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: '/dashboard' },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private navigateToApp() {
     if (!this.appId) return;
 
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'app',
-        resourceId: this.appId,
-        label: this.appName || 'App'
-      },
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/app/${this.appId}` },
       bubbles: true,
       composed: true
     }));
@@ -328,17 +362,25 @@ export class DashboardWorkflowView extends LitElement {
     return html`
       <div class="workflow-view">
         <div class="workflow-header">
-          <div class="workflow-info">
-            <h2 class="workflow-name">${this.workflow?.name || 'Workflow'}</h2>
-            <div class="workflow-meta">
-              ${this.appId ? html`
-                <span class="app-link" @click=${this.openAppTab}>
-                  App: ${this.appName || 'Unknown'}
-                </span>
-              ` : html`
-                <span class="standalone-badge">Standalone</span>
-              `}
-              <span>${this.workflow?.nodes?.length || 0} nodes</span>
+          <div class="header-left">
+            <button class="back-button" @click=${this.goBack}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <div class="workflow-info">
+              <h2 class="workflow-name">${this.workflow?.name || 'Workflow'}</h2>
+              <div class="workflow-meta">
+                ${this.appId ? html`
+                  <span class="app-link" @click=${this.navigateToApp}>
+                    App: ${this.appName || 'Unknown'}
+                  </span>
+                ` : html`
+                  <span class="standalone-badge">Standalone</span>
+                `}
+                <span>${this.workflow?.nodes?.length || 0} nodes</span>
+              </div>
             </div>
           </div>
           <div class="header-actions">
