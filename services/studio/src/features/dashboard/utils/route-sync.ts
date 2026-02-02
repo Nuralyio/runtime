@@ -154,13 +154,14 @@ export function getStudioUrl(
         return `/app/studio/${appId}/workflow?wf=${resourceId}`;
       }
       // Standalone workflow
-      return `/studio/workflow/${resourceId}`;
+      return `/workflow/${resourceId}`;
 
     case 'database':
       if (appId) {
         return `/app/studio/${appId}/database`;
       }
-      return null; // No standalone database studio
+      // Standalone database
+      return `/database/${resourceId}`;
 
     default:
       return null;
