@@ -220,6 +220,11 @@ export interface ChatbotCoreConfig {
   initialThreads?: ChatbotThread[];
 
   /**
+   * Initial suggestions (shown before any API response)
+   */
+  initialSuggestions?: ChatbotSuggestion[];
+
+  /**
    * Custom metadata
    */
   metadata?: Record<string, any>;
