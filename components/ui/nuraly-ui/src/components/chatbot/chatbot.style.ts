@@ -616,14 +616,14 @@ export default css`
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: var(--nuraly-spacing-chatbot-suggestion-padding);
+      padding: var(--nuraly-spacing-chatbot-suggestion-padding, 6px 12px);
       background-color: var(--nuraly-color-chatbot-suggestion-background);
       color: var(--nuraly-color-chatbot-suggestion-text);
       border: var(--nuraly-border-width-chatbot-message, 1px) solid var(--nuraly-color-chatbot-suggestion-border);
-      border-radius: var(--nuraly-border-radius-chatbot-suggestion);
-      font-size: var(--nuraly-typography-chatbot-suggestion-font-size);
+      border-radius: var(--nuraly-border-radius-chatbot-suggestion, 16px);
+      font-size: var(--nuraly-typography-chatbot-suggestion-font-size, 13px);
       font-weight: var(--nuraly-typography-chatbot-suggestion-font-weight);
-      line-height: var(--nuraly-typography-chatbot-suggestion-line-height);
+      line-height: var(--nuraly-typography-chatbot-suggestion-line-height, 1.3);
       cursor: pointer;
       transition: all var(--nuraly-animation-chatbot-transition-duration) var(--nuraly-animation-chatbot-transition-timing);
       user-select: none;
@@ -1276,21 +1276,7 @@ export default css`
     }
   }
 
-  /* Dark theme support */
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --chatbot-background: var(--chatbot-color-background-dark, #161616);
-      --chatbot-surface: var(--chatbot-color-surface-dark, #262626);
-      --chatbot-surface-hover: var(--chatbot-color-surface-hover-dark, #353535);
-      --chatbot-border: var(--chatbot-color-border-dark, #393939);
-      --chatbot-text-primary: var(--chatbot-color-text-primary-dark, #f4f4f4);
-      --chatbot-text-secondary: var(--chatbot-color-text-secondary-dark, #c6c6c6);
-      --chatbot-text-helper: var(--chatbot-color-text-helper-dark, #8d8d8d);
-      --chatbot-bot-message-bg: var(--chatbot-color-bot-message-bg-dark, #262626);
-      --chatbot-bot-message-text: var(--chatbot-color-bot-message-text-dark, #f4f4f4);
-    }
-  }
-
+  
   /* High contrast mode */
   @media (prefers-contrast: high) {
     :host {
