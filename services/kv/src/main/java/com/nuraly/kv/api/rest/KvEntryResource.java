@@ -40,9 +40,7 @@ public class KvEntryResource {
             @QueryParam("scope") String scope,
             @QueryParam("scopedResourceId") String scopedResourceId,
             @QueryParam("prefix") String prefix) {
-        if (applicationId == null || applicationId.isEmpty()) {
-            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
-        }
+        // applicationId is optional - if not provided, returns all entries
         List<KvEntryDTO> entries = entryService.listEntries(applicationId, scope, scopedResourceId, prefix);
         return RestResponse.ok(entries);
     }
