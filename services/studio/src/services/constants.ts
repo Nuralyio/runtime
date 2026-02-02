@@ -41,6 +41,7 @@ export const APIS_URL = {
   deleteRole: (appId: string, roleId: number) => `${API_BASE}/api/applications/${appId}/roles/${roleId}`,
 
   // Workflows
+  getAllWorkflows: () => `${API_BASE}/api/v1/workflows`,
   getWorkflows: (appId: string) => `${API_BASE}/api/v1/workflows?applicationId=${appId}`,
   getWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}`,
   createWorkflow: () => `${API_BASE}/api/v1/workflows`,
@@ -56,6 +57,12 @@ export const APIS_URL = {
   deleteWorkflowEdge: (workflowId: string, edgeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges/${edgeId}`,
 
   // KV Storage (flat entry model)
+  getAllKvEntries: (prefix?: string) => {
+    const params = new URLSearchParams();
+    if (prefix) params.append('prefix', prefix);
+    const queryString = params.toString();
+    return `${API_BASE}/api/v1/kv/entries${queryString ? `?${queryString}` : ''}`;
+  },
   getKvEntries: (appId: string, scope?: string, scopedResourceId?: string, prefix?: string) => {
     const params = new URLSearchParams({ applicationId: appId });
     if (scope) params.append('scope', scope);

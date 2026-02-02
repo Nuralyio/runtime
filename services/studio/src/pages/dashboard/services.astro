@@ -1,25 +1,13 @@
 ---
 /**
- * Dashboard KV Store Route
- * /dashboard/kv with optional query params for filtering
+ * Dashboard Services Route
+ * /dashboard/services - Shows worker services status
  */
 export const prerender = false;
 
-const filters: Record<string, string> = {};
-if (Astro.url.searchParams.has('app')) {
-  filters.app = Astro.url.searchParams.get('app')!;
-}
-if (Astro.url.searchParams.has('workflow')) {
-  filters.workflow = Astro.url.searchParams.get('workflow')!;
-}
-if (Astro.url.searchParams.has('key')) {
-  filters.key = Astro.url.searchParams.get('key')!;
-}
-
 const initialRoute = {
   type: 'overview',
-  overviewView: 'kv',
-  filters: Object.keys(filters).length > 0 ? filters : undefined,
+  overviewView: 'services',
   pathname: Astro.url.pathname,
   search: Astro.url.search
 };
@@ -30,7 +18,7 @@ const initialRoute = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - KV Store - Nuraly</title>
+    <title>Dashboard - Services Status - Nuraly</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
     <style is:global>
       :root {
@@ -46,18 +34,21 @@ const initialRoute = {
         --nuraly-color-border: #e8e8f0;
         --nuraly-color-border-subtle: #f1f3f5;
         --nuraly-color-success: #16a34a;
+        --nuraly-color-success-light: #dcfce7;
         --nuraly-color-warning: #ca8a04;
+        --nuraly-color-warning-light: #fef9c3;
         --nuraly-color-danger: #dc2626;
+        --nuraly-color-danger-light: #fee2e2;
         --nuraly-font-mono: 'SF Mono', 'Fira Code', monospace;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nuraly-color-background);
         color: var(--nuraly-color-text);
-        min-height: 100vh;
       }
-      dashboard-layout { display: block; min-height: 100vh; }
+      dashboard-layout { display: block; width: 100%; height: 100%; }
     </style>
   </head>
   <body>

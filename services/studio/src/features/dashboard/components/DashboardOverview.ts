@@ -5,13 +5,15 @@
  */
 
 import { html, LitElement, css, nothing } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import {
   fetchApplicationsWithStatus,
   fetchAllWorkflowsAcrossApps,
   fetchAllKvEntriesAcrossApps,
+  fetchAllDatabaseConnections,
   type ApplicationWithStatus,
-  type WorkflowWithAppName
+  type WorkflowWithAppName,
+  type DatabaseConnection
 } from '../services/dashboard.service';
 import type { KvEntry } from '../../runtime/redux/store/kv';
 
@@ -24,8 +26,11 @@ import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 import './ApplicationsGrid/ApplicationsGrid';
 import './WorkflowsList/WorkflowsList';
 import './KVEntriesList/KVEntriesList';
+import './DatabaseList/DatabaseList';
+import './ParcourList/ParcourList';
+import './ServicesStatus/ServicesStatus';
 
-type ActiveView = 'applications' | 'workflows' | 'kv';
+type ActiveView = 'applications' | 'workflows' | 'kv' | 'database' | 'parcour' | 'services';
 
 interface MenuItem {
   text: string;
@@ -53,6 +58,7 @@ export class DashboardOverview extends LitElement {
     .overview-sider {
       width: 220px;
       min-width: 220px;
+      height: 100%;
       background: var(--nuraly-color-surface, #ffffff);
       border-right: 1px solid var(--nuraly-color-border, #e8e8f0);
       display: flex;
@@ -141,7 +147,15 @@ export class DashboardOverview extends LitElement {
     .overview-content {
       flex: 1;
       padding: 20px;
-      overflow-y: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .overview-content > * {
+      flex: 1;
+      min-height: 0;
     }
 
     /* Loading */
@@ -202,12 +216,14 @@ export class DashboardOverview extends LitElement {
     }
   `;
 
+  @property({ type: String }) activeView: ActiveView = 'applications';
+
   @state() private applications: ApplicationWithStatus[] = [];
   @state() private workflows: WorkflowWithAppName[] = [];
   @state() private kvEntries: (KvEntry & { applicationName?: string })[] = [];
+  @state() private databases: DatabaseConnection[] = [];
   @state() private loading = true;
   @state() private error: string | null = null;
-  @state() private activeView: ActiveView = 'applications';
 
   async connectedCallback() {
     super.connectedCallback();
@@ -221,15 +237,17 @@ export class DashboardOverview extends LitElement {
     try {
       const headers: Record<string, string> = {};
 
-      const [apps, workflows, kv] = await Promise.all([
+      const [apps, workflows, kv, dbs] = await Promise.all([
         fetchApplicationsWithStatus(headers),
         fetchAllWorkflowsAcrossApps(headers),
-        fetchAllKvEntriesAcrossApps(headers)
+        fetchAllKvEntriesAcrossApps(headers),
+        fetchAllDatabaseConnections(headers)
       ]);
 
       this.applications = apps;
       this.workflows = workflows;
       this.kvEntries = kv;
+      this.databases = dbs;
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
       this.error = err instanceof Error ? err.message : 'Failed to load dashboard data';
@@ -240,13 +258,20 @@ export class DashboardOverview extends LitElement {
 
   private handleMenuChange(e: CustomEvent) {
     const { value } = e.detail;
-    if (value === 'Applications') {
-      this.activeView = 'applications';
-    } else if (value === 'Workflows') {
-      this.activeView = 'workflows';
-    } else if (value === 'KV Store') {
-      this.activeView = 'kv';
-    }
+    const routes: Record<string, string> = {
+      'Applications': '/dashboard/applications',
+      'Workflows': '/dashboard/workflows',
+      'Database': '/dashboard/database',
+      'KV Store': '/dashboard/kv',
+      'Parcour': '/dashboard/parcour',
+      'Services': '/dashboard/services'
+    };
+    const path = routes[value] || '/dashboard/applications';
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   private handleRetry() {
@@ -266,9 +291,24 @@ export class DashboardOverview extends LitElement {
         selected: this.activeView === 'workflows'
       },
       {
-        text: 'KV Store',
+        text: 'Database',
         icon: 'Database',
+        selected: this.activeView === 'database'
+      },
+      {
+        text: 'KV Store',
+        icon: 'Key',
         selected: this.activeView === 'kv'
+      },
+      {
+        text: 'Parcour',
+        icon: 'Route',
+        selected: this.activeView === 'parcour'
+      },
+      {
+        text: 'Services',
+        icon: 'Activity',
+        selected: this.activeView === 'services'
       }
     ];
   }
@@ -292,6 +332,15 @@ export class DashboardOverview extends LitElement {
   private handleKvClick() {
     this.dispatchEvent(new CustomEvent('navigate', {
       detail: { path: '/dashboard/kv' },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private handleDatabaseSelect(db: DatabaseConnection) {
+    // Navigate to database view with the connection info
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/database/${db.applicationId}`, database: db },
       bubbles: true,
       composed: true
     }));
@@ -336,6 +385,7 @@ export class DashboardOverview extends LitElement {
         return html`
           <workflows-list
             .workflows=${this.workflows}
+            .applications=${this.applications}
             @workflow-click=${(e: CustomEvent) => this.handleWorkflowClick(e.detail.workflow)}
             @refresh=${() => this.loadDashboardData()}
           ></workflows-list>
@@ -348,6 +398,26 @@ export class DashboardOverview extends LitElement {
             @refresh=${() => this.loadDashboardData()}
           ></kv-entries-list>
         `;
+      case 'database':
+        return html`
+          <dashboard-database-list
+            .databases=${this.databases}
+            @database-select=${(e: CustomEvent) => this.handleDatabaseSelect(e.detail.database)}
+            @refresh=${() => this.loadDashboardData()}
+          ></dashboard-database-list>
+        `;
+      case 'parcour':
+        return html`
+          <dashboard-parcour-list
+            @refresh=${() => this.loadDashboardData()}
+          ></dashboard-parcour-list>
+        `;
+      case 'services':
+        return html`
+          <dashboard-services-status
+            @refresh=${() => this.loadDashboardData()}
+          ></dashboard-services-status>
+        `;
       default:
         return nothing;
     }
@@ -357,17 +427,21 @@ export class DashboardOverview extends LitElement {
     switch (this.activeView) {
       case 'applications': return 'Applications';
       case 'workflows': return 'Workflows';
+      case 'database': return 'Database';
       case 'kv': return 'KV Store';
+      case 'parcour': return 'Parcour';
+      case 'services': return 'Services Status';
       default: return 'Overview';
     }
   }
 
-  private getViewCount(): number {
+  private getViewCount(): number | null {
     switch (this.activeView) {
       case 'applications': return this.applications.length;
       case 'workflows': return this.workflows.length;
       case 'kv': return this.kvEntries.length;
-      default: return 0;
+      case 'database': return this.databases.length;
+      default: return null;
     }
   }
 
@@ -403,7 +477,7 @@ export class DashboardOverview extends LitElement {
           <header class="overview-header">
             <div class="header-title">
               <h2>${this.getViewTitle()}</h2>
-              ${!this.loading ? html`
+              ${!this.loading && this.getViewCount() !== null ? html`
                 <nr-badge status="default" text="${this.getViewCount()} items"></nr-badge>
               ` : nothing}
             </div>
