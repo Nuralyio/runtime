@@ -6,6 +6,11 @@
 import { type DashboardTabType, type AppSubTab } from '../stores/dashboard-tabs.store';
 
 /**
+ * Overview sub-views for the main dashboard
+ */
+export type OverviewView = 'applications' | 'workflows' | 'kv' | 'database' | 'parcour' | 'services';
+
+/**
  * Parsed route information
  */
 export interface ParsedRoute {
@@ -13,6 +18,7 @@ export interface ParsedRoute {
   resourceId?: string;
   subTab?: AppSubTab;
   filters?: Record<string, string>;
+  overviewView?: OverviewView;
 }
 
 /**
@@ -25,7 +31,32 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
 
   // /dashboard or /dashboard/
   if (path === '/dashboard' || path === '') {
-    return { type: 'overview' };
+    return { type: 'overview', overviewView: 'applications' };
+  }
+
+  // /dashboard/applications
+  if (path === '/dashboard/applications') {
+    return { type: 'overview', overviewView: 'applications' };
+  }
+
+  // /dashboard/workflows (overview list, not a specific workflow)
+  if (path === '/dashboard/workflows') {
+    return { type: 'overview', overviewView: 'workflows' };
+  }
+
+  // /dashboard/database (overview of all databases)
+  if (path === '/dashboard/database') {
+    return { type: 'overview', overviewView: 'database' };
+  }
+
+  // /dashboard/parcour
+  if (path === '/dashboard/parcour') {
+    return { type: 'overview', overviewView: 'parcour' };
+  }
+
+  // /dashboard/services (worker services status)
+  if (path === '/dashboard/services') {
+    return { type: 'overview', overviewView: 'services' };
   }
 
   // /dashboard/app/{appId} or /dashboard/app/{appId}/{subTab}
@@ -65,13 +96,14 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     if (searchParams.has('workflow')) filters.workflow = searchParams.get('workflow')!;
     if (searchParams.has('key')) filters.key = searchParams.get('key')!;
     return {
-      type: 'kv',
+      type: 'overview',
+      overviewView: 'kv',
       filters: Object.keys(filters).length > 0 ? filters : undefined
     };
   }
 
   // Default to overview
-  return { type: 'overview' };
+  return { type: 'overview', overviewView: 'applications' };
 }
 
 /**

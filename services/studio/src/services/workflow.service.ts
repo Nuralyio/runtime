@@ -176,6 +176,16 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const workflowService = {
+  // Get all workflows across all applications
+  async getAllWorkflows(): Promise<(Workflow & { applicationId: string })[]> {
+    const response = await fetch(APIS_URL.getAllWorkflows());
+    const dtos = await handleResponse<WorkflowDTO[]>(response);
+    return dtos.map(dto => ({
+      ...dtoToWorkflow(dto),
+      applicationId: dto.applicationId,
+    }));
+  },
+
   // Get all workflows for an application
   async getWorkflowsByApplication(applicationId: string): Promise<Workflow[]> {
     const response = await fetch(APIS_URL.getWorkflows(applicationId));

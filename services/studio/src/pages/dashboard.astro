@@ -7,6 +7,7 @@ export const prerender = false;
 
 const initialRoute = {
   type: 'overview',
+  overviewView: 'applications',
   pathname: Astro.url.pathname,
   search: Astro.url.search
 };
@@ -83,8 +84,11 @@ const initialRoute = {
         box-sizing: border-box;
       }
 
-      html {
-        scroll-behavior: smooth;
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
       }
 
       body {
@@ -93,15 +97,12 @@ const initialRoute = {
         color: var(--nuraly-color-text);
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
       }
 
       dashboard-layout {
         display: block;
         width: 100%;
-        min-height: 100vh;
+        height: 100%;
       }
     </style>
   </head>

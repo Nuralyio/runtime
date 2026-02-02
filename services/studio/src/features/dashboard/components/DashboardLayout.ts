@@ -5,7 +5,7 @@
 
 import { html, LitElement, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { parseRoute, type ParsedRoute } from '../utils/route-sync';
+import { parseRoute, type ParsedRoute, type OverviewView } from '../utils/route-sync';
 import type { AppSubTab } from '../stores/dashboard-tabs.store';
 
 // Import view components
@@ -24,7 +24,8 @@ export class DashboardLayout extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       background: var(--nuraly-color-background, #f8fafc);
     }
 
@@ -35,6 +36,7 @@ export class DashboardLayout extends LitElement {
       padding: 12px 24px;
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+      flex-shrink: 0;
     }
 
     .header-left {
@@ -52,9 +54,9 @@ export class DashboardLayout extends LitElement {
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      color: var(--nuraly-color-primary, #14144b);
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
     }
 
     .logo-text {
@@ -74,19 +76,27 @@ export class DashboardLayout extends LitElement {
       flex-direction: column;
       flex: 1;
       min-height: 0;
+      overflow: hidden;
     }
 
     .dashboard-content {
       flex: 1;
+      display: flex;
+      flex-direction: column;
       min-height: 0;
-      overflow: auto;
+      overflow: hidden;
+    }
+
+    .dashboard-content > * {
+      flex: 1;
+      min-height: 0;
     }
   `;
 
   @property({ type: String, attribute: 'data-initial-route' })
   initialRouteJson: string = '';
 
-  @state() private currentRoute: ParsedRoute = { type: 'overview' };
+  @state() private currentRoute: ParsedRoute = { type: 'overview', overviewView: 'applications' };
 
   connectedCallback() {
     super.connectedCallback();
@@ -113,11 +123,12 @@ export class DashboardLayout extends LitElement {
           type: initial.type,
           resourceId: initial.resourceId,
           subTab: initial.subTab as AppSubTab,
-          filters: initial.filters
+          filters: initial.filters,
+          overviewView: initial.overviewView as OverviewView
         };
       } catch (e) {
         console.error('[DashboardLayout] Failed to parse initial route:', e);
-        this.currentRoute = { type: 'overview' };
+        this.currentRoute = { type: 'overview', overviewView: 'applications' };
       }
     } else {
       this.currentRoute = parseRoute(window.location.pathname, window.location.search);
@@ -146,6 +157,7 @@ export class DashboardLayout extends LitElement {
       case 'overview':
         return html`
           <dashboard-overview
+            .activeView=${this.currentRoute.overviewView || 'applications'}
             @navigate=${this.handleNavigate}
           ></dashboard-overview>
         `;
@@ -194,11 +206,7 @@ export class DashboardLayout extends LitElement {
       <header class="dashboard-header">
         <div class="header-left">
           <a href="/" class="logo">
-            <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="32" height="32" rx="8" fill="currentColor"/>
-              <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" fill="none"/>
-              <circle cx="16" cy="16" r="3" fill="white"/>
-            </svg>
+            <img class="logo-icon" src="/favicon-32x32.png" alt="Nuraly" />
             <span class="logo-text">Nuraly</span>
           </a>
         </div>
