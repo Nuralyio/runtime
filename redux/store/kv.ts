@@ -104,6 +104,29 @@ function buildCacheKey(appId: string, options?: FetchEntriesOptions): string {
 }
 
 /**
+ * Fetch all entries from API (without applicationId filter)
+ */
+export async function getAllKvEntries(prefix?: string): Promise<KvEntry[] | null> {
+  try {
+    const params = new URLSearchParams();
+    if (prefix) {
+      params.append('prefix', prefix);
+    }
+    const queryString = params.toString();
+    const response = await fetch(`/api/v1/kv/entries${queryString ? `?${queryString}` : ''}`, {
+      credentials: 'include'
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch all entries');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch all KV entries:', error);
+    return null;
+  }
+}
+
+/**
  * Fetch entries from API
  */
 async function fetchEntriesFromAPI(appId: string, options?: FetchEntriesOptions): Promise<KvEntry[] | null> {
