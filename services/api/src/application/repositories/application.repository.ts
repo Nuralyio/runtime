@@ -1,4 +1,5 @@
 import prisma from '../../../prisma/prisma'
+import { Prisma } from '@prisma/client'
 import { IApplicationRepository } from '../interfaces/application.interface';
 import { Application, AppI18nConfig } from '../models/application';
 import { singleton } from 'tsyringe';
@@ -30,19 +31,33 @@ export class ApplicationRepository implements IApplicationRepository {
   }
 
   public async findAll(applicationIds : string[]): Promise<Application[]> {
-    const applications = await prisma.applications.findMany(
-      { where: { uuid :{
-        in: applicationIds
-      } } }
-    );
+    // Use raw query to join applications with published_versions in one query
+    const applications = await prisma.$queryRaw<Array<{
+      id: number;
+      name: string;
+      published: boolean | null;
+      uuid: string;
+      user_id: string;
+      subdomain: string | null;
+      requires_auth_only: boolean;
+      i18n: any;
+      published_at: Date | null;
+    }>>`
+      SELECT a.*, pv.published_at
+      FROM applications a
+      LEFT JOIN published_versions pv ON a.uuid = pv.application_id
+      WHERE a.uuid IN (${Prisma.join(applicationIds)})
+    `;
+
     return applications.map((application) => new Application(
       application.published ?? false,
       application.name,
       application.uuid,
       application.user_id,
       application.subdomain,
-      application.requiresAuthOnly,
-      application.i18n as AppI18nConfig | null
+      application.requires_auth_only,
+      application.i18n as AppI18nConfig | null,
+      application.published_at ?? null
     ));
   }
 

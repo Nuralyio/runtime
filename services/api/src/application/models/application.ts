@@ -25,6 +25,7 @@ export class Application {
     subdomain?: string | null;
     requiresAuthOnly: boolean; // When true, any authenticated user can access (no role/member check needed)
     i18n?: AppI18nConfig | null; // Internationalization configuration
+    publishedAt?: Date | null; // When the app was last published
 
     constructor(
       published: boolean,
@@ -33,7 +34,8 @@ export class Application {
       user_id: string,
       subdomain?: string | null,
       requiresAuthOnly: boolean = false,
-      i18n?: AppI18nConfig | null
+      i18n?: AppI18nConfig | null,
+      publishedAt?: Date | null
     ) {
       this.published = published;
       this.name = name;
@@ -42,6 +44,7 @@ export class Application {
       this.subdomain = subdomain;
       this.requiresAuthOnly = requiresAuthOnly;
       this.i18n = i18n;
+      this.publishedAt = publishedAt;
     }
   }
   

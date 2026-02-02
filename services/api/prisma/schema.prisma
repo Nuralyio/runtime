@@ -25,16 +25,17 @@ model User {
 }
 
 model applications {
-  id                Int      @id @default(autoincrement())
-  name              String   @default("")
-  published         Boolean? @default(false)
-  uuid              String   @unique @default("")
+  id                Int               @id @default(autoincrement())
+  name              String            @default("")
+  published         Boolean?          @default(false)
+  uuid              String            @unique @default("")
   user_id           String
   //user        User @relation(fields: [user_id], references: [id])
   default_page_uuid String?
-  subdomain         String?  @unique // Unique subdomain for accessing the app (e.g., "myapp" for myapp.domain.com)
-  requiresAuthOnly  Boolean  @default(false) @map("requires_auth_only") // When true, any authenticated user can access (no role/member check needed)
-  i18n              Json?    // Internationalization config: { defaultLocale, supportedLocales, fallbackLocale }
+  subdomain         String?           @unique // Unique subdomain for accessing the app (e.g., "myapp" for myapp.domain.com)
+  requiresAuthOnly  Boolean           @default(false) @map("requires_auth_only") // When true, any authenticated user can access (no role/member check needed)
+  i18n              Json?             // Internationalization config: { defaultLocale, supportedLocales, fallbackLocale }
+  publishedVersion  PublishedVersion? // Relation to published version
 }
 
 // ============================================
@@ -235,11 +236,12 @@ model ApplicationRevision {
 
 // Published version tracker
 model PublishedVersion {
-  id            String   @id @default(uuid())
-  applicationId String   @unique @map("application_id")
+  id            String       @id @default(uuid())
+  applicationId String       @unique @map("application_id")
   revision      Int
-  publishedBy   String   @map("published_by")
-  publishedAt   DateTime @default(now()) @map("published_at")
+  publishedBy   String       @map("published_by")
+  publishedAt   DateTime     @default(now()) @map("published_at")
+  application   applications @relation(fields: [applicationId], references: [uuid])
 
   @@map("published_versions")
 }

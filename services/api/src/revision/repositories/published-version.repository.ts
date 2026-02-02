@@ -30,6 +30,14 @@ export class PublishedVersionRepository implements IPublishedVersionRepository {
     return found ? this.toModel(found) : null;
   }
 
+  public async findByApplicationIds(applicationIds: string[]): Promise<PublishedVersionModel[]> {
+    if (applicationIds.length === 0) return [];
+    const found = await prisma.publishedVersion.findMany({
+      where: { applicationId: { in: applicationIds } }
+    });
+    return found.map(data => this.toModel(data));
+  }
+
   public async delete(applicationId: string): Promise<void> {
     await prisma.publishedVersion.delete({
       where: { applicationId }
