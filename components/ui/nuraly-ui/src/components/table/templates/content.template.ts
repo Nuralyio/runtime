@@ -58,6 +58,7 @@ export interface ContentTemplateData {
   activeFilterColumn: string | null;
   loading: boolean;
   host: TableHost;
+  clickable: boolean;
   globalCheckRef?: (el: HTMLInputElement | null) => void;
   onCheckAll: () => void;
   onCheckOne: (event: Event, index: number) => void;
@@ -67,6 +68,7 @@ export interface ContentTemplateData {
   onToggleColumnFilter: (columnKey: string) => void;
   onApplyColumnFilter: (columnKey: string, value: string | number) => void;
   onClearColumnFilter: (columnKey: string) => void;
+  onRowClick?: (row: any, index: number) => void;
 }
 
 /**
@@ -165,7 +167,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
           : repeat(
               data.rows,
               (row, index) => html`
-            <tr>
+            <tr class="${data.clickable ? 'clickable' : ''}" @click=${() => data.onRowClick?.(row, index)}>
               ${(data.expandable || data.expansionRenderer) && !data.selectionMode
               ? html`
                   <td 
@@ -215,19 +217,23 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
               (header: IHeader, headerIndex) => {
                 const fixedClasses = getFixedColumnClasses(header);
                 const hasSelection = (data.expandable || data.expansionRenderer) || data.selectionMode;
-                const leftPosition = header.fixed === 'left' 
-                  ? calculateFixedColumnLeft(data.headers, headerIndex, !!hasSelection) 
+                const leftPosition = header.fixed === 'left'
+                  ? calculateFixedColumnLeft(data.headers, headerIndex, !!hasSelection)
                   : undefined;
-                const width = header.width 
-                  ? typeof header.width === 'number' ? `${header.width}px` : header.width 
+                const width = header.width
+                  ? typeof header.width === 'number' ? `${header.width}px` : header.width
                   : undefined;
-                
-                return html`${data.expandable !== header.key 
-                  ? html`<td 
+                const cellValue = row[header.key];
+                const cellContent = header.render
+                  ? header.render(cellValue, row, index)
+                  : cellValue;
+
+                return html`${data.expandable !== header.key
+                  ? html`<td
                       class="${fixedClasses}"
                       style="${leftPosition !== undefined ? `left: ${leftPosition}px;` : ''} ${width ? `width: ${width}; min-width: ${width};` : ''}">
-                      ${row[header.key]}
-                    </td>` 
+                      ${cellContent}
+                    </td>`
                   : nothing}`;
               }
             )}

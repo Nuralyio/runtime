@@ -48,42 +48,40 @@ const menuStyle = css`
   .menu-link.selected {
     background-color: var(--nuraly-menu-selected-link-background-color);
     color: var(--nuraly-menu-selected-color);
-    border-left: var(--nuraly-menu-selected-link-border);
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
   }
 
   .menu-link:not(.disabled):not(.selected):focus {
     outline: none;
-    border-left: 4px solid transparent;
-    border-top: var(--nuraly-menu-focus-border);
-    border-right: var(--nuraly-menu-focus-border);
-    border-bottom: var(--nuraly-menu-focus-border);
+    border-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
+    border-left-color: transparent;
     color: var(--nuraly-menu-focus-color);
   }
 
   .menu-link.selected:not(.disabled):focus {
     outline: none;
-    border-left: var(--nuraly-menu-selected-link-border);
-    border-top: var(--nuraly-menu-focus-border);
-    border-right: var(--nuraly-menu-focus-border);
-    border-bottom: var(--nuraly-menu-focus-border);
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
+    border-top-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
+    border-right-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
+    border-bottom-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
     color: var(--nuraly-menu-focus-color);
   }
 
   /* Focus-visible for keyboard navigation */
   .menu-link:not(.disabled):focus-visible {
     outline: none;
-    border-top: var(--nuraly-menu-focus-border);
-    border-right: var(--nuraly-menu-focus-border);
-    border-bottom: var(--nuraly-menu-focus-border);
+    border-top-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
+    border-right-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
+    border-bottom-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
   }
 
   .menu-link:not(.disabled):not(.selected):focus-visible {
-    border-left: var(--nuraly-menu-focus-border);
+    border-left-color: var(--nuraly-menu-focus-border-color, var(--nuraly-menu-focus-color));
     color: var(--nuraly-menu-focus-color);
   }
 
   .menu-link.selected:not(.disabled):focus-visible {
-    border-left: var(--nuraly-menu-selected-link-border) !important;
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
     color: var(--nuraly-menu-focus-color);
   }
 
@@ -95,10 +93,7 @@ const menuStyle = css`
   .menu-link.selected:not(.disabled):active {
     background-color: var(--nuraly-menu-active-background-color);
     color: var(--nuraly-menu-active-color);
-    border-left: var(--nuraly-menu-selected-link-border) !important;
-    border-top: 2px solid transparent;
-    border-right: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
   }
 
   .menu-link .action-text-container {
@@ -243,37 +238,35 @@ const menuStyle = css`
 
   .sub-menu:not(.disabled):not(.selected) .sub-menu-header:focus {
     outline: none;
-    border-left: 4px solid transparent;
-    border-top: var(--nuraly-sub-menu-focus-border);
-    border-right: var(--nuraly-sub-menu-focus-border);
-    border-bottom: var(--nuraly-sub-menu-focus-border);
+    border-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
+    border-left-color: transparent;
     color: var(--nuraly-sub-menu-focus-color);
   }
 
   .sub-menu.selected:not(.disabled) .sub-menu-header:focus {
     outline: none;
-    border-left: var(--nuraly-menu-selected-link-border);
-    border-top: var(--nuraly-sub-menu-focus-border);
-    border-right: var(--nuraly-sub-menu-focus-border);
-    border-bottom: var(--nuraly-sub-menu-focus-border);
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
+    border-top-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
+    border-right-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
+    border-bottom-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
     color: var(--nuraly-sub-menu-focus-color);
   }
 
   /* Focus-visible for keyboard navigation on submenus */
   .sub-menu:not(.disabled) .sub-menu-header:focus-visible {
     outline: none;
-    border-top: var(--nuraly-sub-menu-focus-border);
-    border-right: var(--nuraly-sub-menu-focus-border);
-    border-bottom: var(--nuraly-sub-menu-focus-border);
+    border-top-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
+    border-right-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
+    border-bottom-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
   }
 
   .sub-menu:not(.disabled):not(.selected) .sub-menu-header:focus-visible {
-    border-left: var(--nuraly-sub-menu-focus-border);
+    border-left-color: var(--nuraly-sub-menu-focus-border-color, var(--nuraly-sub-menu-focus-color));
     color: var(--nuraly-sub-menu-focus-color);
   }
 
   .sub-menu.selected:not(.disabled) .sub-menu-header:focus-visible {
-    border-left: var(--nuraly-menu-selected-link-border) !important;
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
     color: var(--nuraly-sub-menu-focus-color);
   }
 
@@ -285,19 +278,13 @@ const menuStyle = css`
   .sub-menu.selected:not(.disabled) .sub-menu-header {
     background-color: var(--nuraly-menu-selected-link-background-color);
     color: var(--nuraly-menu-selected-color);
-    border-left: var(--nuraly-menu-selected-link-border);
-    border-top: 2px solid transparent;
-    border-right: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
   }
 
   .sub-menu.selected:not(.disabled) .sub-menu-header:active {
     background-color: var(--nuraly-sub-menu-active-background-color);
     color: var(--nuraly-sub-menu-active-color);
-    border-left: var(--nuraly-menu-selected-link-border);
-    border-top: 2px solid transparent;
-    border-right: 2px solid transparent;
-    border-bottom: 2px solid transparent;
+    border-left-color: var(--nuraly-menu-selected-link-border-color, var(--nuraly-menu-selected-color));
   }
 
   .sub-menu:not(.disabled):not(.selected) .sub-menu-header:active {

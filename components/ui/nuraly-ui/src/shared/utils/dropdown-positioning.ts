@@ -18,6 +18,66 @@ export interface DropdownPositionOptions {
 }
 
 /**
+ * Get the parent element, crossing shadow DOM boundaries if necessary
+ */
+function getParentElement(element: Element): Element | null {
+  if (element.parentElement) {
+    return element.parentElement;
+  }
+
+  // Check if we're at a shadow root boundary
+  const root = element.getRootNode();
+  if (root instanceof ShadowRoot) {
+    return root.host;
+  }
+
+  return null;
+}
+
+/**
+ * Find the nearest ancestor that creates a new containing block for fixed positioning.
+ * Elements with transform, perspective, filter, or will-change create new containing blocks.
+ * This function traverses shadow DOM boundaries to find transformed ancestors.
+ */
+function findContainingBlock(element: HTMLElement): HTMLElement | null {
+  let current: Element | null = element;
+
+  while (current) {
+    const parent = getParentElement(current);
+
+    if (!parent || parent === document.body || parent === document.documentElement) {
+      break;
+    }
+
+    if (parent instanceof HTMLElement) {
+      const style = getComputedStyle(parent);
+      const transform = style.transform;
+      const willChange = style.willChange;
+      const filter = style.filter;
+      const perspective = style.perspective;
+      const contain = style.contain;
+
+      // Check if this element creates a new containing block
+      if (
+        (transform && transform !== 'none') ||
+        (perspective && perspective !== 'none') ||
+        (filter && filter !== 'none') ||
+        willChange === 'transform' ||
+        willChange === 'perspective' ||
+        willChange === 'filter' ||
+        (contain && contain.includes('paint'))
+      ) {
+        return parent;
+      }
+    }
+
+    current = parent;
+  }
+
+  return null;
+}
+
+/**
  * Calculate the optimal placement for a dropdown (top or bottom)
  */
 export function determineOptimalPlacement(
@@ -41,6 +101,8 @@ export function determineOptimalPlacement(
 
 /**
  * Calculate fixed position for a dropdown relative to a trigger element
+ * Handles the case where a parent element has a transform, which creates
+ * a new containing block for fixed-positioned elements.
  */
 export function calculateFixedPosition(
   triggerElement: HTMLElement,
@@ -54,6 +116,19 @@ export function calculateFixedPosition(
   const viewportHeight = window.visualViewport?.height || window.innerHeight;
   const viewportWidth = window.visualViewport?.width || window.innerWidth;
 
+  // Check if there's a transformed ancestor that affects fixed positioning
+  const containingBlock = findContainingBlock(dropdownElement);
+  let containingBlockOffset = { top: 0, left: 0 };
+
+  if (containingBlock) {
+    // If there's a transformed ancestor, fixed positioning is relative to it
+    const containingBlockRect = containingBlock.getBoundingClientRect();
+    containingBlockOffset = {
+      top: containingBlockRect.top,
+      left: containingBlockRect.left
+    };
+  }
+
   // Calculate available space
   const spaceBelow = viewportHeight - triggerRect.bottom;
   const spaceAbove = triggerRect.top;
@@ -62,7 +137,7 @@ export function calculateFixedPosition(
   const estimatedDropdownHeight = dropdownRect.height || 200;
   const placement = determineOptimalPlacement(estimatedDropdownHeight, spaceAbove, spaceBelow);
 
-  // Calculate vertical position
+  // Calculate vertical position (viewport-relative)
   let top: number;
   if (placement === 'bottom') {
     top = triggerRect.bottom + offset;
@@ -70,13 +145,20 @@ export function calculateFixedPosition(
     top = triggerRect.top - estimatedDropdownHeight - offset;
   }
 
-  // Horizontal position - align to trigger's left edge
+  // Horizontal position - align to trigger's left edge (viewport-relative)
   let left = triggerRect.left;
 
   // Ensure dropdown stays within viewport bounds
   const dropdownWidth = triggerRect.width;
   left = Math.max(viewportMargin, Math.min(left, viewportWidth - dropdownWidth - viewportMargin));
   top = Math.max(viewportMargin, Math.min(top, viewportHeight - estimatedDropdownHeight - viewportMargin));
+
+  // Adjust for containing block offset (if a transformed ancestor exists)
+  // Fixed-positioned elements inside a transformed parent are positioned relative to that parent
+  if (containingBlock) {
+    top = top - containingBlockOffset.top;
+    left = left - containingBlockOffset.left;
+  }
 
   return {
     top,

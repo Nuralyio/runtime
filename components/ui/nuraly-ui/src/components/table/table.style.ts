@@ -158,6 +158,10 @@ export default css`
     background-color: var(--nuraly-table-row-hover-background, #f5f5f5);
   }
 
+  tbody tr.clickable {
+    cursor: pointer;
+  }
+
   thead tr {
     background-color: var(--nuraly-table-header-background, #fafafa);
   }

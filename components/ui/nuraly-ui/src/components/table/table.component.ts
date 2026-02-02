@@ -80,6 +80,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: String }) emptyIcon: string | undefined;
   @property({ type: Boolean }) serverSide = false;
   @property({ type: Number }) totalCount = 0;
+  @property({ type: Boolean }) clickable = false;
 
   @state() itemPerPage = [5, 10, 15, 20];
   @state() selectedItemPerPage = this.itemPerPage[0];
@@ -318,6 +319,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           activeFilterColumn: this.activeFilterColumn,
           loading: this.loading,
           host: this,
+          clickable: this.clickable,
           onCheckAll: () => {
             const startIndex = (this.currentPage - 1) * this.selectedItemPerPage;
             const endIndex = Math.min(startIndex + this.selectedItemPerPage, this.selectedItems.length);
@@ -331,7 +333,16 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
           onShowExpandedContent: (index) => this._showExpandedContent(index),
           onToggleColumnFilter: (columnKey) => this.filterController.toggleColumnFilterDropdown(columnKey),
           onApplyColumnFilter: (columnKey, value) => this.filterController.applyColumnFilter(columnKey, value),
-          onClearColumnFilter: (columnKey) => this.filterController.clearColumnFilter(columnKey)
+          onClearColumnFilter: (columnKey) => this.filterController.clearColumnFilter(columnKey),
+          onRowClick: (row, index) => {
+            if (this.clickable) {
+              this.dispatchEvent(new CustomEvent('nr-row-click', {
+                detail: { row, index },
+                bubbles: true,
+                composed: true
+              }));
+            }
+          }
         })}
       </div>
 

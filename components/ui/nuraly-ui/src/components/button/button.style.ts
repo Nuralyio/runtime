@@ -297,7 +297,7 @@ export const buttonStyles = css`
   /* Size variants */
   :host([size="small"]) button {
     height: var(--nuraly-size-sm);
-    padding: var(--nuraly-button-padding-small, var(--nuraly-spacing-1-5) var(--nuraly-spacing-3));
+    padding: var(--nuraly-button-padding-small, 0.375rem 0.75rem);
     font-size: 0.75rem;
     min-width: var(--nuraly-button-min-width, 4.5rem);
     gap: 0.375rem;

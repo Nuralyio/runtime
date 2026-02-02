@@ -1070,3 +1070,233 @@ export const RowExpansionWithFeatures: Story = {
     </div>
   `,
 };
+
+// ============================================
+// Custom Cell Rendering Stories
+// ============================================
+
+/**
+ * Custom Cell Rendering - Basic
+ * Demonstrates using custom render functions to display formatted content,
+ * badges, buttons, and other custom elements in table cells.
+ */
+export const CustomCellRendering: Story = {
+  args: {
+    headers: [
+      {name: 'Name', key: 'name'},
+      {
+        name: 'Status',
+        key: 'status',
+        render: (value: string) => html`
+          <span style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: ${value === 'Active' ? '#dcfce7' : value === 'Pending' ? '#fef3c7' : '#fee2e2'};
+            color: ${value === 'Active' ? '#166534' : value === 'Pending' ? '#92400e' : '#991b1b'};
+          ">
+            <span style="
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+              background: ${value === 'Active' ? '#22c55e' : value === 'Pending' ? '#f59e0b' : '#ef4444'};
+            "></span>
+            ${value}
+          </span>
+        `,
+      },
+      {
+        name: 'Priority',
+        key: 'priority',
+        render: (value: string) => html`
+          <span style="
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: ${value === 'High' ? '#fef2f2' : value === 'Medium' ? '#fffbeb' : '#f0fdf4'};
+            color: ${value === 'High' ? '#dc2626' : value === 'Medium' ? '#d97706' : '#16a34a'};
+            border: 1px solid ${value === 'High' ? '#fecaca' : value === 'Medium' ? '#fde68a' : '#bbf7d0'};
+          ">
+            ${value}
+          </span>
+        `,
+      },
+      {
+        name: 'Progress',
+        key: 'progress',
+        render: (value: number) => html`
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="
+              flex: 1;
+              height: 6px;
+              background: #e5e7eb;
+              border-radius: 3px;
+              overflow: hidden;
+              min-width: 60px;
+            ">
+              <div style="
+                width: ${value}%;
+                height: 100%;
+                background: ${value >= 80 ? '#22c55e' : value >= 50 ? '#3b82f6' : '#f59e0b'};
+                border-radius: 3px;
+                transition: width 0.3s ease;
+              "></div>
+            </div>
+            <span style="font-size: 12px; color: #6b7280; min-width: 36px;">${value}%</span>
+          </div>
+        `,
+      },
+      {
+        name: 'Actions',
+        key: 'actions',
+        width: 150,
+        render: (_value: any, row: any) => html`
+          <div style="display: flex; gap: 4px;">
+            <button
+              style="
+                padding: 4px 8px;
+                border: 1px solid #e5e7eb;
+                background: white;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+              "
+              @click=${(e: Event) => {
+                e.stopPropagation();
+                alert('Edit: ' + row.name);
+              }}
+            >Edit</button>
+            <button
+              style="
+                padding: 4px 8px;
+                border: 1px solid #fecaca;
+                background: #fef2f2;
+                color: #dc2626;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+              "
+              @click=${(e: Event) => {
+                e.stopPropagation();
+                alert('Delete: ' + row.name);
+              }}
+            >Delete</button>
+          </div>
+        `,
+      },
+    ],
+    rows: [
+      {name: 'Project Alpha', status: 'Active', priority: 'High', progress: 85},
+      {name: 'Project Beta', status: 'Pending', priority: 'Medium', progress: 45},
+      {name: 'Project Gamma', status: 'Inactive', priority: 'Low', progress: 20},
+      {name: 'Project Delta', status: 'Active', priority: 'High', progress: 100},
+      {name: 'Project Epsilon', status: 'Pending', priority: 'Medium', progress: 60},
+    ],
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Custom Cell Rendering</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        Each column can have a custom <code>render</code> function that receives the cell value,
+        full row data, and row index. This enables rich content like status badges, progress bars,
+        and action buttons.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
+
+/**
+ * Custom Cell Rendering - With Row Context
+ * Shows how render functions can access the full row data for conditional rendering.
+ */
+export const CustomCellWithRowContext: Story = {
+  args: {
+    headers: [
+      {
+        name: 'User',
+        key: 'name',
+        render: (value: string, row: any) => html`
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: ${row.avatarColor || '#3b82f6'};
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 600;
+              font-size: 14px;
+            ">${value.charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-weight: 500; color: #111827;">${value}</div>
+              <div style="font-size: 12px; color: #6b7280;">${row.email}</div>
+            </div>
+          </div>
+        `,
+      },
+      {name: 'Role', key: 'role'},
+      {
+        name: 'Department',
+        key: 'department',
+        render: (value: string) => html`
+          <span style="
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #374151;
+          ">
+            ${value}
+          </span>
+        `,
+      },
+      {
+        name: 'Joined',
+        key: 'joinedAt',
+        render: (value: string) => {
+          const date = new Date(value);
+          const formatted = date.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+          return html`<span style="color: #6b7280; font-size: 13px;">${formatted}</span>`;
+        },
+      },
+    ],
+    rows: [
+      {name: 'Alice Johnson', email: 'alice@example.com', role: 'Developer', department: 'Engineering', joinedAt: '2023-01-15', avatarColor: '#8b5cf6'},
+      {name: 'Bob Smith', email: 'bob@example.com', role: 'Designer', department: 'Design', joinedAt: '2023-03-20', avatarColor: '#06b6d4'},
+      {name: 'Carol Davis', email: 'carol@example.com', role: 'Manager', department: 'Product', joinedAt: '2022-11-01', avatarColor: '#f59e0b'},
+      {name: 'David Wilson', email: 'david@example.com', role: 'Developer', department: 'Engineering', joinedAt: '2024-02-10', avatarColor: '#10b981'},
+    ],
+    size: 'normal',
+  },
+  render: (args) => html`
+    <div style="padding: 1rem;">
+      <h3 style="margin-bottom: 1rem;">Custom Cell with Row Context</h3>
+      <p style="margin-bottom: 1rem; color: #666;">
+        The render function receives the full row object, allowing you to combine multiple
+        fields or apply conditional styling based on other row properties.
+      </p>
+      <nr-table
+        .headers=${args.headers}
+        .rows=${args.rows}
+        size=${args.size}>
+      </nr-table>
+    </div>
+  `,
+};
