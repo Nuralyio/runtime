@@ -1,40 +1,19 @@
 /**
  * Dashboard Layout Component
- * Main container that manages tabs and routing
+ * Simple router that renders views based on URL
  */
 
-import { html, LitElement, css } from 'lit';
+import { html, LitElement, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import {
-  $dashboardTabs,
-  $activeTab,
-  openTab,
-  closeTab,
-  switchTab,
-  updateTabSubTab,
-  updateTab,
-  type DashboardTab,
-  type DashboardTabType,
-  type AppSubTab
-} from '../stores/dashboard-tabs.store';
-import {
-  parseRoute,
-  tabToRoute,
-  navigateToTab,
-  initRouteListener,
-  syncFromURL,
-  createTabFromRoute,
-  type ParsedRoute
-} from '../utils/route-sync';
-import { workflowService } from '../../../services/workflow.service';
-import {
-  fetchApplicationsWithStatus,
-  type ApplicationWithStatus
-} from '../services/dashboard.service';
+import { parseRoute, type ParsedRoute } from '../utils/route-sync';
+import type { AppSubTab } from '../stores/dashboard-tabs.store';
 
-// Import child components
-import './DashboardTabBar';
-import './DashboardTabContent';
+// Import view components
+import './DashboardOverview';
+import './DashboardAppView';
+import './DashboardWorkflowView';
+import './DashboardDatabaseView';
+import './DashboardKVView';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
@@ -97,236 +76,117 @@ export class DashboardLayout extends LitElement {
       min-height: 0;
     }
 
-    dashboard-tab-bar {
-      flex-shrink: 0;
-    }
-
-    dashboard-tab-content {
+    .dashboard-content {
       flex: 1;
       min-height: 0;
+      overflow: auto;
     }
   `;
 
   @property({ type: String, attribute: 'data-initial-route' })
   initialRouteJson: string = '';
 
-  @state() private tabs: DashboardTab[] = [];
-  @state() private activeTabId: string = 'overview';
-
-  private unsubscribeTabs?: () => void;
-  private unsubscribeRoute?: () => void;
+  @state() private currentRoute: ParsedRoute = { type: 'overview' };
 
   connectedCallback() {
     super.connectedCallback();
-
-    // Subscribe to tab store
-    this.unsubscribeTabs = $dashboardTabs.subscribe((state) => {
-      this.tabs = state.tabs;
-      this.activeTabId = state.activeTabId;
-    });
-
-    // Initialize from route
     this.initializeFromRoute();
 
     // Listen for browser back/forward
-    this.unsubscribeRoute = initRouteListener((parsed) => {
-      this.handleRouteChange(parsed);
-    });
+    window.addEventListener('popstate', this.handlePopState);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.unsubscribeTabs?.();
-    this.unsubscribeRoute?.();
+    window.removeEventListener('popstate', this.handlePopState);
   }
 
-  private async initializeFromRoute() {
-    let parsed: ParsedRoute;
+  private handlePopState = () => {
+    this.currentRoute = parseRoute(window.location.pathname, window.location.search);
+  };
 
+  private initializeFromRoute() {
     if (this.initialRouteJson) {
       try {
         const initial = JSON.parse(this.initialRouteJson);
-        parsed = {
-          type: initial.type as DashboardTabType,
+        this.currentRoute = {
+          type: initial.type,
           resourceId: initial.resourceId,
           subTab: initial.subTab as AppSubTab,
           filters: initial.filters
         };
       } catch (e) {
         console.error('[DashboardLayout] Failed to parse initial route:', e);
-        parsed = { type: 'overview' };
+        this.currentRoute = { type: 'overview' };
       }
     } else {
-      // Parse from current URL
-      parsed = parseRoute(window.location.pathname, window.location.search);
-    }
-
-    await this.handleRouteChange(parsed);
-  }
-
-  private async handleRouteChange(parsed: ParsedRoute) {
-    // Check if we need to fetch data for this tab
-    const state = $dashboardTabs.get();
-    const existingTab = state.tabs.find(t => {
-      if (parsed.type === 'overview') return t.type === 'overview';
-      if (parsed.type === 'kv') return t.type === 'kv';
-      return t.type === parsed.type && t.resourceId === parsed.resourceId;
-    });
-
-    if (existingTab) {
-      // Tab exists, just switch to it
-      switchTab(existingTab.id);
-      if (parsed.type === 'app' && parsed.subTab) {
-        updateTabSubTab(existingTab.id, parsed.subTab);
-      }
-      return;
-    }
-
-    // Need to create new tab - may need to fetch data first
-    switch (parsed.type) {
-      case 'overview':
-        openTab({ type: 'overview', label: 'Overview' });
-        break;
-
-      case 'kv':
-        openTab({ type: 'kv', label: 'KV Store', filters: parsed.filters });
-        break;
-
-      case 'app':
-        await this.openAppTab(parsed.resourceId!, parsed.subTab);
-        break;
-
-      case 'workflow':
-        await this.openWorkflowTab(parsed.resourceId!);
-        break;
-
-      case 'database':
-        await this.openDatabaseTab(parsed.resourceId!);
-        break;
+      this.currentRoute = parseRoute(window.location.pathname, window.location.search);
     }
   }
 
-  private async openAppTab(appId: string, subTab?: AppSubTab) {
-    // Fetch app info to get the name
-    try {
-      const apps = await fetchApplicationsWithStatus({});
-      const app = apps.find(a => a.uuid === appId);
-      const label = app?.name || 'App';
-
-      openTab({
-        type: 'app',
-        resourceId: appId,
-        label,
-        subTab: subTab || 'pages'
-      });
-    } catch (e) {
-      console.error('[DashboardLayout] Failed to fetch app:', e);
-      openTab({
-        type: 'app',
-        resourceId: appId,
-        label: 'App',
-        subTab: subTab || 'pages'
-      });
-    }
+  private navigate(path: string) {
+    window.history.pushState({}, '', path);
+    this.currentRoute = parseRoute(path, '');
   }
 
-  private async openWorkflowTab(workflowId: string) {
-    try {
-      const workflow = await workflowService.getWorkflow(workflowId);
-
-      // Try to get app name if workflow has an applicationId
-      let appName: string | null = null;
-      const appId = (workflow as any).applicationId;
-
-      if (appId) {
-        try {
-          const apps = await fetchApplicationsWithStatus({});
-          const app = apps.find(a => a.uuid === appId);
-          appName = app?.name || null;
-        } catch (e) {
-          // Ignore - appName stays null
-        }
-      }
-
-      openTab({
-        type: 'workflow',
-        resourceId: workflowId,
-        label: workflow.name,
-        appId: appId || null,
-        appName
-      });
-    } catch (e) {
-      console.error('[DashboardLayout] Failed to fetch workflow:', e);
-      openTab({
-        type: 'workflow',
-        resourceId: workflowId,
-        label: 'Workflow',
-        appId: null,
-        appName: null
-      });
-    }
-  }
-
-  private async openDatabaseTab(databaseId: string) {
-    // For now, just create the tab - database service would be called here
-    openTab({
-      type: 'database',
-      resourceId: databaseId,
-      label: 'Database',
-      appId: null,
-      appName: null
-    });
-  }
-
-  private handleTabClick(e: CustomEvent) {
-    const { tabId } = e.detail;
-    const tab = this.tabs.find(t => t.id === tabId);
-    if (tab) {
-      switchTab(tabId);
-      navigateToTab(tab);
-    }
-  }
-
-  private handleTabClose(e: CustomEvent) {
-    const { tabId } = e.detail;
-    closeTab(tabId);
-
-    // Navigate to the new active tab
-    const state = $dashboardTabs.get();
-    const activeTab = state.tabs.find(t => t.id === state.activeTabId);
-    if (activeTab) {
-      navigateToTab(activeTab);
-    }
-  }
-
-  private handleOpenTab(e: CustomEvent) {
-    const detail = e.detail;
-    const newTab = openTab({
-      type: detail.type,
-      resourceId: detail.resourceId,
-      label: detail.label,
-      appId: detail.appId,
-      appName: detail.appName,
-      subTab: detail.subTab,
-      filters: detail.filters
-    });
-    navigateToTab(newTab);
+  private handleNavigate(e: CustomEvent) {
+    const { path } = e.detail;
+    this.navigate(path);
   }
 
   private handleSubTabChange(e: CustomEvent) {
-    const { tabId, subTab } = e.detail;
-    updateTabSubTab(tabId, subTab);
-
-    // Update URL
-    const tab = this.tabs.find(t => t.id === tabId);
-    if (tab) {
-      const updatedTab = { ...tab, subTab };
-      navigateToTab(updatedTab);
-    }
+    const { subTab } = e.detail;
+    const newPath = `/dashboard/app/${this.currentRoute.resourceId}/${subTab}`;
+    window.history.pushState({}, '', newPath);
+    this.currentRoute = { ...this.currentRoute, subTab };
   }
 
-  private get activeTab(): DashboardTab | null {
-    return this.tabs.find(t => t.id === this.activeTabId) || null;
+  private renderContent() {
+    switch (this.currentRoute.type) {
+      case 'overview':
+        return html`
+          <dashboard-overview
+            @navigate=${this.handleNavigate}
+          ></dashboard-overview>
+        `;
+
+      case 'app':
+        return html`
+          <dashboard-app-view
+            .appId=${this.currentRoute.resourceId || ''}
+            .subTab=${this.currentRoute.subTab || 'pages'}
+            @navigate=${this.handleNavigate}
+            @subtab-change=${this.handleSubTabChange}
+          ></dashboard-app-view>
+        `;
+
+      case 'workflow':
+        return html`
+          <dashboard-workflow-view
+            .workflowId=${this.currentRoute.resourceId || ''}
+            @navigate=${this.handleNavigate}
+          ></dashboard-workflow-view>
+        `;
+
+      case 'database':
+        return html`
+          <dashboard-database-view
+            .databaseId=${this.currentRoute.resourceId || ''}
+            @navigate=${this.handleNavigate}
+          ></dashboard-database-view>
+        `;
+
+      case 'kv':
+        return html`
+          <dashboard-kv-view
+            .filters=${this.currentRoute.filters || {}}
+            @navigate=${this.handleNavigate}
+          ></dashboard-kv-view>
+        `;
+
+      default:
+        return html`<p>Unknown route</p>`;
+    }
   }
 
   render() {
@@ -350,18 +210,9 @@ export class DashboardLayout extends LitElement {
       </header>
 
       <div class="dashboard-body">
-        <dashboard-tab-bar
-          .tabs=${this.tabs}
-          .activeTabId=${this.activeTabId}
-          @tab-click=${this.handleTabClick}
-          @tab-close=${this.handleTabClose}
-        ></dashboard-tab-bar>
-
-        <dashboard-tab-content
-          .tab=${this.activeTab}
-          @open-tab=${this.handleOpenTab}
-          @subtab-change=${this.handleSubTabChange}
-        ></dashboard-tab-content>
+        <div class="dashboard-content">
+          ${this.renderContent()}
+        </div>
       </div>
     `;
   }

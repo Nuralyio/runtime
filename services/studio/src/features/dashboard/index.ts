@@ -3,10 +3,8 @@
  * Main entry point for the dashboard feature
  */
 
-// Register dashboard components - new tab-based layout
+// Register dashboard components - simplified routing-based layout
 import './components/DashboardLayout';
-import './components/DashboardTabBar';
-import './components/DashboardTabContent';
 import './components/DashboardOverview';
 import './components/DashboardAppView';
 import './components/DashboardWorkflowView';
@@ -28,8 +26,6 @@ export * from './utils/route-sync';
 // Export components
 export { Dashboard } from './components/Dashboard';
 export { DashboardLayout } from './components/DashboardLayout';
-export { DashboardTabBar } from './components/DashboardTabBar';
-export { DashboardTabContent } from './components/DashboardTabContent';
 export { DashboardOverview } from './components/DashboardOverview';
 export { DashboardAppView } from './components/DashboardAppView';
 export { DashboardWorkflowView } from './components/DashboardWorkflowView';

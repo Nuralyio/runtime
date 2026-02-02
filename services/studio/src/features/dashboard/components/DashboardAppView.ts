@@ -1,6 +1,6 @@
 /**
  * Dashboard App View Component
- * Simplified view of an app with sub-tabs (pages, workflows, database, kv)
+ * Simplified view of an app with sub-tabs using nr-tabs
  */
 
 import { html, LitElement, css, nothing } from 'lit';
@@ -18,6 +18,17 @@ import { getKvEntries, type KvEntry } from '../../runtime/redux/store/kv';
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
+import '../../runtime/components/ui/nuraly-ui/src/components/tabs';
+
+// Tab index mapping
+const SUB_TAB_INDEX: Record<AppSubTab, number> = {
+  pages: 0,
+  workflows: 1,
+  database: 2,
+  kv: 3
+};
+
+const INDEX_TO_SUB_TAB: AppSubTab[] = ['pages', 'workflows', 'database', 'kv'];
 
 @customElement('dashboard-app-view')
 export class DashboardAppView extends LitElement {
@@ -43,6 +54,36 @@ export class DashboardAppView extends LitElement {
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+      background: transparent;
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .back-button:hover {
+      color: var(--nuraly-color-text, #0f0f3c);
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+    }
+
+    .back-button svg {
+      width: 14px;
+      height: 14px;
+    }
+
     .app-info {
       display: flex;
       align-items: center;
@@ -56,39 +97,14 @@ export class DashboardAppView extends LitElement {
       margin: 0;
     }
 
-    .app-description {
-      font-size: 13px;
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      margin: 0;
-    }
-
-    .sub-tabs {
-      display: flex;
-      gap: 4px;
-      padding: 0 24px;
+    .tabs-container {
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+      padding: 0 24px;
     }
 
-    .sub-tab {
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      transition: all 150ms ease;
-    }
-
-    .sub-tab:hover {
-      color: var(--nuraly-color-text, #0f0f3c);
-    }
-
-    .sub-tab.active {
-      color: var(--nuraly-color-primary, #14144b);
-      border-bottom-color: var(--nuraly-color-primary, #14144b);
+    .tabs-container nr-tabs {
+      --nuraly-tabs-border: none;
     }
 
     .sub-content {
@@ -190,6 +206,7 @@ export class DashboardAppView extends LitElement {
 
     .empty-state-text {
       font-size: 13px;
+      margin-bottom: 16px;
     }
   `;
 
@@ -200,6 +217,15 @@ export class DashboardAppView extends LitElement {
   @state() private workflows: WorkflowWithAppName[] = [];
   @state() private kvEntries: KvEntry[] = [];
   @state() private loading = true;
+
+  private get tabs() {
+    return [
+      { label: 'Pages', icon: 'FileText' },
+      { label: 'Workflows', icon: 'GitBranch' },
+      { label: 'Database', icon: 'Database' },
+      { label: 'KV Store', icon: 'Key' }
+    ];
+  }
 
   async connectedCallback() {
     super.connectedCallback();
@@ -244,10 +270,22 @@ export class DashboardAppView extends LitElement {
     }
   }
 
-  private switchSubTab(tab: AppSubTab) {
-    this.subTab = tab;
-    this.dispatchEvent(new CustomEvent('subtab-change', {
-      detail: { tabId: `app-${this.appId}`, subTab: tab },
+  private handleTabChange(e: CustomEvent) {
+    const index = e.detail.index;
+    const newSubTab = INDEX_TO_SUB_TAB[index];
+    if (newSubTab && newSubTab !== this.subTab) {
+      this.subTab = newSubTab;
+      this.dispatchEvent(new CustomEvent('subtab-change', {
+        detail: { subTab: newSubTab },
+        bubbles: true,
+        composed: true
+      }));
+    }
+  }
+
+  private goBack() {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: '/dashboard' },
       bubbles: true,
       composed: true
     }));
@@ -261,14 +299,8 @@ export class DashboardAppView extends LitElement {
   }
 
   private handleWorkflowClick(workflow: WorkflowWithAppName) {
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'workflow',
-        resourceId: workflow.id,
-        label: workflow.name,
-        appId: this.appId,
-        appName: this.app?.name
-      },
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/workflow/${workflow.id}` },
       bubbles: true,
       composed: true
     }));
@@ -383,36 +415,34 @@ export class DashboardAppView extends LitElement {
     return html`
       <div class="app-view">
         <div class="app-header">
-          <div class="app-info">
-            <h2 class="app-name">${this.app?.name || 'Loading...'}</h2>
-            ${this.app?.isPublished ? html`
-              <nr-badge status="success" text="Published"></nr-badge>
-            ` : html`
-              <nr-badge status="warning" text="Draft"></nr-badge>
-            `}
+          <div class="header-left">
+            <button class="back-button" @click=${this.goBack}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              Back
+            </button>
+            <div class="app-info">
+              <h2 class="app-name">${this.app?.name || 'Loading...'}</h2>
+              ${this.app?.isPublished ? html`
+                <nr-badge status="success" text="Published"></nr-badge>
+              ` : html`
+                <nr-badge status="warning" text="Draft"></nr-badge>
+              `}
+            </div>
           </div>
           <nr-button type="primary" size="small" @click=${this.openInStudio}>
             Open in Studio
           </nr-button>
         </div>
 
-        <div class="sub-tabs">
-          <button
-            class="sub-tab ${this.subTab === 'pages' ? 'active' : ''}"
-            @click=${() => this.switchSubTab('pages')}
-          >Pages</button>
-          <button
-            class="sub-tab ${this.subTab === 'workflows' ? 'active' : ''}"
-            @click=${() => this.switchSubTab('workflows')}
-          >Workflows</button>
-          <button
-            class="sub-tab ${this.subTab === 'database' ? 'active' : ''}"
-            @click=${() => this.switchSubTab('database')}
-          >Database</button>
-          <button
-            class="sub-tab ${this.subTab === 'kv' ? 'active' : ''}"
-            @click=${() => this.switchSubTab('kv')}
-          >KV Store</button>
+        <div class="tabs-container">
+          <nr-tabs
+            size="small"
+            .tabs=${this.tabs}
+            .activeTab=${SUB_TAB_INDEX[this.subTab]}
+            @nr-tab-click=${this.handleTabChange}
+          ></nr-tabs>
         </div>
 
         <div class="sub-content">

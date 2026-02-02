@@ -1,7 +1,7 @@
 /**
  * Dashboard Overview Component
  * Shows the main overview with applications, workflows, and KV store lists
- * Emits 'open-tab' events for navigation
+ * Emits 'navigate' events for routing
  */
 
 import { html, LitElement, css, nothing } from 'lit';
@@ -274,37 +274,24 @@ export class DashboardOverview extends LitElement {
   }
 
   private handleAppClick(app: ApplicationWithStatus) {
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'app',
-        resourceId: app.uuid,
-        label: app.name
-      },
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/app/${app.uuid}` },
       bubbles: true,
       composed: true
     }));
   }
 
   private handleWorkflowClick(workflow: WorkflowWithAppName) {
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'workflow',
-        resourceId: workflow.id,
-        label: workflow.name,
-        appId: workflow.applicationId,
-        appName: workflow.applicationName
-      },
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/workflow/${workflow.id}` },
       bubbles: true,
       composed: true
     }));
   }
 
   private handleKvClick() {
-    this.dispatchEvent(new CustomEvent('open-tab', {
-      detail: {
-        type: 'kv',
-        label: 'KV Store'
-      },
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: '/dashboard/kv' },
       bubbles: true,
       composed: true
     }));
