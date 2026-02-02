@@ -286,6 +286,18 @@ export class RevisionService {
   }
 
   /**
+   * Get published versions for multiple applications in one query
+   */
+  async getPublishedVersions(applicationIds: string[]): Promise<Map<string, PublishedVersionModel>> {
+    const versions = await this.publishedVersionRepo.findByApplicationIds(applicationIds);
+    const map = new Map<string, PublishedVersionModel>();
+    for (const version of versions) {
+      map.set(version.applicationId, version);
+    }
+    return map;
+  }
+
+  /**
    * Get the published snapshot for an application
    * Returns the full app/pages/components data from the published revision
    */
