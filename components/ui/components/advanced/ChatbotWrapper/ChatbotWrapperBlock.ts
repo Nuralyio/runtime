@@ -373,6 +373,7 @@ export class ChatbotWrapperBlock extends BaseElementBlock {
           }
         },
         initialMessages: this.resolvedInputs?.initialMessages || [],
+        initialSuggestions: this.resolvedInputs?.suggestions || [],
         debug: debug
       });
 
