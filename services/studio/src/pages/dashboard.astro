@@ -1,5 +1,15 @@
 ---
+/**
+ * Dashboard Main Route
+ * /dashboard - Overview tab
+ */
 export const prerender = false;
+
+const initialRoute = {
+  type: 'overview',
+  pathname: Astro.url.pathname,
+  search: Astro.url.search
+};
 ---
 
 <!doctype html>
@@ -13,7 +23,7 @@ export const prerender = false;
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
 
     <style>
-      /* Nuraly Design System CSS Variables - aligned with 502/home page design */
+      /* Nuraly Design System CSS Variables */
       :root {
         /* Primary brand colors - Nuraly navy */
         --nuraly-color-primary: #14144b;
@@ -54,7 +64,7 @@ export const prerender = false;
         --nuraly-color-purple: #722ed1;
         --nuraly-color-purple-light: #f9f0ff;
 
-        /* Button colors - Override NuralyUI defaults to use Nuraly brand */
+        /* Button colors */
         --nuraly-color-button-primary: var(--nuraly-color-primary);
         --nuraly-color-button-primary-hover: var(--nuraly-color-primary-light);
         --nuraly-color-button-primary-active: var(--nuraly-color-primary-dark);
@@ -65,11 +75,6 @@ export const prerender = false;
 
         /* Transitions */
         --nuraly-transition: 150ms ease;
-
-        /* Footer colors */
-        --nuraly-footer-bg: #0a0a32;
-        --nuraly-footer-text: #6666a0;
-        --nuraly-footer-link: #8888b0;
       }
 
       * {
@@ -89,9 +94,11 @@ export const prerender = false;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         min-height: 100vh;
+        margin: 0;
+        padding: 0;
       }
 
-      nuraly-dashboard {
+      dashboard-layout {
         display: block;
         width: 100%;
         min-height: 100vh;
@@ -99,7 +106,7 @@ export const prerender = false;
     </style>
   </head>
   <body>
-    <nuraly-dashboard></nuraly-dashboard>
+    <dashboard-layout data-initial-route={JSON.stringify(initialRoute)}></dashboard-layout>
 
     <script>
       // Import and register all dashboard components
