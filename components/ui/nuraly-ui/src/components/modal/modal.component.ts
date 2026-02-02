@@ -223,7 +223,15 @@ export class NrModalElement extends NuralyUIBaseMixin(LitElement)
     // When animation completes
     modalAnimation.addEventListener('finish', () => {
       this.animationState = 'open';
-      
+
+      // Clear the animation's fill-forward effect to prevent transform from creating
+      // a containing block for fixed-positioned descendants (e.g., dropdowns)
+      // commitStyles() persists final state, then cancel() removes animation effect
+      modalAnimation.commitStyles();
+      modalAnimation.cancel();
+      // Now clear the transform that was committed
+      modalElement.style.transform = '';
+
       // Only focus if this is the top modal
       if (ModalManager.isTopModal(this)) {
         this.keyboardController.focusFirstElement();

@@ -396,6 +396,33 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
   }
 
   /**
+   * Gets the current validation status
+   * @returns ValidationStatus object with isValid and message
+   */
+  getValidationStatus(): { isValid: boolean; validationMessage: string } {
+    const isValid = this.validationController.checkValidity();
+    return {
+      isValid,
+      validationMessage: this.validationController.validationMessage || ''
+    };
+  }
+
+  /**
+   * Gets the current validation message
+   */
+  get validationMessage(): string {
+    return this.validationController.validationMessage || '';
+  }
+
+  /**
+   * Clears validation state
+   */
+  clearValidation(): void {
+    this.validationController.setCustomValidity('');
+    this.status = SelectStatus.Default;
+  }
+
+  /**
    * Searches for options with the given query
    * @param query - Search query string
    */

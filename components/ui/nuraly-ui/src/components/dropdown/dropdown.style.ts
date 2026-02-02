@@ -57,7 +57,7 @@ export const styles = css`
     display: block;
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: none;
     pointer-events: auto;
   }
 
@@ -66,7 +66,7 @@ export const styles = css`
     display: block;
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: none;
     pointer-events: auto;
   }
 
@@ -81,7 +81,7 @@ export const styles = css`
   .dropdown__panel--top.dropdown__panel--open,
   .dropdown__panel--top-start.dropdown__panel--open,
   .dropdown__panel--top-end.dropdown__panel--open {
-    transform: translateY(0);
+    transform: none;
   }
 
   .dropdown__panel--bottom,
@@ -156,7 +156,7 @@ export const styles = css`
   .dropdown__panel--slide.dropdown__panel--open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: none;
   }
 
   /* For top-positioned dropdowns, slide direction is reversed */
@@ -182,7 +182,7 @@ export const styles = css`
   .dropdown__panel--scale.dropdown__panel--open {
     opacity: 1;
     visibility: visible;
-    transform: scale(1) translateY(0);
+    transform: none;
   }
 
   /* For top-positioned scale dropdowns */
@@ -195,7 +195,7 @@ export const styles = css`
   .dropdown__panel--scale.dropdown__panel--top.dropdown__panel--open,
   .dropdown__panel--scale.dropdown__panel--top-start.dropdown__panel--open,
   .dropdown__panel--scale.dropdown__panel--top-end.dropdown__panel--open {
-    transform: scale(1) translateY(0);
+    transform: none;
   }
 
   /* Arrow */
@@ -440,6 +440,16 @@ export const styles = css`
   :host([disabled]) {
     opacity: var(--nuraly-dropdown-disabled-opacity, 0.5);
     pointer-events: none;
+  }
+
+  /* Allow overflow for nested dropdowns/selects */
+  :host([allow-overflow]) .dropdown__panel {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  :host([allow-overflow]) .dropdown__content {
+    overflow: visible !important;
   }
 
   /* Hidden state */

@@ -35,6 +35,16 @@ export interface IHeader {
   filterConfig?: ColumnFilter;
   fixed?: 'left' | 'right';
   width?: number | string;
+  /**
+   * Custom cell renderer function
+   * When provided, this function will be called to render the cell content
+   * instead of using the raw value from row[key]
+   * @param value - The cell value from row[key]
+   * @param row - The full row data
+   * @param index - The row index
+   * @returns Template result for the cell content (e.g., html`<nr-badge>...</nr-badge>`)
+   */
+  render?: CellContentRenderer;
 }
 
 /**
@@ -87,5 +97,14 @@ export interface SortAttribute {
  * @returns Template result for the expanded content
  */
 export type ExpansionContentRenderer = (row: any, index: number) => any;
+
+/**
+ * Cell content render function
+ * @param value - The cell value from row[key]
+ * @param row - The full row data
+ * @param index - The row index
+ * @returns Template result for the cell content
+ */
+export type CellContentRenderer = (value: any, row: any, index: number) => any;
 
 export const EMPTY_STRING = '';

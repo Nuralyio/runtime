@@ -106,6 +106,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: String, attribute: 'cascade-direction' }) cascadeDirection: 'right' | 'left' | 'auto' = 'auto';
   @property({ type: Number, attribute: 'cascade-delay' }) cascadeDelay = 50;
   @property({ type: Boolean, attribute: 'cascade-on-hover' }) cascadeOnHover = true;
+  @property({ type: Boolean, attribute: 'allow-overflow' }) allowOverflow = false;
 
   private dropdownController = new NrDropdownController(this);
   private openSubmenus = new Set<string>();
