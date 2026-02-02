@@ -16,6 +16,21 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || '';
       <p class="demo-caption">This demo showcases a Retrieval-Augmented Generation (RAG) agent using the ReAct pattern for reasoning and tool use.</p>
     </div>
 
+    <!-- Mobile banner - shown only on mobile -->
+    <div class="mobile-banner">
+      <div class="mobile-banner__icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="mobile-banner__text">
+        <div class="mobile-banner__title">Desktop Recommended</div>
+        <div class="mobile-banner__message">View workflow execution live on desktop for the best experience.</div>
+      </div>
+    </div>
+
     <div class="demo-container" data-animate id="demo-micro-app-container">
       <p style="text-align: center; color: #999; padding: 40px 0;">Loading...</p>
     </div>
@@ -32,6 +47,56 @@ const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || '';
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
+  }
+
+  /* Mobile banner - hidden on desktop */
+  .mobile-banner {
+    display: none;
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+
+  .mobile-banner__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: #3b82f6;
+    border-radius: 50%;
+    color: white;
+  }
+
+  .mobile-banner__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-banner__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+  }
+
+  .mobile-banner__message {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-banner {
+      display: flex;
+    }
   }
 </style>
 
