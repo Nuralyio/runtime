@@ -59,11 +59,14 @@ export class StateHandler {
   addMessageToState(message: ChatbotMessage): void {
     this.state.messages = [...this.state.messages, message];
 
+    // Update suggestions based on message content
     if (message.suggestions && message.suggestions.length > 0) {
       this.state.suggestions = [...message.suggestions];
-    } else {
+    } else if (this.state.messages.length > 1) {
+      // Clear suggestions after first message if no new ones provided
       this.state.suggestions = [];
     }
+    // Keep initial suggestions if only one message exists
 
     if (this.config.maxMessages && this.state.messages.length > this.config.maxMessages) {
       this.state.messages = this.state.messages.slice(-this.config.maxMessages);

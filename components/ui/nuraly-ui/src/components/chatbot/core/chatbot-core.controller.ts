@@ -141,7 +141,7 @@ export class ChatbotCoreController {
       modules: config.enableModules ? [] : undefined,
       selectedModules: [],
       uploadedFiles: [],
-      suggestions: [],
+      suggestions: config.initialSuggestions || [],
       isTyping: false,
       isProcessing: false,
       currentThreadId: undefined,
