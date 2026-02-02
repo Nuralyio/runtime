@@ -1,18 +1,9 @@
 /**
  * Dashboard Route Sync Utilities
- * Handles URL <-> Tab state synchronization
+ * Handles URL parsing and navigation
  */
 
-import {
-  type DashboardTab,
-  type DashboardTabType,
-  type AppSubTab,
-  $dashboardTabs,
-  openTab,
-  switchTab,
-  updateTabSubTab,
-  generateTabId
-} from '../stores/dashboard-tabs.store';
+import { type DashboardTabType, type AppSubTab } from '../stores/dashboard-tabs.store';
 
 /**
  * Parsed route information
@@ -84,28 +75,28 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
 }
 
 /**
- * Convert a tab to its URL path
+ * Build a route path from parsed route
  */
-export function tabToRoute(tab: DashboardTab): string {
-  switch (tab.type) {
+export function buildRoutePath(route: ParsedRoute): string {
+  switch (route.type) {
     case 'overview':
       return '/dashboard';
 
     case 'app':
-      if (tab.subTab && tab.subTab !== 'pages') {
-        return `/dashboard/app/${tab.resourceId}/${tab.subTab}`;
+      if (route.subTab && route.subTab !== 'pages') {
+        return `/dashboard/app/${route.resourceId}/${route.subTab}`;
       }
-      return `/dashboard/app/${tab.resourceId}`;
+      return `/dashboard/app/${route.resourceId}`;
 
     case 'workflow':
-      return `/dashboard/workflow/${tab.resourceId}`;
+      return `/dashboard/workflow/${route.resourceId}`;
 
     case 'database':
-      return `/dashboard/database/${tab.resourceId}`;
+      return `/dashboard/database/${route.resourceId}`;
 
     case 'kv':
-      if (tab.filters && Object.keys(tab.filters).length > 0) {
-        const params = new URLSearchParams(tab.filters);
+      if (route.filters && Object.keys(route.filters).length > 0) {
+        const params = new URLSearchParams(route.filters);
         return `/dashboard/kv?${params.toString()}`;
       }
       return '/dashboard/kv';
@@ -116,63 +107,16 @@ export function tabToRoute(tab: DashboardTab): string {
 }
 
 /**
- * Navigate to a tab's route (updates URL without page reload)
+ * Navigate to a route path (updates URL without page reload)
  */
-export function navigateToTab(tab: DashboardTab): void {
+export function navigateToPath(path: string): void {
   if (typeof window === 'undefined') return;
 
-  const newPath = tabToRoute(tab);
   const currentPath = window.location.pathname + window.location.search;
 
-  if (newPath !== currentPath) {
-    window.history.pushState({ tabId: tab.id }, '', newPath);
+  if (path !== currentPath) {
+    window.history.pushState({}, '', path);
   }
-}
-
-/**
- * Sync state from URL - called on initial load or popstate
- * Returns the tab that should be active (may need data fetching)
- */
-export function syncFromURL(pathname: string, search: string = ''): ParsedRoute {
-  const parsed = parseRoute(pathname, search);
-  const state = $dashboardTabs.get();
-  const tabId = generateTabId(parsed.type, parsed.resourceId);
-
-  // Check if tab already exists
-  const existingTab = state.tabs.find(t => t.id === tabId);
-
-  if (existingTab) {
-    // Tab exists - just activate it
-    switchTab(tabId);
-
-    // Update sub-tab if it's an app tab
-    if (parsed.type === 'app' && parsed.subTab) {
-      updateTabSubTab(tabId, parsed.subTab);
-    }
-  }
-  // If tab doesn't exist, caller needs to fetch data and create it
-
-  return parsed;
-}
-
-/**
- * Create a tab from parsed route (after data is fetched)
- */
-export function createTabFromRoute(
-  parsed: ParsedRoute,
-  label: string,
-  appId?: string | null,
-  appName?: string | null
-): DashboardTab {
-  return openTab({
-    type: parsed.type,
-    resourceId: parsed.resourceId,
-    label,
-    appId,
-    appName,
-    subTab: parsed.subTab,
-    filters: parsed.filters
-  });
 }
 
 /**
