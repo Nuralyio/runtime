@@ -41,26 +41,39 @@ public class KvEntryService {
     public List<KvEntryDTO> listEntries(String applicationId, String scope, String scopedResourceId, String prefix) {
         StringBuilder query = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
+        boolean hasCondition = false;
 
-        query.append("applicationId = :applicationId");
-        params.put("applicationId", applicationId);
+        // applicationId is optional - if provided, filter by it
+        if (applicationId != null && !applicationId.isEmpty()) {
+            query.append("applicationId = :applicationId");
+            params.put("applicationId", applicationId);
+            hasCondition = true;
+        }
 
         if (scope != null && !scope.isEmpty()) {
-            query.append(" AND scope = :scope");
+            query.append(hasCondition ? " AND " : "").append("scope = :scope");
             params.put("scope", scope);
+            hasCondition = true;
         }
 
         if (scopedResourceId != null && !scopedResourceId.isEmpty()) {
-            query.append(" AND scopedResourceId = :scopedResourceId");
+            query.append(hasCondition ? " AND " : "").append("scopedResourceId = :scopedResourceId");
             params.put("scopedResourceId", scopedResourceId);
+            hasCondition = true;
         }
 
         if (prefix != null && !prefix.isEmpty()) {
-            query.append(" AND keyPath LIKE :prefix");
+            query.append(hasCondition ? " AND " : "").append("keyPath LIKE :prefix");
             params.put("prefix", prefix + "%");
+            hasCondition = true;
         }
 
-        List<KvEntryEntity> entries = KvEntryEntity.list(query.toString(), params);
+        List<KvEntryEntity> entries;
+        if (hasCondition) {
+            entries = KvEntryEntity.list(query.toString(), params);
+        } else {
+            entries = KvEntryEntity.listAll();
+        }
 
         List<KvEntryDTO> dtos = new ArrayList<>();
         for (KvEntryEntity entry : entries) {
