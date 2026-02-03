@@ -53,16 +53,23 @@ export function initializeStudio(): void {
 
 /**
  * Initialize the editor tab based on URL routing
- * Reads window.__TAB_TYPE__ set by the Astro page
+ * Reads window.__TAB_TYPE__ and window.__WORKFLOW_ID__ set by the Astro page
  */
 function initializeTabFromUrl(): void {
   const tabType = (window as any).__TAB_TYPE__ as string | undefined;
+  const workflowId = (window as any).__WORKFLOW_ID__ as string | undefined;
 
   if (!tabType) return;
 
-  const tabConfigs: Record<string, { id: string; label: string; type: string }> = {
+  // Get appId from current application for passing to flow tab
+  const currentApp = $currentApplication.get() as any;
+  const appId = currentApp?.uuid;
+
+  console.log('[StudioBootstrap] initializeTabFromUrl:', { tabType, workflowId, appId });
+
+  const tabConfigs: Record<string, { id: string; label: string; type: string; detail?: any }> = {
     page: { id: "0", label: "Page editor", type: "page" },
-    flow: { id: "flow", label: "Workflows", type: "flow" },
+    flow: { id: "flow", label: "Workflows", type: "flow", detail: { appId, workflowId } },
     database: { id: "database", label: "Database", type: "database" },
     journal: { id: "journal", label: "Journal", type: "journal" },
   };
@@ -72,11 +79,17 @@ function initializeTabFromUrl(): void {
 
   const currentState = $editorState.get();
 
-  // Ensure the tab exists in the tabs list
-  const tabExists = currentState.tabs.some(t => t.id === tabConfig.id);
-  const updatedTabs = tabExists
-    ? currentState.tabs
-    : [...currentState.tabs, tabConfig];
+  // Update tabs list - replace existing tab with same id to ensure detail is updated
+  const tabIndex = currentState.tabs.findIndex(t => t.id === tabConfig.id);
+  let updatedTabs: typeof currentState.tabs;
+  if (tabIndex >= 0) {
+    // Replace existing tab with new config (which has detail)
+    updatedTabs = [...currentState.tabs];
+    updatedTabs[tabIndex] = tabConfig;
+  } else {
+    // Add new tab
+    updatedTabs = [...currentState.tabs, tabConfig];
+  }
 
   // Set the current tab and update tabs list
   $editorState.set({

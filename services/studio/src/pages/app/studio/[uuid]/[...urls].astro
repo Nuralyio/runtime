@@ -15,14 +15,20 @@ import { EditorSpinner } from '../../../../features/studio/panels/layout/EditorS
 import { ApplicationNotFound } from '../../../../services/applications/exceptions/ApplicationNotFound';
 const { title, uuid, urls = "" } = Astro.params;
 
+// Parse query parameters
+const url = Astro.url;
+const workflowIdParam = url.searchParams.get('workflow');
+
 // Parse URL to determine which tab to open
 // Supported patterns for editor:
 // - /app/studio/{uuid}/workflow - Opens workflow tab
+// - /app/studio/{uuid}/workflow?workflow={id} - Opens specific workflow
 // - /app/studio/{uuid}/database - Opens database tab
 // - /app/studio/{uuid}/pages/parent/child - Opens pages tab with nested page
 // - /app/studio/{uuid} - Default pages tab
 let tabType = "page"; // default to page editor
 let pageUrl = "";
+let workflowId = workflowIdParam || "";
 
 if (urls) {
   const urlParts = urls.split("/");
@@ -30,7 +36,10 @@ if (urls) {
 
   if (firstPart === "workflow" || firstPart === "workflows") {
     tabType = "flow";
-    // Rest of path could be workflow-specific routing in future
+    // Check if workflow ID is in the path (e.g., /workflows/{workflowId})
+    if (urlParts[1] && !workflowId) {
+      workflowId = urlParts[1];
+    }
   } else if (firstPart === "database" || firstPart === "db") {
     tabType = "database";
     // Rest of path could be database-specific routing in future
@@ -125,7 +134,7 @@ try {
 ---
 
 <head> <title>Nuraly - Editing {application?.name}</title> </head>
-<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID, filesAppUUID,filesPageUUID,filesModulesConfig, urls, currentUser, tabType, pageUrl }}>
+<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID, filesAppUUID,filesPageUUID,filesModulesConfig, urls, currentUser, tabType, pageUrl, workflowId }}>
   window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
   window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
   window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
@@ -140,6 +149,7 @@ try {
   // Tab routing for studio editor
   window.__TAB_TYPE__ = tabType;  // "page", "flow", or "database"
   window.__PAGE_URL__ = pageUrl;  // nested page URL (e.g., "blog/article1")
+  window.__WORKFLOW_ID__ = workflowId;  // specific workflow ID from query param or path
   // Only set __URL__ for page selection when on pages tab
   window.__URL__ = tabType === "page" ? pageUrl : "";
   window.__CURRENT_USER__ = currentUser;

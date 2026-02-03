@@ -42,7 +42,41 @@ export class Dashboard extends LitElement {
 
   async connectedCallback() {
     super.connectedCallback();
+    this.initializeViewFromUrl();
+    window.addEventListener('popstate', this.handlePopState);
     await this.loadDashboardData();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('popstate', this.handlePopState);
+  }
+
+  private handlePopState = () => {
+    this.initializeViewFromUrl();
+  };
+
+  private initializeViewFromUrl() {
+    const path = window.location.pathname;
+    if (path.includes('/dashboard/workflows')) {
+      this.activeView = 'workflows';
+    } else if (path.includes('/dashboard/kv')) {
+      this.activeView = 'kv';
+    } else {
+      this.activeView = 'applications';
+    }
+  }
+
+  private updateUrl(view: ActiveView) {
+    const urlMap: Record<ActiveView, string> = {
+      applications: '/dashboard',
+      workflows: '/dashboard/workflows',
+      kv: '/dashboard/kv'
+    };
+    const newUrl = urlMap[view];
+    if (window.location.pathname !== newUrl) {
+      window.history.pushState({}, '', newUrl);
+    }
   }
 
   private async loadDashboardData() {
@@ -72,13 +106,16 @@ export class Dashboard extends LitElement {
   private handleMenuChange(e: CustomEvent) {
     const { value } = e.detail;
     // The menu emits the text as the value
+    let newView: ActiveView = 'applications';
     if (value === 'Applications') {
-      this.activeView = 'applications';
+      newView = 'applications';
     } else if (value === 'Workflows') {
-      this.activeView = 'workflows';
+      newView = 'workflows';
     } else if (value === 'KV Store') {
-      this.activeView = 'kv';
+      newView = 'kv';
     }
+    this.activeView = newView;
+    this.updateUrl(newView);
   }
 
   private handleRetry() {
@@ -122,7 +159,7 @@ export class Dashboard extends LitElement {
         </svg>
         <h3 class="error-title">Unable to load dashboard</h3>
         <p class="error-message">${this.error}</p>
-        <nr-button type="primary" @click=${this.handleRetry}>Try Again</nr-button>
+        <nr-button type="primary" size="small" @click=${this.handleRetry}>Try Again</nr-button>
       </div>
     `;
   }
