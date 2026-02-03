@@ -225,6 +225,35 @@ async function main() {
   }
   console.log('Seeded sample components');
 
+  // ============================================
+  // 6. FIX SEQUENCES (after seeding with explicit IDs)
+  // ============================================
+  console.log('Fixing database sequences...');
+  await prisma.$executeRaw`
+    DO $$
+    DECLARE
+        r RECORD;
+    BEGIN
+        FOR r IN (
+            SELECT
+                c.relname as table_name,
+                a.attname as column_name,
+                s.relname as sequence_name
+            FROM pg_class c
+            JOIN pg_attribute a ON a.attrelid = c.oid
+            JOIN pg_depend d ON d.refobjid = c.oid AND d.refobjsubid = a.attnum
+            JOIN pg_class s ON s.oid = d.objid AND s.relkind = 'S'
+            WHERE c.relkind = 'r'
+        ) LOOP
+            EXECUTE format(
+                'SELECT setval(%L, COALESCE((SELECT MAX(%I) FROM %I), 1))',
+                r.sequence_name, r.column_name, r.table_name
+            );
+        END LOOP;
+    END $$;
+  `;
+  console.log('Database sequences fixed!');
+
   console.log('Database seeding from backup completed successfully!');
   console.log('All data is now associated with dev@nuraly.io user (ID: ' + KEYCLOAK_DEV_USER_ID + ')');
 }
