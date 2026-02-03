@@ -13,6 +13,8 @@ import type { Workflow } from '../../runtime/components/ui/nuraly-ui/src/compone
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
+import '../../runtime/components/ui/nuraly-ui/src/components/icon';
+import '../../runtime/components/ui/nuraly-ui/src/components/input';
 
 @customElement('dashboard-workflow-view')
 export class DashboardWorkflowView extends LitElement {
@@ -74,11 +76,74 @@ export class DashboardWorkflowView extends LitElement {
       gap: 4px;
     }
 
+    .workflow-name-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .workflow-name {
       font-size: 18px;
       font-weight: 600;
       color: var(--nuraly-color-text, #0f0f3c);
       margin: 0;
+    }
+
+    .workflow-name-container:hover .edit-icon {
+      opacity: 1;
+    }
+
+    .edit-icon {
+      opacity: 0;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 150ms ease;
+      --nuraly-icon-size: 14px;
+      --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    }
+
+    .edit-icon:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+      --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
+    }
+
+    .workflow-name-input {
+      min-width: 200px;
+      --nuraly-input-font-size: 16px;
+      --nuraly-input-font-weight: 600;
+    }
+
+    .edit-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+    }
+
+    .action-icon {
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 150ms ease;
+      --nuraly-icon-size: 16px;
+    }
+
+    .action-icon.save {
+      --nuraly-icon-color: var(--nuraly-color-success, #22c55e);
+    }
+
+    .action-icon.save:hover {
+      background: var(--nuraly-color-success-light, #dcfce7);
+    }
+
+    .action-icon.cancel {
+      --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    }
+
+    .action-icon.cancel:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+      --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
     }
 
     .workflow-meta {
@@ -253,6 +318,9 @@ export class DashboardWorkflowView extends LitElement {
   @state() private workflow: Workflow | null = null;
   @state() private executions: ExecutionResult[] = [];
   @state() private loading = true;
+  @state() private isEditingName = false;
+  @state() private editedName = '';
+  @state() private isSavingName = false;
 
   async connectedCallback() {
     super.connectedCallback();
@@ -303,11 +371,7 @@ export class DashboardWorkflowView extends LitElement {
   }
 
   private goBack() {
-    this.dispatchEvent(new CustomEvent('navigate', {
-      detail: { path: '/dashboard' },
-      bubbles: true,
-      composed: true
-    }));
+    window.history.back();
   }
 
   private navigateToApp() {
@@ -360,6 +424,57 @@ export class DashboardWorkflowView extends LitElement {
     }
   }
 
+  private startEditingName() {
+    this.editedName = this.workflow?.name || '';
+    this.isEditingName = true;
+    // Focus the input after render
+    this.updateComplete.then(() => {
+      const input = this.shadowRoot?.querySelector('.workflow-name-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
+  }
+
+  private cancelEditingName() {
+    this.isEditingName = false;
+    this.editedName = '';
+  }
+
+  private handleNameInput(e: CustomEvent) {
+    this.editedName = e.detail?.value || '';
+  }
+
+  private handleNameKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.saveWorkflowName();
+    } else if (e.key === 'Escape') {
+      this.cancelEditingName();
+    }
+  }
+
+  private async saveWorkflowName() {
+    if (!this.workflow || !this.editedName.trim() || this.editedName === this.workflow.name) {
+      this.cancelEditingName();
+      return;
+    }
+
+    this.isSavingName = true;
+    try {
+      const workflowService = await getWorkflowService();
+      await workflowService.patchWorkflow(this.workflowId, { name: this.editedName.trim() });
+
+      // Update local state
+      this.workflow = { ...this.workflow, name: this.editedName.trim() };
+      this.isEditingName = false;
+    } catch (e) {
+      console.error('[DashboardWorkflowView] Failed to save workflow name:', e);
+    } finally {
+      this.isSavingName = false;
+    }
+  }
+
   render() {
     if (this.loading) {
       return html`
@@ -382,7 +497,42 @@ export class DashboardWorkflowView extends LitElement {
               Back
             </button>
             <div class="workflow-info">
-              <h2 class="workflow-name">${this.workflow?.name || 'Workflow'}</h2>
+              ${this.isEditingName ? html`
+                <div class="workflow-name-container">
+                  <nr-input
+                    class="workflow-name-input"
+                    .value=${this.editedName}
+                    @nr-input=${this.handleNameInput}
+                    @keydown=${this.handleNameKeydown}
+                    ?disabled=${this.isSavingName}
+                    size="small"
+                  ></nr-input>
+                  <div class="edit-actions">
+                    <nr-icon
+                      name="check"
+                      class="action-icon save"
+                      title="Save"
+                      @click=${this.saveWorkflowName}
+                    ></nr-icon>
+                    <nr-icon
+                      name="x"
+                      class="action-icon cancel"
+                      title="Cancel"
+                      @click=${this.cancelEditingName}
+                    ></nr-icon>
+                  </div>
+                </div>
+              ` : html`
+                <div class="workflow-name-container">
+                  <h2 class="workflow-name">${this.workflow?.name || 'Workflow'}</h2>
+                  <nr-icon
+                    name="pencil"
+                    class="edit-icon"
+                    title="Edit name"
+                    @click=${this.startEditingName}
+                  ></nr-icon>
+                </div>
+              `}
               <div class="workflow-meta">
                 ${this.appId ? html`
                   <span class="app-link" @click=${this.navigateToApp}>

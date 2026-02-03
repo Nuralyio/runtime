@@ -3,7 +3,7 @@
  * Simple router that renders views based on URL
  */
 
-import { html, LitElement, css, nothing } from 'lit';
+import { html, LitElement, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { parseRoute, type ParsedRoute, type OverviewView } from '../utils/route-sync';
 import type { AppSubTab } from '../stores/dashboard-tabs.store';
@@ -36,7 +36,7 @@ export class DashboardLayout extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 24px;
+      padding: 0px 24px;
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
       flex-shrink: 0;
@@ -82,7 +82,6 @@ export class DashboardLayout extends LitElement {
       gap: 8px;
       padding: 6px 12px;
       background: var(--nuraly-color-background, #f8fafc);
-      border: 1px solid var(--nuraly-color-border, #e8e8f0);
       border-radius: 6px;
       cursor: pointer;
       transition: all 150ms ease;

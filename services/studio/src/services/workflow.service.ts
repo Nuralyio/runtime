@@ -223,6 +223,28 @@ export const workflowService = {
     return dtoToWorkflow(dto);
   },
 
+  // Partial update workflow (name, description, etc.)
+  // First fetches current workflow, merges updates, then sends full PUT
+  async patchWorkflow(workflowId: string, updates: Partial<{ name: string; description: string }>): Promise<Workflow> {
+    // Get current workflow
+    const current = await this.getWorkflow(workflowId);
+
+    // Merge updates
+    const updatedWorkflow = {
+      ...current,
+      ...updates,
+    };
+
+    // Convert to DTO and send PUT
+    const response = await fetch(APIS_URL.updateWorkflow(workflowId), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(workflowToDTO(updatedWorkflow, current.applicationId || '')),
+    });
+    const dto = await handleResponse<WorkflowDTO>(response);
+    return dtoToWorkflow(dto);
+  },
+
   // Delete a workflow
   async deleteWorkflow(id: string): Promise<void> {
     const response = await fetch(APIS_URL.deleteWorkflow(id), {
