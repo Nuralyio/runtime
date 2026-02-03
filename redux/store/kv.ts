@@ -384,3 +384,93 @@ export function showKvModal(): void {
 export function closeKvModal(): void {
   $showKvModal.set(false);
 }
+
+// ============================================
+// User Preferences API (no applicationId needed)
+// ============================================
+
+/**
+ * System application ID for global user preferences
+ */
+const SYSTEM_APP_ID = '_system';
+
+/**
+ * Prefix for user preference keys
+ */
+const USER_PREFERENCES_PREFIX = 'user-preferences';
+
+/**
+ * Get a user preference entry from KV
+ * Uses scope='user' so each user has their own preferences
+ */
+export async function getUserPreference<T = any>(keyPath: string): Promise<T | null> {
+  try {
+    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
+    const response = await fetch(
+      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}?applicationId=${SYSTEM_APP_ID}&scope=user`,
+      { credentials: 'include' }
+    );
+    if (!response.ok) {
+      if (response.status === 404) return null;
+      throw new Error('Failed to fetch user preference');
+    }
+    const entry = await response.json();
+    return entry?.value ?? null;
+  } catch (error) {
+    console.error('Failed to get user preference:', error);
+    return null;
+  }
+}
+
+/**
+ * Set a user preference entry in KV
+ * Uses scope='user' so each user has their own preferences
+ */
+export async function setUserPreference<T = any>(keyPath: string, value: T): Promise<boolean> {
+  try {
+    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
+    const response = await fetch(
+      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          applicationId: SYSTEM_APP_ID,
+          scope: 'user',
+          value,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error('Failed to set user preference');
+    }
+    return true;
+  } catch (error) {
+    console.error('Failed to set user preference:', error);
+    return false;
+  }
+}
+
+/**
+ * Delete a user preference entry from KV
+ */
+export async function deleteUserPreference(keyPath: string): Promise<boolean> {
+  try {
+    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
+    const response = await fetch(
+      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}?applicationId=${SYSTEM_APP_ID}&scope=user`,
+      {
+        method: 'DELETE',
+        credentials: 'include',
+      }
+    );
+    if (!response.ok && response.status !== 404) {
+      throw new Error('Failed to delete user preference');
+    }
+    return true;
+  } catch (error) {
+    console.error('Failed to delete user preference:', error);
+    return false;
+  }
+}
