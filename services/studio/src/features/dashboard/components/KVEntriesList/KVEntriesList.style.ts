@@ -2,7 +2,11 @@ import { css } from 'lit';
 
 export const kvEntriesListStyles = css`
   :host {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .list-header {
@@ -10,50 +14,42 @@ export const kvEntriesListStyles = css`
     justify-content: flex-end;
     align-items: center;
     margin-bottom: 16px;
+    flex-shrink: 0;
   }
 
-  .kv-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+  /* Table container */
+  .table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     background: var(--nuraly-color-surface, #ffffff);
     border-radius: 8px;
     border: 1px solid var(--nuraly-color-border, #e8e8f0);
     overflow: hidden;
   }
 
-  .kv-table th,
-  .kv-table td {
-    padding: 10px 16px;
-    text-align: left;
+  /* nr-table styling overrides */
+  .table-container nr-table {
+    --nuraly-table-border-radius: 0;
+    --nuraly-table-cell-padding: 14px 16px;
+    --nuraly-table-header-padding: 12px 16px;
   }
 
-  .kv-table th {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--nuraly-color-text-tertiary, #8c8ca8);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    background: var(--nuraly-color-background-hover, #f1f5f9);
-    border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+  .table-container nr-table::part(table) {
+    border: none;
   }
 
-  .kv-table td {
+  /* Date text in table */
+  .date-text {
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
     font-size: 13px;
-    color: var(--nuraly-color-text, #0f0f3c);
-    border-bottom: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
   }
 
-  .kv-table tbody tr {
-    transition: background-color var(--nuraly-transition, 150ms ease);
-  }
-
-  .kv-table tbody tr:hover {
-    background: var(--nuraly-color-background-hover, #f1f5f9);
-  }
-
-  .kv-table tbody tr:last-child td {
-    border-bottom: none;
+  /* Global scope text */
+  .scope-global {
+    color: var(--nuraly-color-text-tertiary, #9ca3af);
+    font-size: 13px;
   }
 
   .key-path {
@@ -124,12 +120,6 @@ export const kvEntriesListStyles = css`
     display: flex;
     gap: 6px;
     justify-content: flex-end;
-    opacity: 0;
-    transition: opacity 0.1s;
-  }
-
-  .kv-table tbody tr:hover .actions-cell {
-    opacity: 1;
   }
 
   .empty-state {
