@@ -81,9 +81,10 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   @property({ type: Boolean }) serverSide = false;
   @property({ type: Number }) totalCount = 0;
   @property({ type: Boolean }) clickable = false;
+  @property({ type: Number }) pageSize = 5;
 
   @state() itemPerPage = [5, 10, 15, 20];
-  @state() selectedItemPerPage = this.itemPerPage[0];
+  @state() selectedItemPerPage = 5;
   @state() displayedRows: any[] = [];
   @state() selectedItems: boolean[] = [];
   @state() currentPage!: number;
@@ -110,6 +111,10 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
   override connectedCallback(): void {
     super.connectedCallback();
     this.selectionController.initSelection();
+    // Initialize selectedItemPerPage from pageSize property
+    if (this.pageSize && this.itemPerPage.includes(this.pageSize)) {
+      this.selectedItemPerPage = this.pageSize;
+    }
   }
 
   override updated(_changedProperties: PropertyValueMap<this> | Map<PropertyKey, unknown>): void {

@@ -17,7 +17,7 @@ export function renderFilterTemplate(data: FilterTemplateData): TemplateResult {
     <div class="filter-container">
       ${data.showInput
         ? html`
-            <nr-icon name="search" class="search-icon"></nr-icon>
+            <nr-icon name="search" size="small" class="search-icon"></nr-icon>
             <input
               type="text"
               placeholder="search"
@@ -27,7 +27,7 @@ export function renderFilterTemplate(data: FilterTemplateData): TemplateResult {
           `
         : html`
             <div class="icon-container" @click=${data.onToggleInput}>
-              <nr-icon name="search"></nr-icon>
+              <nr-icon name="search" size="small"></nr-icon>
             </div>
           `}
     </div>

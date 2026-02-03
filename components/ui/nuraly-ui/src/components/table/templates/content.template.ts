@@ -117,11 +117,11 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                           ${header.name}
                           ${index === data.sortAttribute.index
                             ? choose(data.sortAttribute.order, [
-                                [SortOrder.Default, () => html`<nr-icon name="arrows-v"></nr-icon>`],
-                                [SortOrder.Ascending, () => html`<nr-icon name="long-arrow-up"></nr-icon>`],
-                                [SortOrder.Descending, () => html`<nr-icon name="long-arrow-down"></nr-icon>`],
+                                [SortOrder.Default, () => html`<nr-icon name="arrow-up-down" size="small"></nr-icon>`],
+                                [SortOrder.Ascending, () => html`<nr-icon name="arrow-up" size="small"></nr-icon>`],
+                                [SortOrder.Descending, () => html`<nr-icon name="arrow-down" size="small"></nr-icon>`],
                               ])
-                            : html`<nr-icon name="arrows-v"></nr-icon>`}
+                            : html`<nr-icon name="arrow-up-down" size="small"></nr-icon>`}
                         </span>
                         ${header.filterable && header.filterConfig
                           ? html`
@@ -184,7 +184,7 @@ export function renderContentTemplate(data: ContentTemplateData): TemplateResult
                     aria-label="${data.expand[index] ? 'Collapse row' : 'Expand row'}"
                     class="expand-icon ${data.expand[index] ? 'expanded' : ''} ${selectionColumnClass}" 
                     style="${hasFixedLeftColumns ? 'left: 0; width: 50px; min-width: 50px;' : ''}">
-                    <nr-icon name="angle-down"></nr-icon>
+                    <nr-icon name="chevron-down" size="small"></nr-icon>
                   </td>
                 `
               : data.selectionMode

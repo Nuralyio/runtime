@@ -127,13 +127,13 @@ export default css`
   td {
     text-align: center;
     border-bottom: var(--nuraly-table-border-width, 1px) solid var(--nuraly-table-row-border-color, #f0f0f0);
-    padding: 10px;
+    padding: var(--nuraly-table-cell-padding, 10px);
     font-size: var(--nuraly-table-font-size, 14px);
   }
 
   th {
     cursor: pointer;
-    padding: 10px;
+    padding: var(--nuraly-table-cell-padding, 10px);
     font-size: var(--nuraly-table-font-size, 14px);
   }
 
@@ -179,13 +179,13 @@ export default css`
   /* Size Variants for Table Content */
   :host([size='small']) td,
   :host([size='small']) th {
-    padding: 5px;
+    padding: var(--nuraly-table-cell-padding, 8px 16px);
     font-size: 12px;
   }
 
   :host([size='large']) td,
   :host([size='large']) th {
-    padding: 15px;
+    padding: var(--nuraly-table-cell-padding, 15px);
     font-size: 16px;
   }
 
