@@ -133,14 +133,14 @@ export class DashboardLayout extends LitElement {
 
     /* Dropdown menu styles */
     .user-dropdown-menu {
-      min-width: 200px;
-      padding: 8px 0;
+      min-width: 180px;
+      padding: 4px 0;
     }
 
     .dropdown-header {
-      padding: 12px 16px;
+      padding: 8px 12px;
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .dropdown-header-name {
@@ -158,8 +158,8 @@ export class DashboardLayout extends LitElement {
     .dropdown-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
+      gap: 8px;
+      padding: 6px 12px;
       font-size: 13px;
       color: var(--nuraly-color-text, #0f0f3c);
       cursor: pointer;
@@ -179,7 +179,7 @@ export class DashboardLayout extends LitElement {
     .dropdown-divider {
       height: 1px;
       background: var(--nuraly-color-border, #e8e8f0);
-      margin: 8px 0;
+      margin: 4px 0;
     }
 
     .dropdown-item.danger {

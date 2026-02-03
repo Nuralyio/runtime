@@ -87,6 +87,23 @@ export class DashboardWorkflowView extends LitElement {
       font-weight: 600;
       color: var(--nuraly-color-text, #0f0f3c);
       margin: 0;
+      outline: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: -2px -6px;
+      transition: background 150ms ease;
+      min-width: 50px;
+      display: inline-block;
+    }
+
+    .workflow-name.editing {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+      box-shadow: 0 0 0 2px var(--nuraly-color-primary, #14144b);
+    }
+
+    h2.workflow-name:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+      cursor: text;
     }
 
     .workflow-name-container:hover .edit-icon {
@@ -106,12 +123,6 @@ export class DashboardWorkflowView extends LitElement {
     .edit-icon:hover {
       background: var(--nuraly-color-background-hover, #f1f5f9);
       --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
-    }
-
-    .workflow-name-input {
-      min-width: 200px;
-      --nuraly-input-font-size: 16px;
-      --nuraly-input-font-weight: 600;
     }
 
     .edit-actions {
@@ -427,12 +438,18 @@ export class DashboardWorkflowView extends LitElement {
   private startEditingName() {
     this.editedName = this.workflow?.name || '';
     this.isEditingName = true;
-    // Focus the input after render
+    // Set text and focus after render
     this.updateComplete.then(() => {
-      const input = this.shadowRoot?.querySelector('.workflow-name-input') as HTMLInputElement;
-      if (input) {
-        input.focus();
-        input.select();
+      const element = this.shadowRoot?.querySelector('.workflow-name.editing') as HTMLElement;
+      if (element) {
+        element.textContent = this.editedName;
+        element.focus();
+        // Select all text
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
       }
     });
   }
@@ -442,16 +459,39 @@ export class DashboardWorkflowView extends LitElement {
     this.editedName = '';
   }
 
-  private handleNameInput(e: CustomEvent) {
-    this.editedName = e.detail?.value || '';
+  private handleNameInput(e: Event) {
+    const element = e.target as HTMLElement;
+    this.editedName = element.textContent?.trim() || '';
+  }
+
+  private handleNameBlur(e: FocusEvent) {
+    // Don't save on blur if clicking save/cancel buttons
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (relatedTarget?.closest('.action-icon')) {
+      return;
+    }
+    if (this.isEditingName) {
+      this.saveWorkflowName();
+    }
   }
 
   private handleNameKeydown(e: KeyboardEvent) {
+    if (!this.isEditingName) return;
+
     if (e.key === 'Enter') {
+      e.preventDefault();
       this.saveWorkflowName();
     } else if (e.key === 'Escape') {
+      e.preventDefault();
       this.cancelEditingName();
     }
+  }
+
+  private handlePaste(e: ClipboardEvent) {
+    e.preventDefault();
+    // Get plain text only
+    const text = e.clipboardData?.getData('text/plain') || '';
+    document.execCommand('insertText', false, text);
   }
 
   private async saveWorkflowName() {
@@ -497,42 +537,38 @@ export class DashboardWorkflowView extends LitElement {
               Back
             </button>
             <div class="workflow-info">
-              ${this.isEditingName ? html`
-                <div class="workflow-name-container">
-                  <nr-input
-                    class="workflow-name-input"
-                    .value=${this.editedName}
-                    @nr-input=${this.handleNameInput}
+              <div class="workflow-name-container">
+                ${this.isEditingName ? html`
+                  <span
+                    class="workflow-name editing"
+                    contenteditable="true"
+                    @blur=${this.handleNameBlur}
                     @keydown=${this.handleNameKeydown}
-                    ?disabled=${this.isSavingName}
-                    size="small"
-                  ></nr-input>
-                  <div class="edit-actions">
-                    <nr-icon
-                      name="check"
-                      class="action-icon save"
-                      title="Save"
-                      @click=${this.saveWorkflowName}
-                    ></nr-icon>
-                    <nr-icon
-                      name="x"
-                      class="action-icon cancel"
-                      title="Cancel"
-                      @click=${this.cancelEditingName}
-                    ></nr-icon>
-                  </div>
-                </div>
-              ` : html`
-                <div class="workflow-name-container">
-                  <h2 class="workflow-name">${this.workflow?.name || 'Workflow'}</h2>
+                    @input=${this.handleNameInput}
+                    @paste=${this.handlePaste}
+                  ></span>
+                  <nr-icon
+                    name="check"
+                    class="action-icon save"
+                    title="Save"
+                    @click=${this.saveWorkflowName}
+                  ></nr-icon>
+                  <nr-icon
+                    name="x"
+                    class="action-icon cancel"
+                    title="Cancel"
+                    @click=${this.cancelEditingName}
+                  ></nr-icon>
+                ` : html`
+                  <h2 class="workflow-name" @click=${this.startEditingName}>${this.workflow?.name || 'Workflow'}</h2>
                   <nr-icon
                     name="pencil"
                     class="edit-icon"
                     title="Edit name"
                     @click=${this.startEditingName}
                   ></nr-icon>
-                </div>
-              `}
+                `}
+              </div>
               <div class="workflow-meta">
                 ${this.appId ? html`
                   <span class="app-link" @click=${this.navigateToApp}>
