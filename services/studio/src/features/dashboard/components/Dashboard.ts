@@ -159,7 +159,7 @@ export class Dashboard extends LitElement {
         </svg>
         <h3 class="error-title">Unable to load dashboard</h3>
         <p class="error-message">${this.error}</p>
-        <nr-button type="primary" @click=${this.handleRetry}>Try Again</nr-button>
+        <nr-button type="primary" size="small" @click=${this.handleRetry}>Try Again</nr-button>
       </div>
     `;
   }

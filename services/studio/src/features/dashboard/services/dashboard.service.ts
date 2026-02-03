@@ -1,12 +1,15 @@
 /**
  * Dashboard Service
  * Aggregates data from multiple services for the dashboard
+ * Uses lazy loading to load services only when needed
+ *
+ * Note: Pinned items and view mode preferences are managed by user-preferences.service.ts
+ * and user-preferences.store.ts using KV storage.
  */
 
-import { fetchAllApplications } from '../../../services/applications/fetch-all-applications';
+import { getFetchAllApplications, getWorkflowService, getKvStore } from '../../../services/lazy-loader';
 import { type PublishedVersion } from '../../../services/revisions/revision.service';
-import { workflowService } from '../../../services/workflow.service';
-import { getKvEntries, getAllKvEntries, type KvEntry } from '../../runtime/redux/store/kv';
+import type { KvEntry } from '../../runtime/redux/store/kv';
 
 /**
  * Application with published status information
@@ -20,6 +23,7 @@ export interface ApplicationWithStatus {
   isPublished: boolean;
   publishedAt?: string;
   publishedVersion?: PublishedVersion | null;
+  isPinned?: boolean;
 }
 
 /**
@@ -41,115 +45,15 @@ export interface WorkflowWithAppName {
 }
 
 /**
- * KV key path for pinned workflows (stored per application)
- */
-const PINNED_WORKFLOWS_KV_KEY = 'dashboard/pinned-workflows';
-
-/**
- * LocalStorage key for pinned workflows (fallback/cache)
- */
-const PINNED_WORKFLOWS_CACHE_KEY = 'nuraly_pinned_workflows';
-
-/**
- * Get pinned workflow IDs from localStorage cache
- */
-export function getPinnedWorkflowIds(): Set<string> {
-  try {
-    const stored = localStorage.getItem(PINNED_WORKFLOWS_CACHE_KEY);
-    if (stored) {
-      return new Set(JSON.parse(stored));
-    }
-  } catch (e) {
-    console.error('Failed to read pinned workflows from localStorage:', e);
-  }
-  return new Set();
-}
-
-/**
- * Save pinned workflow IDs to localStorage cache
- */
-function savePinnedWorkflowIdsToCache(ids: Set<string>): void {
-  try {
-    localStorage.setItem(PINNED_WORKFLOWS_CACHE_KEY, JSON.stringify([...ids]));
-  } catch (e) {
-    console.error('Failed to save pinned workflows to localStorage:', e);
-  }
-}
-
-/**
- * Save pinned workflow IDs to KV storage for an application
- */
-export async function savePinnedWorkflowsToKv(applicationId: string, workflowIds: string[]): Promise<void> {
-  try {
-    const { setKvEntry } = await import('../../runtime/redux/store/kv');
-    await setKvEntry(PINNED_WORKFLOWS_KV_KEY, {
-      applicationId,
-      value: workflowIds,
-    });
-  } catch (e) {
-    console.error('Failed to save pinned workflows to KV:', e);
-  }
-}
-
-/**
- * Get pinned workflow IDs from KV storage for an application
- */
-export async function getPinnedWorkflowsFromKv(applicationId: string): Promise<string[]> {
-  try {
-    const { getKvEntry } = await import('../../runtime/redux/store/kv');
-    const entry = await getKvEntry(applicationId, PINNED_WORKFLOWS_KV_KEY);
-    if (entry && Array.isArray(entry.value)) {
-      return entry.value;
-    }
-  } catch (e) {
-    console.error('Failed to get pinned workflows from KV:', e);
-  }
-  return [];
-}
-
-/**
- * Toggle pinned status for a workflow
- */
-export function toggleWorkflowPinned(workflowId: string): boolean {
-  const pinnedIds = getPinnedWorkflowIds();
-  const isPinned = pinnedIds.has(workflowId);
-
-  if (isPinned) {
-    pinnedIds.delete(workflowId);
-  } else {
-    pinnedIds.add(workflowId);
-  }
-
-  savePinnedWorkflowIdsToCache(pinnedIds);
-  return !isPinned;
-}
-
-/**
- * Clean up pinned workflow IDs by removing deleted workflows
- * @param validWorkflowIds - Set of workflow IDs that actually exist
- */
-export function cleanupPinnedWorkflows(validWorkflowIds: Set<string>): void {
-  const pinnedIds = getPinnedWorkflowIds();
-  let hasChanges = false;
-
-  for (const pinnedId of pinnedIds) {
-    if (!validWorkflowIds.has(pinnedId)) {
-      pinnedIds.delete(pinnedId);
-      hasChanges = true;
-    }
-  }
-
-  if (hasChanges) {
-    savePinnedWorkflowIdsToCache(pinnedIds);
-  }
-}
-
-/**
  * Fetch all applications with their published status (single API call - publishedAt included in response)
+ * @param headers - Request headers
+ * @param pinnedIds - Set of pinned application IDs (from user preferences store)
  */
 export async function fetchApplicationsWithStatus(
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  pinnedIds: Set<string> = new Set()
 ): Promise<ApplicationWithStatus[]> {
+  const fetchAllApplications = await getFetchAllApplications();
   const appsResponse = await fetchAllApplications(headers);
 
   if (appsResponse.status !== 'OK' || !appsResponse.data) {
@@ -158,7 +62,7 @@ export async function fetchApplicationsWithStatus(
   }
 
   // publishedAt is now included in the applications response via DB join
-  return appsResponse.data.map((app: any) => ({
+  const applications = appsResponse.data.map((app: any) => ({
     uuid: app.uuid,
     name: app.name,
     description: app.description,
@@ -166,16 +70,28 @@ export async function fetchApplicationsWithStatus(
     updatedAt: app.updatedAt,
     isPublished: !!app.publishedAt,
     publishedAt: app.publishedAt,
-    publishedVersion: null // No longer fetching full version details
+    publishedVersion: null, // No longer fetching full version details
+    isPinned: pinnedIds.has(app.uuid)
   }));
+
+  return applications;
 }
 
 /**
  * Fetch all workflows across all applications (single API call)
+ * @param headers - Request headers
+ * @param pinnedIds - Set of pinned workflow IDs (from user preferences store)
  */
 export async function fetchAllWorkflowsAcrossApps(
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  pinnedIds: Set<string> = new Set()
 ): Promise<WorkflowWithAppName[]> {
+  // Lazy load services
+  const [fetchAllApplications, workflowService] = await Promise.all([
+    getFetchAllApplications(),
+    getWorkflowService(),
+  ]);
+
   // Fetch applications and all workflows in parallel
   const [appsResponse, allWorkflowsData] = await Promise.all([
     fetchAllApplications(headers),
@@ -188,7 +104,6 @@ export async function fetchAllWorkflowsAcrossApps(
   }
 
   const apps = appsResponse.data;
-  const pinnedIds = getPinnedWorkflowIds();
 
   // Create a map of applicationId -> applicationName for quick lookup
   const appNameMap = new Map<string, string>();
@@ -213,10 +128,6 @@ export async function fetchAllWorkflowsAcrossApps(
     isPinned: pinnedIds.has((workflow as any).uuid || workflow.id)
   }));
 
-  // Clean up pinned IDs for deleted workflows (using uuid)
-  const validWorkflowIds = new Set(allWorkflows.map(w => w.uuid));
-  cleanupPinnedWorkflows(validWorkflowIds);
-
   return allWorkflows;
 }
 
@@ -226,10 +137,16 @@ export async function fetchAllWorkflowsAcrossApps(
 export async function fetchAllKvEntriesAcrossApps(
   headers: Record<string, string>
 ): Promise<(KvEntry & { applicationName?: string })[]> {
+  // Lazy load services
+  const [fetchAllApplications, kvStore] = await Promise.all([
+    getFetchAllApplications(),
+    getKvStore(),
+  ]);
+
   // Fetch applications and all KV entries in parallel
   const [appsResponse, allEntries] = await Promise.all([
     fetchAllApplications(headers),
-    getAllKvEntries(),
+    kvStore.getAllKvEntries(),
   ]);
 
   if (appsResponse.status !== 'OK' || !appsResponse.data) {
@@ -276,10 +193,16 @@ export interface DatabaseConnection {
 export async function fetchAllDatabaseConnections(
   headers: Record<string, string>
 ): Promise<DatabaseConnection[]> {
+  // Lazy load services
+  const [fetchAllApplications, kvStore] = await Promise.all([
+    getFetchAllApplications(),
+    getKvStore(),
+  ]);
+
   // Fetch applications and all database KV entries in parallel
   const [appsResponse, allEntries] = await Promise.all([
     fetchAllApplications(headers),
-    getAllKvEntries('database/'),
+    kvStore.getAllKvEntries('database/'),
   ]);
 
   if (appsResponse.status !== 'OK' || !appsResponse.data) {

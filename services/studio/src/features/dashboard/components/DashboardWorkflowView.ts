@@ -6,7 +6,8 @@
 import { html, LitElement, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { getStudioUrl } from '../utils/route-sync';
-import { workflowService, type ExecutionResult } from '../../../services/workflow.service';
+import { getWorkflowService } from '../../../services/lazy-loader';
+import type { ExecutionResult } from '../../../services/workflow.service';
 import type { Workflow } from '../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types';
 
 // Import NuralyUI components
@@ -269,6 +270,9 @@ export class DashboardWorkflowView extends LitElement {
 
     this.loading = true;
     try {
+      // Lazy load workflow service
+      const workflowService = await getWorkflowService();
+
       // Fetch workflow
       this.workflow = await workflowService.getWorkflow(this.workflowId);
 
@@ -286,10 +290,15 @@ export class DashboardWorkflowView extends LitElement {
     }
   }
 
+  private openWorkflow() {
+    // Opens in standalone editor (dashboard-based)
+    window.location.href = `/dashboard/workflow/edit/${this.workflowId}`;
+  }
+
   private openInStudio() {
-    const url = getStudioUrl('workflow', this.workflowId, this.appId);
-    if (url) {
-      window.location.href = url;
+    // Opens in studio (only available for app-attached workflows)
+    if (this.appId) {
+      window.location.href = `/app/studio/${this.appId}/workflows?workflow=${this.workflowId}`;
     }
   }
 
@@ -315,6 +324,9 @@ export class DashboardWorkflowView extends LitElement {
     if (!this.workflowId) return;
 
     try {
+      // Lazy load workflow service
+      const workflowService = await getWorkflowService();
+
       await workflowService.executeWorkflow(this.workflowId);
       // Refresh executions
       this.executions = await workflowService.getExecutions(this.workflowId);
@@ -387,9 +399,14 @@ export class DashboardWorkflowView extends LitElement {
             <nr-button type="default" size="small" iconLeft="Play" @click=${this.runWorkflow}>
               Run
             </nr-button>
-            <nr-button type="primary" size="small" @click=${this.openInStudio}>
-              Open in Studio
+            <nr-button type="primary" size="small" @click=${this.openWorkflow}>
+              Open
             </nr-button>
+            ${this.appId ? html`
+              <nr-button type="default" size="small" @click=${this.openInStudio}>
+                Open in Studio
+              </nr-button>
+            ` : nothing}
           </div>
         </div>
 

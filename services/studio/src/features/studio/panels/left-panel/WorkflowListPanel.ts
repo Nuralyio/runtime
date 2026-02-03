@@ -153,7 +153,7 @@ export class WorkflowListPanel extends LitElement {
       id: item.id,
       type: "flow",
       label: item.text,
-      detail: { workflowId: item.id },
+      detail: { workflowId: item.id, appId: this.appId },
     });
   }
 

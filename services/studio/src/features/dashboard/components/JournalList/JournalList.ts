@@ -1,6 +1,6 @@
 /**
- * Dashboard Parcour List Component
- * Shows parcours (user journeys/flows)
+ * Dashboard Journal List Component
+ * Shows journal entries for logging
  */
 
 import { html, LitElement, css } from 'lit';
@@ -8,8 +8,8 @@ import { customElement } from 'lit/decorators.js';
 
 import '../../../runtime/components/ui/nuraly-ui/src/components/button';
 
-@customElement('dashboard-parcour-list')
-export class DashboardParcourList extends LitElement {
+@customElement('dashboard-journal-list')
+export class DashboardJournalList extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -63,10 +63,10 @@ export class DashboardParcourList extends LitElement {
     return html`
       <div class="empty-state">
         <svg class="empty-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
         </svg>
-        <h3 class="empty-title">Parcour</h3>
-        <p class="empty-text">Design and manage user journeys across your applications</p>
+        <h3 class="empty-title">Journal</h3>
+        <p class="empty-text">View and manage logs across your applications</p>
         <span class="coming-soon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
@@ -81,6 +81,6 @@ export class DashboardParcourList extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'dashboard-parcour-list': DashboardParcourList;
+    'dashboard-journal-list': DashboardJournalList;
   }
 }

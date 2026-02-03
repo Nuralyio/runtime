@@ -13,6 +13,7 @@ export const workflowsListStyles = css`
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 10px;
     margin-bottom: 16px;
     flex-shrink: 0;
   }

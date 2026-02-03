@@ -27,10 +27,10 @@ import './ApplicationsGrid/ApplicationsGrid';
 import './WorkflowsList/WorkflowsList';
 import './KVEntriesList/KVEntriesList';
 import './DatabaseList/DatabaseList';
-import './ParcourList/ParcourList';
+import './JournalList/JournalList';
 import './ServicesStatus/ServicesStatus';
 
-type ActiveView = 'applications' | 'workflows' | 'kv' | 'database' | 'parcour' | 'services';
+type ActiveView = 'applications' | 'workflows' | 'kv' | 'database' | 'journal' | 'services';
 
 interface MenuItem {
   text: string;
@@ -222,38 +222,178 @@ export class DashboardOverview extends LitElement {
   @state() private workflows: WorkflowWithAppName[] = [];
   @state() private kvEntries: (KvEntry & { applicationName?: string })[] = [];
   @state() private databases: DatabaseConnection[] = [];
-  @state() private loading = true;
+
+  // Per-view loading states
+  @state() private loadingApps = false;
+  @state() private loadingWorkflows = false;
+  @state() private loadingKv = false;
+  @state() private loadingDatabases = false;
+
+  // Track what's been loaded (reactive)
+  @state() private appsLoaded = false;
+  @state() private workflowsLoaded = false;
+  @state() private kvLoaded = false;
+  @state() private databasesLoaded = false;
+
   @state() private error: string | null = null;
+
+  // Computed loading state for current view
+  private get loading(): boolean {
+    switch (this.activeView) {
+      case 'applications': return this.loadingApps;
+      case 'workflows': return this.loadingWorkflows;
+      case 'kv': return this.loadingKv;
+      case 'database': return this.loadingDatabases;
+      default: return false;
+    }
+  }
 
   async connectedCallback() {
     super.connectedCallback();
-    await this.loadDashboardData();
+    await this.loadDataForView(this.activeView);
+    // Preload other views in background after current view loads
+    this.preloadOtherViews();
   }
 
-  private async loadDashboardData() {
-    this.loading = true;
-    this.error = null;
-
-    try {
-      const headers: Record<string, string> = {};
-
-      const [apps, workflows, kv, dbs] = await Promise.all([
-        fetchApplicationsWithStatus(headers),
-        fetchAllWorkflowsAcrossApps(headers),
-        fetchAllKvEntriesAcrossApps(headers),
-        fetchAllDatabaseConnections(headers)
-      ]);
-
-      this.applications = apps;
-      this.workflows = workflows;
-      this.kvEntries = kv;
-      this.databases = dbs;
-    } catch (err) {
-      console.error('Failed to load dashboard data:', err);
-      this.error = err instanceof Error ? err.message : 'Failed to load dashboard data';
-    } finally {
-      this.loading = false;
+  updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('activeView')) {
+      this.loadDataForView(this.activeView);
     }
+  }
+
+  private preloadOtherViews() {
+    // Preload other views in background (non-blocking)
+    const allViews: ActiveView[] = ['applications', 'workflows', 'database', 'kv'];
+    const otherViews = allViews.filter(v => v !== this.activeView);
+
+    // Load each view sequentially in background to avoid overwhelming the server
+    const loadNext = async (views: ActiveView[]) => {
+      if (views.length === 0) return;
+      const [next, ...rest] = views;
+      try {
+        await this.loadDataForView(next);
+      } catch (e) {
+        // Ignore errors during preload - they'll be shown when user navigates
+        console.debug(`[Dashboard] Preload ${next} failed:`, e);
+      }
+      // Small delay between requests
+      setTimeout(() => loadNext(rest), 100);
+    };
+
+    // Start preloading after a short delay to not compete with current view
+    setTimeout(() => loadNext(otherViews), 500);
+  }
+
+  private isViewLoaded(view: ActiveView): boolean {
+    switch (view) {
+      case 'applications': return this.appsLoaded;
+      case 'workflows': return this.workflowsLoaded;
+      case 'kv': return this.kvLoaded;
+      case 'database': return this.databasesLoaded;
+      default: return true;
+    }
+  }
+
+  private async loadDataForView(view: ActiveView) {
+    // Skip if already loaded (unless forced refresh)
+    if (this.isViewLoaded(view)) return;
+
+    const headers: Record<string, string> = {};
+
+    switch (view) {
+      case 'applications':
+        if (!this.loadingApps) {
+          this.loadingApps = true;
+          this.error = null;
+          try {
+            this.applications = await fetchApplicationsWithStatus(headers);
+            this.appsLoaded = true;
+          } catch (err) {
+            console.error('Failed to load applications:', err);
+            this.error = err instanceof Error ? err.message : 'Failed to load applications';
+          } finally {
+            this.loadingApps = false;
+          }
+        }
+        break;
+
+      case 'workflows':
+        if (!this.loadingWorkflows) {
+          this.loadingWorkflows = true;
+          this.error = null;
+          try {
+            // Load apps too for the workflow creation dropdown
+            const [workflows, apps] = await Promise.all([
+              fetchAllWorkflowsAcrossApps(headers),
+              this.appsLoaded
+                ? Promise.resolve(this.applications)
+                : fetchApplicationsWithStatus(headers)
+            ]);
+            this.workflows = workflows;
+            if (!this.appsLoaded) {
+              this.applications = apps;
+              this.appsLoaded = true;
+            }
+            this.workflowsLoaded = true;
+          } catch (err) {
+            console.error('Failed to load workflows:', err);
+            this.error = err instanceof Error ? err.message : 'Failed to load workflows';
+          } finally {
+            this.loadingWorkflows = false;
+          }
+        }
+        break;
+
+      case 'kv':
+        if (!this.loadingKv) {
+          this.loadingKv = true;
+          this.error = null;
+          try {
+            this.kvEntries = await fetchAllKvEntriesAcrossApps(headers);
+            this.kvLoaded = true;
+          } catch (err) {
+            console.error('Failed to load KV entries:', err);
+            this.error = err instanceof Error ? err.message : 'Failed to load KV entries';
+          } finally {
+            this.loadingKv = false;
+          }
+        }
+        break;
+
+      case 'database':
+        if (!this.loadingDatabases) {
+          this.loadingDatabases = true;
+          this.error = null;
+          try {
+            this.databases = await fetchAllDatabaseConnections(headers);
+            this.databasesLoaded = true;
+          } catch (err) {
+            console.error('Failed to load databases:', err);
+            this.error = err instanceof Error ? err.message : 'Failed to load databases';
+          } finally {
+            this.loadingDatabases = false;
+          }
+        }
+        break;
+
+      // journal and services don't need pre-loaded data
+      case 'journal':
+      case 'services':
+        break;
+    }
+  }
+
+  private async refreshCurrentView() {
+    // Force reload current view
+    switch (this.activeView) {
+      case 'applications': this.appsLoaded = false; break;
+      case 'workflows': this.workflowsLoaded = false; break;
+      case 'kv': this.kvLoaded = false; break;
+      case 'database': this.databasesLoaded = false; break;
+    }
+    this.error = null;
+    await this.loadDataForView(this.activeView);
   }
 
   private handleMenuChange(e: CustomEvent) {
@@ -263,7 +403,7 @@ export class DashboardOverview extends LitElement {
       'Workflows': '/dashboard/workflows',
       'Database': '/dashboard/database',
       'KV Store': '/dashboard/kv',
-      'Parcour': '/dashboard/parcour',
+      'Journal': '/dashboard/journal',
       'Services': '/dashboard/services'
     };
     const path = routes[value] || '/dashboard/applications';
@@ -275,7 +415,7 @@ export class DashboardOverview extends LitElement {
   }
 
   private handleRetry() {
-    this.loadDashboardData();
+    this.refreshCurrentView();
   }
 
   private getMenuItems(): MenuItem[] {
@@ -301,9 +441,9 @@ export class DashboardOverview extends LitElement {
         selected: this.activeView === 'kv'
       },
       {
-        text: 'Parcour',
-        icon: 'Route',
-        selected: this.activeView === 'parcour'
+        text: 'Journal',
+        icon: 'FileText',
+        selected: this.activeView === 'journal'
       },
       {
         text: 'Services',
@@ -347,10 +487,11 @@ export class DashboardOverview extends LitElement {
   }
 
   private renderLoading() {
+    const loadingText = `Loading ${this.getViewTitle().toLowerCase()}...`;
     return html`
       <div class="loading-container">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Loading dashboard...</p>
+        <p class="loading-text">${loadingText}</p>
       </div>
     `;
   }
@@ -363,7 +504,7 @@ export class DashboardOverview extends LitElement {
         </svg>
         <h3 class="error-title">Unable to load dashboard</h3>
         <p class="error-message">${this.error}</p>
-        <nr-button type="primary" @click=${this.handleRetry}>Try Again</nr-button>
+        <nr-button type="primary" size="small" @click=${this.handleRetry}>Try Again</nr-button>
       </div>
     `;
   }
@@ -378,7 +519,7 @@ export class DashboardOverview extends LitElement {
           <applications-grid
             .applications=${this.applications}
             @app-click=${(e: CustomEvent) => this.handleAppClick(e.detail.app)}
-            @refresh=${() => this.loadDashboardData()}
+            @refresh=${() => this.refreshCurrentView()}
           ></applications-grid>
         `;
       case 'workflows':
@@ -387,7 +528,7 @@ export class DashboardOverview extends LitElement {
             .workflows=${this.workflows}
             .applications=${this.applications}
             @workflow-click=${(e: CustomEvent) => this.handleWorkflowClick(e.detail.workflow)}
-            @refresh=${() => this.loadDashboardData()}
+            @refresh=${() => this.refreshCurrentView()}
           ></workflows-list>
         `;
       case 'kv':
@@ -395,7 +536,7 @@ export class DashboardOverview extends LitElement {
           <kv-entries-list
             .entries=${this.kvEntries}
             @open-kv-tab=${() => this.handleKvClick()}
-            @refresh=${() => this.loadDashboardData()}
+            @refresh=${() => this.refreshCurrentView()}
           ></kv-entries-list>
         `;
       case 'database':
@@ -403,19 +544,19 @@ export class DashboardOverview extends LitElement {
           <dashboard-database-list
             .databases=${this.databases}
             @database-select=${(e: CustomEvent) => this.handleDatabaseSelect(e.detail.database)}
-            @refresh=${() => this.loadDashboardData()}
+            @refresh=${() => this.refreshCurrentView()}
           ></dashboard-database-list>
         `;
-      case 'parcour':
+      case 'journal':
         return html`
-          <dashboard-parcour-list
-            @refresh=${() => this.loadDashboardData()}
-          ></dashboard-parcour-list>
+          <dashboard-journal-list
+            @refresh=${() => this.refreshCurrentView()}
+          ></dashboard-journal-list>
         `;
       case 'services':
         return html`
           <dashboard-services-status
-            @refresh=${() => this.loadDashboardData()}
+            @refresh=${() => this.refreshCurrentView()}
           ></dashboard-services-status>
         `;
       default:
@@ -429,7 +570,7 @@ export class DashboardOverview extends LitElement {
       case 'workflows': return 'Workflows';
       case 'database': return 'Database';
       case 'kv': return 'KV Store';
-      case 'parcour': return 'Parcour';
+      case 'journal': return 'Journal';
       case 'services': return 'Services Status';
       default: return 'Overview';
     }
@@ -458,15 +599,15 @@ export class DashboardOverview extends LitElement {
           <div class="sider-footer">
             <div class="stats-container">
               <div class="stat-item">
-                <span class="stat-value">${this.applications.length}</span>
+                <span class="stat-value">${this.appsLoaded ? this.applications.length : '-'}</span>
                 <span class="stat-label">Apps</span>
               </div>
               <div class="stat-item">
-                <span class="stat-value">${this.workflows.length}</span>
+                <span class="stat-value">${this.workflowsLoaded ? this.workflows.length : '-'}</span>
                 <span class="stat-label">Workflows</span>
               </div>
               <div class="stat-item">
-                <span class="stat-value">${this.kvEntries.length}</span>
+                <span class="stat-value">${this.kvLoaded ? this.kvEntries.length : '-'}</span>
                 <span class="stat-label">KV</span>
               </div>
             </div>

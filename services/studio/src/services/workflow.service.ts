@@ -66,6 +66,7 @@ function dtoToWorkflow(dto: WorkflowDTO): Workflow {
     id: dto.id,
     name: dto.name,
     description: dto.description,
+    applicationId: dto.applicationId,
     nodes: dto.nodes?.map(dtoToNode) || [],
     edges: dto.edges?.map(dtoToEdge) || [],
     variables: dto.variables ? JSON.parse(dto.variables) : undefined,

@@ -46,6 +46,10 @@ import {
   getRelationships,
 } from "../../../runtime/redux/store/database";
 import { getKvEntries } from "../../../runtime/redux/store/kv";
+import {
+  createViewportDebouncer,
+  type ViewportDebouncer,
+} from "../../../../utils/workflow-utils";
 
 @customElement("database-page")
 export class DatabasePage extends LitElement {
@@ -346,7 +350,7 @@ export class DatabasePage extends LitElement {
 
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
-  private viewportSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+  private viewportDebouncer: ViewportDebouncer | null = null;
   private positionsSaveTimeout: ReturnType<typeof setTimeout> | null = null;
   private currentViewport: DatabaseCanvasViewport = getDefaultViewport();
   private savedTablePositions: TablePositions = {};
@@ -373,7 +377,7 @@ export class DatabasePage extends LitElement {
     super.disconnectedCallback();
     if (this.unsubscribeState) this.unsubscribeState();
     if (this.unsubscribeConnections) this.unsubscribeConnections();
-    if (this.viewportSaveTimeout) clearTimeout(this.viewportSaveTimeout);
+    if (this.viewportDebouncer) this.viewportDebouncer.cancel();
     if (this.positionsSaveTimeout) clearTimeout(this.positionsSaveTimeout);
   }
 
@@ -472,6 +476,15 @@ export class DatabasePage extends LitElement {
     // Load saved table positions for this connection and schema
     const savedPositions = await getDatabaseTablePositions(this.currentConnection.path, schemaName, appId);
     this.savedTablePositions = savedPositions || {};
+
+    // Initialize viewport debouncer for this connection
+    const connectionPath = this.currentConnection.path;
+    this.viewportDebouncer = createViewportDebouncer((viewport) => {
+      const currentAppId = $currentApplication.get()?.uuid;
+      if (currentAppId) {
+        saveDatabaseViewport(connectionPath, currentAppId, viewport as DatabaseCanvasViewport);
+      }
+    });
 
     // Build the canvas workflow
     this.buildSchemaWorkflow();
@@ -616,17 +629,10 @@ export class DatabasePage extends LitElement {
     const { viewport } = event.detail;
     this.currentViewport = viewport;
 
-    // Debounce saving to KV (500ms)
-    if (this.viewportSaveTimeout) {
-      clearTimeout(this.viewportSaveTimeout);
+    // Use debouncer to save viewport
+    if (this.viewportDebouncer) {
+      this.viewportDebouncer.update(viewport);
     }
-
-    this.viewportSaveTimeout = setTimeout(() => {
-      const appId = $currentApplication.get()?.uuid;
-      if (appId && this.currentConnection) {
-        saveDatabaseViewport(this.currentConnection.path, appId, viewport);
-      }
-    }, 500);
   }
 
   private async handleRunQuery(offset = 0, limit = this.queryLimit) {

@@ -1,12 +1,10 @@
 ---
 /**
- * Dashboard Workflow Route
- * /dashboard/workflow/{wfId}
+ * Dashboard Journal Route
+ * /dashboard/journal - Shows logs
  */
 import { ViewTransitions } from 'astro:transitions';
 export const prerender = false;
-
-const { wfId } = Astro.params;
 
 // Extract current user from X-USER header (set by gateway)
 let currentUser = null;
@@ -20,8 +18,8 @@ try {
 }
 
 const initialRoute = {
-  type: 'workflow',
-  resourceId: wfId,
+  type: 'overview',
+  overviewView: 'journal',
   pathname: Astro.url.pathname,
   search: Astro.url.search
 };
@@ -32,7 +30,7 @@ const initialRoute = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - Workflow - Nuraly</title>
+    <title>Dashboard - Journal - Nuraly</title>
     <ViewTransitions />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
     <style is:global>
@@ -60,13 +58,13 @@ const initialRoute = {
         --nuraly-color-text-on-color: #ffffff;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; }
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         background: var(--nuraly-color-background);
         color: var(--nuraly-color-text);
-        min-height: 100vh;
       }
-      dashboard-layout { display: block; min-height: 100vh; }
+      dashboard-layout { display: block; width: 100%; height: 100%; }
     </style>
   </head>
   <body>
@@ -76,8 +74,8 @@ const initialRoute = {
       window.__CURRENT_USER__ = currentUser;
     </script>
     <script>
-      import "../../../features/dashboard";
-      import "../../../features/runtime/components";
+      import "../../features/dashboard";
+      import "../../features/runtime/components";
     </script>
   </body>
 </html>
