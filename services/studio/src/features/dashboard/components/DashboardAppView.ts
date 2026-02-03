@@ -19,6 +19,7 @@ import type { KvEntry } from '../../runtime/redux/store/kv';
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../runtime/components/ui/nuraly-ui/src/components/tabs';
+import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 
 // Tab index mapping
 const SUB_TAB_INDEX: Record<AppSubTab, number> = {
@@ -58,30 +59,6 @@ export class DashboardAppView extends LitElement {
       display: flex;
       align-items: center;
       gap: 16px;
-    }
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      font-size: 13px;
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      background: transparent;
-      border: 1px solid var(--nuraly-color-border, #e8e8f0);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 150ms ease;
-    }
-
-    .back-button:hover {
-      color: var(--nuraly-color-text, #0f0f3c);
-      background: var(--nuraly-color-background-hover, #f1f5f9);
-    }
-
-    .back-button svg {
-      width: 14px;
-      height: 14px;
     }
 
     .app-info {
@@ -422,12 +399,10 @@ export class DashboardAppView extends LitElement {
       <div class="app-view">
         <div class="app-header">
           <div class="header-left">
-            <button class="back-button" @click=${this.goBack}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
-              </svg>
+            <nr-button size="small" variant="secondary" @click=${this.goBack}>
+              <nr-icon slot="prefix" name="arrow-left" size="small"></nr-icon>
               Back
-            </button>
+            </nr-button>
             <div class="app-info">
               <h2 class="app-name">${this.app?.name || 'Loading...'}</h2>
               ${this.app?.isPublished ? html`

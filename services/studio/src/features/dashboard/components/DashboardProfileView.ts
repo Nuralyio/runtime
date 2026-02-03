@@ -10,6 +10,7 @@ import { getCurrentUser, type CurrentUserInfo } from '../../runtime/handlers/run
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
+import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 
 @customElement('dashboard-profile-view')
 export class DashboardProfileView extends LitElement {
@@ -246,31 +247,9 @@ export class DashboardProfileView extends LitElement {
       margin: 0;
     }
 
-    /* Back button */
-    .back-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      font-size: 14px;
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      background: transparent;
-      border: 1px solid var(--nuraly-color-border, #e8e8f0);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 150ms ease;
+    /* Back button wrapper for margin */
+    .profile-view > nr-button {
       margin-bottom: 24px;
-    }
-
-    .back-button:hover {
-      color: var(--nuraly-color-text, #0f0f3c);
-      background: var(--nuraly-color-surface, #ffffff);
-      border-color: var(--nuraly-color-primary, #14144b);
-    }
-
-    .back-button svg {
-      width: 16px;
-      height: 16px;
     }
   `;
 
@@ -331,12 +310,10 @@ export class DashboardProfileView extends LitElement {
 
     return html`
       <div class="profile-view">
-        <button class="back-button" @click=${this.goBack}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
+        <nr-button size="small" variant="secondary" @click=${this.goBack}>
+          <nr-icon slot="prefix" name="arrow-left" size="small"></nr-icon>
           Back to Dashboard
-        </button>
+        </nr-button>
 
         <div class="profile-header">
           <h1>Profile</h1>
