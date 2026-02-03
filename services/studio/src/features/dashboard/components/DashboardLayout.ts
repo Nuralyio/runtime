@@ -371,9 +371,10 @@ export class DashboardLayout extends LitElement {
 
     return html`
       <nr-dropdown
-        trigger="hover"
+        trigger="click"
         placement="bottom-end"
         close-on-outside-click
+        close-on-escape
       >
         <div slot="trigger" class="user-profile">
           <div class="user-avatar">${this.getUserInitials()}</div>
