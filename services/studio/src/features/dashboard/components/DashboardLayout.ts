@@ -36,6 +36,7 @@ export class DashboardLayout extends LitElement {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 49px;
       padding: 0px 24px;
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
@@ -190,20 +191,11 @@ export class DashboardLayout extends LitElement {
       color: var(--nuraly-color-danger, #dc2626);
     }
 
-    .dashboard-body {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-      overflow: hidden;
-    }
-
     .dashboard-content {
       flex: 1;
-      display: flex;
-      flex-direction: column;
       min-height: 0;
       overflow: hidden;
+      display: flex;
     }
 
     .dashboard-content > * {
@@ -425,10 +417,8 @@ export class DashboardLayout extends LitElement {
         </div>
       </header>
 
-      <div class="dashboard-body">
-        <div class="dashboard-content">
-          ${this.renderContent()}
-        </div>
+      <div class="dashboard-content">
+        ${this.renderContent()}
       </div>
     `;
   }

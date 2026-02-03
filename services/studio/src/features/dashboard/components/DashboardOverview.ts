@@ -43,26 +43,30 @@ interface MenuItem {
 export class DashboardOverview extends LitElement {
   static styles = css`
     :host {
-      display: block;
-      height: 100%;
+      display: flex;
+      flex: 1;
+      min-height: 0;
       background: var(--nuraly-color-background, #f8fafc);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
 
     .overview-layout {
       display: flex;
-      height: 100%;
+      flex: 1;
+      min-height: 0;
     }
 
     /* Sidebar */
     .overview-sider {
       width: 220px;
       min-width: 220px;
-      height: 100%;
+      flex-shrink: 0;
+      height: calc(100vh - 49px);
       background: var(--nuraly-color-surface, #ffffff);
       border-right: 1px solid var(--nuraly-color-border, #e8e8f0);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .sider-nav {
@@ -119,6 +123,8 @@ export class DashboardOverview extends LitElement {
       display: flex;
       flex-direction: column;
       min-width: 0;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .overview-header {
@@ -151,11 +157,13 @@ export class DashboardOverview extends LitElement {
       display: flex;
       flex-direction: column;
       min-height: 0;
+      height: calc(100vh - 49px - 48px);
     }
 
     .overview-content > * {
       flex: 1;
       min-height: 0;
+      overflow: hidden;
     }
 
     /* Loading */
