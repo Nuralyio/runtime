@@ -8,6 +8,19 @@ const realm = import.meta.env.PUBLIC_KEYCLOAK_REALM || 'nuraly';
 const clientId = import.meta.env.PUBLIC_KEYCLOAK_CLIENT_ID || 'nuraly-web';
 const redirectUri = import.meta.env.PUBLIC_KEYCLOAK_REDIRECT_URI || 'http://localhost/cb';
 const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrations?client_id=${clientId}&response_type=code&scope=openid&redirect_uri=${encodeURIComponent(redirectUri)}`;
+
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+let isAuthenticated = false;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+    isAuthenticated = currentUser && !currentUser.anonymous;
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
 ---
 
 <header class="home-header" style="background: #f8fafc;">
@@ -32,8 +45,14 @@ const registrationUrl = `/auth/realms/${realm}/protocol/openid-connect/registrat
         </div>
 
         <div class="home-nav-actions">
-          <a href="/dashboard" class="btn btn-secondary">LOG IN</a>
-          <a href={registrationUrl} class="btn btn-primary">GET STARTED</a>
+          {isAuthenticated ? (
+            <a href="/dashboard" class="btn btn-primary">DASHBOARD</a>
+          ) : (
+            <>
+              <a href="/dashboard" class="btn btn-secondary">LOG IN</a>
+              <a href={registrationUrl} class="btn btn-primary">GET STARTED</a>
+            </>
+          )}
         </div>
       </nav>
     </div>
