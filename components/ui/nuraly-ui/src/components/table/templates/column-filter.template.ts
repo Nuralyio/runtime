@@ -63,7 +63,7 @@ export function renderColumnFilterTemplate(data: ColumnFilterTemplateData): Temp
         ${currentValue
           ? html`
               <button class="column-filter-clear" @click=${onClearFilter}>
-                <nr-icon name="times"></nr-icon>
+                <nr-icon name="x" size="small"></nr-icon>
               </button>
             `
           : nothing}
@@ -81,7 +81,7 @@ export function renderColumnFilterTemplate(data: ColumnFilterTemplateData): Temp
 export function renderFilterIcon(_isActive: boolean, hasFilter: boolean): TemplateResult {
   return html`
     <span class="filter-icon ${hasFilter ? 'has-filter' : ''}">
-      <nr-icon name="filter"></nr-icon>
+      <nr-icon name="filter" size="small"></nr-icon>
       ${hasFilter ? html`<span class="filter-indicator"></span>` : nothing}
     </span>
   `;
