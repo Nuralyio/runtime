@@ -8,11 +8,13 @@ import { customElement, property } from 'lit/decorators.js';
 import styles from './KVEntriesList.style';
 import { formatDate } from '../../services/dashboard.service';
 import type { KvEntry } from '../../../runtime/redux/store/kv';
+import type { IHeader } from '../../../runtime/components/ui/nuraly-ui/src/components/table/table.types';
 
 // Import NuralyUI components
 import '../../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../../runtime/components/ui/nuraly-ui/src/components/tag';
+import '../../../runtime/components/ui/nuraly-ui/src/components/table';
 
 // Extended KvEntry with application name
 interface KvEntryWithAppName extends KvEntry {
@@ -45,19 +47,138 @@ export class KVEntriesList extends LitElement {
     }));
   }
 
-  private getTypeClass(valueType: string): string {
-    return valueType.toLowerCase();
+  private handleRowClick(entry: KvEntryWithAppName) {
+    // Navigate to studio with KV modal open
+    window.location.href = `/app/studio/${entry.applicationId}?kv=${encodeURIComponent(entry.keyPath)}`;
   }
 
-  private renderSecretBadge(isSecret: boolean) {
-    if (!isSecret) return '';
+  private getTypeColor(type: string): { bg: string; color: string } {
+    const colors: Record<string, { bg: string; color: string }> = {
+      string: { bg: '#dbeafe', color: '#2563eb' },
+      json: { bg: '#fef3c7', color: '#d97706' },
+      number: { bg: '#dcfce7', color: '#16a34a' },
+      boolean: { bg: '#fee2e2', color: '#dc2626' },
+      binary: { bg: '#f3e8ff', color: '#7c3aed' },
+    };
+    return colors[type.toLowerCase()] || { bg: '#e8e8f0', color: '#5c5c7a' };
+  }
 
-    return html`
-      <nr-badge
-        status="warning"
-        text="Secret"
-      ></nr-badge>
-    `;
+  private getTableHeaders(): IHeader[] {
+    return [
+      {
+        name: 'Key Path',
+        key: 'keyPath',
+        render: (value: string) => html`
+          <code style="
+            font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: #14144b;
+            background: #e8e8f0;
+            padding: 3px 8px;
+            border-radius: 4px;
+          ">${value}</code>
+        `,
+      },
+      {
+        name: 'Application',
+        key: 'applicationName',
+        render: (value: string) => html`
+          <span style="
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #5c5c7a;
+          ">${value || 'Unknown'}</span>
+        `,
+      },
+      {
+        name: 'Type',
+        key: 'valueType',
+        width: 100,
+        render: (value: string) => {
+          const { bg, color } = this.getTypeColor(value);
+          return html`
+            <span style="
+              display: inline-block;
+              padding: 2px 8px;
+              border-radius: 4px;
+              font-size: 10px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.02em;
+              background: ${bg};
+              color: ${color};
+            ">${value}</span>
+          `;
+        },
+      },
+      {
+        name: 'Scope',
+        key: 'scope',
+        width: 120,
+        render: (value: string) => value
+          ? html`<span style="
+              display: inline-block;
+              padding: 2px 8px;
+              background: #e8e8f0;
+              border-radius: 4px;
+              font-size: 12px;
+              color: #5c5c7a;
+            ">${value}</span>`
+          : html`<span style="color: #9ca3af; font-size: 13px;">Global</span>`,
+      },
+      {
+        name: 'Secret',
+        key: 'isSecret',
+        width: 80,
+        render: (value: boolean) => value
+          ? html`<span style="
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 2px 8px;
+              background: #fef3c7;
+              color: #d97706;
+              border-radius: 4px;
+              font-size: 11px;
+              font-weight: 500;
+            "><span style="font-size: 8px;">●</span>Secret</span>`
+          : html``,
+      },
+      {
+        name: 'Updated',
+        key: 'updatedAt',
+        width: 140,
+        render: (value: string) => html`<span style="color: #5c5c7a; font-size: 13px;">${formatDate(value)}</span>`,
+      },
+      {
+        name: 'Actions',
+        key: 'actions',
+        width: 160,
+        render: (_value: any, row: KvEntryWithAppName) => html`
+          <div style="display: flex; gap: 6px; justify-content: flex-end;">
+            <nr-button
+              type="default"
+              size="small"
+              iconLeft="Pencil"
+              title="Edit entry"
+              @click=${(e: Event) => this.handleEdit(e, row)}
+            >Edit</nr-button>
+            <nr-button
+              type="danger"
+              size="small"
+              iconLeft="Trash2"
+              title="Delete entry"
+              @click=${(e: Event) => this.handleDelete(e, row)}
+            >Delete</nr-button>
+          </div>
+        `,
+      },
+    ];
   }
 
   private renderEmptyState() {
@@ -79,64 +200,17 @@ export class KVEntriesList extends LitElement {
       ${this.entries.length === 0
         ? this.renderEmptyState()
         : html`
-            <table class="kv-table">
-              <thead>
-                <tr>
-                  <th>Key Path</th>
-                  <th>Application</th>
-                  <th>Type</th>
-                  <th>Scope</th>
-                  <th>Secret</th>
-                  <th>Updated</th>
-                  <th style="text-align: right;">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${this.entries.map(entry => html`
-                  <tr>
-                    <td>
-                      <code class="key-path">${entry.keyPath}</code>
-                    </td>
-                    <td>
-                      <span class="app-badge">${entry.applicationName || 'Unknown'}</span>
-                    </td>
-                    <td>
-                      <span class="type-badge ${this.getTypeClass(entry.valueType)}">
-                        ${entry.valueType}
-                      </span>
-                    </td>
-                    <td>
-                      ${entry.scope
-                        ? html`<span class="scope-badge">${entry.scope}</span>`
-                        : html`<span style="color: var(--nuraly-color-text-tertiary, #9ca3af);">Global</span>`
-                      }
-                    </td>
-                    <td>
-                      ${this.renderSecretBadge(entry.isSecret)}
-                    </td>
-                    <td>${formatDate(entry.updatedAt)}</td>
-                    <td>
-                      <div class="actions-cell">
-                        <nr-button
-                          type="default"
-                          size="small"
-                          iconLeft="Pencil"
-                          title="Edit entry"
-                          @click=${(e: Event) => this.handleEdit(e, entry)}
-                        >Edit</nr-button>
-                        <nr-button
-                          type="danger"
-                          size="small"
-                          iconLeft="Trash2"
-                          title="Delete entry"
-                          @click=${(e: Event) => this.handleDelete(e, entry)}
-                        >Delete</nr-button>
-                      </div>
-                    </td>
-                  </tr>
-                `)}
-              </tbody>
-            </table>
+            <div class="table-container">
+              <nr-table
+                .headers=${this.getTableHeaders()}
+                .rows=${this.entries}
+                size="small"
+                pageSize=${10}
+                emptyText="No KV entries found"
+                clickable
+                @nr-row-click=${(e: CustomEvent) => this.handleRowClick(e.detail.row)}
+              ></nr-table>
+            </div>
           `
       }
     `;

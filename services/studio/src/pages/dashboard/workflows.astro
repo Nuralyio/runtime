@@ -1,0 +1,81 @@
+---
+/**
+ * Dashboard Workflows Route
+ * /dashboard/workflows - Shows all workflows across applications
+ */
+import { ViewTransitions } from 'astro:transitions';
+export const prerender = false;
+
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
+
+const initialRoute = {
+  type: 'overview',
+  overviewView: 'workflows',
+  pathname: Astro.url.pathname,
+  search: Astro.url.search
+};
+---
+
+<!doctype html>
+<html lang="en" data-theme="default-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Workflows - Nuraly</title>
+    <ViewTransitions />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
+    <style is:global>
+      :root {
+        --nuraly-color-primary: #14144b;
+        --nuraly-color-primary-light: #1e1e6e;
+        --nuraly-color-primary-dark: #0a0a32;
+        --nuraly-color-primary-bg: #f0f0f8;
+        --nuraly-color-background: #f8fafc;
+        --nuraly-color-background-hover: #f1f5f9;
+        --nuraly-color-surface: #ffffff;
+        --nuraly-color-text: #0f0f3c;
+        --nuraly-color-text-secondary: #5c5c7a;
+        --nuraly-color-text-tertiary: #8c8ca8;
+        --nuraly-color-border: #e8e8f0;
+        --nuraly-color-border-subtle: #f1f3f5;
+        --nuraly-color-success: #16a34a;
+        --nuraly-color-warning: #ca8a04;
+        --nuraly-color-danger: #dc2626;
+        --nuraly-font-mono: 'SF Mono', 'Fira Code', monospace;
+        /* Button colors */
+        --nuraly-color-button-primary: var(--nuraly-color-primary);
+        --nuraly-color-button-primary-hover: var(--nuraly-color-primary-light);
+        --nuraly-color-button-primary-active: var(--nuraly-color-primary-dark);
+        --nuraly-color-text-on-color: #ffffff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--nuraly-color-background);
+        color: var(--nuraly-color-text);
+      }
+      dashboard-layout { display: block; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <dashboard-layout data-initial-route={JSON.stringify(initialRoute)}></dashboard-layout>
+
+    <script is:inline define:vars={{ currentUser }}>
+      window.__CURRENT_USER__ = currentUser;
+    </script>
+    <script>
+      import "../../features/dashboard";
+      import "../../features/runtime/components";
+    </script>
+  </body>
+</html>

@@ -564,7 +564,7 @@ export class StudioLeftPanel extends LitElement {
         id: workflow.id,
         type: "flow",
         label: workflow.name,
-        detail: { workflowId: workflow.id },
+        detail: { workflowId: workflow.id, appId: this.appId },
       });
 
       // Refresh the workflow list
