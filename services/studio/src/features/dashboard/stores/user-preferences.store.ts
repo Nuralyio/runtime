@@ -1,0 +1,244 @@
+/**
+ * User Preferences Store
+ * Reactive nanostores for user preferences with KV persistence
+ */
+
+import { atom } from 'nanostores';
+import {
+  loadAllPreferences,
+  setPreference,
+  migrateFromLocalStorage,
+  cleanupPinnedApplications as cleanupApps,
+  cleanupPinnedWorkflows as cleanupWorkflows,
+} from '../services/user-preferences.service';
+
+// ============================================
+// Atoms
+// ============================================
+
+/**
+ * Set of pinned application IDs
+ */
+export const $pinnedApplications = atom<Set<string>>(new Set());
+
+/**
+ * Set of pinned workflow IDs
+ */
+export const $pinnedWorkflows = atom<Set<string>>(new Set());
+
+/**
+ * View mode for applications section
+ */
+export const $applicationsViewMode = atom<'cards' | 'table'>('cards');
+
+/**
+ * View mode for workflows section
+ */
+export const $workflowsViewMode = atom<'cards' | 'table'>('table');
+
+/**
+ * Loading state for preferences
+ */
+export const $preferencesLoading = atom<boolean>(true);
+
+/**
+ * Error state for preferences
+ */
+export const $preferencesError = atom<string | null>(null);
+
+// ============================================
+// Initialization
+// ============================================
+
+let initialized = false;
+let initPromise: Promise<void> | null = null;
+
+/**
+ * Initialize user preferences from KV
+ * Safe to call multiple times - will only initialize once
+ */
+export async function initUserPreferences(): Promise<void> {
+  if (initialized) return;
+
+  // Return existing promise if initialization is in progress
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
+    try {
+      $preferencesLoading.set(true);
+      $preferencesError.set(null);
+
+      // Migrate from localStorage first (one-time)
+      await migrateFromLocalStorage();
+
+      // Load preferences from KV
+      const prefs = await loadAllPreferences();
+
+      // Update stores
+      $pinnedApplications.set(new Set(prefs.pinnedApplications));
+      $pinnedWorkflows.set(new Set(prefs.pinnedWorkflows));
+      $applicationsViewMode.set(prefs.applicationsViewMode);
+      $workflowsViewMode.set(prefs.workflowsViewMode);
+
+      initialized = true;
+    } catch (error) {
+      console.error('Failed to initialize user preferences:', error);
+      $preferencesError.set('Failed to load preferences');
+    } finally {
+      $preferencesLoading.set(false);
+    }
+  })();
+
+  return initPromise;
+}
+
+/**
+ * Force reload preferences from KV
+ */
+export async function reloadUserPreferences(): Promise<void> {
+  initialized = false;
+  initPromise = null;
+  await initUserPreferences();
+}
+
+// ============================================
+// Pinned Applications Actions
+// ============================================
+
+/**
+ * Toggle pinned status for an application
+ * Updates both the store and KV
+ * @returns The new pinned status
+ */
+export async function togglePinnedApplication(appId: string): Promise<boolean> {
+  const current = $pinnedApplications.get();
+  const newSet = new Set(current);
+  const wasPinned = newSet.has(appId);
+
+  if (wasPinned) {
+    newSet.delete(appId);
+  } else {
+    newSet.add(appId);
+  }
+
+  // Update store immediately for responsive UI
+  $pinnedApplications.set(newSet);
+
+  // Persist to KV
+  const success = await setPreference('pinnedApplications', [...newSet]);
+
+  if (!success) {
+    // Revert on failure
+    $pinnedApplications.set(current);
+    console.error('Failed to persist pinned application change');
+    return wasPinned;
+  }
+
+  return !wasPinned;
+}
+
+/**
+ * Clean up pinned applications by removing deleted ones
+ */
+export async function cleanupPinnedApplications(validAppIds: Set<string>): Promise<void> {
+  const current = $pinnedApplications.get();
+  const filtered = new Set([...current].filter(id => validAppIds.has(id)));
+
+  if (filtered.size !== current.size) {
+    $pinnedApplications.set(filtered);
+    await cleanupApps(validAppIds);
+  }
+}
+
+// ============================================
+// Pinned Workflows Actions
+// ============================================
+
+/**
+ * Toggle pinned status for a workflow
+ * Updates both the store and KV
+ * @returns The new pinned status
+ */
+export async function togglePinnedWorkflow(workflowId: string): Promise<boolean> {
+  const current = $pinnedWorkflows.get();
+  const newSet = new Set(current);
+  const wasPinned = newSet.has(workflowId);
+
+  if (wasPinned) {
+    newSet.delete(workflowId);
+  } else {
+    newSet.add(workflowId);
+  }
+
+  // Update store immediately for responsive UI
+  $pinnedWorkflows.set(newSet);
+
+  // Persist to KV
+  const success = await setPreference('pinnedWorkflows', [...newSet]);
+
+  if (!success) {
+    // Revert on failure
+    $pinnedWorkflows.set(current);
+    console.error('Failed to persist pinned workflow change');
+    return wasPinned;
+  }
+
+  return !wasPinned;
+}
+
+/**
+ * Clean up pinned workflows by removing deleted ones
+ */
+export async function cleanupPinnedWorkflows(validWorkflowIds: Set<string>): Promise<void> {
+  const current = $pinnedWorkflows.get();
+  const filtered = new Set([...current].filter(id => validWorkflowIds.has(id)));
+
+  if (filtered.size !== current.size) {
+    $pinnedWorkflows.set(filtered);
+    await cleanupWorkflows(validWorkflowIds);
+  }
+}
+
+// ============================================
+// View Mode Actions
+// ============================================
+
+/**
+ * Set view mode for applications section
+ */
+export async function setApplicationsViewMode(mode: 'cards' | 'table'): Promise<void> {
+  const current = $applicationsViewMode.get();
+  if (current === mode) return;
+
+  // Update store immediately
+  $applicationsViewMode.set(mode);
+
+  // Persist to KV
+  const success = await setPreference('applicationsViewMode', mode);
+
+  if (!success) {
+    // Revert on failure
+    $applicationsViewMode.set(current);
+    console.error('Failed to persist applications view mode');
+  }
+}
+
+/**
+ * Set view mode for workflows section
+ */
+export async function setWorkflowsViewMode(mode: 'cards' | 'table'): Promise<void> {
+  const current = $workflowsViewMode.get();
+  if (current === mode) return;
+
+  // Update store immediately
+  $workflowsViewMode.set(mode);
+
+  // Persist to KV
+  const success = await setPreference('workflowsViewMode', mode);
+
+  if (!success) {
+    // Revert on failure
+    $workflowsViewMode.set(current);
+    console.error('Failed to persist workflows view mode');
+  }
+}

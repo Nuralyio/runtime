@@ -6,7 +6,7 @@
 /**
  * Tab types supported in the dashboard routes
  */
-export type DashboardTabType = 'overview' | 'workflow' | 'database' | 'app' | 'kv';
+export type DashboardTabType = 'overview' | 'workflow' | 'workflow-edit' | 'database' | 'app' | 'kv' | 'profile';
 
 /**
  * Sub-tab types for app view (used with nr-tabs)

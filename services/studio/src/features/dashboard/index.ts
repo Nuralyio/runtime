@@ -10,6 +10,7 @@ import './components/DashboardAppView';
 import './components/DashboardWorkflowView';
 import './components/DashboardDatabaseView';
 import './components/DashboardKVView';
+import './components/DashboardProfileView';
 
 // Register legacy dashboard component (for backwards compatibility)
 import './components/Dashboard';
@@ -20,7 +21,9 @@ import './components/KVEntriesList/KVEntriesList';
 
 // Export types and services
 export * from './services/dashboard.service';
+export * from './services/user-preferences.service';
 export * from './stores/dashboard-tabs.store';
+export * from './stores/user-preferences.store';
 export * from './utils/route-sync';
 
 // Export components
@@ -31,3 +34,4 @@ export { DashboardAppView } from './components/DashboardAppView';
 export { DashboardWorkflowView } from './components/DashboardWorkflowView';
 export { DashboardDatabaseView } from './components/DashboardDatabaseView';
 export { DashboardKVView } from './components/DashboardKVView';
+export { DashboardProfileView } from './components/DashboardProfileView';

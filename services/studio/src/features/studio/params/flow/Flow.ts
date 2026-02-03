@@ -1,4 +1,4 @@
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { html, LitElement, css } from "lit";
 import "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component";
 import type { Workflow } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
@@ -21,62 +21,12 @@ import {
   handleExecuteWorkflow,
   handleSaveWorkflow,
 } from "../../../runtime/redux/handlers/workflows";
-import type { WorkflowNode, WorkflowEdge } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { createSocketFunctions } from "../../../runtime/handlers/runtime-api/socket";
-
-/**
- * Convert backend DTO format to canvas format
- * Backend returns positionX/Y as numbers and configuration/ports as JSON strings
- * Canvas expects position as {x,y} object and configuration/ports as parsed objects
- */
-function convertDtoToWorkflow(dto: any): Workflow | null {
-  if (!dto) return null;
-
-  return {
-    id: dto.id,
-    name: dto.name,
-    description: dto.description,
-    applicationId: dto.applicationId,
-    nodes: (dto.nodes || []).map((n: any): WorkflowNode => {
-      // Parse configuration and ports if they're strings
-      const config = typeof n.configuration === 'string' ? JSON.parse(n.configuration || '{}') : (n.configuration || {});
-      const ports = typeof n.ports === 'string' ? JSON.parse(n.ports || '{}') : (n.ports || { inputs: [], outputs: [] });
-
-      // Extract metadata from config (backend stores it there)
-      const metadata = config.metadata || n.metadata || {};
-      delete config.metadata;
-
-      return {
-        id: n.id,
-        name: n.name,
-        type: n.type,
-        position: n.position || { x: n.positionX || 0, y: n.positionY || 0 },
-        configuration: config,
-        ports,
-        metadata: {
-          maxRetries: n.maxRetries,
-          retryDelayMs: n.retryDelayMs,
-          timeoutMs: n.timeoutMs,
-          ...metadata,
-        },
-      };
-    }),
-    edges: (dto.edges || []).map((e: any): WorkflowEdge => ({
-      id: e.id,
-      sourceNodeId: e.sourceNodeId,
-      sourcePortId: e.sourcePortId || 'out',
-      targetNodeId: e.targetNodeId,
-      targetPortId: e.targetPortId || 'in',
-      label: e.label,
-      condition: e.condition,
-      priority: e.priority,
-    })),
-    // Parse viewport from JSON string if present
-    viewport: dto.viewport ? (typeof dto.viewport === 'string' ? JSON.parse(dto.viewport) : dto.viewport) : undefined,
-    createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt,
-  };
-}
+import {
+  convertDtoToWorkflow,
+  createViewportDebouncer,
+  type ViewportDebouncer,
+} from "../../../../utils/workflow-utils";
 
 // Mock workflow to showcase UI when no workflow is selected
 const MOCK_WORKFLOW: Workflow = {
@@ -377,6 +327,10 @@ export class FlowPage extends LitElement {
   @state()
   private executionError: string | null = null;
 
+  /** Detail passed from tab containing workflowId and/or appId */
+  @property({ type: Object })
+  detail: { workflowId?: string; appId?: string } | null = null;
+
   // Track partial execution start node (for selective node status reset)
   private partialExecutionStartNodeId: string | null = null;
 
@@ -385,9 +339,13 @@ export class FlowPage extends LitElement {
 
   private unsubscribeWorkflow: (() => void) | null = null;
   private unsubscribeSaveStatus: (() => void) | null = null;
-  private viewportSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+  private viewportDebouncer: ViewportDebouncer | null = null;
   private currentViewport: CanvasViewport = getDefaultWorkflowViewport();
   private unsubscribeContext: (() => void) | null = null;
+
+  // Store IDs separately so they survive canvas events that don't include them
+  private loadedWorkflowId: string | null = null;
+  private loadedApplicationId: string | null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -403,6 +361,13 @@ export class FlowPage extends LitElement {
       // Preserve current viewport when updating workflow from store
       // This prevents viewport reset during execution events
       if (workflow) {
+        // Update stored IDs when workflow changes from store
+        if (workflow.id) {
+          this.loadedWorkflowId = workflow.id;
+        }
+        if (workflow.applicationId) {
+          this.loadedApplicationId = workflow.applicationId;
+        }
         this.workflow = { ...workflow, viewport: this.currentViewport };
       } else {
         this.workflow = workflow;
@@ -421,6 +386,13 @@ export class FlowPage extends LitElement {
         // Convert DTO format to canvas format
         const wf = convertDtoToWorkflow(rawWf);
         if (wf) {
+          // Update stored IDs when workflow changes from context
+          if (wf.id) {
+            this.loadedWorkflowId = wf.id;
+          }
+          if (wf.applicationId) {
+            this.loadedApplicationId = wf.applicationId;
+          }
           // Preserve current viewport when switching workflows via context
           this.workflow = { ...wf, viewport: this.currentViewport };
           // Also update the global store so execute uses the right workflow
@@ -446,8 +418,27 @@ export class FlowPage extends LitElement {
     if (this.unsubscribeContext) {
       this.unsubscribeContext();
     }
-    if (this.viewportSaveTimeout) {
-      clearTimeout(this.viewportSaveTimeout);
+    if (this.viewportDebouncer) {
+      this.viewportDebouncer.cancel();
+    }
+  }
+
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+    // If detail changed and we have a new workflowId or appId, reload the workflow
+    if (changedProperties.has('detail') && this.detail) {
+      const oldDetail = changedProperties.get('detail') as { workflowId?: string; appId?: string } | null;
+      const newWorkflowId = this.detail.workflowId;
+      const newAppId = this.detail.appId;
+      const oldWorkflowId = oldDetail?.workflowId;
+      const oldAppId = oldDetail?.appId;
+
+      // Reload if workflowId or appId changed
+      if ((newWorkflowId && newWorkflowId !== oldWorkflowId) ||
+          (newAppId && newAppId !== oldAppId && !this.loadedApplicationId)) {
+        console.log('[Flow] Detail changed, reloading workflow:', this.detail);
+        this.loadWorkflow();
+      }
     }
   }
 
@@ -717,18 +708,29 @@ export class FlowPage extends LitElement {
 
   private async loadWorkflow() {
     this.loading = true;
-    const appId = $currentApplication.get()?.uuid;
+    // Use detail.appId as primary source, fall back to store
+    const appId = this.detail?.appId || $currentApplication.get()?.uuid;
+
+    console.log('[Flow] loadWorkflow called, detail:', this.detail, 'appId:', appId);
 
     if (appId) {
+      // Store appId immediately so it survives canvas events
+      this.loadedApplicationId = appId;
+
       // Load all workflows for this app
       const workflows = await getWorkflows(appId);
       if (workflows) {
         $workflows.set(workflows);
       }
 
-      // Get or create the current workflow
-      const workflow = await getOrCreateWorkflow(appId);
+      // Get or create the current workflow (use detail.workflowId if provided)
+      const workflow = await getOrCreateWorkflow(appId, this.detail?.workflowId);
       if (workflow) {
+        // Store IDs separately so they survive canvas events
+        this.loadedWorkflowId = workflow.id;
+
+        console.log('[Flow] Loaded workflow:', workflow.id, workflow.name, 'appId:', appId);
+
         // Load viewport from KV (or migrate from workflow if exists)
         let viewport = await getWorkflowViewport(workflow.id, appId);
 
@@ -746,9 +748,19 @@ export class FlowPage extends LitElement {
           viewport: this.currentViewport,
         };
 
+        // Initialize viewport debouncer for this workflow
+        this.viewportDebouncer = createViewportDebouncer((v) => {
+          const currentAppId = this.loadedApplicationId || $currentApplication.get()?.uuid;
+          if (currentAppId && this.workflow) {
+            saveWorkflowViewport(this.workflow.id, currentAppId, v);
+          }
+        });
+
         // Subscribe to workflow events (for external HTTP triggers)
         this.subscribeToWorkflow(workflow.id);
       }
+    } else {
+      console.warn('[Flow] No appId available from detail or store');
     }
 
     this.loading = false;
@@ -756,7 +768,24 @@ export class FlowPage extends LitElement {
 
   private handleCanvasWorkflowChanged(event: CustomEvent<{ workflow: Workflow }>) {
     const { workflow } = event.detail;
-    handleWorkflowChanged(workflow);
+
+    // Use stored IDs first, then detail prop, then workflow object, then event data
+    const workflowId = this.loadedWorkflowId || this.detail?.workflowId || this.workflow?.id || workflow.id;
+    const applicationId = this.loadedApplicationId || this.detail?.appId || this.workflow?.applicationId || workflow.applicationId;
+
+    if (!workflowId) {
+      console.error('[Flow] Cannot update: no workflow ID available');
+      return;
+    }
+
+    // Preserve essential fields that canvas might not include in the event
+    const preservedWorkflow: Workflow = {
+      ...workflow,
+      id: workflowId,
+      applicationId: applicationId,
+    };
+
+    handleWorkflowChanged(preservedWorkflow);
   }
 
   /**
@@ -768,17 +797,10 @@ export class FlowPage extends LitElement {
 
     this.currentViewport = viewport;
 
-    // Debounce saving to KV (500ms)
-    if (this.viewportSaveTimeout) {
-      clearTimeout(this.viewportSaveTimeout);
+    // Use debouncer to save viewport
+    if (this.viewportDebouncer) {
+      this.viewportDebouncer.update(viewport);
     }
-
-    this.viewportSaveTimeout = setTimeout(() => {
-      const appId = $currentApplication.get()?.uuid;
-      if (appId && this.workflow) {
-        saveWorkflowViewport(this.workflow.id, appId, viewport);
-      }
-    }, 500);
   }
 
   /**

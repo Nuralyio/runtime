@@ -12,8 +12,8 @@ import {
   type ApplicationWithStatus,
   type WorkflowWithAppName
 } from '../services/dashboard.service';
-import { workflowService } from '../../../services/workflow.service';
-import { getKvEntries, type KvEntry } from '../../runtime/redux/store/kv';
+import { getWorkflowService, getKvStore } from '../../../services/lazy-loader';
+import type { KvEntry } from '../../runtime/redux/store/kv';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
@@ -247,6 +247,12 @@ export class DashboardAppView extends LitElement {
       const apps = await fetchApplicationsWithStatus({});
       this.app = apps.find(a => a.uuid === this.appId) || null;
 
+      // Lazy load services and fetch data
+      const [workflowService, kvStore] = await Promise.all([
+        getWorkflowService(),
+        getKvStore(),
+      ]);
+
       // Fetch workflows for this app
       const allWorkflows = await workflowService.getWorkflowsByApplication(this.appId);
       this.workflows = allWorkflows.map(wf => ({
@@ -262,7 +268,7 @@ export class DashboardAppView extends LitElement {
       }));
 
       // Fetch KV entries for this app
-      this.kvEntries = await getKvEntries(this.appId) || [];
+      this.kvEntries = await kvStore.getKvEntries(this.appId) || [];
     } catch (e) {
       console.error('[DashboardAppView] Failed to load app data:', e);
     } finally {
@@ -336,7 +342,7 @@ export class DashboardAppView extends LitElement {
       <div class="empty-state">
         <p class="empty-state-title">Pages Overview</p>
         <p class="empty-state-text">Open in Studio to view and edit pages</p>
-        <nr-button type="primary" @click=${this.openInStudio}>Open in Studio</nr-button>
+        <nr-button type="primary" size="small" @click=${this.openInStudio}>Open in Studio</nr-button>
       </div>
     `;
   }
@@ -374,7 +380,7 @@ export class DashboardAppView extends LitElement {
       <div class="empty-state">
         <p class="empty-state-title">Database Connections</p>
         <p class="empty-state-text">Open in Studio to manage database connections</p>
-        <nr-button type="primary" @click=${this.openInStudio}>Open in Studio</nr-button>
+        <nr-button type="primary" size="small" @click=${this.openInStudio}>Open in Studio</nr-button>
       </div>
     `;
   }

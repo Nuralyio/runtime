@@ -8,7 +8,7 @@ import { type DashboardTabType, type AppSubTab } from '../stores/dashboard-tabs.
 /**
  * Overview sub-views for the main dashboard
  */
-export type OverviewView = 'applications' | 'workflows' | 'kv' | 'database' | 'parcour' | 'services';
+export type OverviewView = 'applications' | 'workflows' | 'kv' | 'database' | 'journal' | 'services';
 
 /**
  * Parsed route information
@@ -49,14 +49,19 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     return { type: 'overview', overviewView: 'database' };
   }
 
-  // /dashboard/parcour
-  if (path === '/dashboard/parcour') {
-    return { type: 'overview', overviewView: 'parcour' };
+  // /dashboard/journal
+  if (path === '/dashboard/journal') {
+    return { type: 'overview', overviewView: 'journal' };
   }
 
   // /dashboard/services (worker services status)
   if (path === '/dashboard/services') {
     return { type: 'overview', overviewView: 'services' };
+  }
+
+  // /dashboard/profile
+  if (path === '/dashboard/profile') {
+    return { type: 'profile' };
   }
 
   // /dashboard/app/{appId} or /dashboard/app/{appId}/{subTab}
@@ -71,7 +76,16 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     };
   }
 
-  // /dashboard/workflow/{wfId}
+  // /dashboard/workflow/edit/{wfId} - workflow editor
+  const workflowEditMatch = path.match(/^\/dashboard\/workflow\/edit\/([^/]+)$/);
+  if (workflowEditMatch) {
+    return {
+      type: 'workflow-edit',
+      resourceId: workflowEditMatch[1]
+    };
+  }
+
+  // /dashboard/workflow/{wfId} - workflow details view
   const workflowMatch = path.match(/^\/dashboard\/workflow\/([^/]+)$/);
   if (workflowMatch) {
     return {
@@ -123,6 +137,9 @@ export function buildRoutePath(route: ParsedRoute): string {
     case 'workflow':
       return `/dashboard/workflow/${route.resourceId}`;
 
+    case 'workflow-edit':
+      return `/dashboard/workflow/edit/${route.resourceId}`;
+
     case 'database':
       return `/dashboard/database/${route.resourceId}`;
 
@@ -132,6 +149,9 @@ export function buildRoutePath(route: ParsedRoute): string {
         return `/dashboard/kv?${params.toString()}`;
       }
       return '/dashboard/kv';
+
+    case 'profile':
+      return '/dashboard/profile';
 
     default:
       return '/dashboard';
@@ -183,10 +203,10 @@ export function getStudioUrl(
 
     case 'workflow':
       if (appId) {
-        return `/app/studio/${appId}/workflow?wf=${resourceId}`;
+        return `/app/studio/${appId}/workflows?workflow=${resourceId}`;
       }
-      // Standalone workflow
-      return `/workflow/${resourceId}`;
+      // Standalone workflow - use dashboard edit URL
+      return `/dashboard/workflow/edit/${resourceId}`;
 
     case 'database':
       if (appId) {

@@ -2,13 +2,24 @@
  * Workflows List Component
  * Displays a table of workflows across all applications
  * Supports creating new workflows (standalone or attached to an app)
+ * Supports toggling between card and table view
+ * Uses KV storage for user preferences via nanostores
  */
 
 import { html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import styles from './WorkflowsList.style';
-import { formatDate, toggleWorkflowPinned, type WorkflowWithAppName, type ApplicationWithStatus } from '../../services/dashboard.service';
-import { workflowService } from '../../../../services/workflow.service';
+import { formatDate, type WorkflowWithAppName, type ApplicationWithStatus } from '../../services/dashboard.service';
+import {
+  $pinnedWorkflows,
+  $workflowsViewMode,
+  $preferencesLoading,
+  initUserPreferences,
+  togglePinnedWorkflow,
+  setWorkflowsViewMode,
+  cleanupPinnedWorkflows,
+} from '../../stores/user-preferences.store';
+import { getWorkflowService } from '../../../../services/lazy-loader';
 import type { IHeader } from '../../../runtime/components/ui/nuraly-ui/src/components/table/table.types';
 
 // Import NuralyUI components
@@ -21,6 +32,9 @@ import '../../../runtime/components/ui/nuraly-ui/src/components/select';
 import '../../../runtime/components/ui/nuraly-ui/src/components/tag';
 import '../../../runtime/components/ui/nuraly-ui/src/components/card';
 import '../../../runtime/components/ui/nuraly-ui/src/components/icon';
+import '../../../runtime/components/ui/nuraly-ui/src/components/radio-group';
+
+type ViewMode = 'cards' | 'table';
 
 @customElement('workflows-list')
 export class WorkflowsList extends LitElement {
@@ -32,13 +46,83 @@ export class WorkflowsList extends LitElement {
   @state() private showCreateDropdown = false;
   @state() private isCreating = false;
   @state() private workflowName = '';
+  @state() private viewMode: ViewMode = 'table';
+  @state() private pinnedIds: Set<string> = new Set();
+  @state() private preferencesLoading = true;
+
+  private unsubscribes: (() => void)[] = [];
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Initialize preferences
+    initUserPreferences();
+
+    // Subscribe to stores
+    this.unsubscribes.push(
+      $pinnedWorkflows.subscribe(pinned => {
+        this.pinnedIds = pinned;
+        // Trigger re-render
+        this.requestUpdate();
+      })
+    );
+
+    this.unsubscribes.push(
+      $workflowsViewMode.subscribe(mode => {
+        this.viewMode = mode;
+      })
+    );
+
+    this.unsubscribes.push(
+      $preferencesLoading.subscribe(loading => {
+        this.preferencesLoading = loading;
+      })
+    );
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unsubscribes.forEach(unsub => unsub());
+    this.unsubscribes = [];
+  }
+
+  override updated(changedProperties: Map<string, unknown>) {
+    super.updated(changedProperties);
+
+    // Clean up pinned IDs when workflows change
+    if (changedProperties.has('workflows') && this.workflows.length > 0) {
+      const validWorkflowIds = new Set(this.workflows.map(w => w.uuid));
+      cleanupPinnedWorkflows(validWorkflowIds);
+    }
+  }
+
+  private get workflowsWithPinnedStatus(): WorkflowWithAppName[] {
+    return this.workflows.map(w => ({
+      ...w,
+      isPinned: this.pinnedIds.has(w.uuid)
+    }));
+  }
 
   private get pinnedWorkflows(): WorkflowWithAppName[] {
-    return this.workflows.filter(w => w.isPinned);
+    return this.workflowsWithPinnedStatus.filter(w => w.isPinned);
   }
 
   private get unpinnedWorkflows(): WorkflowWithAppName[] {
-    return this.workflows.filter(w => !w.isPinned);
+    return this.workflowsWithPinnedStatus.filter(w => !w.isPinned);
+  }
+
+  private get viewModeOptions() {
+    return [
+      { value: 'cards', label: '', icon: 'grid' },
+      { value: 'table', label: '', icon: 'list' }
+    ];
+  }
+
+  private async handleViewModeChange(e: CustomEvent) {
+    const value = e.detail?.value;
+    if (value === 'cards' || value === 'table') {
+      await setWorkflowsViewMode(value);
+    }
   }
 
   private getTableHeaders(): IHeader[] {
@@ -133,16 +217,9 @@ export class WorkflowsList extends LitElement {
     }));
   }
 
-  private handlePin(e: Event, workflow: WorkflowWithAppName) {
+  private async handlePin(e: Event, workflow: WorkflowWithAppName) {
     e.stopPropagation();
-    const newPinnedStatus = toggleWorkflowPinned(workflow.uuid);
-
-    // Create new array with updated workflow (triggers Lit reactivity)
-    this.workflows = this.workflows.map(w =>
-      w.uuid === workflow.uuid
-        ? { ...w, isPinned: newPinnedStatus }
-        : w
-    );
+    await togglePinnedWorkflow(workflow.uuid);
   }
 
   private closeCreateDropdown() {
@@ -164,6 +241,9 @@ export class WorkflowsList extends LitElement {
 
     this.isCreating = true;
     try {
+      // Lazy load workflow service
+      const workflowService = await getWorkflowService();
+
       const workflow = await workflowService.createWorkflow(
         applicationId,
         name
@@ -268,18 +348,27 @@ export class WorkflowsList extends LitElement {
     `;
   }
 
-  private renderWorkflowCard(workflow: WorkflowWithAppName) {
+  private renderWorkflowCard(workflow: WorkflowWithAppName, showUnpinButton = false) {
     return html`
       <nr-card @click=${() => this.handleRowClick(workflow)}>
         <div slot="content">
           <div class="card-header">
             <h3 class="card-name" title=${workflow.name}>${workflow.name}</h3>
-            <nr-icon
-              name="star"
-              class="unpin-icon"
-              title="Unpin workflow"
-              @click=${(e: Event) => this.handlePin(e, workflow)}
-            ></nr-icon>
+            ${showUnpinButton ? html`
+              <nr-icon
+                name="star"
+                class="unpin-icon"
+                title="Unpin workflow"
+                @click=${(e: Event) => this.handlePin(e, workflow)}
+              ></nr-icon>
+            ` : html`
+              <nr-icon
+                name="star"
+                class="pin-icon"
+                title="Pin workflow"
+                @click=${(e: Event) => this.handlePin(e, workflow)}
+              ></nr-icon>
+            `}
           </div>
 
           <div class="card-meta">
@@ -312,12 +401,12 @@ export class WorkflowsList extends LitElement {
     `;
   }
 
-  private renderPinnedCards(workflows: WorkflowWithAppName[]) {
+  private renderCardsGrid(workflows: WorkflowWithAppName[], showUnpinButton = false) {
     if (workflows.length === 0) return nothing;
 
     return html`
       <div class="pinned-grid">
-        ${workflows.map(workflow => this.renderWorkflowCard(workflow))}
+        ${workflows.map(workflow => this.renderWorkflowCard(workflow, showUnpinButton))}
       </div>
     `;
   }
@@ -339,7 +428,7 @@ export class WorkflowsList extends LitElement {
     `;
   }
 
-  private renderSection(title: string, workflows: WorkflowWithAppName[], status: 'success' | 'warning' | 'default', asCards = false) {
+  private renderSection(title: string, workflows: WorkflowWithAppName[], status: 'success' | 'warning' | 'default', asCards = false, showUnpinButton = false) {
     if (workflows.length === 0) return nothing;
 
     return html`
@@ -348,7 +437,7 @@ export class WorkflowsList extends LitElement {
           <h2 class="section-title">${title}</h2>
           <nr-tag size="small" status=${status}>${workflows.length}</nr-tag>
         </div>
-        ${asCards ? this.renderPinnedCards(workflows) : this.renderWorkflowsTable(workflows)}
+        ${asCards ? this.renderCardsGrid(workflows, showUnpinButton) : this.renderWorkflowsTable(workflows)}
       </div>
     `;
   }
@@ -358,19 +447,31 @@ export class WorkflowsList extends LitElement {
     const unpinned = this.unpinnedWorkflows;
     const hasPinned = pinned.length > 0;
 
+    // Determine if we show as cards or table based on view mode
+    const showAsCards = this.viewMode === 'cards';
+
     return html`
       ${this.workflows.length === 0
         ? this.renderEmptyState()
         : html`
             <div class="list-header">
+              <nr-radio-group
+                type="button"
+                size="small"
+                direction="horizontal"
+                auto-width
+                .options=${this.viewModeOptions}
+                .value=${this.viewMode}
+                @nr-change=${this.handleViewModeChange}
+              ></nr-radio-group>
               ${this.renderCreateButton()}
             </div>
             <div class="sections-container">
               ${hasPinned ? html`
-                ${this.renderSection('Pinned', pinned, 'success', true)}
-                ${this.renderSection('Workflows', unpinned, 'default', false)}
+                ${this.renderSection('Pinned', pinned, 'success', true, true)}
+                ${this.renderSection('Workflows', unpinned, 'default', showAsCards, false)}
               ` : html`
-                ${this.renderWorkflowsTable(this.workflows)}
+                ${showAsCards ? this.renderCardsGrid(this.workflowsWithPinnedStatus, false) : this.renderWorkflowsTable(this.workflowsWithPinnedStatus)}
               `}
             </div>
           `

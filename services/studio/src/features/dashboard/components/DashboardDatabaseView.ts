@@ -203,7 +203,7 @@ export class DashboardDatabaseView extends LitElement {
             The simplified database viewer is coming soon. For now, please use the full Studio editor to manage database connections, view schemas, and run queries.
           </p>
           ${this.appId ? html`
-            <nr-button type="primary" @click=${this.openInStudio}>
+            <nr-button type="primary" size="small" @click=${this.openInStudio}>
               Open in Studio
             </nr-button>
           ` : ''}

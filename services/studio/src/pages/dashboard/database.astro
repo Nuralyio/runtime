@@ -3,7 +3,19 @@
  * Dashboard Database Route
  * /dashboard/database - Shows all databases across applications
  */
+import { ViewTransitions } from 'astro:transitions';
 export const prerender = false;
+
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
 
 const initialRoute = {
   type: 'overview',
@@ -19,11 +31,13 @@ const initialRoute = {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Database - Nuraly</title>
+    <ViewTransitions />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
     <style is:global>
       :root {
         --nuraly-color-primary: #14144b;
         --nuraly-color-primary-light: #1e1e6e;
+        --nuraly-color-primary-dark: #0a0a32;
         --nuraly-color-primary-bg: #f0f0f8;
         --nuraly-color-background: #f8fafc;
         --nuraly-color-background-hover: #f1f5f9;
@@ -37,6 +51,11 @@ const initialRoute = {
         --nuraly-color-warning: #ca8a04;
         --nuraly-color-danger: #dc2626;
         --nuraly-font-mono: 'SF Mono', 'Fira Code', monospace;
+        /* Button colors */
+        --nuraly-color-button-primary: var(--nuraly-color-primary);
+        --nuraly-color-button-primary-hover: var(--nuraly-color-primary-light);
+        --nuraly-color-button-primary-active: var(--nuraly-color-primary-dark);
+        --nuraly-color-text-on-color: #ffffff;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { height: 100%; overflow: hidden; }
@@ -51,6 +70,9 @@ const initialRoute = {
   <body>
     <dashboard-layout data-initial-route={JSON.stringify(initialRoute)}></dashboard-layout>
 
+    <script is:inline define:vars={{ currentUser }}>
+      window.__CURRENT_USER__ = currentUser;
+    </script>
     <script>
       import "../../features/dashboard";
       import "../../features/runtime/components";
