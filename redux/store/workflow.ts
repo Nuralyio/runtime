@@ -152,21 +152,32 @@ export async function getWorkflows(
 
 /**
  * Get or create a workflow for the application
+ * @param appId - The application ID
+ * @param workflowId - Optional specific workflow ID to load
  */
-export async function getOrCreateWorkflow(appId: string): Promise<Workflow | null> {
+export async function getOrCreateWorkflow(appId: string, workflowId?: string): Promise<Workflow | null> {
   const workflows = await getWorkflows(appId);
 
   if (workflows && workflows.length > 0) {
     // Update workflows list
     $workflows.set(workflows);
 
-    // Prefer workflows with nodes, otherwise use the first one
-    // This handles the case where empty workflows were created before proper ones
     let selectedWorkflow = workflows[0];
-    for (const wf of workflows) {
-      if (wf.nodes && wf.nodes.length > 0) {
-        selectedWorkflow = wf;
-        break;
+
+    // If a specific workflowId is requested, find it
+    if (workflowId) {
+      const requested = workflows.find(wf => wf.id === workflowId);
+      if (requested) {
+        selectedWorkflow = requested;
+      }
+    } else {
+      // Prefer workflows with nodes, otherwise use the first one
+      // This handles the case where empty workflows were created before proper ones
+      for (const wf of workflows) {
+        if (wf.nodes && wf.nodes.length > 0) {
+          selectedWorkflow = wf;
+          break;
+        }
       }
     }
 
