@@ -30,8 +30,62 @@ import '../../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../../runtime/components/ui/nuraly-ui/src/components/table';
 import '../../../runtime/components/ui/nuraly-ui/src/components/icon';
 import '../../../runtime/components/ui/nuraly-ui/src/components/radio-group';
+import '../../../runtime/components/ui/nuraly-ui/src/components/dropdown';
 
 type StatusFilter = 'all' | 'published' | 'draft';
+
+interface ApplicationTemplate {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+}
+
+const APPLICATION_TEMPLATES: ApplicationTemplate[] = [
+  {
+    id: 'form-builder',
+    name: 'Form Builder',
+    description: 'Build dynamic forms with validation and submission handling',
+    icon: 'file-text',
+    category: 'Input',
+  },
+  {
+    id: 'dashboard',
+    name: 'Dashboard',
+    description: 'Create an interactive dashboard with charts and metrics',
+    icon: 'layout-dashboard',
+    category: 'Analytics',
+  },
+  {
+    id: 'crud-app',
+    name: 'CRUD Application',
+    description: 'Full create, read, update, delete operations template',
+    icon: 'database',
+    category: 'Data',
+  },
+  {
+    id: 'landing-page',
+    name: 'Landing Page',
+    description: 'Marketing landing page with hero and feature sections',
+    icon: 'globe',
+    category: 'Marketing',
+  },
+  {
+    id: 'user-portal',
+    name: 'User Portal',
+    description: 'User account management with profile and settings',
+    icon: 'users',
+    category: 'Auth',
+  },
+  {
+    id: 'wizard-flow',
+    name: 'Multi-Step Wizard',
+    description: 'Guide users through a multi-step process or onboarding',
+    icon: 'git-branch',
+    category: 'Flow',
+  },
+];
 type ViewMode = 'cards' | 'table';
 
 @customElement('applications-grid')
@@ -45,6 +99,14 @@ export class ApplicationsGrid extends LitElement {
   @state() private viewMode: ViewMode = 'cards';
   @state() private pinnedIds: Set<string> = new Set();
   @state() private preferencesLoading = true;
+
+  // Create app dropdown states
+  @state() private showCreateDropdown = false;
+  @state() private showBlankForm = false;
+  @state() private showTemplateModal = false;
+  @state() private selectedTemplate: ApplicationTemplate | null = null;
+  @state() private appName = '';
+  @state() private isCreating = false;
 
   private unsubscribes: (() => void)[] = [];
 
@@ -93,7 +155,121 @@ export class ApplicationsGrid extends LitElement {
   }
 
   private handleCreateApp() {
-    window.location.href = '/app/studio?new=true';
+    window.location.href = '/app/studio/new';
+  }
+
+  private generateDefaultAppName(): string {
+    const baseName = 'Untitled Application';
+    const existingNames = new Set(this.applications.map(app => app.name));
+
+    if (!existingNames.has(baseName)) {
+      return baseName;
+    }
+
+    let counter = 1;
+    while (existingNames.has(`${baseName} ${counter}`)) {
+      counter++;
+    }
+    return `${baseName} ${counter}`;
+  }
+
+  private closeCreateDropdown() {
+    this.showCreateDropdown = false;
+    // Reset form state when closing
+    this.showBlankForm = false;
+    this.appName = '';
+  }
+
+  private handleShowBlankForm() {
+    this.appName = this.generateDefaultAppName();
+    this.showBlankForm = true;
+  }
+
+  private handleBackToOptions() {
+    this.showBlankForm = false;
+    this.appName = '';
+  }
+
+  private handleShowTemplateModal() {
+    this.showCreateDropdown = false;
+    this.showTemplateModal = true;
+    this.selectedTemplate = null;
+  }
+
+  private handleCloseTemplateModal() {
+    this.showTemplateModal = false;
+    this.selectedTemplate = null;
+  }
+
+  private handleSelectTemplate(template: ApplicationTemplate) {
+    this.selectedTemplate = template;
+  }
+
+  private handleAppNameInput(e: CustomEvent) {
+    this.appName = (e.target as HTMLInputElement).value || '';
+  }
+
+  private async createApplication(name: string): Promise<{ uuid: string } | null> {
+    try {
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ name }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create application: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Failed to create application:', error);
+      return null;
+    }
+  }
+
+  private async handleCreateBlankApp() {
+    if (!this.appName.trim() || this.isCreating) return;
+
+    this.isCreating = true;
+    try {
+      const app = await this.createApplication(this.appName.trim());
+      if (app?.uuid) {
+        this.closeCreateDropdown();
+        window.location.href = `/app/studio/${app.uuid}`;
+      } else {
+        console.error('Failed to create application: No UUID returned');
+      }
+    } catch (error) {
+      console.error('Failed to create application:', error);
+    } finally {
+      this.isCreating = false;
+    }
+  }
+
+  private async handleCreateFromTemplate() {
+    if (!this.selectedTemplate || this.isCreating) return;
+
+    this.isCreating = true;
+    try {
+      // Create app with template name
+      const app = await this.createApplication(this.selectedTemplate.name);
+      if (app?.uuid) {
+        this.handleCloseTemplateModal();
+        // TODO: Apply template to the app
+        window.location.href = `/app/studio/${app.uuid}`;
+      } else {
+        console.error('Failed to create application from template: No UUID returned');
+      }
+    } catch (error) {
+      console.error('Failed to create application from template:', error);
+    } finally {
+      this.isCreating = false;
+    }
   }
 
   private handleSearchInput(e: CustomEvent) {
@@ -246,6 +422,137 @@ export class ApplicationsGrid extends LitElement {
   private async handlePin(e: Event, app: ApplicationWithStatus) {
     e.stopPropagation();
     await togglePinnedApplication(app.uuid);
+  }
+
+  private renderCreateOptionsMenu() {
+    return html`
+      <div class="create-options-menu">
+        <div class="create-option" @click=${this.handleShowTemplateModal}>
+          <div class="create-option-icon">
+            <nr-icon name="layout-template"></nr-icon>
+          </div>
+          <div class="create-option-content">
+            <span class="create-option-title">From Template</span>
+            <span class="create-option-description">Start with a pre-built template</span>
+          </div>
+        </div>
+        <div class="create-option" @click=${this.handleShowBlankForm}>
+          <div class="create-option-icon">
+            <nr-icon name="file-plus"></nr-icon>
+          </div>
+          <div class="create-option-content">
+            <span class="create-option-title">Blank Application</span>
+            <span class="create-option-description">Start from scratch</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderBlankForm() {
+    return html`
+      <div class="create-app-form">
+        <button class="dropdown-back-button" @click=${this.handleBackToOptions}>
+          <nr-icon name="arrow-left"></nr-icon>
+          Back
+        </button>
+        <div class="dropdown-form-header">New Application</div>
+        <div class="form-field">
+          <label class="form-label">Name</label>
+          <nr-input
+            type="text"
+            placeholder="My Application"
+            size="small"
+            .value=${this.appName}
+            @nr-input=${this.handleAppNameInput}
+          ></nr-input>
+        </div>
+        <div class="dropdown-form-actions">
+          <nr-button
+            type="primary"
+            size="small"
+            ?disabled=${!this.appName.trim() || this.isCreating}
+            ?loading=${this.isCreating}
+            @click=${this.handleCreateBlankApp}
+          >
+            Create
+          </nr-button>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderTemplateModal() {
+    if (!this.showTemplateModal) return nothing;
+
+    return html`
+      <div class="template-modal-overlay" @click=${this.handleCloseTemplateModal}>
+        <div class="template-modal" @click=${(e: Event) => e.stopPropagation()}>
+          <div class="template-modal-header">
+            <h2 class="template-modal-title">Choose a Template</h2>
+            <button class="template-modal-close" @click=${this.handleCloseTemplateModal}>
+              <nr-icon name="x"></nr-icon>
+            </button>
+          </div>
+          <div class="template-modal-body">
+            <div class="template-grid">
+              ${APPLICATION_TEMPLATES.map(
+                template => html`
+                  <div
+                    class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
+                    @click=${() => this.handleSelectTemplate(template)}
+                  >
+                    <div class="template-card-icon">
+                      <nr-icon name=${template.icon}></nr-icon>
+                    </div>
+                    <h3 class="template-card-name">${template.name}</h3>
+                    <p class="template-card-description">${template.description}</p>
+                    <span class="template-card-category">${template.category}</span>
+                  </div>
+                `
+              )}
+            </div>
+          </div>
+          <div class="template-modal-footer">
+            <nr-button type="default" size="small" @click=${this.handleCloseTemplateModal}>
+              Cancel
+            </nr-button>
+            <nr-button
+              type="primary"
+              size="small"
+              ?disabled=${!this.selectedTemplate || this.isCreating}
+              ?loading=${this.isCreating}
+              @click=${this.handleCreateFromTemplate}
+            >
+              Use Template
+            </nr-button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderCreateButton() {
+    return html`
+      <nr-dropdown
+        trigger="click"
+        placement="bottom-end"
+        ?open=${this.showCreateDropdown}
+        @nr-dropdown-open=${() => this.showCreateDropdown = true}
+        @nr-dropdown-close=${this.closeCreateDropdown}
+        close-on-outside-click
+        close-on-escape
+        min-width="280px"
+        allow-overflow
+      >
+        <nr-button slot="trigger" type="primary" size="small" iconLeft="Plus">
+          New Application
+        </nr-button>
+        <div slot="content">
+          ${this.showBlankForm ? this.renderBlankForm() : this.renderCreateOptionsMenu()}
+        </div>
+      </nr-dropdown>
+    `;
   }
 
   private renderEmptyState() {
@@ -427,12 +734,12 @@ export class ApplicationsGrid extends LitElement {
               .value=${this.viewMode}
               @nr-change=${this.handleViewModeChange}
             ></nr-radio-group>
-            <nr-button type="primary" size="small" iconLeft="Plus" @click=${this.handleCreateApp}>
-              New Application
-            </nr-button>
+            ${this.renderCreateButton()}
           </div>
         </div>
       ` : nothing}
+
+      ${this.renderTemplateModal()}
 
       ${!hasApplications
         ? this.renderEmptyState()

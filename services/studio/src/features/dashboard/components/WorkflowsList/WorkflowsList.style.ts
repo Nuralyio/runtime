@@ -302,6 +302,242 @@ export const workflowsListStyles = css`
     border-top: 1px solid var(--nuraly-color-border, #e8e8f0);
     margin-top: 4px;
   }
+
+  /* Create options menu styles */
+  .create-options-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    min-width: 200px;
+  }
+
+  .create-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .create-option:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+  }
+
+  .create-option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--nuraly-color-background-active, #e8e8f0);
+    --nuraly-icon-color: var(--nuraly-color-text-secondary, #5c5c7a);
+    --nuraly-icon-size: 18px;
+  }
+
+  .create-option-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .create-option-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .create-option-description {
+    font-size: 11px;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  /* Template modal styles */
+  .template-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 150ms ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .template-modal {
+    background: var(--nuraly-color-surface, #ffffff);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 680px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 200ms ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .template-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+  }
+
+  .template-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--nuraly-color-text, #0f0f3c);
+    margin: 0;
+  }
+
+  .template-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    --nuraly-icon-size: 20px;
+    transition: all 150ms ease;
+  }
+
+  .template-modal-close:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+    --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .template-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .template-card {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 2px solid var(--nuraly-color-border, #e8e8f0);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 150ms ease;
+    background: var(--nuraly-color-surface, #ffffff);
+  }
+
+  .template-card:hover {
+    border-color: var(--nuraly-color-primary-light, #6366f1);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+  }
+
+  .template-card.selected {
+    border-color: var(--nuraly-color-primary, #14144b);
+    background: var(--nuraly-color-primary-bg, #f0f0ff);
+  }
+
+  .template-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: var(--nuraly-color-background-active, #e8e8f0);
+    --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
+    --nuraly-icon-size: 22px;
+    margin-bottom: 12px;
+  }
+
+  .template-card.selected .template-card-icon {
+    background: var(--nuraly-color-primary, #14144b);
+    --nuraly-icon-color: white;
+  }
+
+  .template-card-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--nuraly-color-text, #0f0f3c);
+    margin: 0 0 4px 0;
+  }
+
+  .template-card-description {
+    font-size: 12px;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .template-card-category {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    margin-top: 12px;
+  }
+
+  .template-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--nuraly-color-border, #e8e8f0);
+  }
+
+  /* Back button in dropdown */
+  .dropdown-back-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin: -4px -4px 8px -4px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+    --nuraly-icon-color: var(--nuraly-color-text-secondary, #5c5c7a);
+    --nuraly-icon-size: 14px;
+    font-size: 12px;
+    transition: all 150ms ease;
+  }
+
+  .dropdown-back-button:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+    color: var(--nuraly-color-text, #0f0f3c);
+    --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
+  }
 `;
 
 export default [workflowsListStyles];

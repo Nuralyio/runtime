@@ -36,6 +36,65 @@ import '../../../runtime/components/ui/nuraly-ui/src/components/radio-group';
 
 type ViewMode = 'cards' | 'table';
 
+/**
+ * Workflow template interface
+ */
+interface WorkflowTemplate {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+}
+
+/**
+ * Mock workflow templates
+ */
+const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
+  {
+    id: 'webhook-handler',
+    name: 'Webhook Handler',
+    description: 'Process incoming webhook requests',
+    icon: 'webhook',
+    category: 'Integrations'
+  },
+  {
+    id: 'email-automation',
+    name: 'Email Automation',
+    description: 'Send automated emails based on triggers',
+    icon: 'mail',
+    category: 'Communication'
+  },
+  {
+    id: 'data-sync',
+    name: 'Data Sync Pipeline',
+    description: 'Synchronize data between systems',
+    icon: 'refresh-cw',
+    category: 'Data'
+  },
+  {
+    id: 'scheduled-task',
+    name: 'Scheduled Task',
+    description: 'Run tasks on a schedule',
+    icon: 'clock',
+    category: 'Automation'
+  },
+  {
+    id: 'api-integration',
+    name: 'API Integration',
+    description: 'Connect to external APIs',
+    icon: 'link',
+    category: 'Integrations'
+  },
+  {
+    id: 'report-generator',
+    name: 'Report Generator',
+    description: 'Generate and distribute reports',
+    icon: 'chart-bar',
+    category: 'Reporting'
+  }
+];
+
 @customElement('workflows-list')
 export class WorkflowsList extends LitElement {
   static styles = styles;
@@ -44,6 +103,9 @@ export class WorkflowsList extends LitElement {
   @property({ type: Array }) applications: ApplicationWithStatus[] = [];
 
   @state() private showCreateDropdown = false;
+  @state() private showBlankForm = false;
+  @state() private showTemplateModal = false;
+  @state() private selectedTemplate: WorkflowTemplate | null = null;
   @state() private isCreating = false;
   @state() private workflowName = '';
   @state() private viewMode: ViewMode = 'table';
@@ -224,7 +286,31 @@ export class WorkflowsList extends LitElement {
 
   private closeCreateDropdown() {
     this.showCreateDropdown = false;
+    this.showBlankForm = false;
     this.workflowName = '';
+  }
+
+  private handleSelectBlankWorkflow() {
+    this.showBlankForm = true;
+  }
+
+  private handleSelectFromTemplate() {
+    this.showCreateDropdown = false;
+    this.showTemplateModal = true;
+    this.selectedTemplate = null;
+  }
+
+  private handleBackToOptions() {
+    this.showBlankForm = false;
+  }
+
+  private closeTemplateModal() {
+    this.showTemplateModal = false;
+    this.selectedTemplate = null;
+  }
+
+  private handleTemplateSelect(template: WorkflowTemplate) {
+    this.selectedTemplate = template;
   }
 
   private handleNameInput(e: CustomEvent) {
@@ -236,9 +322,23 @@ export class WorkflowsList extends LitElement {
     if (!name) return;
 
     // Get selected application (optional)
-    const select = this.shadowRoot?.querySelector('nr-select') as any;
+    const select = this.shadowRoot?.querySelector('.blank-form-container nr-select') as any;
     const applicationId = select?.value || '';
 
+    await this.createWorkflow(name, applicationId);
+  }
+
+  private async handleCreateFromTemplate() {
+    if (!this.selectedTemplate) return;
+
+    // Get selected application from the modal (if we had one, for now use empty)
+    const applicationId = '';
+
+    await this.createWorkflow(this.selectedTemplate.name, applicationId);
+    this.closeTemplateModal();
+  }
+
+  private async createWorkflow(name: string, applicationId: string) {
     this.isCreating = true;
     try {
       // Lazy load workflow service
@@ -296,6 +396,69 @@ export class WorkflowsList extends LitElement {
     `;
   }
 
+  private renderCreateOptionsMenu() {
+    return html`
+      <div class="create-options-menu">
+        <div class="create-option" @click=${this.handleSelectFromTemplate}>
+          <div class="create-option-icon">
+            <nr-icon name="layout-template"></nr-icon>
+          </div>
+          <div class="create-option-content">
+            <span class="create-option-title">From Template</span>
+            <span class="create-option-description">Start with a pre-built workflow</span>
+          </div>
+        </div>
+        <div class="create-option" @click=${this.handleSelectBlankWorkflow}>
+          <div class="create-option-icon">
+            <nr-icon name="plus"></nr-icon>
+          </div>
+          <div class="create-option-content">
+            <span class="create-option-title">Blank Workflow</span>
+            <span class="create-option-description">Start from scratch</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderBlankForm() {
+    return html`
+      <div class="create-workflow-form blank-form-container">
+        <button class="dropdown-back-button" @click=${this.handleBackToOptions}>
+          <nr-icon name="chevron-left"></nr-icon>
+          Back
+        </button>
+        <div class="dropdown-form-header">New Blank Workflow</div>
+        <div class="form-field">
+          <label class="form-label">Name</label>
+          <nr-input
+            placeholder="Enter workflow name"
+            size="small"
+            .value=${this.workflowName}
+            @nr-input=${this.handleNameInput}
+          ></nr-input>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Application <span class="optional-label">(optional)</span></label>
+          <nr-select
+            placeholder="Select application"
+            size="small"
+            .options=${this.getAppOptions()}
+          ></nr-select>
+        </div>
+        <div class="dropdown-form-actions">
+          <nr-button type="default" size="small" @click=${this.closeCreateDropdown}>Cancel</nr-button>
+          <nr-button
+            type="primary"
+            size="small"
+            ?disabled=${!this.workflowName.trim() || this.isCreating}
+            @click=${this.handleCreateWorkflow}
+          >${this.isCreating ? 'Creating...' : 'Create'}</nr-button>
+        </div>
+      </div>
+    `;
+  }
+
   private renderCreateButton() {
     return html`
       <nr-dropdown
@@ -306,7 +469,7 @@ export class WorkflowsList extends LitElement {
         @nr-dropdown-close=${this.closeCreateDropdown}
         close-on-outside-click
         close-on-escape
-        min-width="320px"
+        min-width="280px"
         allow-overflow
       >
         <nr-button
@@ -315,36 +478,57 @@ export class WorkflowsList extends LitElement {
           size="small"
           iconLeft="Plus"
         >Create Workflow</nr-button>
-        <div slot="content" class="create-workflow-form">
-          <div class="dropdown-form-header">New Workflow</div>
-          <div class="form-field">
-            <label class="form-label">Name</label>
-            <nr-input
-              placeholder="Enter workflow name"
-              size="small"
-              .value=${this.workflowName}
-              @nr-input=${this.handleNameInput}
-            ></nr-input>
+        <div slot="content">
+          ${this.showBlankForm ? this.renderBlankForm() : this.renderCreateOptionsMenu()}
+        </div>
+      </nr-dropdown>
+    `;
+  }
+
+  private renderTemplateModal() {
+    if (!this.showTemplateModal) return nothing;
+
+    return html`
+      <div class="template-modal-overlay" @click=${this.closeTemplateModal}>
+        <div class="template-modal" @click=${(e: Event) => e.stopPropagation()}>
+          <div class="template-modal-header">
+            <h2 class="template-modal-title">Choose a Template</h2>
+            <button class="template-modal-close" @click=${this.closeTemplateModal}>
+              <nr-icon name="x"></nr-icon>
+            </button>
           </div>
-          <div class="form-field">
-            <label class="form-label">Application <span class="optional-label">(optional)</span></label>
-            <nr-select
-              placeholder="Select application"
-              size="small"
-              .options=${this.getAppOptions()}
-            ></nr-select>
+          <div class="template-modal-body">
+            <div class="template-grid">
+              ${WORKFLOW_TEMPLATES.map(template => html`
+                <div
+                  class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
+                  @click=${() => this.handleTemplateSelect(template)}
+                >
+                  <div class="template-card-icon">
+                    <nr-icon name="${template.icon}"></nr-icon>
+                  </div>
+                  <h3 class="template-card-name">${template.name}</h3>
+                  <p class="template-card-description">${template.description}</p>
+                  <span class="template-card-category">${template.category}</span>
+                </div>
+              `)}
+            </div>
           </div>
-          <div class="dropdown-form-actions">
-            <nr-button type="default" size="small" @click=${this.closeCreateDropdown}>Cancel</nr-button>
+          <div class="template-modal-footer">
+            <nr-button type="default" size="small" @click=${this.closeTemplateModal}>
+              Cancel
+            </nr-button>
             <nr-button
               type="primary"
               size="small"
-              ?disabled=${!this.workflowName.trim() || this.isCreating}
-              @click=${this.handleCreateWorkflow}
-            >${this.isCreating ? 'Creating...' : 'Create'}</nr-button>
+              ?disabled=${!this.selectedTemplate || this.isCreating}
+              @click=${this.handleCreateFromTemplate}
+            >
+              ${this.isCreating ? 'Creating...' : 'Use Template'}
+            </nr-button>
           </div>
         </div>
-      </nr-dropdown>
+      </div>
     `;
   }
 
@@ -476,6 +660,7 @@ export class WorkflowsList extends LitElement {
             </div>
           `
       }
+      ${this.renderTemplateModal()}
     `;
   }
 }
