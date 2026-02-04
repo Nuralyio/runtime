@@ -349,6 +349,7 @@ export default css`
     box-shadow: var(--nuraly-shadow-chatbot-message, none);
     box-sizing: border-box;
     overflow-wrap: break-word;
+    white-space: pre-wrap;
     background-color: var(--nuraly-color-chatbot-message-background, transparent);
     color: var(--nuraly-color-chatbot-message-text, inherit);
     border: var(--nuraly-border-width-chatbot-message, 0) solid var(--nuraly-color-chatbot-message-border, transparent);
