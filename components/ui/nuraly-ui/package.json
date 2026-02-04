@@ -1,7 +1,7 @@
 {
   "name": "@nuralyui/workspace",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "A comprehensive collection of enterprise-class web components built with Lit and TypeScript",
   "type": "module",
   "workspaces": [
