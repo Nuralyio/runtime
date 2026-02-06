@@ -17,7 +17,7 @@ import "../runtime/components/ui/components/utility/ValidationRules/ValidationRu
 import "../runtime/components/ui/components/utility/BorderManager/BorderManager";
 import "../runtime/components/ui/components/utility/AccessRoles/AccessRoles";
 import "../runtime/components/ui/components/utility/ShareModal/ShareModal";
-import "../runtime/components/ui/components/utility/KvModal/KvModal";
+import "./components/kv-modal/KvModal";
 import "../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel";
 import "../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel";
 import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
