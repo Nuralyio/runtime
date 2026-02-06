@@ -7,33 +7,29 @@
 import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost } from '../interfaces/index.js';
-import type { WorkflowNode, WorkflowEdge, Position } from '../workflow-canvas.types.js';
-import {
-  undo,
-  redo,
-  canUndo,
-  canRedo,
-  getUndoDescription,
-  getRedoDescription,
-  recordAddNode,
-  recordDeleteNode,
-  recordMoveNodes,
-  recordUpdateNodeConfig,
-  recordAddEdge,
-  recordDeleteEdge,
-  recordBulkDelete,
-  recordPasteNodes,
-  recordDuplicateNodes,
-  flushPendingOperations,
-  clearUndoHistory,
-} from '../../../../../../../redux/store/undo/index.js';
+import type { WorkflowNode, WorkflowEdge, Position, UndoProvider } from '../workflow-canvas.types.js';
 
 /**
- * Controller for undo/redo operations
+ * Controller for undo/redo operations.
+ * Delegates all undo/redo logic to an externally-provided UndoProvider
+ * so the UI library never imports from the redux store.
  */
 export class UndoController extends BaseCanvasController {
+  private _undoProvider: UndoProvider | null = null;
+
   constructor(host: CanvasHost & ReactiveControllerHost) {
     super(host);
+  }
+
+  /**
+   * Set the undo provider (injected by the host)
+   */
+  set undoProvider(provider: UndoProvider | null) {
+    this._undoProvider = provider;
+  }
+
+  get undoProvider(): UndoProvider | null {
+    return this._undoProvider;
   }
 
   /**
@@ -47,13 +43,14 @@ export class UndoController extends BaseCanvasController {
    * Execute undo
    */
   performUndo(): boolean {
+    if (!this._undoProvider) return false;
     const workflowId = this.getWorkflowId();
 
-    if (!canUndo(workflowId)) {
+    if (!this._undoProvider.canUndo(workflowId)) {
       return false;
     }
 
-    const result = undo(workflowId, this._host.workflow);
+    const result = this._undoProvider.undo(workflowId, this._host.workflow);
 
     if (result.success && result.workflow) {
       this._host.setWorkflow(result.workflow);
@@ -90,13 +87,14 @@ export class UndoController extends BaseCanvasController {
    * Execute redo
    */
   performRedo(): boolean {
+    if (!this._undoProvider) return false;
     const workflowId = this.getWorkflowId();
 
-    if (!canRedo(workflowId)) {
+    if (!this._undoProvider.canRedo(workflowId)) {
       return false;
     }
 
-    const result = redo(workflowId, this._host.workflow);
+    const result = this._undoProvider.redo(workflowId, this._host.workflow);
 
     if (result.success && result.workflow) {
       this._host.setWorkflow(result.workflow);
@@ -133,21 +131,21 @@ export class UndoController extends BaseCanvasController {
    * Check if undo is available
    */
   canUndo(): boolean {
-    return canUndo(this.getWorkflowId());
+    return this._undoProvider?.canUndo(this.getWorkflowId()) ?? false;
   }
 
   /**
    * Check if redo is available
    */
   canRedo(): boolean {
-    return canRedo(this.getWorkflowId());
+    return this._undoProvider?.canRedo(this.getWorkflowId()) ?? false;
   }
 
   /**
    * Get undo tooltip text
    */
   getUndoTooltip(): string {
-    const description = getUndoDescription(this.getWorkflowId());
+    const description = this._undoProvider?.getUndoDescription(this.getWorkflowId());
     if (description) {
       return `Undo: ${description} (Ctrl+Z)`;
     }
@@ -158,7 +156,7 @@ export class UndoController extends BaseCanvasController {
    * Get redo tooltip text
    */
   getRedoTooltip(): string {
-    const description = getRedoDescription(this.getWorkflowId());
+    const description = this._undoProvider?.getRedoDescription(this.getWorkflowId());
     if (description) {
       return `Redo: ${description} (Ctrl+Shift+Z)`;
     }
@@ -169,21 +167,21 @@ export class UndoController extends BaseCanvasController {
    * Record that a node was added
    */
   recordNodeAdded(node: WorkflowNode): void {
-    recordAddNode(this.getWorkflowId(), node);
+    this._undoProvider?.recordAddNode(this.getWorkflowId(), node);
   }
 
   /**
    * Record that a node was deleted
    */
   recordNodeDeleted(node: WorkflowNode, connectedEdges: WorkflowEdge[]): void {
-    recordDeleteNode(this.getWorkflowId(), node, connectedEdges);
+    this._undoProvider?.recordDeleteNode(this.getWorkflowId(), node, connectedEdges);
   }
 
   /**
    * Record that nodes were moved
    */
   recordNodesMoved(moves: Array<{ nodeId: string; oldPosition: Position; newPosition: Position }>): void {
-    recordMoveNodes(this.getWorkflowId(), moves);
+    this._undoProvider?.recordMoveNodes(this.getWorkflowId(), moves);
   }
 
   /**
@@ -194,55 +192,55 @@ export class UndoController extends BaseCanvasController {
     changes: Partial<WorkflowNode>,
     previousState: Partial<WorkflowNode>
   ): void {
-    recordUpdateNodeConfig(this.getWorkflowId(), nodeId, changes, previousState);
+    this._undoProvider?.recordUpdateNodeConfig(this.getWorkflowId(), nodeId, changes, previousState);
   }
 
   /**
    * Record that an edge was added
    */
   recordEdgeAdded(edge: WorkflowEdge): void {
-    recordAddEdge(this.getWorkflowId(), edge);
+    this._undoProvider?.recordAddEdge(this.getWorkflowId(), edge);
   }
 
   /**
    * Record that an edge was deleted
    */
   recordEdgeDeleted(edge: WorkflowEdge): void {
-    recordDeleteEdge(this.getWorkflowId(), edge);
+    this._undoProvider?.recordDeleteEdge(this.getWorkflowId(), edge);
   }
 
   /**
    * Record a bulk delete operation
    */
   recordBulkDeleted(nodes: WorkflowNode[], edges: WorkflowEdge[]): void {
-    recordBulkDelete(this.getWorkflowId(), nodes, edges);
+    this._undoProvider?.recordBulkDelete(this.getWorkflowId(), nodes, edges);
   }
 
   /**
    * Record that nodes were pasted
    */
   recordNodesPasted(nodes: WorkflowNode[], edges: WorkflowEdge[]): void {
-    recordPasteNodes(this.getWorkflowId(), nodes, edges);
+    this._undoProvider?.recordPasteNodes(this.getWorkflowId(), nodes, edges);
   }
 
   /**
    * Record that nodes were duplicated
    */
   recordNodesDuplicated(nodes: WorkflowNode[], edges: WorkflowEdge[]): void {
-    recordDuplicateNodes(this.getWorkflowId(), nodes, edges);
+    this._undoProvider?.recordDuplicateNodes(this.getWorkflowId(), nodes, edges);
   }
 
   /**
    * Flush any pending operations (call before undo)
    */
   flushPending(): void {
-    flushPendingOperations();
+    this._undoProvider?.flushPendingOperations();
   }
 
   /**
    * Clear undo history for the current workflow
    */
   clearHistory(): void {
-    clearUndoHistory(this.getWorkflowId());
+    this._undoProvider?.clearUndoHistory(this.getWorkflowId());
   }
 }

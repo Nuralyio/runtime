@@ -6,8 +6,7 @@
 
 import { LitElement, html, css } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
-import { getTables, type TableDTO } from '../../../../../../../redux/store/database.js';
-import { getVarValue } from '../../../../../../../redux/store/context.js';
+import type { TableDTO, DatabaseProvider } from './data-node.types.js';
 
 /**
  * Table Select Component for Data Node configuration
@@ -55,16 +54,13 @@ export class NrTableSelect extends LitElement {
   @property({ type: String }) value: string = '';
   @property({ type: String }) placeholder: string = 'Select table...';
   @property({ type: Boolean }) disabled: boolean = false;
+  @property({ type: String }) applicationId: string = '';
+  @property({ attribute: false }) databaseProvider?: DatabaseProvider;
 
   @state() private tables: TableDTO[] = [];
   @state() private loading = false;
   // @ts-ignore - Reserved for future error display
   @state() private error = '';
-
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -89,8 +85,7 @@ export class NrTableSelect extends LitElement {
   }
 
   private async loadTables(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.connectionPath) {
+    if (!this.applicationId || !this.connectionPath || !this.databaseProvider) {
       this.tables = [];
       return;
     }
@@ -99,7 +94,7 @@ export class NrTableSelect extends LitElement {
     this.error = '';
 
     try {
-      const tables = await getTables(this.connectionPath, appId, this.schema || undefined);
+      const tables = await this.databaseProvider.getTables(this.connectionPath, this.applicationId, this.schema || undefined);
       this.tables = tables;
     } catch (err: any) {
       console.error('Failed to load tables:', err);

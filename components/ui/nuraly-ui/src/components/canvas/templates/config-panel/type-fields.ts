@@ -11,6 +11,7 @@ import {
   AgentNodeType,
   DbDesignerNodeType,
 } from '../../workflow-canvas.types.js';
+import type { DatabaseProvider } from '../../data-node/data-node.types.js';
 
 // Import field renderers
 import { renderDataNodeFields } from './data-node-fields.js';
@@ -73,6 +74,8 @@ export function renderTypeFields(
   workflowId?: string,
   kvEntries?: { keyPath: string; value?: any; isSecret: boolean }[],
   onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void,
+  applicationId?: string,
+  databaseProvider?: DatabaseProvider,
 ): TemplateResult | typeof nothing {
   switch (type) {
     // Workflow nodes
@@ -110,7 +113,7 @@ export function renderTypeFields(
       return renderDebugNodeFields(config, onUpdate);
 
     case WorkflowNodeType.DATABASE:
-      return renderDataNodeFields(config, onUpdate);
+      return renderDataNodeFields(config, onUpdate, kvEntries, onCreateKvEntry, applicationId, databaseProvider);
 
     case WorkflowNodeType.CHATBOT:
       return renderChatbotTriggerFields(config, onUpdate);

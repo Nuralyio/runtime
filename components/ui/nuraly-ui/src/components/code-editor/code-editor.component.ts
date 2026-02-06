@@ -12,7 +12,6 @@ import {
   CODE_EDITOR_THEME,
   type CodeEditorTheme,
   type CodeEditorLanguage,
-  type CodeEditorChangeEventDetail,
   type CodeEditorKeyEventDetail
 } from './code-editor.types.js';
 import { ThemeAwareMixin } from '../../shared/theme-mixin.js';
@@ -32,8 +31,6 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 // @ts-ignore
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 
-// Import custom type definitions
-import { databaseTypeDefinitions } from '../../../../../../types/database.types';
 
 // Setup Monaco workers (client-side only)
 if (typeof self !== 'undefined') {
@@ -136,6 +133,10 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
   /** API endpoint for AI completions */
   @property({ type: String, attribute: 'completions-endpoint' })
   completionsEndpoint = '/api/v1/copilot/completion';
+
+  /** Extra type definitions for Monaco IntelliSense (host-provided) */
+  @property({ attribute: false })
+  extraTypeDefinitions: string = '';
 
   override render() {
     return html`
@@ -245,11 +246,11 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
 
     // Keyboard events
     this.editor.onKeyDown((e: monaco.IKeyboardEvent) => {
-      this.emit('nr-keydown', this.createKeyEventDetail(e));
+      this.emit('nr-keydown', this.createKeyEventDetail(e) as unknown as Record<string, unknown>);
     });
 
     this.editor.onKeyUp((e: monaco.IKeyboardEvent) => {
-      this.emit('nr-keyup', this.createKeyEventDetail(e));
+      this.emit('nr-keyup', this.createKeyEventDetail(e) as unknown as Record<string, unknown>);
     });
 
     // Focus events
@@ -339,7 +340,9 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
 
     // Add custom type definitions for both TypeScript and JavaScript
     [tsDefaults, jsDefaults].forEach(defaults => {
-      defaults.addExtraLib(databaseTypeDefinitions, 'database-types.d.ts');
+      if (this.extraTypeDefinitions) {
+        defaults.addExtraLib(this.extraTypeDefinitions, 'database-types.d.ts');
+      }
     });
 
     // Base compiler options shared between TS and JS
@@ -450,7 +453,7 @@ export class NrCodeEditorElement extends ThemeAwareMixin(LitElement) {
 
     // Register hover provider for documentation
     monaco.languages.registerHoverProvider(['javascript', 'typescript'], {
-      provideHover: (model, position) => {
+      provideHover: (model: any, position: any) => {
         const word = model.getWordAtPosition(position);
         if (!word) return;
 

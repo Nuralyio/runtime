@@ -338,6 +338,7 @@ export class FrameController extends BaseCanvasController {
   /**
    * Set visibility of nodes contained in a frame
    */
+  // @ts-ignore Reserved for future frame collapse/expand feature
   private setContainedNodesVisibility(frame: WorkflowNode, visible: boolean): void {
     const containedNodes = this.getContainedNodes(frame);
     for (const node of containedNodes) {

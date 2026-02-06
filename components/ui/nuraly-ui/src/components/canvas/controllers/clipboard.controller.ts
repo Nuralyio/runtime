@@ -26,7 +26,7 @@ export interface ClipboardData {
  */
 export interface ClipboardHost extends CanvasHost {
   /** Last mouse position on canvas for paste positioning */
-  lastMousePosition?: Position;
+  lastMousePosition: Position | null;
 }
 
 /**

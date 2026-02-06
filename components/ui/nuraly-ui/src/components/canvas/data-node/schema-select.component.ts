@@ -6,8 +6,7 @@
 
 import { LitElement, html, css } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
-import { getSchemas, type SchemaDTO } from '../../../../../../../redux/store/database.js';
-import { getVarValue } from '../../../../../../../redux/store/context.js';
+import type { SchemaDTO, DatabaseProvider } from './data-node.types.js';
 
 /**
  * Schema Select Component for Data Node configuration
@@ -54,16 +53,13 @@ export class NrSchemaSelect extends LitElement {
   @property({ type: String }) value: string = '';
   @property({ type: String }) placeholder: string = 'Select schema...';
   @property({ type: Boolean }) disabled: boolean = false;
+  @property({ type: String }) applicationId: string = '';
+  @property({ attribute: false }) databaseProvider?: DatabaseProvider;
 
   @state() private schemas: SchemaDTO[] = [];
   @state() private loading = false;
   // @ts-ignore - Reserved for future error display
   @state() private error = '';
-
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -84,8 +80,7 @@ export class NrSchemaSelect extends LitElement {
   }
 
   private async loadSchemas(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.connectionPath) {
+    if (!this.applicationId || !this.connectionPath || !this.databaseProvider) {
       this.schemas = [];
       return;
     }
@@ -94,7 +89,7 @@ export class NrSchemaSelect extends LitElement {
     this.error = '';
 
     try {
-      const schemas = await getSchemas(this.connectionPath, appId);
+      const schemas = await this.databaseProvider.getSchemas(this.connectionPath, this.applicationId);
       this.schemas = schemas;
 
       // Auto-select 'public' for PostgreSQL if available

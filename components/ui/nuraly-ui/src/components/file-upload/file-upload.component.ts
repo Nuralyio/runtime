@@ -9,6 +9,9 @@ import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 export class FileUpload extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
 
+  /** Explicit theme from data-theme attribute (provided by ThemeAwareMixin) */
+  declare explicitTheme: string | null;
+
   @property({ type: String }) accept: string = '';
   @property({ type: Boolean }) multiple: boolean = false;
   @property({ type: Boolean }) drag: boolean = true;
