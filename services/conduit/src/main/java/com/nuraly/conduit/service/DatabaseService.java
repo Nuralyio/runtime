@@ -3,6 +3,7 @@ package com.nuraly.conduit.service;
 import com.nuraly.conduit.connector.DatabaseConnector;
 import com.nuraly.conduit.connector.DatabaseConnectorFactory;
 import com.nuraly.conduit.dto.*;
+import com.nuraly.library.logging.LogClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -10,6 +11,7 @@ import org.jboss.logging.Logger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main service for database operations.
@@ -28,6 +30,9 @@ public class DatabaseService {
 
     @Inject
     DatabaseConnectorFactory connectorFactory;
+
+    @Inject
+    LogClient logClient;
 
     /**
      * Test a database connection using credentials from KV.
@@ -50,7 +55,15 @@ public class DatabaseService {
         }
 
         DatabaseConnector connector = connectorFactory.getConnector(credential.getType());
-        return connector.testConnection(credential);
+        TestConnectionResult result = connector.testConnection(credential);
+
+        logClient.info("query", null, Map.of(
+                "action", "test_connection",
+                "db_type", credential.getType() != null ? credential.getType() : "unknown",
+                "success", String.valueOf(result.isSuccess())
+        ));
+
+        return result;
     }
 
     /**
@@ -105,17 +118,41 @@ public class DatabaseService {
      * Execute a query/mutation request.
      */
     public QueryResult execute(String connectionPath, String applicationId, QueryRequest request) {
+        long startTime = System.currentTimeMillis();
         try {
             DatabaseCredential credential = getCredentialOrThrow(connectionPath, applicationId);
             DatabaseConnector connector = connectorFactory.getConnector(credential.getType());
 
             try (Connection conn = poolManager.getConnection(connectionPath, applicationId, credential)) {
-                return connector.execute(conn, request);
+                QueryResult result = connector.execute(conn, request);
+                long durationMs = System.currentTimeMillis() - startTime;
+
+                logClient.info("query", null, Map.of(
+                        "action", "execute",
+                        "operation", request.getOperation() != null ? request.getOperation().name() : "unknown",
+                        "table", request.getTable() != null ? request.getTable() : "unknown",
+                        "schema", request.getSchema() != null ? request.getSchema() : "default",
+                        "db_type", credential.getType() != null ? credential.getType() : "unknown",
+                        "success", String.valueOf(result.isSuccess()),
+                        "duration_ms", durationMs
+                ));
+
+                return result;
             }
         } catch (IllegalArgumentException e) {
+            logClient.error("query", null, Map.of(
+                    "action", "execute",
+                    "error", "invalid_argument",
+                    "duration_ms", System.currentTimeMillis() - startTime
+            ));
             return QueryResult.failure(e.getMessage());
         } catch (SQLException e) {
             LOG.errorf("Query execution failed: %s", e.getMessage());
+            logClient.error("query", null, Map.of(
+                    "action", "execute",
+                    "error", "sql_error",
+                    "duration_ms", System.currentTimeMillis() - startTime
+            ));
             return QueryResult.failure("Database error: " + e.getMessage());
         }
     }
