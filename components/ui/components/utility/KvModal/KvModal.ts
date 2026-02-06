@@ -2,7 +2,13 @@ import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { kvModalStyles } from './KvModal.style';
 import { getVarValue } from '../../../../../redux/store/context';
-import { APIS_URL } from '../../../../../../../services/constants';
+import {
+  setEntry,
+  deleteEntry,
+  rotateSecret,
+  getVersionHistory,
+  rollbackEntry,
+} from '../../../../../../../services/kv/kv.service';
 import {
   getKvEntries,
   getCachedKvEntries,
@@ -112,17 +118,8 @@ export class KvModal extends LitElement {
     const appId = this.getAppId();
     if (!appId) return;
 
-    try {
-      const response = await fetch(APIS_URL.getKvVersions(appId, keyPath), {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        this.versions = await response.json();
-      }
-    } catch (error) {
-      console.error('Failed to load version history:', error);
-      this.versions = [];
-    }
+    const versions = await getVersionHistory(appId, keyPath);
+    this.versions = versions ?? [];
   }
 
   private resetEntryForm(): void {
@@ -152,61 +149,50 @@ export class KvModal extends LitElement {
     const appId = this.getAppId();
     if (!appId || !this.entryKey) return;
 
-    try {
-      // Parse value if it looks like JSON
-      let parsedValue: any = this.entryValue;
-      if (this.entryValue.trim().startsWith('{') || this.entryValue.trim().startsWith('[')) {
-        try {
-          parsedValue = JSON.parse(this.entryValue);
-        } catch {
-          // Keep as string if not valid JSON
-        }
-      } else if (this.entryValue === 'true' || this.entryValue === 'false') {
-        parsedValue = this.entryValue === 'true';
-      } else if (!isNaN(Number(this.entryValue)) && this.entryValue.trim() !== '') {
-        parsedValue = Number(this.entryValue);
+    // Parse value if it looks like JSON
+    let parsedValue: any = this.entryValue;
+    if (this.entryValue.trim().startsWith('{') || this.entryValue.trim().startsWith('[')) {
+      try {
+        parsedValue = JSON.parse(this.entryValue);
+      } catch {
+        // Keep as string if not valid JSON
       }
-
-      const response = await fetch(APIS_URL.setKvEntry(this.entryKey), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          applicationId: appId,
-          scope: this.filterScope || undefined,
-          value: parsedValue,
-          isSecret: this.entryIsSecret,
-          ttlSeconds: this.entryTtl || undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to save entry');
-      }
-
-      const savedEntry = await response.json();
-
-      // Update local state
-      const existingIndex = this.entries.findIndex(e => e.keyPath === this.entryKey);
-      let updatedEntries: KvEntry[];
-      if (existingIndex >= 0) {
-        updatedEntries = [...this.entries];
-        updatedEntries[existingIndex] = savedEntry;
-      } else {
-        updatedEntries = [...this.entries, savedEntry];
-      }
-
-      this.entries = updatedEntries;
-      updateCachedEntries(appId, updatedEntries, {
-        scope: this.filterScope || undefined,
-        prefix: this.filterPrefix || undefined
-      });
-      this.resetEntryForm();
-      this.showMessage('success', `Entry "${this.entryKey}" saved successfully`);
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to save entry');
+    } else if (this.entryValue === 'true' || this.entryValue === 'false') {
+      parsedValue = this.entryValue === 'true';
+    } else if (!isNaN(Number(this.entryValue)) && this.entryValue.trim() !== '') {
+      parsedValue = Number(this.entryValue);
     }
+
+    const savedEntry = await setEntry(this.entryKey, {
+      applicationId: appId,
+      scope: this.filterScope || undefined,
+      value: parsedValue,
+      isSecret: this.entryIsSecret,
+      ttlSeconds: this.entryTtl || undefined,
+    });
+
+    if (!savedEntry) {
+      this.showMessage('error', 'Failed to save entry');
+      return;
+    }
+
+    // Update local state
+    const existingIndex = this.entries.findIndex(e => e.keyPath === this.entryKey);
+    let updatedEntries: KvEntry[];
+    if (existingIndex >= 0) {
+      updatedEntries = [...this.entries];
+      updatedEntries[existingIndex] = savedEntry;
+    } else {
+      updatedEntries = [...this.entries, savedEntry];
+    }
+
+    this.entries = updatedEntries;
+    updateCachedEntries(appId, updatedEntries, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
+    this.resetEntryForm();
+    this.showMessage('success', `Entry "${this.entryKey}" saved successfully`);
   }
 
   private async handleDeleteEntry(keyPath: string): Promise<void> {
@@ -215,68 +201,48 @@ export class KvModal extends LitElement {
 
     if (!confirm(`Are you sure you want to delete entry "${keyPath}"?`)) return;
 
-    try {
-      const response = await fetch(APIS_URL.deleteKvEntry(appId, keyPath), {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+    const success = await deleteEntry(appId, keyPath);
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to delete entry');
-      }
-
-      const updatedEntries = this.entries.filter(e => e.keyPath !== keyPath);
-      this.entries = updatedEntries;
-      updateCachedEntries(appId, updatedEntries, {
-        scope: this.filterScope || undefined,
-        prefix: this.filterPrefix || undefined
-      });
-      this.showMessage('success', 'Entry deleted successfully');
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to delete entry');
+    if (!success) {
+      this.showMessage('error', 'Failed to delete entry');
+      return;
     }
+
+    const updatedEntries = this.entries.filter(e => e.keyPath !== keyPath);
+    this.entries = updatedEntries;
+    updateCachedEntries(appId, updatedEntries, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
+    this.showMessage('success', 'Entry deleted successfully');
   }
 
   private async handleRotateSecret(): Promise<void> {
     const appId = this.getAppId();
     if (!appId || !this.selectedSecretKey || !this.rotateNewValue) return;
 
-    try {
-      const response = await fetch(APIS_URL.rotateKvSecret(appId, this.selectedSecretKey), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          value: this.rotateNewValue,
-        }),
-      });
+    const updatedEntry = await rotateSecret(appId, this.selectedSecretKey, this.rotateNewValue);
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to rotate secret');
-      }
-
-      const updatedEntry = await response.json();
-
-      // Update local state
-      const updatedEntries = this.entries.map(e =>
-        e.keyPath === this.selectedSecretKey ? updatedEntry : e
-      );
-      this.entries = updatedEntries;
-      updateCachedEntries(appId, updatedEntries, {
-        scope: this.filterScope || undefined,
-        prefix: this.filterPrefix || undefined
-      });
-
-      // Reload version history
-      await this.loadVersionHistory(this.selectedSecretKey);
-
-      this.resetRotateForm();
-      this.showMessage('success', 'Secret rotated successfully');
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to rotate secret');
+    if (!updatedEntry) {
+      this.showMessage('error', 'Failed to rotate secret');
+      return;
     }
+
+    // Update local state
+    const updatedEntries = this.entries.map(e =>
+      e.keyPath === this.selectedSecretKey ? updatedEntry : e
+    );
+    this.entries = updatedEntries;
+    updateCachedEntries(appId, updatedEntries, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
+
+    // Reload version history
+    await this.loadVersionHistory(this.selectedSecretKey);
+
+    this.resetRotateForm();
+    this.showMessage('success', 'Secret rotated successfully');
   }
 
   private async handleRollback(version: number): Promise<void> {
@@ -285,38 +251,27 @@ export class KvModal extends LitElement {
 
     if (!confirm(`Are you sure you want to rollback to version ${version}?`)) return;
 
-    try {
-      const response = await fetch(APIS_URL.rollbackKvEntry(appId, this.selectedSecretKey), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ version }),
-      });
+    const updatedEntry = await rollbackEntry(appId, this.selectedSecretKey, version);
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'Failed to rollback');
-      }
-
-      const updatedEntry = await response.json();
-
-      // Update local state
-      const updatedEntries = this.entries.map(e =>
-        e.keyPath === this.selectedSecretKey ? updatedEntry : e
-      );
-      this.entries = updatedEntries;
-      updateCachedEntries(appId, updatedEntries, {
-        scope: this.filterScope || undefined,
-        prefix: this.filterPrefix || undefined
-      });
-
-      // Reload version history
-      await this.loadVersionHistory(this.selectedSecretKey);
-
-      this.showMessage('success', `Rolled back to version ${version}`);
-    } catch (error: any) {
-      this.showMessage('error', error.message || 'Failed to rollback');
+    if (!updatedEntry) {
+      this.showMessage('error', 'Failed to rollback');
+      return;
     }
+
+    // Update local state
+    const updatedEntries = this.entries.map(e =>
+      e.keyPath === this.selectedSecretKey ? updatedEntry : e
+    );
+    this.entries = updatedEntries;
+    updateCachedEntries(appId, updatedEntries, {
+      scope: this.filterScope || undefined,
+      prefix: this.filterPrefix || undefined
+    });
+
+    // Reload version history
+    await this.loadVersionHistory(this.selectedSecretKey);
+
+    this.showMessage('success', `Rolled back to version ${version}`);
   }
 
   private handleEditEntry(entry: KvEntry): void {
