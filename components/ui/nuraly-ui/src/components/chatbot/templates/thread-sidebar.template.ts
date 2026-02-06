@@ -9,6 +9,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
 import { ChatbotThread } from '../chatbot.types.js';
+import { formatTimestamp } from '../utils/format.js';
 
 
 export interface ThreadSidebarTemplateHandlers {
@@ -55,7 +56,7 @@ export function renderThreadSidebar(
               <div class="thread-item__preview">
                 ${previewText}
               </div>
-              <div class="thread-item__timestamp">${thread.updatedAt}</div>
+              <div class="thread-item__timestamp">${formatTimestamp(thread.updatedAt)}</div>
             </div>
           `;
         })}
