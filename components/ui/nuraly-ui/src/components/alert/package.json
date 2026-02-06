@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/alert",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Alert component for NuralyUI library",
   "main": "index.js",
   "type": "module",
