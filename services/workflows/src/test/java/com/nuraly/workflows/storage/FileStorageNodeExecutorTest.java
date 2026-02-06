@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
 import com.nuraly.workflows.engine.executors.FileStorageNodeExecutor;
+import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.storage.providers.LocalStorageProvider;
@@ -203,34 +204,11 @@ class FileStorageNodeExecutorTest {
     }
 
     private ExecutionContext createContext(JsonNode input) {
-        return new ExecutionContext() {
-            @Override
-            public JsonNode getInput() {
-                return input;
-            }
-
-            @Override
-            public void setVariable(String name, Object value) {}
-
-            @Override
-            public Object getVariable(String name) {
-                return null;
-            }
-
-            @Override
-            public String getExecutionId() {
-                return UUID.randomUUID().toString();
-            }
-
-            @Override
-            public String getWorkflowId() {
-                return UUID.randomUUID().toString();
-            }
-
-            @Override
-            public String getUserId() {
-                return "test-user";
-            }
-        };
+        WorkflowExecutionEntity execution = new WorkflowExecutionEntity();
+        execution.id = UUID.randomUUID();
+        execution.inputData = input.toString();
+        ExecutionContext context = new ExecutionContext(execution);
+        context.setInput(input);
+        return context;
     }
 }
