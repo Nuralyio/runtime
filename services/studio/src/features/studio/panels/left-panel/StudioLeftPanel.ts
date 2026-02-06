@@ -17,13 +17,13 @@ import { openEditorTab } from '@nuraly/runtime/redux/actions/editor/openEditorTa
 import { workflowService } from '../../../../services/workflow.service';
 
 // Import revision panel
-import "../../../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel.js";
+import "../../components/revision-panel/RevisionPanel.js";
 
 // Import workflow list panel
 import "./WorkflowListPanel.js";
 
 // Import functions panel
-import "../../../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel.js";
+import "../../components/functions-panel/FunctionsPanel.js";
 
 interface MenuItem {
   id?: string;  // Custom: uuid of page/component

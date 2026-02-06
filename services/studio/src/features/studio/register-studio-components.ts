@@ -10,16 +10,16 @@ import "../runtime/components/ui/components/display/BoxModel/BoxModel";
 import "../runtime/components/ui/components/inputs/IconPicker/IconPicker";
 import "../runtime/components/ui/components/inputs/UsersDropdown/UsersDropdown";
 import "../runtime/components/ui/components/inputs/InsertDropdown/InsertDropdown";
-import "../runtime/components/ui/components/utility/Handlers/Handlers";
-import "../runtime/components/ui/components/utility/Function/InvokeFunction";
-import "../runtime/components/ui/components/utility/Export-Import/Export-Import";
+import "./components/handlers/Handlers";
+import "./components/invoke-function/InvokeFunction";
+import "./components/export-import/Export-Import";
 import "../runtime/components/ui/components/utility/ValidationRules/ValidationRules";
 import "../runtime/components/ui/components/utility/BorderManager/BorderManager";
-import "../runtime/components/ui/components/utility/AccessRoles/AccessRoles";
-import "../runtime/components/ui/components/utility/ShareModal/ShareModal";
+import "./components/access-roles/AccessRoles";
+import "./components/share-modal/ShareModal";
 import "./components/kv-modal/KvModal";
-import "../runtime/components/ui/components/utility/RevisionPanel/RevisionPanel";
-import "../runtime/components/ui/components/studio/FunctionsPanel/FunctionsPanel";
+import "./components/revision-panel/RevisionPanel";
+import "./components/functions-panel/FunctionsPanel";
 import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
 
 // i18n components
