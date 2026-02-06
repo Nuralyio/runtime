@@ -18,7 +18,7 @@ import {
 } from '../../utils/workflow-utils';
 import { workflowService } from '../../services/workflow.service';
 import { createSocketFunctions } from '../runtime/handlers/runtime-api/socket';
-import { setKvEntry, getKvEntry } from '../runtime/redux/store/kv';
+import { setKvEntry, getKvEntry, getKvEntries, type KvEntry } from '../runtime/redux/store/kv';
 
 type SaveStatus = 'saved' | 'saving' | 'dirty' | 'error';
 type NodeStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
@@ -332,6 +332,9 @@ export class StandaloneWorkflowPage extends LitElement {
   @state()
   private executionError: string | null = null;
 
+  @state()
+  private kvEntries: KvEntry[] = [];
+
   private flowSocket: any = null;
   private viewportDebouncer: ViewportDebouncer | null = null;
   private currentViewport: CanvasViewport = getDefaultViewport();
@@ -455,6 +458,47 @@ export class StandaloneWorkflowPage extends LitElement {
     this.flowSocket.connect(url, path);
   }
 
+  /**
+   * Load KV entries for the current application
+   */
+  private async loadKvEntries(appId: string): Promise<void> {
+    try {
+      const entries = await getKvEntries(appId, {});
+      this.kvEntries = entries || [];
+    } catch (error) {
+      console.error('[StandaloneWorkflow] Failed to load KV entries:', error);
+      this.kvEntries = [];
+    }
+  }
+
+  /**
+   * Handle creation of new KV entry from config panel
+   */
+  private async handleCreateKvEntry(detail: { keyPath: string; value: any; scope: string; isSecret: boolean }): Promise<void> {
+    const appId = this.loadedApplicationId;
+    if (!appId) {
+      console.error('[StandaloneWorkflow] Cannot create KV entry: no application ID');
+      return;
+    }
+
+    try {
+      const result = await setKvEntry(detail.keyPath, {
+        applicationId: appId,
+        value: detail.value,
+        isSecret: detail.isSecret,
+        scope: detail.scope,
+      });
+
+      if (result) {
+        console.log('[StandaloneWorkflow] Created KV entry:', detail.keyPath);
+        // Refresh KV entries to include the new one
+        await this.loadKvEntries(appId);
+      }
+    } catch (error) {
+      console.error('[StandaloneWorkflow] Failed to create KV entry:', error);
+    }
+  }
+
   private async loadWorkflow(): Promise<void> {
     if (!this.workflowId) {
       this.loadError = 'No workflow ID provided';
@@ -480,6 +524,13 @@ export class StandaloneWorkflowPage extends LitElement {
       // Store IDs separately so they survive canvas events
       this.loadedWorkflowId = workflow.id;
       this.loadedApplicationId = workflow.applicationId || null;
+
+      // Load KV entries for this application (needed for API key selects etc.)
+      if (this.loadedApplicationId) {
+        await this.loadKvEntries(this.loadedApplicationId);
+      } else {
+        console.warn('[StandaloneWorkflow] No applicationId - KV entries will not be loaded');
+      }
 
       // Load viewport from KV (pass applicationId since this.workflow isn't set yet)
       const viewport = await this.loadViewport(workflow.applicationId);
@@ -989,6 +1040,9 @@ export class StandaloneWorkflowPage extends LitElement {
             .nodeStatuses=${this.nodeStatuses}
             .agentActivity=${this.agentActivity}
             .readonly=${this.readonly}
+            .applicationId=${this.loadedApplicationId || ''}
+            .kvEntries=${this.kvEntries.map(e => ({ keyPath: e.keyPath, value: e.value, isSecret: e.isSecret }))}
+            .onCreateKvEntry=${(detail: any) => this.handleCreateKvEntry(detail)}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}

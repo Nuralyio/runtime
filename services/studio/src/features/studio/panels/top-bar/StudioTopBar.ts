@@ -32,9 +32,9 @@ import { eventDispatcher } from '@nuraly/runtime/utils/change-detection';
 import { getInsertOptions, getEditOptions, getApplicationOptions } from './topbar-options';
 
 // Modal components
-import '@nuraly/runtime/components/ui/components/utility/ShareModal/ShareModal';
-import '@nuraly/runtime/components/ui/components/utility/KvModal/KvModal';
-import '@nuraly/runtime/components/ui/components/utility/AppSettingsModal/AppSettingsModal';
+import '../../components/share-modal/ShareModal';
+import '../../components/kv-modal/KvModal';
+import '../../components/app-settings-modal/AppSettingsModal';
 
 @customElement("studio-topbar")
 export class StudioTopBar extends LitElement {

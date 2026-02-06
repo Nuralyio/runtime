@@ -9,7 +9,7 @@
 
 import { getFetchAllApplications, getWorkflowService, getKvStore } from '../../../services/lazy-loader';
 import { type PublishedVersion } from '../../../services/revisions/revision.service';
-import type { KvEntry } from '../../runtime/redux/store/kv';
+import type { KvEntry } from '../../../services/kv/kv.types';
 
 /**
  * Application with published status information

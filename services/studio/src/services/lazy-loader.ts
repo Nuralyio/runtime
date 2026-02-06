@@ -33,10 +33,10 @@ export async function getFetchAllApplications() {
  */
 export async function getKvStore() {
   if (!serviceCache.has('kvStore')) {
-    const module = await import('../features/runtime/redux/store/kv');
+    const module = await import('./kv/kv.service');
     serviceCache.set('kvStore', module);
   }
-  return serviceCache.get('kvStore') as typeof import('../features/runtime/redux/store/kv');
+  return serviceCache.get('kvStore') as typeof import('./kv/kv.service');
 }
 
 /**
