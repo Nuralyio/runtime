@@ -10,6 +10,7 @@ import com.nuraly.kv.entity.KvEntryVersionEntity;
 import com.nuraly.kv.entity.enums.KvValueType;
 import com.nuraly.kv.exception.KvEntryNotFoundException;
 import com.nuraly.kv.exception.KvVersionConflictException;
+import com.nuraly.library.logging.LogClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -35,6 +36,9 @@ public class KvEntryService {
 
     @Inject
     KvEntryVersionDTOMapper versionMapper;
+
+    @Inject
+    LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,6 +92,13 @@ public class KvEntryService {
         KvEntryEntity entry = findEntry(applicationId, keyPath);
 
         auditService.logRead(null, entry.id, keyPath, userId, true);
+
+        logClient.info("kv", null, Map.of(
+                "action", "read",
+                "key_path", keyPath,
+                "is_secret", String.valueOf(Boolean.TRUE.equals(entry.isSecret)),
+                "user_id", userId != null ? userId : "unknown"
+        ));
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
         dto.setValue(decryptAndParseValue(entry));
@@ -149,8 +160,21 @@ public class KvEntryService {
 
         if (isNew) {
             eventService.publishEntryCreated(null, entry.id, keyPath);
+            logClient.info("kv", null, Map.of(
+                    "action", "created",
+                    "key_path", keyPath,
+                    "is_secret", String.valueOf(Boolean.TRUE.equals(entry.isSecret)),
+                    "value_type", String.valueOf(entry.valueType),
+                    "user_id", userId != null ? userId : "unknown"
+            ));
         } else {
             eventService.publishEntryUpdated(null, entry.id, keyPath);
+            logClient.info("kv", null, Map.of(
+                    "action", "updated",
+                    "key_path", keyPath,
+                    "is_secret", String.valueOf(Boolean.TRUE.equals(entry.isSecret)),
+                    "user_id", userId != null ? userId : "unknown"
+            ));
         }
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
@@ -166,6 +190,12 @@ public class KvEntryService {
 
         auditService.logDelete(null, entryId, keyPath, userId, true);
         eventService.publishEntryDeleted(null, entryId, keyPath);
+
+        logClient.info("kv", null, Map.of(
+                "action", "deleted",
+                "key_path", keyPath,
+                "user_id", userId != null ? userId : "unknown"
+        ));
     }
 
     public KvEntryDTO rotateSecret(String applicationId, String keyPath, Object newValue, String userId) {
@@ -188,6 +218,13 @@ public class KvEntryService {
 
         auditService.logRotate(null, entry.id, keyPath, userId, true);
         eventService.publishSecretRotated(null, entry.id, keyPath, entry.version);
+
+        logClient.info("kv", null, Map.of(
+                "action", "secret_rotated",
+                "key_path", keyPath,
+                "new_version", String.valueOf(entry.version),
+                "user_id", userId != null ? userId : "unknown"
+        ));
 
         KvEntryDTO dto = entryMapper.toDTO(entry);
         dto.setValue(newValue);
