@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/canvas",
-  "version": "0.1.0",
+  "version": "0.0.8",
   "description": "Workflow canvas component for visual workflow editing",
   "main": "index.js",
   "type": "module",

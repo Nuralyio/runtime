@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/form",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "NuralyUI Form - A comprehensive form component with validation coordination, submission handling, and state management",
   "type": "module",
   "main": "./index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/layout",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Layout components for NuralyUI - includes Layout, Header, Footer, Sider, and Content",
   "type": "module",
   "main": "index.js",

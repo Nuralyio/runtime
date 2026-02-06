@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/menu",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Menu component for NuralyUI library with support for nested submenus",
   "main": "index.js",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/panel",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Panel component for NuralyUI - transformable panel/window with drag and resize",
   "main": "index.js",
   "type": "module",
