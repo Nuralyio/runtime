@@ -186,10 +186,15 @@ services:
       - QUARKUS_DATASOURCE_PASSWORD=password
       - PERMISSION_API_BASE_URL=http://api:8000/api
       - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     env_file:
       - config/dev.env
     depends_on:
       - postgres
+      - rabbitmq
       - api
     networks:
       - nuraly-network
