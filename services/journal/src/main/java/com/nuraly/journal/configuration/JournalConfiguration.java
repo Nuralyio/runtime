@@ -20,6 +20,21 @@ public class JournalConfiguration {
     @ConfigProperty(name = "journal.websocket.enabled", defaultValue = "true")
     public boolean websocketEnabled;
 
+    @ConfigProperty(name = "rabbitmq.host", defaultValue = "rabbitmq")
+    public String rabbitmqHost;
+
+    @ConfigProperty(name = "rabbitmq.port", defaultValue = "5672")
+    public int rabbitmqPort;
+
+    @ConfigProperty(name = "rabbitmq.username", defaultValue = "guest")
+    public String rabbitmqUsername;
+
+    @ConfigProperty(name = "rabbitmq.password", defaultValue = "guest")
+    public String rabbitmqPassword;
+
+    @ConfigProperty(name = "journal.queue.logs", defaultValue = "journal-logs")
+    public String logsQueueName;
+
     @ConfigProperty(name = "permission.api.base-url", defaultValue = "http://api:8000/api")
     public String permissionApiBaseUrl;
 

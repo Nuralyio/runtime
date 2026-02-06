@@ -116,6 +116,13 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
+        <!-- RabbitMQ Client -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.16.0</version>
+        </dependency>
+
         <!-- Jakarta WS RS -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
