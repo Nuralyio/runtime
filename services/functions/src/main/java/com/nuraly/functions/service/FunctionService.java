@@ -6,6 +6,7 @@ import com.nuraly.functions.dto.mapper.FunctionDTOMapper;
 import com.nuraly.functions.entity.FunctionEntity;
 import com.nuraly.functions.exception.FunctionNotFoundException;
 import org.jboss.logging.Logger;
+import com.nuraly.library.logging.LogClient;
 import com.nuraly.library.permission.PermissionCheckRequest;
 import com.nuraly.library.permission.PermissionClient;
 import com.nuraly.library.permission.PermissionDeniedException;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -37,6 +39,9 @@ public class FunctionService {
 
     @Inject
     PermissionClient permissionClient;
+
+    @Inject
+    LogClient logClient;
 
     public List<FunctionDTO> getFunctions(String applicationId, String userHeader) {
         List<FunctionEntity> entities;
@@ -109,6 +114,14 @@ public class FunctionService {
             );
         }
 
+        logClient.info("function", null, Map.of(
+                "action", "created",
+                "function_id", String.valueOf(entity.id),
+                "label", entity.getLabel() != null ? entity.getLabel() : "",
+                "runtime", entity.getRuntime() != null ? entity.getRuntime() : "",
+                "created_by", userUuid != null ? userUuid : "unknown"
+        ));
+
         return functionDTOMapper.toFunctionDTO(entity);
     }
 
@@ -122,6 +135,13 @@ public class FunctionService {
         entity.setTemplate(functionDTO.getTemplate());
         entity.setRuntime(functionDTO.getRuntime());
         entity.setHandler(functionDTO.getHandler());
+
+        logClient.info("function", null, Map.of(
+                "action", "updated",
+                "function_id", String.valueOf(id),
+                "label", entity.getLabel() != null ? entity.getLabel() : ""
+        ));
+
         return functionDTOMapper.toFunctionDTO(entity);
     }
 
@@ -131,6 +151,11 @@ public class FunctionService {
             throw new FunctionNotFoundException("Function not found with id: " + id);
         }
         entity.delete();
+
+        logClient.info("function", null, Map.of(
+                "action", "deleted",
+                "function_id", String.valueOf(id)
+        ));
     }
 
     /**
@@ -261,6 +286,33 @@ public class FunctionService {
             throw new FunctionNotFoundException("Function not found with id: " + functionId);
         }
 
-        return functionInvoker.invoke(functionEntity, request);
+        long startTime = System.currentTimeMillis();
+        try {
+            String result = functionInvoker.invoke(functionEntity, request);
+            long durationMs = System.currentTimeMillis() - startTime;
+
+            logClient.info("function", null, Map.of(
+                    "action", "invoked",
+                    "function_id", String.valueOf(functionId),
+                    "label", functionEntity.getLabel() != null ? functionEntity.getLabel() : "",
+                    "status", "SUCCESS",
+                    "duration_ms", durationMs
+            ));
+
+            return result;
+        } catch (Exception e) {
+            long durationMs = System.currentTimeMillis() - startTime;
+
+            logClient.error("function", null, Map.of(
+                    "action", "invoked",
+                    "function_id", String.valueOf(functionId),
+                    "label", functionEntity.getLabel() != null ? functionEntity.getLabel() : "",
+                    "status", "FAILED",
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown",
+                    "duration_ms", durationMs
+            ));
+
+            throw e;
+        }
     }
 }

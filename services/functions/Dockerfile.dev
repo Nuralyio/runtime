@@ -15,9 +15,9 @@ RUN npm install -g esbuild
 # Using version 1.4.0 for better compatibility with Chicory (no SIMD)
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
-        curl -L https://github.com/nicholasjackson/javy/releases/download/v0.6.1-nicj2/javy-arm-linux-0.6.1.gz | gunzip > /usr/local/bin/javy; \
+        curl -fL https://github.com/bytecodealliance/javy/releases/download/v1.4.0/javy-arm-linux-v1.4.0.gz | gunzip > /usr/local/bin/javy; \
     else \
-        curl -L https://github.com/bytecodealliance/javy/releases/download/v1.4.0/javy-x86_64-linux-v1.4.0.gz | gunzip > /usr/local/bin/javy; \
+        curl -fL https://github.com/bytecodealliance/javy/releases/download/v1.4.0/javy-x86_64-linux-v1.4.0.gz | gunzip > /usr/local/bin/javy; \
     fi && \
     chmod +x /usr/local/bin/javy
 
