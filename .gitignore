@@ -1,6 +1,16 @@
 # Build output
 dist/
 
+# Compiled artifacts from submodule builds (tsc output alongside source)
+redux/store/**/*.js
+redux/store/**/*.js.map
+redux/store/**/*.d.ts
+redux/store/**/*.d.ts.map
+types/**/*.js
+types/**/*.js.map
+types/**/*.d.ts
+types/**/*.d.ts.map
+
 # Dependencies (IMPORTANT: Studio uses parent node_modules)
 node_modules/
 package-lock.json
