@@ -2,12 +2,14 @@ package com.nuraly.library.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Client for sending logs to the Journal service.
+ * Client for sending logs to the Journal service via RabbitMQ.
  * Can be injected into any Nuraly service for centralized logging.
  *
  * Usage:
@@ -40,8 +42,20 @@ public class LogClient {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule());
 
-    @ConfigProperty(name = "journal.service.url", defaultValue = "http://journal:7004")
-    String journalServiceUrl;
+    @ConfigProperty(name = "rabbitmq.host", defaultValue = "rabbitmq")
+    String host;
+
+    @ConfigProperty(name = "rabbitmq.port", defaultValue = "5672")
+    int port;
+
+    @ConfigProperty(name = "rabbitmq.username", defaultValue = "guest")
+    String username;
+
+    @ConfigProperty(name = "rabbitmq.password", defaultValue = "guest")
+    String password;
+
+    @ConfigProperty(name = "journal.queue.logs", defaultValue = "journal-logs")
+    String queueName;
 
     @ConfigProperty(name = "journal.service.name", defaultValue = "unknown")
     String serviceName;
@@ -51,6 +65,45 @@ public class LogClient {
 
     @ConfigProperty(name = "journal.async", defaultValue = "true")
     boolean async;
+
+    private Connection connection;
+    private Channel channel;
+
+    @PostConstruct
+    void init() {
+        if (!enabled) {
+            return;
+        }
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost(host);
+            factory.setPort(port);
+            factory.setUsername(username);
+            factory.setPassword(password);
+
+            connection = factory.newConnection();
+            channel = connection.createChannel();
+            channel.queueDeclare(queueName, true, false, false, null);
+
+            LOGGER.info("Connected to RabbitMQ and declared queue: " + queueName);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to connect to RabbitMQ: " + e.getMessage() + ". Logs will not be published.");
+        }
+    }
+
+    @PreDestroy
+    void cleanup() {
+        try {
+            if (channel != null && channel.isOpen()) {
+                channel.close();
+            }
+            if (connection != null && connection.isOpen()) {
+                connection.close();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error closing RabbitMQ connection", e);
+        }
+    }
 
     /**
      * Send a log entry with specified level.
@@ -74,9 +127,9 @@ public class LogClient {
         request.setData(data);
 
         if (async) {
-            CompletableFuture.runAsync(() -> sendLog(request));
+            CompletableFuture.runAsync(() -> publishLog(request));
         } else {
-            sendLog(request);
+            publishLog(request);
         }
     }
 
@@ -183,59 +236,32 @@ public class LogClient {
     }
 
     /**
-     * Send batch of logs.
+     * Send batch of logs. Each log is published as a separate message.
      */
     public void logBatch(List<LogRequest> logs) {
         if (!enabled || logs.isEmpty()) {
             return;
         }
 
-        Map<String, Object> batch = new HashMap<>();
-        batch.put("logs", logs);
-
         if (async) {
-            CompletableFuture.runAsync(() -> sendBatch(batch));
+            CompletableFuture.runAsync(() -> logs.forEach(this::publishLog));
         } else {
-            sendBatch(batch);
+            logs.forEach(this::publishLog);
         }
     }
 
-    private void sendLog(LogRequest request) {
+    private void publishLog(LogRequest request) {
+        if (channel == null || !channel.isOpen()) {
+            LOGGER.fine("RabbitMQ channel not available, skipping log");
+            return;
+        }
+
         try {
-            String url = journalServiceUrl + "/api/v1/logs";
-            String payload = objectMapper.writeValueAsString(request);
-            post(url, payload);
+            String message = objectMapper.writeValueAsString(request);
+            channel.basicPublish("", queueName, null, message.getBytes(StandardCharsets.UTF_8));
+            LOGGER.fine("Published log to queue: " + queueName);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to send log to journal service: " + e.getMessage());
-        }
-    }
-
-    private void sendBatch(Map<String, Object> batch) {
-        try {
-            String url = journalServiceUrl + "/api/v1/logs/batch";
-            String payload = objectMapper.writeValueAsString(batch);
-            post(url, payload);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to send batch logs to journal service: " + e.getMessage());
-        }
-    }
-
-    private void post(String urlString, String payload) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
-        connection.setDoOutput(true);
-
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode < 200 || responseCode >= 300) {
-            LOGGER.warning("Journal service returned HTTP " + responseCode);
+            LOGGER.log(Level.WARNING, "Failed to publish log to RabbitMQ: " + e.getMessage());
         }
     }
 }
