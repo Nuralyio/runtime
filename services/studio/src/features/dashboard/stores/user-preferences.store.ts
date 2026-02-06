@@ -10,6 +10,7 @@ import {
   migrateFromLocalStorage,
   cleanupPinnedApplications as cleanupApps,
   cleanupPinnedWorkflows as cleanupWorkflows,
+  cleanupPinnedWhiteboards as cleanupWhiteboardsPref,
 } from '../services/user-preferences.service';
 
 // ============================================
@@ -27,6 +28,11 @@ export const $pinnedApplications = atom<Set<string>>(new Set());
 export const $pinnedWorkflows = atom<Set<string>>(new Set());
 
 /**
+ * Set of pinned whiteboard IDs
+ */
+export const $pinnedWhiteboards = atom<Set<string>>(new Set());
+
+/**
  * View mode for applications section
  */
 export const $applicationsViewMode = atom<'cards' | 'table'>('cards');
@@ -35,6 +41,11 @@ export const $applicationsViewMode = atom<'cards' | 'table'>('cards');
  * View mode for workflows section
  */
 export const $workflowsViewMode = atom<'cards' | 'table'>('table');
+
+/**
+ * View mode for whiteboards section
+ */
+export const $whiteboardsViewMode = atom<'cards' | 'table'>('cards');
 
 /**
  * Loading state for preferences
@@ -77,8 +88,10 @@ export async function initUserPreferences(): Promise<void> {
       // Update stores
       $pinnedApplications.set(new Set(prefs.pinnedApplications));
       $pinnedWorkflows.set(new Set(prefs.pinnedWorkflows));
+      $pinnedWhiteboards.set(new Set(prefs.pinnedWhiteboards));
       $applicationsViewMode.set(prefs.applicationsViewMode);
       $workflowsViewMode.set(prefs.workflowsViewMode);
+      $whiteboardsViewMode.set(prefs.whiteboardsViewMode);
 
       initialized = true;
     } catch (error) {
@@ -200,6 +213,55 @@ export async function cleanupPinnedWorkflows(validWorkflowIds: Set<string>): Pro
 }
 
 // ============================================
+// Pinned Whiteboards Actions
+// ============================================
+
+/**
+ * Toggle pinned status for a whiteboard
+ * Updates both the store and KV
+ * @returns The new pinned status
+ */
+export async function togglePinnedWhiteboard(whiteboardId: string): Promise<boolean> {
+  const current = $pinnedWhiteboards.get();
+  const newSet = new Set(current);
+  const wasPinned = newSet.has(whiteboardId);
+
+  if (wasPinned) {
+    newSet.delete(whiteboardId);
+  } else {
+    newSet.add(whiteboardId);
+  }
+
+  // Update store immediately for responsive UI
+  $pinnedWhiteboards.set(newSet);
+
+  // Persist to KV
+  const success = await setPreference('pinnedWhiteboards', [...newSet]);
+
+  if (!success) {
+    // Revert on failure
+    $pinnedWhiteboards.set(current);
+    console.error('Failed to persist pinned whiteboard change');
+    return wasPinned;
+  }
+
+  return !wasPinned;
+}
+
+/**
+ * Clean up pinned whiteboards by removing deleted ones
+ */
+export async function cleanupPinnedWhiteboards(validWhiteboardIds: Set<string>): Promise<void> {
+  const current = $pinnedWhiteboards.get();
+  const filtered = new Set([...current].filter(id => validWhiteboardIds.has(id)));
+
+  if (filtered.size !== current.size) {
+    $pinnedWhiteboards.set(filtered);
+    await cleanupWhiteboardsPref(validWhiteboardIds);
+  }
+}
+
+// ============================================
 // View Mode Actions
 // ============================================
 
@@ -240,5 +302,25 @@ export async function setWorkflowsViewMode(mode: 'cards' | 'table'): Promise<voi
     // Revert on failure
     $workflowsViewMode.set(current);
     console.error('Failed to persist workflows view mode');
+  }
+}
+
+/**
+ * Set view mode for whiteboards section
+ */
+export async function setWhiteboardsViewMode(mode: 'cards' | 'table'): Promise<void> {
+  const current = $whiteboardsViewMode.get();
+  if (current === mode) return;
+
+  // Update store immediately
+  $whiteboardsViewMode.set(mode);
+
+  // Persist to KV
+  const success = await setPreference('whiteboardsViewMode', mode);
+
+  if (!success) {
+    // Revert on failure
+    $whiteboardsViewMode.set(current);
+    console.error('Failed to persist whiteboards view mode');
   }
 }

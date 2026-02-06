@@ -56,6 +56,18 @@ export const APIS_URL = {
   addWorkflowEdge: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges`,
   deleteWorkflowEdge: (workflowId: string, edgeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges/${edgeId}`,
 
+  // Whiteboards
+  getAllWhiteboards: () => `${API_BASE}/api/v1/whiteboards`,
+  getWhiteboards: (appId: string) => `${API_BASE}/api/v1/whiteboards?applicationId=${appId}`,
+  getWhiteboard: (id: string) => `${API_BASE}/api/v1/whiteboards/${id}`,
+  createWhiteboard: () => `${API_BASE}/api/v1/whiteboards`,
+  updateWhiteboard: (id: string) => `${API_BASE}/api/v1/whiteboards/${id}`,
+  deleteWhiteboard: (id: string) => `${API_BASE}/api/v1/whiteboards/${id}`,
+  // Whiteboard Elements
+  addWhiteboardElement: (whiteboardId: string) => `${API_BASE}/api/v1/whiteboards/${whiteboardId}/elements`,
+  updateWhiteboardElement: (whiteboardId: string, elementId: string) => `${API_BASE}/api/v1/whiteboards/${whiteboardId}/elements/${elementId}`,
+  deleteWhiteboardElement: (whiteboardId: string, elementId: string) => `${API_BASE}/api/v1/whiteboards/${whiteboardId}/elements/${elementId}`,
+
   // KV Storage (flat entry model)
   getAllKvEntries: (prefix?: string) => {
     const params = new URLSearchParams();

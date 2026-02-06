@@ -7,7 +7,7 @@
  * and user-preferences.store.ts using KV storage.
  */
 
-import { getFetchAllApplications, getWorkflowService, getKvStore } from '../../../services/lazy-loader';
+import { getFetchAllApplications, getWorkflowService, getWhiteboardService, getKvStore } from '../../../services/lazy-loader';
 import { type PublishedVersion } from '../../../services/revisions/revision.service';
 import type { KvEntry } from '../../../services/kv/kv.types';
 
@@ -129,6 +129,77 @@ export async function fetchAllWorkflowsAcrossApps(
   }));
 
   return allWorkflows;
+}
+
+/**
+ * Whiteboard with application name for display
+ */
+export interface WhiteboardWithAppName {
+  id: string;
+  name: string;
+  description?: string;
+  applicationId: string;
+  applicationName?: string;
+  backgroundColor?: string;
+  gridEnabled?: boolean;
+  elementsCount: number;
+  connectorsCount: number;
+  createdAt?: string;
+  updatedAt?: string;
+  isPinned?: boolean;
+}
+
+/**
+ * Fetch all whiteboards across all applications (single API call)
+ * @param headers - Request headers
+ * @param pinnedIds - Set of pinned whiteboard IDs (from user preferences store)
+ */
+export async function fetchAllWhiteboardsAcrossApps(
+  headers: Record<string, string>,
+  pinnedIds: Set<string> = new Set()
+): Promise<WhiteboardWithAppName[]> {
+  // Lazy load services
+  const [fetchAllApplications, whiteboardService] = await Promise.all([
+    getFetchAllApplications(),
+    getWhiteboardService(),
+  ]);
+
+  // Fetch applications and all whiteboards in parallel
+  const [appsResponse, allWhiteboardsData] = await Promise.all([
+    fetchAllApplications(headers),
+    whiteboardService.getAllWhiteboards(),
+  ]);
+
+  if (appsResponse.status !== 'OK' || !appsResponse.data) {
+    console.error('Failed to fetch applications:', appsResponse.error);
+    return [];
+  }
+
+  const apps = appsResponse.data;
+
+  // Create a map of applicationId -> applicationName for quick lookup
+  const appNameMap = new Map<string, string>();
+  for (const app of apps) {
+    appNameMap.set(app.uuid, app.name);
+  }
+
+  // Map whiteboards to include application name and pinned status
+  const allWhiteboards: WhiteboardWithAppName[] = allWhiteboardsData.map(wb => ({
+    id: wb.id,
+    name: wb.name,
+    description: wb.description,
+    applicationId: wb.applicationId,
+    applicationName: appNameMap.get(wb.applicationId) || 'Unknown',
+    backgroundColor: wb.backgroundColor,
+    gridEnabled: wb.gridEnabled,
+    elementsCount: wb.elements?.length || 0,
+    connectorsCount: wb.connectors?.length || 0,
+    createdAt: wb.createdAt,
+    updatedAt: wb.updatedAt,
+    isPinned: pinnedIds.has(wb.id)
+  }));
+
+  return allWhiteboards;
 }
 
 /**

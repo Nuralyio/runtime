@@ -12,8 +12,10 @@ import { getUserPreference, setUserPreference } from '../../../services/kv/kv.se
 export interface DashboardPreferences {
   pinnedApplications: string[];
   pinnedWorkflows: string[];
+  pinnedWhiteboards: string[];
   applicationsViewMode: 'cards' | 'table';
   workflowsViewMode: 'cards' | 'table';
+  whiteboardsViewMode: 'cards' | 'table';
 }
 
 /**
@@ -22,8 +24,10 @@ export interface DashboardPreferences {
 const DEFAULT_PREFERENCES: DashboardPreferences = {
   pinnedApplications: [],
   pinnedWorkflows: [],
+  pinnedWhiteboards: [],
   applicationsViewMode: 'cards',
   workflowsViewMode: 'table',
+  whiteboardsViewMode: 'cards',
 };
 
 /**
@@ -32,8 +36,10 @@ const DEFAULT_PREFERENCES: DashboardPreferences = {
 const PREFERENCE_KEYS = {
   pinnedApplications: 'pinned-applications',
   pinnedWorkflows: 'pinned-workflows',
+  pinnedWhiteboards: 'pinned-whiteboards',
   applicationsViewMode: 'view-mode-applications',
   workflowsViewMode: 'view-mode-workflows',
+  whiteboardsViewMode: 'view-mode-whiteboards',
 } as const;
 
 /**
@@ -46,18 +52,22 @@ let cacheInitialized = false;
  * Load all user preferences from KV into cache
  */
 export async function loadAllPreferences(): Promise<DashboardPreferences> {
-  const [pinnedApps, pinnedWorkflows, appsViewMode, workflowsViewMode] = await Promise.all([
+  const [pinnedApps, pinnedWorkflows, pinnedWhiteboards, appsViewMode, workflowsViewMode, whiteboardsViewMode] = await Promise.all([
     getUserPreference<string[]>(PREFERENCE_KEYS.pinnedApplications),
     getUserPreference<string[]>(PREFERENCE_KEYS.pinnedWorkflows),
+    getUserPreference<string[]>(PREFERENCE_KEYS.pinnedWhiteboards),
     getUserPreference<'cards' | 'table'>(PREFERENCE_KEYS.applicationsViewMode),
     getUserPreference<'cards' | 'table'>(PREFERENCE_KEYS.workflowsViewMode),
+    getUserPreference<'cards' | 'table'>(PREFERENCE_KEYS.whiteboardsViewMode),
   ]);
 
   preferencesCache = {
     pinnedApplications: pinnedApps ?? DEFAULT_PREFERENCES.pinnedApplications,
     pinnedWorkflows: pinnedWorkflows ?? DEFAULT_PREFERENCES.pinnedWorkflows,
+    pinnedWhiteboards: pinnedWhiteboards ?? DEFAULT_PREFERENCES.pinnedWhiteboards,
     applicationsViewMode: appsViewMode ?? DEFAULT_PREFERENCES.applicationsViewMode,
     workflowsViewMode: workflowsViewMode ?? DEFAULT_PREFERENCES.workflowsViewMode,
+    whiteboardsViewMode: whiteboardsViewMode ?? DEFAULT_PREFERENCES.whiteboardsViewMode,
   };
   cacheInitialized = true;
 
@@ -197,6 +207,49 @@ export async function cleanupPinnedWorkflows(validWorkflowIds: Set<string>): Pro
 }
 
 // ============================================
+// Pinned Whiteboards Functions
+// ============================================
+
+/**
+ * Get pinned whiteboard IDs as a Set
+ */
+export async function getPinnedWhiteboardIds(): Promise<Set<string>> {
+  const pinned = await getPreference('pinnedWhiteboards');
+  return new Set(pinned);
+}
+
+/**
+ * Toggle pinned status for a whiteboard
+ * @returns The new pinned status (true if now pinned, false if unpinned)
+ */
+export async function toggleWhiteboardPinned(whiteboardId: string): Promise<boolean> {
+  const pinned = await getPreference('pinnedWhiteboards');
+  const pinnedSet = new Set(pinned);
+  const wasPinned = pinnedSet.has(whiteboardId);
+
+  if (wasPinned) {
+    pinnedSet.delete(whiteboardId);
+  } else {
+    pinnedSet.add(whiteboardId);
+  }
+
+  await setPreference('pinnedWhiteboards', [...pinnedSet]);
+  return !wasPinned;
+}
+
+/**
+ * Clean up pinned whiteboard IDs by removing deleted whiteboards
+ */
+export async function cleanupPinnedWhiteboards(validWhiteboardIds: Set<string>): Promise<void> {
+  const pinned = await getPreference('pinnedWhiteboards');
+  const filtered = pinned.filter(id => validWhiteboardIds.has(id));
+
+  if (filtered.length !== pinned.length) {
+    await setPreference('pinnedWhiteboards', filtered);
+  }
+}
+
+// ============================================
 // View Mode Functions
 // ============================================
 
@@ -204,10 +257,13 @@ export async function cleanupPinnedWorkflows(validWorkflowIds: Set<string>): Pro
  * Get view mode for a section
  */
 export async function getViewMode(
-  section: 'applications' | 'workflows'
+  section: 'applications' | 'workflows' | 'whiteboards'
 ): Promise<'cards' | 'table'> {
   if (section === 'applications') {
     return getPreference('applicationsViewMode');
+  }
+  if (section === 'whiteboards') {
+    return getPreference('whiteboardsViewMode');
   }
   return getPreference('workflowsViewMode');
 }
@@ -216,11 +272,13 @@ export async function getViewMode(
  * Set view mode for a section
  */
 export async function setViewMode(
-  section: 'applications' | 'workflows',
+  section: 'applications' | 'workflows' | 'whiteboards',
   mode: 'cards' | 'table'
 ): Promise<void> {
   if (section === 'applications') {
     await setPreference('applicationsViewMode', mode);
+  } else if (section === 'whiteboards') {
+    await setPreference('whiteboardsViewMode', mode);
   } else {
     await setPreference('workflowsViewMode', mode);
   }

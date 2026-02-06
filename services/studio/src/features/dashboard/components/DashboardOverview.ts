@@ -9,10 +9,12 @@ import { customElement, property, state } from 'lit/decorators.js';
 import {
   fetchApplicationsWithStatus,
   fetchAllWorkflowsAcrossApps,
+  fetchAllWhiteboardsAcrossApps,
   fetchAllKvEntriesAcrossApps,
   fetchAllDatabaseConnections,
   type ApplicationWithStatus,
   type WorkflowWithAppName,
+  type WhiteboardWithAppName,
   type DatabaseConnection
 } from '../services/dashboard.service';
 import type { KvEntry } from '../../../services/kv/kv.types';
@@ -25,12 +27,13 @@ import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 // Import child components
 import './ApplicationsGrid/ApplicationsGrid';
 import './WorkflowsList/WorkflowsList';
+import './WhiteboardsList/WhiteboardsList';
 import './KVEntriesList/KVEntriesList';
 import './DatabaseList/DatabaseList';
 import './JournalList/JournalList';
 import './ServicesStatus/ServicesStatus';
 
-type ActiveView = 'applications' | 'workflows' | 'kv' | 'database' | 'journal' | 'services';
+type ActiveView = 'applications' | 'workflows' | 'whiteboards' | 'kv' | 'database' | 'journal' | 'services';
 
 interface MenuItem {
   text: string;
@@ -228,18 +231,21 @@ export class DashboardOverview extends LitElement {
 
   @state() private applications: ApplicationWithStatus[] = [];
   @state() private workflows: WorkflowWithAppName[] = [];
+  @state() private whiteboards: WhiteboardWithAppName[] = [];
   @state() private kvEntries: (KvEntry & { applicationName?: string })[] = [];
   @state() private databases: DatabaseConnection[] = [];
 
   // Per-view loading states
   @state() private loadingApps = false;
   @state() private loadingWorkflows = false;
+  @state() private loadingWhiteboards = false;
   @state() private loadingKv = false;
   @state() private loadingDatabases = false;
 
   // Track what's been loaded (reactive)
   @state() private appsLoaded = false;
   @state() private workflowsLoaded = false;
+  @state() private whiteboardsLoaded = false;
   @state() private kvLoaded = false;
   @state() private databasesLoaded = false;
 
@@ -250,6 +256,7 @@ export class DashboardOverview extends LitElement {
     switch (this.activeView) {
       case 'applications': return this.loadingApps;
       case 'workflows': return this.loadingWorkflows;
+      case 'whiteboards': return this.loadingWhiteboards;
       case 'kv': return this.loadingKv;
       case 'database': return this.loadingDatabases;
       default: return false;
@@ -272,7 +279,7 @@ export class DashboardOverview extends LitElement {
 
   private preloadOtherViews() {
     // Preload other views in background (non-blocking)
-    const allViews: ActiveView[] = ['applications', 'workflows', 'database', 'kv'];
+    const allViews: ActiveView[] = ['applications', 'workflows', 'whiteboards', 'database', 'kv'];
     const otherViews = allViews.filter(v => v !== this.activeView);
 
     // Load each view sequentially in background to avoid overwhelming the server
@@ -297,6 +304,7 @@ export class DashboardOverview extends LitElement {
     switch (view) {
       case 'applications': return this.appsLoaded;
       case 'workflows': return this.workflowsLoaded;
+      case 'whiteboards': return this.whiteboardsLoaded;
       case 'kv': return this.kvLoaded;
       case 'database': return this.databasesLoaded;
       default: return true;
@@ -353,6 +361,32 @@ export class DashboardOverview extends LitElement {
         }
         break;
 
+      case 'whiteboards':
+        if (!this.loadingWhiteboards) {
+          this.loadingWhiteboards = true;
+          this.error = null;
+          try {
+            const [whiteboards, apps] = await Promise.all([
+              fetchAllWhiteboardsAcrossApps(headers),
+              this.appsLoaded
+                ? Promise.resolve(this.applications)
+                : fetchApplicationsWithStatus(headers)
+            ]);
+            this.whiteboards = whiteboards;
+            if (!this.appsLoaded) {
+              this.applications = apps;
+              this.appsLoaded = true;
+            }
+            this.whiteboardsLoaded = true;
+          } catch (err) {
+            console.error('Failed to load whiteboards:', err);
+            this.error = err instanceof Error ? err.message : 'Failed to load whiteboards';
+          } finally {
+            this.loadingWhiteboards = false;
+          }
+        }
+        break;
+
       case 'kv':
         if (!this.loadingKv) {
           this.loadingKv = true;
@@ -397,6 +431,7 @@ export class DashboardOverview extends LitElement {
     switch (this.activeView) {
       case 'applications': this.appsLoaded = false; break;
       case 'workflows': this.workflowsLoaded = false; break;
+      case 'whiteboards': this.whiteboardsLoaded = false; break;
       case 'kv': this.kvLoaded = false; break;
       case 'database': this.databasesLoaded = false; break;
     }
@@ -409,6 +444,7 @@ export class DashboardOverview extends LitElement {
     const routes: Record<string, string> = {
       'Applications': '/dashboard/applications',
       'Workflows': '/dashboard/workflows',
+      'Whiteboards': '/dashboard/whiteboards',
       'Database': '/dashboard/database',
       'KV Store': '/dashboard/kv',
       'Journal': '/dashboard/journal',
@@ -437,6 +473,11 @@ export class DashboardOverview extends LitElement {
         text: 'Workflows',
         icon: 'GitBranch',
         selected: this.activeView === 'workflows'
+      },
+      {
+        text: 'Whiteboards',
+        icon: 'PenTool',
+        selected: this.activeView === 'whiteboards'
       },
       {
         text: 'Database',
@@ -472,6 +513,14 @@ export class DashboardOverview extends LitElement {
   private handleWorkflowClick(workflow: WorkflowWithAppName) {
     this.dispatchEvent(new CustomEvent('navigate', {
       detail: { path: `/dashboard/workflow/${workflow.id}` },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private handleWhiteboardClick(whiteboard: WhiteboardWithAppName) {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/whiteboard/${whiteboard.id}` },
       bubbles: true,
       composed: true
     }));
@@ -539,6 +588,15 @@ export class DashboardOverview extends LitElement {
             @refresh=${() => this.refreshCurrentView()}
           ></workflows-list>
         `;
+      case 'whiteboards':
+        return html`
+          <whiteboards-list
+            .whiteboards=${this.whiteboards}
+            .applications=${this.applications}
+            @whiteboard-click=${(e: CustomEvent) => this.handleWhiteboardClick(e.detail.whiteboard)}
+            @refresh=${() => this.refreshCurrentView()}
+          ></whiteboards-list>
+        `;
       case 'kv':
         return html`
           <kv-entries-list
@@ -576,6 +634,7 @@ export class DashboardOverview extends LitElement {
     switch (this.activeView) {
       case 'applications': return 'Applications';
       case 'workflows': return 'Workflows';
+      case 'whiteboards': return 'Whiteboards';
       case 'database': return 'Database';
       case 'kv': return 'KV Store';
       case 'journal': return 'Journal';
@@ -588,6 +647,7 @@ export class DashboardOverview extends LitElement {
     switch (this.activeView) {
       case 'applications': return this.applications.length;
       case 'workflows': return this.workflows.length;
+      case 'whiteboards': return this.whiteboards.length;
       case 'kv': return this.kvEntries.length;
       case 'database': return this.databases.length;
       default: return null;
@@ -613,6 +673,10 @@ export class DashboardOverview extends LitElement {
               <div class="stat-item">
                 <span class="stat-value">${this.workflowsLoaded ? this.workflows.length : '-'}</span>
                 <span class="stat-label">Workflows</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">${this.whiteboardsLoaded ? this.whiteboards.length : '-'}</span>
+                <span class="stat-label">Boards</span>
               </div>
               <div class="stat-item">
                 <span class="stat-value">${this.kvLoaded ? this.kvEntries.length : '-'}</span>

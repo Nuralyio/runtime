@@ -18,6 +18,17 @@ export async function getWorkflowService() {
 }
 
 /**
+ * Lazily load the whiteboard service
+ */
+export async function getWhiteboardService() {
+  if (!serviceCache.has('whiteboard')) {
+    const module = await import('./whiteboard.service');
+    serviceCache.set('whiteboard', module.whiteboardService);
+  }
+  return serviceCache.get('whiteboard') as typeof import('./whiteboard.service').whiteboardService;
+}
+
+/**
  * Lazily load the applications fetch function
  */
 export async function getFetchAllApplications() {
