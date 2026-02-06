@@ -28,6 +28,30 @@ public class WhiteboardDTO {
     public Instant createdAt;
     public Instant updatedAt;
 
+    /**
+     * Create a summary DTO without loading elements/connectors (for list endpoints).
+     */
+    public static WhiteboardDTO fromSummary(WhiteboardEntity entity) {
+        WhiteboardDTO dto = new WhiteboardDTO();
+        dto.id = entity.id;
+        dto.name = entity.name;
+        dto.description = entity.description;
+        dto.applicationId = entity.applicationId;
+        dto.createdBy = entity.createdBy;
+        dto.viewport = entity.viewport;
+        dto.version = entity.version;
+        dto.backgroundColor = entity.backgroundColor;
+        dto.gridEnabled = entity.gridEnabled;
+        dto.gridSize = entity.gridSize;
+        dto.snapToGrid = entity.snapToGrid;
+        dto.allowAnonymousEditing = entity.allowAnonymousEditing;
+        dto.maxCollaborators = entity.maxCollaborators;
+        dto.templateId = entity.templateId;
+        dto.createdAt = entity.createdAt;
+        dto.updatedAt = entity.updatedAt;
+        return dto;
+    }
+
     public static WhiteboardDTO from(WhiteboardEntity entity) {
         WhiteboardDTO dto = new WhiteboardDTO();
         dto.id = entity.id;

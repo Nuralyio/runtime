@@ -41,7 +41,7 @@ public class WhiteboardService {
     // ==================== Whiteboard CRUD ====================
 
     @Transactional
-    public WhiteboardEntity create(CreateWhiteboardDTO dto, String createdBy) {
+    public WhiteboardDTO createAndMap(CreateWhiteboardDTO dto, String createdBy) {
         WhiteboardEntity whiteboard = new WhiteboardEntity();
         whiteboard.name = dto.name;
         whiteboard.description = dto.description;
@@ -66,11 +66,32 @@ public class WhiteboardService {
         whiteboard.viewport = "{\"zoom\": 1.0, \"panX\": 0, \"panY\": 0}";
 
         whiteboardRepository.persist(whiteboard);
-        return whiteboard;
+        return WhiteboardDTO.fromSummary(whiteboard);
     }
 
+    @Transactional
     public Optional<WhiteboardEntity> getById(UUID id) {
         return whiteboardRepository.findByIdWithAll(id);
+    }
+
+    @Transactional
+    public Optional<WhiteboardDTO> getByIdAsDTO(UUID id) {
+        return whiteboardRepository.findByIdWithAll(id)
+                .map(WhiteboardDTO::from);
+    }
+
+    @Transactional
+    public List<WhiteboardDTO> listAll() {
+        return whiteboardRepository.listAll().stream()
+                .map(WhiteboardDTO::fromSummary)
+                .toList();
+    }
+
+    @Transactional
+    public List<WhiteboardDTO> listByApplicationId(String applicationId) {
+        return whiteboardRepository.findByApplicationId(applicationId).stream()
+                .map(WhiteboardDTO::fromSummary)
+                .toList();
     }
 
     public List<WhiteboardEntity> getByApplicationId(String applicationId) {
@@ -78,11 +99,9 @@ public class WhiteboardService {
     }
 
     @Transactional
-    public WhiteboardEntity update(UUID id, CreateWhiteboardDTO dto) {
-        WhiteboardEntity whiteboard = whiteboardRepository.findById(id);
-        if (whiteboard == null) {
-            throw new NotFoundException("Whiteboard not found: " + id);
-        }
+    public WhiteboardDTO updateAndMap(UUID id, CreateWhiteboardDTO dto) {
+        WhiteboardEntity whiteboard = whiteboardRepository.findByIdWithAll(id)
+                .orElseThrow(() -> new NotFoundException("Whiteboard not found: " + id));
 
         if (dto.name != null) whiteboard.name = dto.name;
         if (dto.description != null) whiteboard.description = dto.description;
@@ -91,7 +110,7 @@ public class WhiteboardService {
         if (dto.gridSize != null) whiteboard.gridSize = dto.gridSize;
         if (dto.snapToGrid != null) whiteboard.snapToGrid = dto.snapToGrid;
 
-        return whiteboard;
+        return WhiteboardDTO.from(whiteboard);
     }
 
     @Transactional
@@ -178,6 +197,16 @@ public class WhiteboardService {
         element.lastEditedBy = editedBy;
 
         return element;
+    }
+
+    @Transactional
+    public WhiteboardElementDTO addElementAndMap(UUID whiteboardId, CreateElementDTO dto, UUID createdBy) {
+        return WhiteboardElementDTO.from(addElement(whiteboardId, dto, createdBy));
+    }
+
+    @Transactional
+    public WhiteboardElementDTO updateElementAndMap(UUID whiteboardId, UUID elementId, CreateElementDTO dto, UUID editedBy) {
+        return WhiteboardElementDTO.from(updateElement(whiteboardId, elementId, dto, editedBy));
     }
 
     @Transactional
@@ -355,5 +384,11 @@ public class WhiteboardService {
         }
 
         return whiteboard;
+    }
+
+    @Transactional
+    public WhiteboardDTO restoreRevisionAndMap(UUID whiteboardId, Integer revisionNumber) {
+        WhiteboardEntity whiteboard = restoreRevision(whiteboardId, revisionNumber);
+        return WhiteboardDTO.from(whiteboard);
     }
 }

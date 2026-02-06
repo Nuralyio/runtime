@@ -27,34 +27,36 @@ public class WhiteboardResource {
 
     @POST
     public Response createWhiteboard(CreateWhiteboardDTO dto, @HeaderParam("X-User-Id") String userId) {
-        WhiteboardEntity whiteboard = whiteboardService.create(dto, userId);
-        return Response.created(URI.create("/api/v1/whiteboards/" + whiteboard.id))
-                .entity(WhiteboardDTO.from(whiteboard))
+        WhiteboardDTO result = whiteboardService.createAndMap(dto, userId);
+        return Response.created(URI.create("/api/v1/whiteboards/" + result.id))
+                .entity(result)
                 .build();
     }
 
     @GET
     @Path("/{id}")
     public Response getWhiteboard(@PathParam("id") UUID id) {
-        return whiteboardService.getById(id)
-                .map(w -> Response.ok(WhiteboardDTO.from(w)).build())
+        return whiteboardService.getByIdAsDTO(id)
+                .map(dto -> Response.ok(dto).build())
                 .orElse(Response.status(Response.Status.NOT_FOUND).build());
     }
 
     @GET
     public Response listWhiteboards(@QueryParam("applicationId") String applicationId) {
-        List<WhiteboardDTO> whiteboards = whiteboardService.getByApplicationId(applicationId)
-                .stream()
-                .map(WhiteboardDTO::from)
-                .toList();
+        List<WhiteboardDTO> whiteboards;
+        if (applicationId != null && !applicationId.isBlank()) {
+            whiteboards = whiteboardService.listByApplicationId(applicationId);
+        } else {
+            whiteboards = whiteboardService.listAll();
+        }
         return Response.ok(whiteboards).build();
     }
 
     @PUT
     @Path("/{id}")
     public Response updateWhiteboard(@PathParam("id") UUID id, CreateWhiteboardDTO dto) {
-        WhiteboardEntity whiteboard = whiteboardService.update(id, dto);
-        return Response.ok(WhiteboardDTO.from(whiteboard)).build();
+        WhiteboardDTO result = whiteboardService.updateAndMap(id, dto);
+        return Response.ok(result).build();
     }
 
     @DELETE
@@ -74,9 +76,9 @@ public class WhiteboardResource {
             @HeaderParam("X-User-Id") String userId
     ) {
         UUID userUuid = userId != null ? UUID.fromString(userId) : null;
-        WhiteboardElementEntity element = whiteboardService.addElement(whiteboardId, dto, userUuid);
-        return Response.created(URI.create("/api/v1/whiteboards/" + whiteboardId + "/elements/" + element.id))
-                .entity(WhiteboardElementDTO.from(element))
+        WhiteboardElementDTO result = whiteboardService.addElementAndMap(whiteboardId, dto, userUuid);
+        return Response.created(URI.create("/api/v1/whiteboards/" + whiteboardId + "/elements/" + result.id))
+                .entity(result)
                 .build();
     }
 
@@ -89,8 +91,8 @@ public class WhiteboardResource {
             @HeaderParam("X-User-Id") String userId
     ) {
         UUID userUuid = userId != null ? UUID.fromString(userId) : null;
-        WhiteboardElementEntity element = whiteboardService.updateElement(whiteboardId, elementId, dto, userUuid);
-        return Response.ok(WhiteboardElementDTO.from(element)).build();
+        WhiteboardElementDTO result = whiteboardService.updateElementAndMap(whiteboardId, elementId, dto, userUuid);
+        return Response.ok(result).build();
     }
 
     @DELETE
@@ -239,7 +241,7 @@ public class WhiteboardResource {
             @PathParam("id") UUID whiteboardId,
             @PathParam("revision") Integer revision
     ) {
-        WhiteboardEntity whiteboard = whiteboardService.restoreRevision(whiteboardId, revision);
-        return Response.ok(WhiteboardDTO.from(whiteboard)).build();
+        WhiteboardDTO result = whiteboardService.restoreRevisionAndMap(whiteboardId, revision);
+        return Response.ok(result).build();
     }
 }

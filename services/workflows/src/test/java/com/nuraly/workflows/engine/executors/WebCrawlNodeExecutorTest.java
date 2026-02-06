@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.engine.ExecutionContext;
 import com.nuraly.workflows.engine.NodeExecutionResult;
+import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import org.junit.jupiter.api.BeforeEach;
