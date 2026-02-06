@@ -25,8 +25,8 @@
   "offlineSessionMaxLifespan": 5184000,
   "accessTokenLifespan": 300,
   "accessTokenLifespanForImplicitFlow": 900,
-  "ssoSessionIdleTimeout": 1800,
-  "ssoSessionMaxLifespan": 36000,
+  "ssoSessionIdleTimeout": 259200,
+  "ssoSessionMaxLifespan": 259200,
   "clients": [
     {
       "clientId": "nuraly-web",
