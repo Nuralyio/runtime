@@ -8,7 +8,7 @@ import { type DashboardTabType, type AppSubTab } from '../stores/dashboard-tabs.
 /**
  * Overview sub-views for the main dashboard
  */
-export type OverviewView = 'applications' | 'workflows' | 'kv' | 'database' | 'journal' | 'services';
+export type OverviewView = 'applications' | 'workflows' | 'whiteboards' | 'kv' | 'database' | 'journal' | 'services';
 
 /**
  * Parsed route information
@@ -44,6 +44,11 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     return { type: 'overview', overviewView: 'workflows' };
   }
 
+  // /dashboard/whiteboards (overview list)
+  if (path === '/dashboard/whiteboards') {
+    return { type: 'overview', overviewView: 'whiteboards' };
+  }
+
   // /dashboard/database (overview of all databases)
   if (path === '/dashboard/database') {
     return { type: 'overview', overviewView: 'database' };
@@ -73,6 +78,24 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
       type: 'app',
       resourceId: appId,
       subTab: ['pages', 'workflows', 'database', 'kv'].includes(subTab) ? subTab : 'pages'
+    };
+  }
+
+  // /dashboard/whiteboard/edit/{wbId} - whiteboard editor
+  const whiteboardEditMatch = path.match(/^\/dashboard\/whiteboard\/edit\/([^/]+)$/);
+  if (whiteboardEditMatch) {
+    return {
+      type: 'whiteboard-edit',
+      resourceId: whiteboardEditMatch[1]
+    };
+  }
+
+  // /dashboard/whiteboard/{wbId} - whiteboard details view
+  const whiteboardMatch = path.match(/^\/dashboard\/whiteboard\/([^/]+)$/);
+  if (whiteboardMatch) {
+    return {
+      type: 'whiteboard',
+      resourceId: whiteboardMatch[1]
     };
   }
 
@@ -136,6 +159,12 @@ export function buildRoutePath(route: ParsedRoute): string {
 
     case 'workflow':
       return `/dashboard/workflow/${route.resourceId}`;
+
+    case 'whiteboard':
+      return `/dashboard/whiteboard/${route.resourceId}`;
+
+    case 'whiteboard-edit':
+      return `/dashboard/whiteboard/edit/${route.resourceId}`;
 
     case 'workflow-edit':
       return `/dashboard/workflow/edit/${route.resourceId}`;

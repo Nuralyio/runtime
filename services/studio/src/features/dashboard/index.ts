@@ -8,6 +8,7 @@ import './components/DashboardLayout';
 import './components/DashboardOverview';
 import './components/DashboardAppView';
 import './components/DashboardWorkflowView';
+import './components/DashboardWhiteboardView';
 import './components/DashboardDatabaseView';
 import './components/DashboardKVView';
 import './components/DashboardProfileView';
@@ -17,6 +18,7 @@ import './components/Dashboard';
 import './components/ApplicationsGrid/ApplicationsGrid';
 import './components/ApplicationsGrid/ApplicationCard';
 import './components/WorkflowsList/WorkflowsList';
+import './components/WhiteboardsList/WhiteboardsList';
 import './components/KVEntriesList/KVEntriesList';
 
 // Export types and services
@@ -32,6 +34,7 @@ export { DashboardLayout } from './components/DashboardLayout';
 export { DashboardOverview } from './components/DashboardOverview';
 export { DashboardAppView } from './components/DashboardAppView';
 export { DashboardWorkflowView } from './components/DashboardWorkflowView';
+export { DashboardWhiteboardView } from './components/DashboardWhiteboardView';
 export { DashboardDatabaseView } from './components/DashboardDatabaseView';
 export { DashboardKVView } from './components/DashboardKVView';
 export { DashboardProfileView } from './components/DashboardProfileView';

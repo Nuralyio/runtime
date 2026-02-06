@@ -13,9 +13,11 @@ import { getCurrentUser, type CurrentUserInfo } from '../../runtime/handlers/run
 import './DashboardOverview';
 import './DashboardAppView';
 import './DashboardWorkflowView';
+import './DashboardWhiteboardView';
 import './DashboardDatabaseView';
 import './DashboardKVView';
 import './DashboardProfileView';
+import '../../standalone/StandaloneWhiteboardPage';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
@@ -291,6 +293,22 @@ export class DashboardLayout extends LitElement {
             .workflowId=${this.currentRoute.resourceId || ''}
             @navigate=${this.handleNavigate}
           ></dashboard-workflow-view>
+        `;
+
+      case 'whiteboard':
+        return html`
+          <dashboard-whiteboard-view
+            .whiteboardId=${this.currentRoute.resourceId || ''}
+            @navigate=${this.handleNavigate}
+          ></dashboard-whiteboard-view>
+        `;
+
+      case 'whiteboard-edit':
+        return html`
+          <standalone-whiteboard-page
+            .whiteboardId=${this.currentRoute.resourceId || ''}
+            @navigate=${this.handleNavigate}
+          ></standalone-whiteboard-page>
         `;
 
       case 'database':
