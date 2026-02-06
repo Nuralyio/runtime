@@ -14,6 +14,11 @@ import {
   migrateWorkflowViewportToKv,
   getDefaultWorkflowViewport
 } from "../../../runtime/redux/store/workflow";
+import {
+  getKvEntries,
+  setKvEntry,
+  type KvEntry
+} from "../../../runtime/redux/store/kv";
 import type { CanvasViewport } from "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
 import { $context } from "../../../runtime/redux/store/context";
 import {
@@ -326,6 +331,9 @@ export class FlowPage extends LitElement {
 
   @state()
   private executionError: string | null = null;
+
+  @state()
+  private kvEntries: KvEntry[] = [];
 
   /** Detail passed from tab containing workflowId and/or appId */
   @property({ type: Object })
@@ -706,6 +714,47 @@ export class FlowPage extends LitElement {
     console.log('[Flow] Updated DEBUG node output:', nodeId, outputData);
   }
 
+  /**
+   * Load KV entries for the current application
+   */
+  private async loadKvEntries(appId: string): Promise<void> {
+    try {
+      const entries = await getKvEntries(appId, {});
+      this.kvEntries = entries || [];
+    } catch (error) {
+      console.error('[Flow] Failed to load KV entries:', error);
+      this.kvEntries = [];
+    }
+  }
+
+  /**
+   * Handle creation of new KV entry from config panel
+   */
+  private async handleCreateKvEntry(detail: { keyPath: string; value: any; scope: string; isSecret: boolean }): Promise<void> {
+    const appId = this.loadedApplicationId || this.detail?.appId || $currentApplication.get()?.uuid;
+    if (!appId) {
+      console.error('[Flow] Cannot create KV entry: no application ID');
+      return;
+    }
+
+    try {
+      const result = await setKvEntry(detail.keyPath, {
+        applicationId: appId,
+        value: detail.value,
+        isSecret: detail.isSecret,
+        scope: detail.scope,
+      });
+
+      if (result) {
+        console.log('[Flow] Created KV entry:', detail.keyPath);
+        // Refresh KV entries to include the new one
+        await this.loadKvEntries(appId);
+      }
+    } catch (error) {
+      console.error('[Flow] Failed to create KV entry:', error);
+    }
+  }
+
   private async loadWorkflow() {
     this.loading = true;
     // Use detail.appId as primary source, fall back to store
@@ -716,6 +765,9 @@ export class FlowPage extends LitElement {
     if (appId) {
       // Store appId immediately so it survives canvas events
       this.loadedApplicationId = appId;
+
+      // Load KV entries for this application
+      await this.loadKvEntries(appId);
 
       // Load all workflows for this app
       const workflows = await getWorkflows(appId);
@@ -1035,6 +1087,9 @@ export class FlowPage extends LitElement {
             .workflow=${this.workflow || MOCK_WORKFLOW}
             .nodeStatuses=${this.nodeStatuses}
             .agentActivity=${this.agentActivity}
+            .applicationId=${this.loadedApplicationId || ''}
+            .kvEntries=${this.kvEntries.map(e => ({ keyPath: e.keyPath, value: e.value, isSecret: e.isSecret }))}
+            .onCreateKvEntry=${(detail: any) => this.handleCreateKvEntry(detail)}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}
