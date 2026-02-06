@@ -15,7 +15,7 @@ import {
   type WorkflowWithAppName,
   type DatabaseConnection
 } from '../services/dashboard.service';
-import type { KvEntry } from '../../runtime/redux/store/kv';
+import type { KvEntry } from '../../../services/kv/kv.types';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/menu';

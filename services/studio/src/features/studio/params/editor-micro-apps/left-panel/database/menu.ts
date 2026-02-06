@@ -18,55 +18,10 @@ export const databaseConnectionsMenu = {
         // Check if connections are already loaded
         let connections = GetVar("databaseConnections") || [];
 
-        // If no connections, try to load them from KV
+        // Connections should be pre-loaded into the variable store by the host (Database.ts).
+        // If they haven't loaded yet, show a placeholder instead of fetching inline.
         if (connections.length === 0) {
-          const appId = GetVar("currentEditingApplication")?.uuid;
-          if (!appId) {
-            return [{ text: "No connections", id: "empty", icon: "info", disabled: true }];
-          }
-
-          // Fetch KV entries and parse connections
-          return fetch("/api/v1/kv/entries?applicationId=" + appId)
-            .then(res => res.json())
-            .then(kvEntries => {
-              const dbTypes = ['postgresql', 'mysql', 'mongodb', 'sqlite', 'mssql', 'oracle'];
-              const parsed = (kvEntries || [])
-                .filter(entry => {
-                  const parts = entry.keyPath?.split('/') || [];
-                  return parts.length >= 2 && dbTypes.includes(parts[0]) && entry.isSecret;
-                })
-                .map(entry => {
-                  const parts = entry.keyPath.split('/');
-                  return {
-                    path: entry.keyPath,
-                    type: parts[0],
-                    name: parts.slice(1).join('/'),
-                    status: 'unknown'
-                  };
-                });
-
-              // Update the store so other components can use it
-              if (parsed.length > 0) {
-                SetVar("databaseConnections", parsed);
-              }
-
-              if (parsed.length === 0) {
-                return [{ text: "No connections", id: "empty", icon: "info", disabled: true }];
-              }
-
-              const currentConn = GetVar("currentDatabaseConnection");
-              return parsed.map(conn => ({
-                text: conn.name,
-                id: conn.path,
-                icon: 'database',
-                selected: currentConn?.path === conn.path,
-                badge: conn.type
-              }));
-            })
-            .catch(err => {
-              console.error("Failed to load connections:", err);
-              return [{ text: "Error loading connections", id: "error", icon: "alert-triangle", disabled: true }];
-            });
+          return [{ text: "Loading connections...", id: "loading", icon: "loader", disabled: true }];
         }
 
         const currentConn = GetVar("currentDatabaseConnection");

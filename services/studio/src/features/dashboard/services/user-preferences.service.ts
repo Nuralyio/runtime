@@ -4,7 +4,7 @@
  * Provides caching and convenience functions for dashboard preferences
  */
 
-import { getUserPreference, setUserPreference } from '../../runtime/redux/store/kv';
+import { getUserPreference, setUserPreference } from '../../../services/kv/kv.service';
 
 /**
  * Dashboard user preferences interface
