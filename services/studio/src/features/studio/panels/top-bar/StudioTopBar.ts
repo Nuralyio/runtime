@@ -33,7 +33,7 @@ import { getInsertOptions, getEditOptions, getApplicationOptions } from './topba
 
 // Modal components
 import '@nuraly/runtime/components/ui/components/utility/ShareModal/ShareModal';
-import '@nuraly/runtime/components/ui/components/utility/KvModal/KvModal';
+import '../../components/kv-modal/KvModal';
 import '@nuraly/runtime/components/ui/components/utility/AppSettingsModal/AppSettingsModal';
 
 @customElement("studio-topbar")
