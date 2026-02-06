@@ -2563,6 +2563,168 @@ export const workflowCanvasStyles = css`
   .collapsed-frame-node.status-waiting {
     border-color: var(--nuraly-color-warning, #f59e0b);
   }
+
+  /* ========================================
+   * WHITEBOARD FLOATING TOOLBAR
+   * ======================================== */
+
+  .wb-floating-toolbar {
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    pointer-events: auto;
+    white-space: nowrap;
+  }
+
+  .wb-color-picker-panel {
+    position: absolute;
+    z-index: 1001;
+    pointer-events: auto;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 8px;
+    width: 200px;
+  }
+
+  .wb-picker-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .wb-picker-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1.5px solid #d1d5db;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease, border-color 0.1s ease;
+  }
+
+  .wb-picker-swatch:hover {
+    transform: scale(1.15);
+    border-color: #9ca3af;
+  }
+
+  .wb-picker-swatch.active {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1.5px #3b82f6;
+  }
+
+  .wb-picker-custom {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .wb-picker-native {
+    width: 32px;
+    height: 32px;
+    padding: 1px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .wb-picker-native::-webkit-color-swatch-wrapper {
+    padding: 2px;
+  }
+
+  .wb-picker-native::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+
+  .wb-picker-native::-moz-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+
+  .wb-picker-native:hover {
+    border-color: #9ca3af;
+  }
+
+  .wb-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .wb-toolbar-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 2px;
+    user-select: none;
+  }
+
+  .wb-toolbar-divider {
+    width: 1px;
+    height: 20px;
+    background: #e5e7eb;
+    margin: 0 4px;
+  }
+
+  .wb-floating-toolbar nr-colorholder-box {
+    cursor: pointer;
+  }
+
+  .wb-floating-toolbar nr-input {
+    --nr-input-height: 28px;
+    --nr-input-font-size: 12px;
+  }
+
+  .wb-floating-toolbar nr-select {
+    --nr-select-height: 28px;
+    --nr-select-font-size: 12px;
+  }
+
+  .wb-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #f9fafb;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    color: #374151;
+  }
+
+  .wb-toolbar-btn:hover {
+    background: #e5e7eb;
+  }
+
+  .wb-toolbar-btn.danger:hover {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+  }
+
+  .wb-toolbar-btn nr-icon {
+    --icon-size: 14px;
+  }
 `;
 
 export const styles = workflowCanvasStyles;

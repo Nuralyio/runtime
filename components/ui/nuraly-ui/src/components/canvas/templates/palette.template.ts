@@ -34,7 +34,11 @@ export function renderPaletteTemplate(data: PaletteTemplateData): TemplateResult
   if (!data.showPalette) return nothing;
 
   const categories = getCategoriesForCanvasType(data.canvasType);
-  const paletteTitle = data.canvasType === CanvasType.DATABASE ? 'Add DB Element' : 'Add Node';
+  const paletteTitle = data.canvasType === CanvasType.DATABASE
+    ? 'Add DB Element'
+    : data.canvasType === CanvasType.WHITEBOARD
+      ? 'Add Element'
+      : 'Add Node';
   const searchTerm = data.searchTerm.toLowerCase().trim();
 
   // Filter categories and nodes based on search term

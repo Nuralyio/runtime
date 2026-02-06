@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, html, svg, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -17,8 +17,10 @@ import {
   NODE_ICONS,
   isAgentNode,
   isNoteNode,
+  isWhiteboardNode,
   WorkflowNodeType,
   DbDesignerNodeType,
+  WhiteboardNodeType,
 } from './workflow-canvas.types.js';
 import { styles } from './workflow-node.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
@@ -62,7 +64,7 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     super.updated(changedProperties);
     // Focus textarea when entering edit mode
     if (changedProperties.has('editing') && this.editing) {
-      const textarea = this.shadowRoot?.querySelector('.note-textarea') as HTMLTextAreaElement;
+      const textarea = this.shadowRoot?.querySelector('.note-textarea, .wb-textarea') as HTMLTextAreaElement;
       if (textarea) {
         textarea.focus();
       }
@@ -452,6 +454,391 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private _isWhiteboardNode(): boolean {
+    return isWhiteboardNode(this.node.type);
+  }
+
+  /**
+   * Render whiteboard node - Miro-style visual elements
+   */
+  private renderWhiteboardNode() {
+    const config = this.node.configuration || {};
+    const nodeType = this.node.type as WhiteboardNodeType;
+    const width = (config.width as number) || 200;
+    const height = (config.height as number) || 200;
+    const bgColor = (config.backgroundColor as string) || (config.fillColor as string) || NODE_COLORS[this.node.type] || '#3b82f6';
+    const textContent = (config.textContent as string) || '';
+    const textColor = (config.textColor as string) || '#1a1a1a';
+    const fontSize = (config.fontSize as number) || 14;
+    const textAlign = (config.textAlign as string) || 'center';
+    const borderColor = (config.borderColor as string) || 'transparent';
+    const borderWidth = (config.borderWidth as number) || 0;
+    const borderRadius = (config.borderRadius as number) || 0;
+    const opacity = (config.opacity as number) ?? 1;
+    const rotation = (config.rotation as number) || 0;
+
+    const containerClasses = {
+      'node-container': true,
+      'wb-node': true,
+      selected: this.selected,
+      dragging: this.dragging,
+      editing: this.editing,
+    };
+
+    const containerStyles = {
+      left: `${this.node.position.x}px`,
+      top: `${this.node.position.y}px`,
+      '--wb-width': `${width}px`,
+      '--wb-height': `${height}px`,
+      '--wb-bg': bgColor,
+      '--wb-text-color': textColor,
+      '--wb-font-size': `${fontSize}px`,
+      '--wb-text-align': textAlign,
+      '--wb-border-color': borderColor,
+      '--wb-border-width': `${borderWidth}px`,
+      '--wb-border-radius': `${borderRadius}px`,
+      '--wb-opacity': `${opacity}`,
+      '--wb-rotation': `${rotation}deg`,
+    };
+
+    switch (nodeType) {
+      case WhiteboardNodeType.STICKY_NOTE:
+        return this.renderWbStickyNote(containerClasses, containerStyles, config);
+
+      case WhiteboardNodeType.TEXT_BLOCK:
+        return this.renderWbTextBlock(containerClasses, containerStyles, config);
+
+      case WhiteboardNodeType.SHAPE_CIRCLE:
+        return this.renderWbShape(containerClasses, containerStyles, config, 'circle');
+
+      case WhiteboardNodeType.SHAPE_DIAMOND:
+        return this.renderWbShape(containerClasses, containerStyles, config, 'diamond');
+
+      case WhiteboardNodeType.SHAPE_TRIANGLE:
+        return this.renderWbShape(containerClasses, containerStyles, config, 'triangle');
+
+      case WhiteboardNodeType.SHAPE_STAR:
+        return this.renderWbShape(containerClasses, containerStyles, config, 'star');
+
+      case WhiteboardNodeType.SHAPE_HEXAGON:
+        return this.renderWbShape(containerClasses, containerStyles, config, 'hexagon');
+
+      case WhiteboardNodeType.SHAPE_ARROW:
+      case WhiteboardNodeType.SHAPE_LINE:
+        return this.renderWbLine(containerClasses, containerStyles, config, nodeType === WhiteboardNodeType.SHAPE_ARROW);
+
+      case WhiteboardNodeType.IMAGE:
+        return this.renderWbImage(containerClasses, containerStyles, config);
+
+      case WhiteboardNodeType.FRAME:
+        return this.renderWbFrame(containerClasses, containerStyles, config);
+
+      case WhiteboardNodeType.VOTING:
+        return this.renderWbVoting(containerClasses, containerStyles, config);
+
+      case WhiteboardNodeType.SHAPE_RECTANGLE:
+      default:
+        return this.renderWbRectangle(containerClasses, containerStyles, config);
+    }
+  }
+
+  private renderWbStickyNote(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const textContent = (config.textContent as string) || 'Add note...';
+    const bgColor = (config.backgroundColor as string) || '#fef08a';
+    const textColor = (config.textColor as string) || '#713f12';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-sticky-note': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-sticky-body" style="background: ${bgColor}; color: ${textColor};">
+          ${this.editing ? html`
+            <textarea
+              class="wb-textarea"
+              .value=${textContent}
+              @blur=${this.handleWbTextBlur}
+              @keydown=${this.handleWbTextKeydown}
+              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+              style="color: ${textColor};"
+            ></textarea>
+          ` : html`
+            <span class="wb-text">${textContent}</span>
+          `}
+        </div>
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private renderWbTextBlock(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const textContent = (config.textContent as string) || 'Type text...';
+    const textColor = (config.textColor as string) || '#1a1a1a';
+    const fontSize = (config.fontSize as number) || 16;
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-text-block': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-text-body" style="color: ${textColor}; font-size: ${fontSize}px;">
+          ${this.editing ? html`
+            <textarea
+              class="wb-textarea"
+              .value=${textContent}
+              @blur=${this.handleWbTextBlur}
+              @keydown=${this.handleWbTextKeydown}
+              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+              style="color: ${textColor}; font-size: ${fontSize}px;"
+            ></textarea>
+          ` : html`
+            <span class="wb-text">${textContent}</span>
+          `}
+        </div>
+        ${this.renderWbPorts()}
+      </div>
+    `;
+  }
+
+  private renderWbRectangle(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const textContent = (config.textContent as string) || '';
+    const bgColor = (config.backgroundColor as string) || (config.fillColor as string) || '#3b82f6';
+    const textColor = (config.textColor as string) || '#ffffff';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-shape': true, 'wb-shape-rectangle': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-shape-body" style="background: ${bgColor}; color: ${textColor};">
+          ${textContent ? html`<span class="wb-shape-text">${textContent}</span>` : nothing}
+        </div>
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private renderWbShape(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>, shape: string) {
+    const textContent = (config.textContent as string) || '';
+    const bgColor = (config.backgroundColor as string) || (config.fillColor as string) || NODE_COLORS[this.node.type] || '#8b5cf6';
+    const textColor = (config.textColor as string) || '#ffffff';
+    const width = (config.width as number) || 120;
+    const height = (config.height as number) || 120;
+    const stroke = (config.borderColor as string) || 'none';
+    const strokeWidth = (config.borderWidth as number) || 0;
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-shape': true, [`wb-shape-${shape}`]: true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <svg class="wb-shape-svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+          ${this.renderSvgShape(shape, width, height, bgColor, stroke, strokeWidth)}
+        </svg>
+        ${textContent ? html`<span class="wb-shape-text" style="color: ${textColor};">${textContent}</span>` : nothing}
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private renderSvgShape(shape: string, w: number, h: number, fill: string, stroke: string, strokeWidth: number) {
+    switch (shape) {
+      case 'circle':
+        return svg`<ellipse cx="${w / 2}" cy="${h / 2}" rx="${w / 2 - 2}" ry="${h / 2 - 2}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+
+      case 'diamond':
+        return svg`<polygon points="${w / 2},2 ${w - 2},${h / 2} ${w / 2},${h - 2} 2,${h / 2}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+
+      case 'triangle':
+        return svg`<polygon points="${w / 2},2 ${w - 2},${h - 2} 2,${h - 2}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+
+      case 'star': {
+        const cx = w / 2, cy = h / 2;
+        const outerR = Math.min(w, h) / 2 - 2;
+        const innerR = outerR * 0.4;
+        const points: string[] = [];
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? outerR : innerR;
+          const angle = (Math.PI / 2) + (Math.PI * 2 * i / 10);
+          points.push(`${cx + r * Math.cos(angle)},${cy - r * Math.sin(angle)}`);
+        }
+        return svg`<polygon points="${points.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+      }
+
+      case 'hexagon': {
+        const cx = w / 2, cy = h / 2;
+        const r = Math.min(w, h) / 2 - 2;
+        const points: string[] = [];
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 6) + (Math.PI * 2 * i / 6);
+          points.push(`${cx + r * Math.cos(angle)},${cy - r * Math.sin(angle)}`);
+        }
+        return svg`<polygon points="${points.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+      }
+
+      default:
+        return svg`<rect x="2" y="2" width="${w - 4}" height="${h - 4}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>`;
+    }
+  }
+
+  private renderWbLine(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>, hasArrow: boolean) {
+    const width = (config.width as number) || 200;
+    const height = (config.height as number) || 4;
+    const bgColor = (config.backgroundColor as string) || (config.fillColor as string) || '#6b7280';
+    const svgH = Math.max(height, 20);
+    const midY = svgH / 2;
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-shape': true, 'wb-shape-line': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <svg class="wb-shape-svg" viewBox="0 0 ${width} ${svgH}" width="${width}" height="${svgH}">
+          ${svg`<line x1="0" y1="${midY}" x2="${width}" y2="${midY}" stroke="${bgColor}" stroke-width="3" />`}
+          ${hasArrow ? svg`<polygon points="${width - 12},${midY - 6} ${width},${midY} ${width - 12},${midY + 6}" fill="${bgColor}" />` : nothing}
+        </svg>
+        ${this.renderWbPorts()}
+      </div>
+    `;
+  }
+
+  private renderWbImage(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const imageUrl = (config.imageUrl as string) || '';
+    const imageAlt = (config.imageAlt as string) || 'Image';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-image': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-image-body">
+          ${imageUrl ? html`
+            <img class="wb-image-content" src=${imageUrl} alt=${imageAlt} />
+          ` : html`
+            <div class="wb-image-placeholder">
+              <nr-icon name="image" size="large"></nr-icon>
+              <span>Double-click to add image</span>
+            </div>
+          `}
+        </div>
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private renderWbFrame(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const label = (config.textContent as string) || this.node.name || 'Frame';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-frame': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-frame-label">${label}</div>
+        <div class="wb-frame-body"></div>
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private renderWbVoting(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const textContent = (config.textContent as string) || 'Vote topic';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-voting': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-voting-body">
+          <nr-icon name="thumbs-up" size="medium"></nr-icon>
+          <span class="wb-voting-text">${textContent}</span>
+        </div>
+        ${this.renderWbPorts()}
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  /** Render ports for whiteboard nodes - hidden by default, visible on hover */
+  private renderWbPorts() {
+    return html`
+      <div class="wb-ports-container">
+        ${this.node.ports.inputs.map((port, i) =>
+          this.renderPort(port, true, i, this.node.ports.inputs.length)
+        )}
+        ${this.node.ports.outputs.map((port, i) =>
+          this.renderPort(port, false, i, this.node.ports.outputs.length)
+        )}
+      </div>
+    `;
+  }
+
+  private handleWbTextBlur(e: FocusEvent) {
+    const textarea = e.target as HTMLTextAreaElement;
+    this.dispatchEvent(new CustomEvent('note-content-change', {
+      detail: { node: this.node, content: textarea.value },
+      bubbles: true,
+      composed: true,
+    }));
+    this.dispatchEvent(new CustomEvent('note-edit-end', {
+      detail: { node: this.node },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private handleWbTextKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      this.dispatchEvent(new CustomEvent('note-edit-end', {
+        detail: { node: this.node },
+        bubbles: true,
+        composed: true,
+      }));
+    }
+  }
+
+  private handleWbResizeStart(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent('note-resize-start', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private renderConfigPort(port: NodePort, index: number, total: number) {
     // Position config ports evenly spaced along the bottom using percentages
     const portSpacing = 45; // Space between ports in px (wider for labels)
@@ -498,6 +885,11 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     // Use special rendering for Note nodes
     if (this.isNoteNode()) {
       return this.renderNoteNode();
+    }
+
+    // Use special rendering for Whiteboard nodes
+    if (this._isWhiteboardNode()) {
+      return this.renderWhiteboardNode();
     }
 
     const nodeColor = this.getNodeColor();
