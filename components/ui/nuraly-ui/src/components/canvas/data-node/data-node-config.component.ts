@@ -11,9 +11,9 @@ import {
   DATABASE_TYPES,
   type DatabaseType,
   type DataNodeConfiguration,
+  type ColumnDTO,
+  type DatabaseProvider,
 } from './data-node.types.js';
-import { getColumns, type ColumnDTO } from '../../../../../../../redux/store/database.js';
-import { getVarValue } from '../../../../../../../redux/store/context.js';
 
 // Import child components
 import './schema-select.component.js';
@@ -179,6 +179,14 @@ export class NrDataNodeConfig extends LitElement {
   @property({ type: Object })
   config: Partial<DataNodeConfiguration> = {};
 
+  /** Application ID (host-provided, replaces getVarValue) */
+  @property({ type: String })
+  applicationId: string = '';
+
+  /** Database provider for introspection (host-provided) */
+  @property({ attribute: false })
+  databaseProvider?: DatabaseProvider;
+
   /** KV entries for connection selects (host-provided) */
   @property({ attribute: false })
   kvEntries: { keyPath: string; value?: any; isSecret: boolean }[] = [];
@@ -189,11 +197,6 @@ export class NrDataNodeConfig extends LitElement {
 
   @state() private columns: ColumnDTO[] = [];
   @state() private loadingColumns = false;
-
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
 
   override updated(changedProperties: Map<string, unknown>): void {
     if (changedProperties.has('config')) {
@@ -214,11 +217,11 @@ export class NrDataNodeConfig extends LitElement {
   }
 
   private async loadColumns(): Promise<void> {
-    const appId = this.getAppId();
+    const appId = this.applicationId;
     const connectionPath = this.config.connectionPath;
     const entity = this.config.entity;
 
-    if (!appId || !connectionPath || !entity) {
+    if (!appId || !connectionPath || !entity || !this.databaseProvider) {
       this.columns = [];
       return;
     }
@@ -226,7 +229,7 @@ export class NrDataNodeConfig extends LitElement {
     this.loadingColumns = true;
 
     try {
-      const columns = await getColumns(
+      const columns = await this.databaseProvider.getColumns(
         connectionPath,
         appId,
         entity,
@@ -316,6 +319,8 @@ export class NrDataNodeConfig extends LitElement {
         <label>Schema</label>
         <nr-schema-select
           .connectionPath=${connectionPath || ''}
+          .applicationId=${this.applicationId}
+          .databaseProvider=${this.databaseProvider}
           .value=${this.config.schema || ''}
           placeholder="Select schema..."
           @value-change=${(e: CustomEvent) => this.onUpdate('schema', e.detail.value)}
@@ -334,6 +339,8 @@ export class NrDataNodeConfig extends LitElement {
         <nr-table-select
           .connectionPath=${connectionPath || ''}
           .schema=${schema || ''}
+          .applicationId=${this.applicationId}
+          .databaseProvider=${this.databaseProvider}
           .value=${this.config.entity || ''}
           placeholder="Select table..."
           @value-change=${(e: CustomEvent) => this.onUpdate('entity', e.detail.value)}

@@ -101,7 +101,10 @@ const createConfig = (component) => ({
   // Externalize shared deps so they are loaded once by the host (lean bundles)
   external: (id) => (
     id === 'lit' || id.startsWith('lit/') ||
-    id === '@nuralyui/common' || id.startsWith('@nuralyui/common/')
+    id === '@nuralyui/common' || id.startsWith('@nuralyui/common/') ||
+    id === 'socket.io-client' || id.startsWith('socket.io-client/') ||
+    id === 'monaco-editor' || id.startsWith('monaco-editor/') ||
+    id === 'monacopilot' || id.startsWith('monacopilot/')
   ),
   onwarn(warning) {
     if (warning.code !== 'THIS_IS_UNDEFINED') {

@@ -197,7 +197,7 @@ export interface NodeConfiguration {
   httpContentType?: string;
   // Condition node
   expression?: string;
-  language?: 'javascript' | 'jsonata';
+  language?: 'javascript' | 'jsonata' | 'fr';
   // Delay node
   duration?: number;
   unit?: 'milliseconds' | 'seconds' | 'minutes' | 'hours';
@@ -215,7 +215,7 @@ export interface NodeConfiguration {
   maxTokens?: number;
   tools?: string[];
   // LLM node
-  provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local';
+  provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local' | 'google';
   modelName?: string;
   apiUrlPath?: string;  // KV path for custom API URL (for Ollama)
   // Memory node (context memory for agents/LLM)
@@ -1840,3 +1840,37 @@ export interface FrameResizeState {
  * Resize handle type
  */
 export type ResizeHandle = 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w';
+
+/**
+ * Result from an undo/redo operation
+ */
+export interface UndoRedoResult {
+  success: boolean;
+  workflow?: Workflow;
+  description?: string;
+  error?: string;
+}
+
+/**
+ * Provider interface for undo/redo operations.
+ * Host injects an implementation so the UI never imports from the store.
+ */
+export interface UndoProvider {
+  undo(workflowId: string, workflow: Workflow): UndoRedoResult;
+  redo(workflowId: string, workflow: Workflow): UndoRedoResult;
+  canUndo(workflowId: string): boolean;
+  canRedo(workflowId: string): boolean;
+  getUndoDescription(workflowId: string): string | undefined;
+  getRedoDescription(workflowId: string): string | undefined;
+  recordAddNode(workflowId: string, node: WorkflowNode): void;
+  recordDeleteNode(workflowId: string, node: WorkflowNode, connectedEdges: WorkflowEdge[]): void;
+  recordMoveNodes(workflowId: string, moves: Array<{ nodeId: string; oldPosition: Position; newPosition: Position }>): void;
+  recordUpdateNodeConfig(workflowId: string, nodeId: string, changes: Partial<WorkflowNode>, previousState: Partial<WorkflowNode>): void;
+  recordAddEdge(workflowId: string, edge: WorkflowEdge): void;
+  recordDeleteEdge(workflowId: string, edge: WorkflowEdge): void;
+  recordBulkDelete(workflowId: string, nodes: WorkflowNode[], edges: WorkflowEdge[]): void;
+  recordPasteNodes(workflowId: string, nodes: WorkflowNode[], edges: WorkflowEdge[]): void;
+  recordDuplicateNodes(workflowId: string, nodes: WorkflowNode[], edges: WorkflowEdge[]): void;
+  flushPendingOperations(): void;
+  clearUndoHistory(workflowId: string): void;
+}

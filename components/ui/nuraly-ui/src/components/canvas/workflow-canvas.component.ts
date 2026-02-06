@@ -20,7 +20,9 @@ import {
   NodeConfiguration,
   createNodeFromTemplate,
   isFrameNode,
+  type UndoProvider,
 } from './workflow-canvas.types.js';
+import type { DatabaseProvider } from './data-node/data-node.types.js';
 import { styles } from './workflow-canvas.style.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import './workflow-node.component.js';
@@ -28,6 +30,7 @@ import '../icon/icon.component.js';
 import '../input/input.component.js';
 import '../chatbot/chatbot.component.js';
 import { ChatbotCoreController } from '../chatbot/core/chatbot-core.controller.js';
+import { ChatbotSender } from '../chatbot/chatbot.types.js';
 import { WorkflowSocketProvider } from '../chatbot/providers/workflow-socket-provider.js';
 
 // Controllers
@@ -231,6 +234,34 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
+  /** Undo/redo provider injected by the host */
+  @property({ attribute: false })
+  get undoProvider(): UndoProvider | null {
+    return this.undoController?.undoProvider ?? null;
+  }
+
+  set undoProvider(provider: UndoProvider | null) {
+    if (this.undoController) {
+      this.undoController.undoProvider = provider;
+    }
+  }
+
+  /** Database introspection provider injected by the host */
+  @property({ attribute: false })
+  databaseProvider?: DatabaseProvider;
+
+  /** Application ID for database operations (host-provided) */
+  @property({ type: String })
+  applicationId: string = '';
+
+  /** KV entries for secret/connection selects (host-provided) */
+  @property({ attribute: false })
+  kvEntries: { keyPath: string; value?: any; isSecret: boolean }[] = [];
+
+  /** Callback when a KV entry needs to be created */
+  @property({ attribute: false })
+  onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void;
+
   @state()
   private viewport: CanvasViewport = { zoom: 1, panX: 0, panY: 0 };
 
@@ -256,6 +287,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private isPanning = false;
 
   @state()
+  // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
   private panStart: Position = { x: 0, y: 0 };
 
   @state()
@@ -283,6 +315,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private marqueeState: MarqueeState | null = null;
 
   @state()
+  // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
   private lastMousePosition: Position | null = null;
 
   // Chatbot preview controller and provider for CHAT_START nodes
@@ -662,7 +695,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
             // Add bot message to the chat
             this.chatPreviewController.addMessage({
               id: `bot-${Date.now()}`,
-              sender: 'bot',
+              sender: ChatbotSender.Bot,
               text: message,
               timestamp: new Date().toISOString(),
             });
@@ -1730,6 +1763,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       loadingVariables: this.loadingVariables,
       nodeExecution,
       executionId: this.currentExecutionId ?? undefined,
+      kvEntries: this.kvEntries,
+      onCreateKvEntry: this.onCreateKvEntry,
+      applicationId: this.applicationId,
+      databaseProvider: this.databaseProvider,
     });
   }
 

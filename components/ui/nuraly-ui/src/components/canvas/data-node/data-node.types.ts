@@ -5,6 +5,52 @@
  */
 
 /**
+ * Database schema information (standalone DTO — no store imports)
+ */
+export interface SchemaDTO {
+  name: string;
+  tableCount: number;
+  owner?: string;
+}
+
+/**
+ * Table information (standalone DTO — no store imports)
+ */
+export interface TableDTO {
+  name: string;
+  schema?: string;
+  type: 'table' | 'view' | 'collection';
+  rowCount?: number;
+  description?: string;
+}
+
+/**
+ * Column information (standalone DTO — no store imports)
+ */
+export interface ColumnDTO {
+  name: string;
+  type: string;
+  nullable: boolean;
+  primaryKey: boolean;
+  defaultValue?: string;
+  description?: string;
+  ordinalPosition?: number;
+  maxLength?: number;
+  precision?: number;
+  scale?: number;
+}
+
+/**
+ * Provider interface for database introspection.
+ * Host injects an implementation so the UI never makes fetch() calls.
+ */
+export interface DatabaseProvider {
+  getSchemas(connectionPath: string, applicationId: string): Promise<SchemaDTO[]>;
+  getTables(connectionPath: string, applicationId: string, schema?: string): Promise<TableDTO[]>;
+  getColumns(connectionPath: string, applicationId: string, table: string, schema?: string): Promise<ColumnDTO[]>;
+}
+
+/**
  * Data node operation types
  */
 export enum DataOperation {

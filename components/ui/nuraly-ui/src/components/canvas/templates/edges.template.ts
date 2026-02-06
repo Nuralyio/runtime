@@ -10,7 +10,6 @@ import {
   WorkflowNode,
   Position,
   ExecutionStatus,
-  WorkflowNodeType,
 } from '../workflow-canvas.types.js';
 import type { ConnectionState } from '../interfaces/index.js';
 
@@ -43,7 +42,6 @@ function getCollapsedFramePortPosition(
   const portSpacing = 16; // gap: 8px + port height 10px
 
   // Calculate vertical center position
-  const totalPortsHeight = (totalPorts - 1) * portSpacing;
   const centerY = frame.position.y + frameHeight / 2;
   const offsetY = (portIndex - (totalPorts - 1) / 2) * portSpacing;
 

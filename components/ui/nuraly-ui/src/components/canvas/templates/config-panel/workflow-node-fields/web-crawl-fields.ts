@@ -74,7 +74,7 @@ export function renderWebCrawlFields(
     <div class="config-field">
       <label>Include Patterns (Optional)</label>
       <nr-input
-        value=${(config.includePatterns || []).join(', ')}
+        value=${((config.includePatterns as string[]) || []).join(', ')}
         placeholder="/blog/.*, /docs/.*"
         @nr-input=${(e: CustomEvent) => {
           const value = e.detail.value;
@@ -88,7 +88,7 @@ export function renderWebCrawlFields(
     <div class="config-field">
       <label>Exclude Patterns (Optional)</label>
       <nr-input
-        value=${(config.excludePatterns || []).join(', ')}
+        value=${((config.excludePatterns as string[]) || []).join(', ')}
         placeholder="/login.*, /admin.*"
         @nr-input=${(e: CustomEvent) => {
           const value = e.detail.value;
@@ -102,7 +102,7 @@ export function renderWebCrawlFields(
     <div class="config-field">
       <label>Remove Selectors (Optional)</label>
       <nr-input
-        value=${(config.removeSelectors || []).join(', ')}
+        value=${((config.removeSelectors as string[]) || []).join(', ')}
         placeholder="nav, footer, .sidebar"
         @nr-input=${(e: CustomEvent) => {
           const value = e.detail.value;

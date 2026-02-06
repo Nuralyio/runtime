@@ -5,6 +5,7 @@
  */
 
 import { WorkflowNode, Workflow } from '../../workflow-canvas.types.js';
+import type { DatabaseProvider } from '../../data-node/data-node.types.js';
 
 /**
  * Callbacks for config panel interactions
@@ -66,4 +67,8 @@ export interface ConfigPanelTemplateData {
   kvEntries?: { keyPath: string; value?: any; isSecret: boolean }[];
   /** Callback when a KV entry needs to be created */
   onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void;
+  /** Application ID for database operations (host-provided) */
+  applicationId?: string;
+  /** Database introspection provider (host-provided) */
+  databaseProvider?: DatabaseProvider;
 }

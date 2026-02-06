@@ -54,7 +54,8 @@ export function renderFileStorageFields(
   onUpdate: (key: string, value: unknown) => void
 ): TemplateResult {
   const provider = config.provider || 'local';
-  const needsCredentials = provider === 's3' || provider === 'minio';
+  const providerStr = provider as string;
+  const needsCredentials = providerStr === 's3' || providerStr === 'minio';
   const testFile = config.testFile as { filename: string; contentType: string; size: number; base64: string } | undefined;
 
   return html`
@@ -135,7 +136,7 @@ export function renderFileStorageFields(
     <div class="config-field">
       <label>Metadata Fields (Optional)</label>
       <nr-input
-        value=${(config.metadataFields || []).join(', ')}
+        value=${((config.metadataFields as string[]) || []).join(', ')}
         placeholder="userId, category"
         @nr-input=${(e: CustomEvent) => {
           const value = e.detail.value;

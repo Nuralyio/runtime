@@ -7,7 +7,7 @@
 import { ReactiveControllerHost } from 'lit';
 import { BaseCanvasController } from './base.controller.js';
 import { CanvasHost } from '../interfaces/index.js';
-import { WorkflowNode, Position } from '../workflow-canvas.types.js';
+import { WorkflowNode } from '../workflow-canvas.types.js';
 
 /**
  * State for marquee selection box

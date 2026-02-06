@@ -7,7 +7,6 @@
 import {
   Workflow,
   WorkflowNode,
-  WorkflowEdge,
   NodeTemplate,
   OutputVariable,
   NODE_TEMPLATES,
@@ -80,7 +79,7 @@ export function getAvailableVariables(
  */
 export function flattenVariables(
   variables: OutputVariable[],
-  prefix = ''
+  _prefix = ''
 ): { path: string; description: string; type: string }[] {
   const result: { path: string; description: string; type: string }[] = [];
 
@@ -274,7 +273,7 @@ function extractVariablePaths(
  * Get dynamic variables from actual execution data
  */
 export function getDynamicVariablesFromOutput(
-  nodeId: string,
+  _nodeId: string,
   nodeName: string,
   nodeType: string,
   nodeConfig: any,

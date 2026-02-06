@@ -182,7 +182,7 @@ function renderAvailableVariables(
 export function renderConfigPanelTemplate(
   data: ConfigPanelTemplateData
 ): TemplateResult | typeof nothing {
-  const { node, position, callbacks, workflowId, workflow, dynamicVariables, loadingVariables, nodeExecution, executionId, kvEntries, onCreateKvEntry } = data;
+  const { node, position, callbacks, workflowId, workflow, dynamicVariables, loadingVariables, nodeExecution, executionId, kvEntries, onCreateKvEntry, applicationId, databaseProvider } = data;
 
   if (!node || !position) return nothing;
 
@@ -211,7 +211,7 @@ export function renderConfigPanelTemplate(
       </div>
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
-        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry)}
+        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider)}
         ${renderNodeExecutionData(nodeExecution, executionId, node.id, callbacks)}
         ${renderAvailableVariables(workflow, node, dynamicVariables, loadingVariables)}
       </div>
