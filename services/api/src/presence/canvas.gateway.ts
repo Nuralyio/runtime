@@ -314,7 +314,7 @@ function handleOperationApply(
 
   // Simple OT: transform against concurrent operations
   const concurrentOps = buffer.operations.filter((op) => op.version > baseVersion);
-  let transformedOp = operation;
+  let transformedOp: CanvasOperation | null = operation;
 
   for (const concurrent of concurrentOps) {
     transformedOp = transformOperation(transformedOp, concurrent);
