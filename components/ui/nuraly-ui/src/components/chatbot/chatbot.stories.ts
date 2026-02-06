@@ -2716,3 +2716,274 @@ export const InputOnlyWithFileUpload: Story = {
     `;
   }
 };
+
+/**
+ * Bug Fix: Message Whitespace Trimming
+ *
+ * This story demonstrates the fix for extra whitespace in messages.
+ * Previously, messages with leading/trailing newlines or spaces would
+ * display with extra vertical padding due to `white-space: pre-wrap`.
+ *
+ * The fix trims message text before rendering to remove unwanted whitespace
+ * while still preserving intentional line breaks within the message.
+ */
+export const WhitespaceTrimming: Story = {
+  args: {
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    boxed: true
+  },
+  render: (args) => {
+    // Messages with various whitespace issues that should be trimmed
+    const messagesWithWhitespace: ChatbotMessage[] = [
+      {
+        id: '1',
+        text: '\n\nThis message has leading newlines\n\n',
+        sender: ChatbotSender.User,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '2',
+        text: 'Bot response without extra whitespace',
+        sender: ChatbotSender.Bot,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '3',
+        text: '   This has leading and trailing spaces   ',
+        sender: ChatbotSender.User,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '4',
+        text: 'This message\nhas intentional\nline breaks\nthat should be preserved',
+        sender: ChatbotSender.Bot,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '5',
+        text: '\n\n\nMultiple newlines before and after\n\n\n',
+        sender: ChatbotSender.User,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '6',
+        text: 'Short message',
+        sender: ChatbotSender.User,
+        timestamp: new Date().toISOString()
+      }
+    ];
+
+    setTimeout(() => {
+      const chatbot = document.querySelector('#whitespace-chatbot') as any;
+      if (chatbot) {
+        chatbot.messages = messagesWithWhitespace;
+        chatbot.chatStarted = true;
+      }
+    }, 0);
+
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 24px; width: 500px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 18px;">🐛 Bug Fix: Whitespace Trimming</h3>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+            Messages with leading/trailing whitespace are now trimmed.
+            Internal line breaks are preserved.
+          </p>
+        </div>
+
+        <div style="height: 500px; border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden;">
+          <nr-chatbot
+            id="whitespace-chatbot"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${args.showSendButton}
+            .boxed=${args.boxed}
+            placeholder="Type a message..."
+          ></nr-chatbot>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Custom CSS Theming - Nexpublica Brand
+ *
+ * Demonstrates how to customize the chatbot appearance using CSS variables.
+ * Apply your brand colors by overriding the CSS custom properties.
+ */
+export const CustomCSSTheming: Story = {
+  args: {
+    size: ChatbotSize.Medium,
+    variant: ChatbotVariant.Default,
+    showSendButton: true,
+    boxed: true,
+    showThreads: true
+  },
+  render: (args) => {
+    const sampleMessages: ChatbotMessage[] = [
+      {
+        id: '1',
+        text: 'Bonjour! Comment puis-je vous aider aujourd\'hui?',
+        sender: ChatbotSender.Bot,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '2',
+        text: 'Je voudrais en savoir plus sur vos services.',
+        sender: ChatbotSender.User,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '3',
+        text: 'Bien sûr! Nexpublica offre des solutions technologiques innovantes pour le progrès de la société. Nous proposons:\n\n• Conseil en transformation digitale\n• Développement de solutions sur mesure\n• Intelligence artificielle et automatisation',
+        sender: ChatbotSender.Bot,
+        timestamp: new Date().toISOString()
+      }
+    ];
+
+    const sampleThreads = [
+      {
+        id: 'thread-1',
+        title: 'Services Nexpublica',
+        messages: sampleMessages,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'thread-2',
+        title: 'Support technique',
+        messages: [
+          {
+            id: '1',
+            text: 'Comment configurer l\'API?',
+            sender: ChatbotSender.User,
+            timestamp: new Date().toISOString()
+          }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    setTimeout(() => {
+      const chatbot = document.querySelector('#themed-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = createControllerForElement(chatbot, {
+          delay: 500,
+          streaming: true,
+          streamingSpeed: 5,
+          contextualResponses: true,
+          enableThreads: true,
+          ui: {
+            onStateChange: (state: any) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; }
+          }
+        });
+        chatbot.controller = controller;
+
+        // Initialize threads
+        controller.loadConversations(sampleThreads);
+        controller.switchThread('thread-1');
+      }
+    }, 0);
+
+    // Nexpublica brand colors
+    const nexpublicaTheme = `
+      --nuraly-color-chatbot-background: #ffffff;
+      --nuraly-color-chatbot-border: #e0e0e0;
+
+      /* User message - Pink/Magenta brand color */
+      --nuraly-color-chatbot-message-user-background: #E91E8C;
+      --nuraly-color-chatbot-message-user-text: #ffffff;
+
+      /* Bot message - Light background */
+      --nuraly-color-chatbot-message-bot-background: #f8f9fa;
+      --nuraly-color-chatbot-message-bot-text: #1A1A5E;
+
+      /* Input styling */
+      --nuraly-color-chatbot-input-background: #ffffff;
+      --nuraly-color-chatbot-input-border: #E91E8C;
+      --nuraly-color-chatbot-input-border-focus: #1A1A5E;
+      --nuraly-color-chatbot-input-text: #1A1A5E;
+      --nuraly-color-chatbot-input-placeholder: #8e8e8e;
+
+      /* Send button - Navy blue */
+      --nuraly-color-chatbot-send-button-background: #1A1A5E;
+      --nuraly-color-chatbot-send-button-background-hover: #2a2a7e;
+      --nuraly-color-chatbot-send-button-text: #ffffff;
+
+      /* Suggestions */
+      --nuraly-color-chatbot-suggestion-background: #f0e6f6;
+      --nuraly-color-chatbot-suggestion-background-hover: #e6d6f0;
+      --nuraly-color-chatbot-suggestion-text: #1A1A5E;
+      --nuraly-color-chatbot-suggestion-border: #E91E8C;
+
+      /* Accent color */
+      --nuraly-color-chatbot-accent: #E91E8C;
+
+      /* Thread sidebar */
+      --nuraly-color-chatbot-sidebar-background: #f8f9fa;
+      --nuraly-color-chatbot-sidebar-border: #e0e0e0;
+      --nuraly-color-chatbot-sidebar-text: #1A1A5E;
+      --nuraly-color-chatbot-thread-background-hover: rgba(233, 30, 140, 0.1);
+      --nuraly-color-chatbot-thread-background-active: #E91E8C;
+      --nuraly-color-chatbot-thread-text-active: #ffffff;
+      --nuraly-color-chatbot-thread-background-active-hover: #d11a7d;
+    `;
+
+    return html`
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+        <!-- Brand Header -->
+        <div style="background: linear-gradient(135deg, #1A1A5E 0%, #2a2a7e 100%); color: white; padding: 24px; border-radius: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <span style="color: #E91E8C; font-size: 32px; font-weight: bold;">›</span>
+            <span style="font-size: 24px; font-weight: bold;">nex<span style="color: #E91E8C;">publica</span></span>
+          </div>
+          <h3 style="margin: 0 0 8px 0; font-size: 16px;">Custom CSS Theming</h3>
+          <p style="margin: 0; font-size: 14px; opacity: 0.9;">
+            Customize the chatbot with your brand colors using CSS variables.
+          </p>
+        </div>
+
+        <!-- CSS Variables Reference -->
+        <details style="background: #f8f9fa; padding: 16px; border-radius: 8px; border: 1px solid #dee2e6;">
+          <summary style="cursor: pointer; font-weight: 600; color: #1A1A5E;">CSS Variables Used</summary>
+          <pre style="margin: 12px 0 0 0; padding: 12px; background: #1A1A5E; color: #f8f9fa; border-radius: 8px; font-size: 11px; overflow-x: auto; white-space: pre-wrap;">${nexpublicaTheme}</pre>
+        </details>
+
+        <!-- Themed Chatbot -->
+        <div style="height: 500px;">
+          <nr-chatbot
+            id="themed-chatbot"
+            style="${nexpublicaTheme}"
+            .size=${args.size}
+            .variant=${args.variant}
+            .showSendButton=${args.showSendButton}
+            .boxed=${args.boxed}
+            .showThreads=${args.showThreads}
+            placeholder="Écrivez votre message..."
+          ></nr-chatbot>
+        </div>
+
+        <!-- Usage Code -->
+        <div style="background: #1A1A5E; padding: 16px; border-radius: 8px;">
+          <h4 style="margin: 0 0 12px 0; color: #E91E8C; font-size: 14px;">How to Use</h4>
+          <pre style="margin: 0; color: #f8f9fa; font-size: 12px; overflow-x: auto;">&lt;nr-chatbot style="
+  --nuraly-color-chatbot-message-user-background: #E91E8C;
+  --nuraly-color-chatbot-send-button-background: #1A1A5E;
+  /* ... more variables */
+"&gt;&lt;/nr-chatbot&gt;</pre>
+        </div>
+      </div>
+    `;
+  }
+};

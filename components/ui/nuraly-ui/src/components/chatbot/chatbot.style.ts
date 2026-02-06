@@ -340,7 +340,7 @@ export default css`
   }
 
   .message__content {
-    padding: var(--nuraly-spacing-chatbot-message-padding-vertical, var(--nuraly-spacing-chatbot-message-padding)) var(--nuraly-spacing-chatbot-message-padding-horizontal, var(--nuraly-spacing-chatbot-message-padding));
+    padding: var(--nuraly-spacing-chatbot-message-padding, 8px 12px);
     border-radius: var(--nuraly-border-radius-chatbot-message, 0);
     font-size: var(--nuraly-font-size-chatbot-message);
     line-height: var(--nuraly-line-height-chatbot-message);
@@ -349,7 +349,7 @@ export default css`
     box-shadow: var(--nuraly-shadow-chatbot-message, none);
     box-sizing: border-box;
     overflow-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: normal;
     background-color: var(--nuraly-color-chatbot-message-background, transparent);
     color: var(--nuraly-color-chatbot-message-text, inherit);
     border: var(--nuraly-border-width-chatbot-message, 0) solid var(--nuraly-color-chatbot-message-border, transparent);
@@ -536,7 +536,7 @@ export default css`
     display: flex;
     align-items: center;
     gap: var(--chatbot-spacing-sm);
-    background-color: var(--chatbot-bot-message-bg);
+    background-color: var(--nuraly-color-chatbot-message-bot-background, transparent);
     /* Set indicator color (affects spinner currentColor) */
     color: var(--chatbot-loading-indicator-color, var(--nuraly-color-chatbot-accent, var(--chatbot-text-secondary)));
   }
@@ -1179,7 +1179,7 @@ export default css`
 
   /* Mode-specific styles */
   :host([data-mode='assistant']) .message.bot .message__content {
-    background: linear-gradient(135deg, var(--chatbot-bot-message-bg), var(--chatbot-surface-hover));
+    background: linear-gradient(135deg, var(--nuraly-color-chatbot-message-bot-background, transparent), var(--nuraly-color-chatbot-surface-hover, #f1f1f1));
   }
 
   :host([data-mode='assistant']) .suggestion {

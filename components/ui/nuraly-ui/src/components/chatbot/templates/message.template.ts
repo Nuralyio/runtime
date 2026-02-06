@@ -9,6 +9,7 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { msg } from '@lit/localize';
 import { ChatbotMessage, ChatbotLoadingType } from '../chatbot.types.js';
+import { formatTimestamp } from '../utils/format.js';
 
 // Import required components for template
 
@@ -93,11 +94,11 @@ export function renderMessage(
       data-id="${message.id}"
     >
       <div class="message__content" part="message-content">
-        ${isError 
-          ? renderErrorMessage(message.text) 
-          : message?.metadata?.renderAsHtml 
-            ? unsafeHTML(message.text) 
-            : message.text
+        ${isError
+          ? renderErrorMessage(message.text?.trim() ?? '')
+          : message?.metadata?.renderAsHtml
+            ? unsafeHTML(message.text?.trim() ?? '')
+            : unsafeHTML((message.text?.trim() ?? '').replace(/\n/g, '<br>'))
         }
       </div>
       ${message.files && message.files.length > 0 ? html`
@@ -144,7 +145,7 @@ export function renderMessage(
       ` : nothing}
       <div class="message__footer" part="message-footer">
         <div class="message__timestamp" part="message-timestamp">
-          ${message.timestamp}
+          ${formatTimestamp(message.timestamp)}
         </div>
         <nr-icon
           name="copy"

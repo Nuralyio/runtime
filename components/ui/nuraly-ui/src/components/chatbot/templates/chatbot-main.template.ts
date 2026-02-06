@@ -102,7 +102,7 @@ export function renderChatbotMain(
             <nr-button
               type="text"
               size="small"
-              .icon=${['bars']}
+              .icon=${['menu']}
               @click=${handlers.onToggleThreadSidebar}
               title="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
               aria-label="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
@@ -111,7 +111,7 @@ export function renderChatbotMain(
               <nr-button
                 type="text"
                 size="small"
-                .icon=${['pencil-alt']}
+                .icon=${['pencil']}
                 @click=${handlers.threadSidebar?.onCreateNew}
                 title="${msg('New conversation')}"
                 aria-label="${msg('New conversation')}"
