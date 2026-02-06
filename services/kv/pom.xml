@@ -105,7 +105,7 @@
         <dependency>
             <groupId>com.github.Nuralyio</groupId>
             <artifactId>shared-java-library</artifactId>
-            <version>10fc7fc</version>
+            <version>1.2.0</version>
         </dependency>
 
         <!-- Testing -->
