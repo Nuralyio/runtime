@@ -82,17 +82,38 @@ export enum DbDesignerNodeType {
 }
 
 /**
+ * Node types for whiteboard mode
+ */
+export enum WhiteboardNodeType {
+  STICKY_NOTE = 'WB_STICKY_NOTE',
+  SHAPE_RECTANGLE = 'WB_SHAPE_RECTANGLE',
+  SHAPE_CIRCLE = 'WB_SHAPE_CIRCLE',
+  SHAPE_DIAMOND = 'WB_SHAPE_DIAMOND',
+  SHAPE_TRIANGLE = 'WB_SHAPE_TRIANGLE',
+  SHAPE_ARROW = 'WB_SHAPE_ARROW',
+  SHAPE_LINE = 'WB_SHAPE_LINE',
+  SHAPE_STAR = 'WB_SHAPE_STAR',
+  SHAPE_HEXAGON = 'WB_SHAPE_HEXAGON',
+  TEXT_BLOCK = 'WB_TEXT_BLOCK',
+  IMAGE = 'WB_IMAGE',
+  DRAWING = 'WB_DRAWING',
+  FRAME = 'WB_FRAME',
+  VOTING = 'WB_VOTING',
+}
+
+/**
  * Canvas type to differentiate between canvas modes
  */
 export enum CanvasType {
   WORKFLOW = 'WORKFLOW',
   DATABASE = 'DATABASE',
+  WHITEBOARD = 'WHITEBOARD',
 }
 
 /**
  * Combined node type union
  */
-export type NodeType = WorkflowNodeType | AgentNodeType | DbDesignerNodeType;
+export type NodeType = WorkflowNodeType | AgentNodeType | DbDesignerNodeType | WhiteboardNodeType;
 
 /**
  * Execution status for nodes and workflows
@@ -528,6 +549,21 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [DbDesignerNodeType.RELATIONSHIP]: '#ec4899', // Pink for relationships
   [DbDesignerNodeType.CONSTRAINT]: '#ef4444', // Red for constraints
   [DbDesignerNodeType.QUERY]: '#06b6d4', // Cyan for queries
+  // Whiteboard nodes
+  [WhiteboardNodeType.STICKY_NOTE]: '#fef08a',
+  [WhiteboardNodeType.SHAPE_RECTANGLE]: '#3b82f6',
+  [WhiteboardNodeType.SHAPE_CIRCLE]: '#8b5cf6',
+  [WhiteboardNodeType.SHAPE_DIAMOND]: '#f59e0b',
+  [WhiteboardNodeType.SHAPE_TRIANGLE]: '#22c55e',
+  [WhiteboardNodeType.SHAPE_ARROW]: '#6b7280',
+  [WhiteboardNodeType.SHAPE_LINE]: '#6b7280',
+  [WhiteboardNodeType.SHAPE_STAR]: '#f97316',
+  [WhiteboardNodeType.SHAPE_HEXAGON]: '#ec4899',
+  [WhiteboardNodeType.TEXT_BLOCK]: '#111827',
+  [WhiteboardNodeType.IMAGE]: '#06b6d4',
+  [WhiteboardNodeType.DRAWING]: '#14b8a6',
+  [WhiteboardNodeType.FRAME]: '#6366f1',
+  [WhiteboardNodeType.VOTING]: '#ef4444',
 };
 
 /**
@@ -592,6 +628,21 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [DbDesignerNodeType.RELATIONSHIP]: 'git-merge',
   [DbDesignerNodeType.CONSTRAINT]: 'shield',
   [DbDesignerNodeType.QUERY]: 'terminal',
+  // Whiteboard nodes
+  [WhiteboardNodeType.STICKY_NOTE]: 'sticky-note',
+  [WhiteboardNodeType.SHAPE_RECTANGLE]: 'square',
+  [WhiteboardNodeType.SHAPE_CIRCLE]: 'circle',
+  [WhiteboardNodeType.SHAPE_DIAMOND]: 'diamond',
+  [WhiteboardNodeType.SHAPE_TRIANGLE]: 'triangle',
+  [WhiteboardNodeType.SHAPE_ARROW]: 'arrow-right',
+  [WhiteboardNodeType.SHAPE_LINE]: 'minus',
+  [WhiteboardNodeType.SHAPE_STAR]: 'star',
+  [WhiteboardNodeType.SHAPE_HEXAGON]: 'hexagon',
+  [WhiteboardNodeType.TEXT_BLOCK]: 'type',
+  [WhiteboardNodeType.IMAGE]: 'image',
+  [WhiteboardNodeType.DRAWING]: 'pen-tool',
+  [WhiteboardNodeType.FRAME]: 'frame',
+  [WhiteboardNodeType.VOTING]: 'thumbs-up',
 };
 
 /**
@@ -1513,6 +1564,213 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [{ id: 'result', type: PortType.OUTPUT, label: 'Result Schema' }],
     },
   },
+  // Whiteboard nodes
+  {
+    type: WhiteboardNodeType.STICKY_NOTE,
+    name: 'Sticky Note',
+    description: 'Add a sticky note to the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.STICKY_NOTE],
+    color: NODE_COLORS[WhiteboardNodeType.STICKY_NOTE],
+    category: 'wb-notes-text',
+    defaultConfig: {
+      textContent: '',
+      backgroundColor: '#fef08a',
+      textColor: '#713f12',
+      fontSize: 14,
+      width: 200,
+      height: 200,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.TEXT_BLOCK,
+    name: 'Text Block',
+    description: 'Add a text block to the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.TEXT_BLOCK],
+    color: NODE_COLORS[WhiteboardNodeType.TEXT_BLOCK],
+    category: 'wb-notes-text',
+    defaultConfig: {
+      textContent: '',
+      fontSize: 16,
+      fontWeight: 'normal',
+      textAlign: 'left',
+      width: 200,
+      height: 50,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_RECTANGLE,
+    name: 'Rectangle',
+    description: 'Add a rectangle shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_RECTANGLE],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_RECTANGLE],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#3b82f6' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_CIRCLE,
+    name: 'Circle',
+    description: 'Add a circle shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_CIRCLE],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_CIRCLE],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#8b5cf6' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_DIAMOND,
+    name: 'Diamond',
+    description: 'Add a diamond shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_DIAMOND],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_DIAMOND],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#f59e0b' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_TRIANGLE,
+    name: 'Triangle',
+    description: 'Add a triangle shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_TRIANGLE],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_TRIANGLE],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#22c55e' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_ARROW,
+    name: 'Arrow',
+    description: 'Add an arrow shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_ARROW],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_ARROW],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 60, fillColor: '#6b7280' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_LINE,
+    name: 'Line',
+    description: 'Add a line shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_LINE],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_LINE],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 4, fillColor: '#6b7280' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_STAR,
+    name: 'Star',
+    description: 'Add a star shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_STAR],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_STAR],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#f97316' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.SHAPE_HEXAGON,
+    name: 'Hexagon',
+    description: 'Add a hexagon shape',
+    icon: NODE_ICONS[WhiteboardNodeType.SHAPE_HEXAGON],
+    color: NODE_COLORS[WhiteboardNodeType.SHAPE_HEXAGON],
+    category: 'wb-shapes',
+    defaultConfig: { width: 120, height: 120, fillColor: '#ec4899' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.IMAGE,
+    name: 'Image',
+    description: 'Add an image to the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.IMAGE],
+    color: NODE_COLORS[WhiteboardNodeType.IMAGE],
+    category: 'wb-media',
+    defaultConfig: { imageUrl: '', width: 200, height: 200 },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.DRAWING,
+    name: 'Drawing',
+    description: 'Add a freehand drawing area',
+    icon: NODE_ICONS[WhiteboardNodeType.DRAWING],
+    color: NODE_COLORS[WhiteboardNodeType.DRAWING],
+    category: 'wb-media',
+    defaultConfig: { pathData: '', width: 200, height: 200 },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.VOTING,
+    name: 'Voting',
+    description: 'Add a voting element for collaboration',
+    icon: NODE_ICONS[WhiteboardNodeType.VOTING],
+    color: NODE_COLORS[WhiteboardNodeType.VOTING],
+    category: 'wb-media',
+    defaultConfig: { textContent: 'Vote', width: 200, height: 150 },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.FRAME,
+    name: 'Frame',
+    description: 'Group whiteboard elements together',
+    icon: NODE_ICONS[WhiteboardNodeType.FRAME],
+    color: NODE_COLORS[WhiteboardNodeType.FRAME],
+    category: 'wb-layout',
+    defaultConfig: {
+      frameLabel: 'Group',
+      frameWidth: 400,
+      frameHeight: 300,
+      frameBackgroundColor: 'rgba(99, 102, 241, 0.05)',
+      frameBorderColor: 'rgba(99, 102, 241, 0.3)',
+      frameLabelPosition: 'top-left',
+      frameLabelPlacement: 'outside',
+      frameShowLabel: true,
+      frameCollapsed: false,
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [],
+    },
+  },
 ];
 
 /**
@@ -1674,6 +1932,44 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     ],
     canvasType: CanvasType.DATABASE,
   },
+  // Whiteboard mode categories
+  {
+    id: 'wb-notes-text',
+    name: 'Notes & Text',
+    icon: 'sticky-note',
+    nodeTypes: [WhiteboardNodeType.STICKY_NOTE, WhiteboardNodeType.TEXT_BLOCK],
+    canvasType: CanvasType.WHITEBOARD,
+  },
+  {
+    id: 'wb-shapes',
+    name: 'Shapes',
+    icon: 'square',
+    nodeTypes: [
+      WhiteboardNodeType.SHAPE_RECTANGLE,
+      WhiteboardNodeType.SHAPE_CIRCLE,
+      WhiteboardNodeType.SHAPE_DIAMOND,
+      WhiteboardNodeType.SHAPE_TRIANGLE,
+      WhiteboardNodeType.SHAPE_ARROW,
+      WhiteboardNodeType.SHAPE_LINE,
+      WhiteboardNodeType.SHAPE_STAR,
+      WhiteboardNodeType.SHAPE_HEXAGON,
+    ],
+    canvasType: CanvasType.WHITEBOARD,
+  },
+  {
+    id: 'wb-media',
+    name: 'Media & Interactive',
+    icon: 'image',
+    nodeTypes: [WhiteboardNodeType.IMAGE, WhiteboardNodeType.DRAWING, WhiteboardNodeType.VOTING],
+    canvasType: CanvasType.WHITEBOARD,
+  },
+  {
+    id: 'wb-layout',
+    name: 'Layout',
+    icon: 'frame',
+    nodeTypes: [WhiteboardNodeType.FRAME],
+    canvasType: CanvasType.WHITEBOARD,
+  },
 ];
 
 /**
@@ -1702,6 +1998,13 @@ export function isWorkflowNode(type: NodeType): boolean {
  */
 export function isDbDesignerNode(type: NodeType): boolean {
   return Object.values(DbDesignerNodeType).includes(type as DbDesignerNodeType);
+}
+
+/**
+ * Helper to check if node type is a whiteboard node
+ */
+export function isWhiteboardNode(type: NodeType): boolean {
+  return Object.values(WhiteboardNodeType).includes(type as WhiteboardNodeType);
 }
 
 /**

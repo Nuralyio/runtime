@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html } from 'lit';
+import { LitElement, html, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
@@ -20,6 +20,8 @@ import {
   NodeConfiguration,
   createNodeFromTemplate,
   isFrameNode,
+  isWhiteboardNode,
+  WhiteboardNodeType,
   type UndoProvider,
 } from './workflow-canvas.types.js';
 import type { DatabaseProvider } from './data-node/data-node.types.js';
@@ -315,6 +317,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private marqueeState: MarqueeState | null = null;
 
   @state()
+  private _wbActiveColorPicker: 'fill' | 'text' | null = null;
+
+  @state()
   // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
   private lastMousePosition: Position | null = null;
 
@@ -507,6 +512,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleCanvasMouseDown = (e: MouseEvent) => {
     if (this.disabled) return;
+    // Close any open whiteboard color picker
+    if (this._wbActiveColorPicker) this._wbActiveColorPicker = null;
     const target = e.target as HTMLElement;
     const isCanvasBackground = target.classList.contains('canvas-grid') || target.classList.contains('canvas-wrapper');
 
@@ -590,19 +597,25 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (this.disabled) return;
     const { node } = e.detail;
 
-    // For NOTE nodes, enter inline edit mode instead of opening config panel
-    if (node.type === WorkflowNodeType.NOTE) {
+    // For NOTE nodes and whiteboard text nodes, enter inline edit mode instead of opening config panel
+    if (node.type === WorkflowNodeType.NOTE || node.type === 'WB_STICKY_NOTE' || node.type === 'WB_TEXT_BLOCK') {
       if (this.readonly) return;
       this.editingNoteId = node.id;
       // Focus the textarea after render
       this.updateComplete.then(() => {
         const nodeEl = this.shadowRoot?.querySelector(`workflow-node[data-node-id="${node.id}"]`);
-        const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea') as HTMLTextAreaElement;
+        const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea, .wb-textarea') as HTMLTextAreaElement;
         if (textarea) {
           textarea.focus();
           textarea.select();
         }
       });
+      return;
+    }
+
+    // For all other whiteboard nodes, open config panel but skip workflow variable fetch
+    if (isWhiteboardNode(node.type)) {
+      this.configuredNode = node;
       return;
     }
 
@@ -1507,13 +1520,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   private handleNoteContentChange(e: CustomEvent) {
     const { node, content } = e.detail;
+    // Whiteboard nodes use 'textContent', workflow notes use 'noteContent'
+    const configKey = isWhiteboardNode(node.type) ? 'textContent' : 'noteContent';
     const updatedNodes = this.workflow.nodes.map(n => {
       if (n.id === node.id) {
         return {
           ...n,
           configuration: {
             ...n.configuration,
-            noteContent: content,
+            [configKey]: content,
           },
         };
       }
@@ -1670,6 +1685,224 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       onNodeDoubleClick: (type) => this.addNode(type),
       onSearchChange: (term) => { this.paletteSearchTerm = term; },
     });
+  }
+
+  // ==================== Whiteboard Floating Toolbar ====================
+
+  private getSelectedWhiteboardNode(): WorkflowNode | null {
+    if (this.canvasType !== CanvasType.WHITEBOARD) return null;
+    if (this.selectedNodeIds.size !== 1) return null;
+    const nodeId = Array.from(this.selectedNodeIds)[0];
+    const node = this.workflow?.nodes.find(n => n.id === nodeId);
+    if (!node || !isWhiteboardNode(node.type)) return null;
+    return node;
+  }
+
+  private getNodeScreenPosition(node: WorkflowNode): { x: number; y: number } {
+    const config = node.configuration || {};
+    const width = (config.width as number) || 200;
+    const x = (node.position.x + width / 2) * this.viewport.zoom + this.viewport.panX;
+    const y = node.position.y * this.viewport.zoom + this.viewport.panY;
+    return { x, y };
+  }
+
+  private wbHasText(node: WorkflowNode): boolean {
+    return node.type === WhiteboardNodeType.STICKY_NOTE ||
+           node.type === WhiteboardNodeType.TEXT_BLOCK ||
+           node.type === WhiteboardNodeType.VOTING;
+  }
+
+  private wbHasFill(node: WorkflowNode): boolean {
+    return node.type !== WhiteboardNodeType.DRAWING &&
+           node.type !== WhiteboardNodeType.SHAPE_LINE &&
+           node.type !== WhiteboardNodeType.SHAPE_ARROW;
+  }
+
+  private handleWbToolbarAction(nodeId: string, key: string, value: unknown) {
+    const updatedNodes = this.workflow.nodes.map(n => {
+      if (n.id === nodeId) {
+        return {
+          ...n,
+          configuration: { ...n.configuration, [key]: value },
+        };
+      }
+      return n;
+    });
+    this.setWorkflow({ ...this.workflow, nodes: updatedNodes });
+    this.dispatchWorkflowChanged();
+  }
+
+  private handleWbDeleteNode(nodeId: string) {
+    this.selectionController.deleteSelected();
+  }
+
+  private _handleWbColorHolderClick(type: 'fill' | 'text', e: MouseEvent) {
+    e.stopPropagation();
+    this._wbActiveColorPicker = this._wbActiveColorPicker === type ? null : type;
+  }
+
+  private renderWbFloatingToolbar() {
+    const node = this.getSelectedWhiteboardNode();
+    if (!node || this.readonly || this.editingNoteId) {
+      if (this._wbActiveColorPicker) this._wbActiveColorPicker = null;
+      return nothing;
+    }
+
+    const pos = this.getNodeScreenPosition(node);
+    const hasText = this.wbHasText(node);
+    const hasFill = this.wbHasFill(node);
+    const config = node.configuration || {};
+
+    const nodeWidth = ((config.width as number) || 200) * this.viewport.zoom;
+    const toolbarStyles = {
+      left: `${pos.x + nodeWidth / 2}px`,
+      top: `${pos.y - 52}px`,
+    };
+
+    const fontFamilyOptions = [
+      { value: 'Inter, sans-serif', label: 'Inter' },
+      { value: 'Arial, sans-serif', label: 'Arial' },
+      { value: 'Georgia, serif', label: 'Georgia' },
+      { value: 'Courier New, monospace', label: 'Courier New' },
+      { value: 'Comic Sans MS, cursive', label: 'Comic Sans' },
+      { value: 'Verdana, sans-serif', label: 'Verdana' },
+    ];
+
+    // Color picker panel rendered OUTSIDE the toolbar (no transform ancestor)
+    const renderColorPicker = () => {
+      if (!this._wbActiveColorPicker) return nothing;
+      const holderEl = this.shadowRoot?.querySelector(
+        `.wb-color-trigger-${this._wbActiveColorPicker}`
+      ) as HTMLElement;
+      if (!holderEl) return nothing;
+
+      const rect = holderEl.getBoundingClientRect();
+      const canvasRect = this.getBoundingClientRect();
+      const pickerStyles = {
+        left: `${rect.left - canvasRect.left}px`,
+        top: `${rect.bottom - canvasRect.top + 6}px`,
+      };
+
+      const isFill = this._wbActiveColorPicker === 'fill';
+      const currentColor = isFill
+        ? (config.backgroundColor || config.fillColor || '#fef08a')
+        : (config.textColor || '#1a1a1a');
+      const presets = isFill
+        ? ['#fef08a', '#bbf7d0', '#bfdbfe', '#fecaca', '#e9d5ff', '#fed7aa', '#ffffff', '#f3f4f6']
+        : ['#1a1a1a', '#374151', '#713f12', '#1e3a5f', '#7f1d1d', '#4c1d95', '#ffffff'];
+      const configKey = isFill ? 'backgroundColor' : 'textColor';
+
+      return html`
+        <div class="wb-color-picker-panel" style=${styleMap(pickerStyles)} @mousedown=${(e: MouseEvent) => e.stopPropagation()}>
+          <div class="wb-picker-presets">
+            ${presets.map(c => html`
+              <button
+                class="wb-picker-swatch ${currentColor === c ? 'active' : ''}"
+                style="background: ${c};"
+                @click=${() => this.handleWbToolbarAction(node.id, configKey, c)}
+              ></button>
+            `)}
+          </div>
+          <div class="wb-picker-custom">
+            <input
+              type="color"
+              class="wb-picker-native"
+              .value=${currentColor}
+              @input=${(e: Event) => this.handleWbToolbarAction(node.id, configKey, (e.target as HTMLInputElement).value)}
+            />
+            <nr-input
+              type="text"
+              size="small"
+              variant="outlined"
+              .value=${currentColor}
+              placeholder="#hex"
+              style="flex: 1;"
+              @nr-input=${(e: CustomEvent) => {
+                const val = (e.target as any).value;
+                if (val && CSS.supports('color', val)) {
+                  this.handleWbToolbarAction(node.id, configKey, val);
+                }
+              }}
+            ></nr-input>
+          </div>
+        </div>
+      `;
+    };
+
+    return html`
+      <div class="wb-floating-toolbar" style=${styleMap(toolbarStyles)} @mousedown=${(e: MouseEvent) => e.stopPropagation()}>
+        ${hasFill ? html`
+          <div class="wb-toolbar-group">
+            <label class="wb-toolbar-label">Fill</label>
+            <nr-colorholder-box
+              class="wb-color-trigger-fill"
+              .color=${config.backgroundColor || config.fillColor || '#fef08a'}
+              size="small"
+              @click=${(e: MouseEvent) => this._handleWbColorHolderClick('fill', e)}
+            ></nr-colorholder-box>
+          </div>
+        ` : nothing}
+
+        ${hasText ? html`
+          <div class="wb-toolbar-divider"></div>
+          <div class="wb-toolbar-group">
+            <label class="wb-toolbar-label">Text</label>
+            <nr-colorholder-box
+              class="wb-color-trigger-text"
+              .color=${config.textColor || '#1a1a1a'}
+              size="small"
+              @click=${(e: MouseEvent) => this._handleWbColorHolderClick('text', e)}
+            ></nr-colorholder-box>
+          </div>
+          <div class="wb-toolbar-divider"></div>
+          <div class="wb-toolbar-group">
+            <label class="wb-toolbar-label">Size</label>
+            <nr-input
+              type="number"
+              size="small"
+              variant="outlined"
+              .value=${String(config.fontSize || 14)}
+              min="8"
+              max="120"
+              step="1"
+              style="width: 80px;"
+              @nr-input=${(e: CustomEvent) => {
+                const val = parseInt((e.target as any).value, 10);
+                if (!isNaN(val) && val > 0) {
+                  this.handleWbToolbarAction(node.id, 'fontSize', val);
+                }
+              }}
+            ></nr-input>
+          </div>
+          <div class="wb-toolbar-divider"></div>
+          <div class="wb-toolbar-group">
+            <label class="wb-toolbar-label">Font</label>
+            <nr-select
+              size="small"
+              .options=${fontFamilyOptions}
+              .value=${config.fontFamily || 'Inter, sans-serif'}
+              placeholder="Font"
+              style="width: 130px;"
+              @nr-change=${(e: CustomEvent) => {
+                const select = e.target as any;
+                const selected = select.value;
+                if (selected) {
+                  this.handleWbToolbarAction(node.id, 'fontFamily', selected);
+                }
+              }}
+            ></nr-select>
+          </div>
+        ` : nothing}
+
+        <div class="wb-toolbar-divider"></div>
+        <div class="wb-toolbar-group">
+          <button class="wb-toolbar-btn danger" title="Delete" @click=${() => this.handleWbDeleteNode(node.id)}>
+            <nr-icon name="trash-2" size="small"></nr-icon>
+          </button>
+        </div>
+      </div>
+      ${renderColorPicker()}
+    `;
   }
 
   private renderContextMenu() {
@@ -2090,6 +2323,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         ${this.renderMarqueeBox()}
         ${this.renderEmptyState()}
         ${this.renderDisabledOverlay()}
+        ${this.renderWbFloatingToolbar()}
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}
