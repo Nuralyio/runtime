@@ -1,66 +1,9 @@
 import { map } from "nanostores";
+import * as kvService from "../../../../services/kv/kv.service";
 
-/**
- * KV Value types (auto-detected, but exposed for reference)
- */
-export type KvValueType = 'STRING' | 'JSON' | 'NUMBER' | 'BOOLEAN' | 'BINARY';
-
-/**
- * KV Entry interface - flat structure without namespaces
- */
-export interface KvEntry {
-  id: string;
-  applicationId: string;
-  scope?: string;
-  scopedResourceId?: string;
-  keyPath: string;
-  value: any;
-  valueType: KvValueType;
-  isSecret: boolean;
-  isEncrypted: boolean;
-  version: number;
-  expiresAt?: string;
-  metadata?: string;
-  createdBy?: string;
-  updatedBy?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-/**
- * KV Entry Version (for secret history)
- */
-export interface KvEntryVersion {
-  id: string;
-  entryId: string;
-  version: number;
-  changeReason: string;
-  changedBy?: string;
-  createdAt: string;
-}
-
-/**
- * Options for fetching KV entries
- */
-export interface FetchEntriesOptions {
-  scope?: string;
-  scopedResourceId?: string;
-  prefix?: string;
-}
-
-/**
- * Request to set an entry
- */
-export interface SetEntryRequest {
-  applicationId: string;
-  scope?: string;
-  scopedResourceId?: string;
-  value: any;
-  isSecret?: boolean;
-  ttlSeconds?: number;
-  metadata?: string;
-  expectedVersion?: number;
-}
+// Re-export types from the service layer — single source of truth
+export type { KvValueType, KvEntry, KvEntryVersion, FetchEntriesOptions, SetEntryRequest } from "../../../../services/kv/kv.types";
+import type { KvEntry, FetchEntriesOptions, SetEntryRequest, KvEntryVersion } from "../../../../services/kv/kv.types";
 
 /**
  * KV Data structure for cache
@@ -103,75 +46,22 @@ function buildCacheKey(appId: string, options?: FetchEntriesOptions): string {
   return parts.join(':');
 }
 
+// ============================================
+// Delegating functions (cache + service calls)
+// ============================================
+
 /**
  * Fetch all entries from API (without applicationId filter)
  */
 export async function getAllKvEntries(prefix?: string): Promise<KvEntry[] | null> {
-  try {
-    const params = new URLSearchParams();
-    if (prefix) {
-      params.append('prefix', prefix);
-    }
-    const queryString = params.toString();
-    const response = await fetch(`/api/v1/kv/entries${queryString ? `?${queryString}` : ''}`, {
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch all entries');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch all KV entries:', error);
-    return null;
-  }
-}
-
-/**
- * Fetch entries from API
- */
-async function fetchEntriesFromAPI(appId: string, options?: FetchEntriesOptions): Promise<KvEntry[] | null> {
-  try {
-    const params = new URLSearchParams({ applicationId: appId });
-    if (options?.scope) {
-      params.append('scope', options.scope);
-    }
-    if (options?.scopedResourceId) {
-      params.append('scopedResourceId', options.scopedResourceId);
-    }
-    if (options?.prefix) {
-      params.append('prefix', options.prefix);
-    }
-    const response = await fetch(`/api/v1/kv/entries?${params.toString()}`, {
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch entries');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch KV entries:', error);
-    return null;
-  }
+  return kvService.getAllKvEntries(prefix);
 }
 
 /**
  * Get a single entry from API
  */
 export async function getKvEntry(appId: string, keyPath: string): Promise<KvEntry | null> {
-  try {
-    const params = new URLSearchParams({ applicationId: appId });
-    const response = await fetch(`/api/v1/kv/entries/${encodeURIComponent(keyPath)}?${params.toString()}`, {
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      if (response.status === 404) return null;
-      throw new Error('Failed to fetch entry');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch KV entry:', error);
-    return null;
-  }
+  return kvService.fetchEntry(appId, keyPath);
 }
 
 /**
@@ -209,8 +99,8 @@ export async function getKvEntries(
     timestamp: now
   });
 
-  // Create the fetch promise
-  const fetchPromise = fetchEntriesFromAPI(appId, options)
+  // Create the fetch promise — delegates to service
+  const fetchPromise = kvService.fetchEntries(appId, options)
     .then((entries) => {
       const currentCache = $kvCache.get();
       const currentData = currentCache[cacheKey] || { entries: [] };
@@ -236,89 +126,45 @@ export async function getKvEntries(
  * Set an entry value
  */
 export async function setKvEntry(keyPath: string, request: SetEntryRequest): Promise<KvEntry | null> {
-  try {
-    const response = await fetch(`/api/v1/kv/entries/${encodeURIComponent(keyPath)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(request)
-    });
-    if (!response.ok) {
-      throw new Error('Failed to set entry');
-    }
-    // Invalidate cache for this app
+  const result = await kvService.setEntry(keyPath, request);
+  if (result) {
     invalidateKvCache(request.applicationId);
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to set KV entry:', error);
-    return null;
   }
+  return result;
 }
 
 /**
  * Delete an entry
  */
 export async function deleteKvEntry(appId: string, keyPath: string): Promise<boolean> {
-  try {
-    const params = new URLSearchParams({ applicationId: appId });
-    const response = await fetch(`/api/v1/kv/entries/${encodeURIComponent(keyPath)}?${params.toString()}`, {
-      method: 'DELETE',
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error('Failed to delete entry');
-    }
-    // Invalidate cache
+  const result = await kvService.deleteEntry(appId, keyPath);
+  if (result) {
     invalidateKvCache(appId);
-    return true;
-  } catch (error) {
-    console.error('Failed to delete KV entry:', error);
-    return false;
   }
+  return result;
 }
 
 /**
  * Rotate a secret value
  */
 export async function rotateKvSecret(appId: string, keyPath: string, newValue: any): Promise<KvEntry | null> {
-  try {
-    const params = new URLSearchParams({ applicationId: appId });
-    const response = await fetch(`/api/v1/kv/entries/${encodeURIComponent(keyPath)}/rotate?${params.toString()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ value: newValue })
-    });
-    if (!response.ok) {
-      throw new Error('Failed to rotate secret');
-    }
-    // Invalidate cache
+  const result = await kvService.rotateSecret(appId, keyPath, newValue);
+  if (result) {
     invalidateKvCache(appId);
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to rotate KV secret:', error);
-    return null;
   }
+  return result;
 }
 
 /**
  * Get version history for an entry
  */
 export async function getKvVersionHistory(appId: string, keyPath: string): Promise<KvEntryVersion[] | null> {
-  try {
-    const params = new URLSearchParams({ applicationId: appId });
-    const response = await fetch(`/api/v1/kv/entries/${encodeURIComponent(keyPath)}/versions?${params.toString()}`, {
-      credentials: 'include'
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch version history');
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch KV version history:', error);
-    return null;
-  }
+  return kvService.getVersionHistory(appId, keyPath);
 }
+
+// ============================================
+// Cache operations (stay in the store)
+// ============================================
 
 /**
  * Invalidate KV cache for a specific app
@@ -386,91 +232,17 @@ export function closeKvModal(): void {
 }
 
 // ============================================
-// User Preferences API (no applicationId needed)
+// User Preferences API — delegates to service
 // ============================================
 
-/**
- * System application ID for global user preferences
- */
-const SYSTEM_APP_ID = '_system';
-
-/**
- * Prefix for user preference keys
- */
-const USER_PREFERENCES_PREFIX = 'user-preferences';
-
-/**
- * Get a user preference entry from KV
- * Uses scope='user' so each user has their own preferences
- */
 export async function getUserPreference<T = any>(keyPath: string): Promise<T | null> {
-  try {
-    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
-    const response = await fetch(
-      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}?applicationId=${SYSTEM_APP_ID}&scope=user`,
-      { credentials: 'include' }
-    );
-    if (!response.ok) {
-      if (response.status === 404) return null;
-      throw new Error('Failed to fetch user preference');
-    }
-    const entry = await response.json();
-    return entry?.value ?? null;
-  } catch (error) {
-    console.error('Failed to get user preference:', error);
-    return null;
-  }
+  return kvService.getUserPreference<T>(keyPath);
 }
 
-/**
- * Set a user preference entry in KV
- * Uses scope='user' so each user has their own preferences
- */
 export async function setUserPreference<T = any>(keyPath: string, value: T): Promise<boolean> {
-  try {
-    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
-    const response = await fetch(
-      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}`,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          applicationId: SYSTEM_APP_ID,
-          scope: 'user',
-          value,
-        }),
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to set user preference');
-    }
-    return true;
-  } catch (error) {
-    console.error('Failed to set user preference:', error);
-    return false;
-  }
+  return kvService.setUserPreference(keyPath, value);
 }
 
-/**
- * Delete a user preference entry from KV
- */
 export async function deleteUserPreference(keyPath: string): Promise<boolean> {
-  try {
-    const fullKeyPath = `${USER_PREFERENCES_PREFIX}/${keyPath}`;
-    const response = await fetch(
-      `/api/v1/kv/entries/${encodeURIComponent(fullKeyPath)}?applicationId=${SYSTEM_APP_ID}&scope=user`,
-      {
-        method: 'DELETE',
-        credentials: 'include',
-      }
-    );
-    if (!response.ok && response.status !== 404) {
-      throw new Error('Failed to delete user preference');
-    }
-    return true;
-  } catch (error) {
-    console.error('Failed to delete user preference:', error);
-    return false;
-  }
+  return kvService.deleteUserPreference(keyPath);
 }
