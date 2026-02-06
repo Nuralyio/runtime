@@ -179,6 +179,14 @@ export class NrDataNodeConfig extends LitElement {
   @property({ type: Object })
   config: Partial<DataNodeConfiguration> = {};
 
+  /** KV entries for connection selects (host-provided) */
+  @property({ attribute: false })
+  kvEntries: { keyPath: string; value?: any; isSecret: boolean }[] = [];
+
+  /** Callback when a KV entry needs to be created */
+  @property({ attribute: false })
+  onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void;
+
   @state() private columns: ColumnDTO[] = [];
   @state() private loadingColumns = false;
 
@@ -276,14 +284,18 @@ export class NrDataNodeConfig extends LitElement {
       `;
     }
 
+    const dbEntries = this.kvEntries.filter(e => e.keyPath.startsWith(`${dbType}/`));
+
     return html`
       <div class="config-field">
         <label>Connection</label>
         <nr-db-connection-select
           .dbType=${dbType}
+          .entries=${dbEntries}
           .value=${this.config.connectionPath || ''}
           placeholder="Select or create connection..."
           @value-change=${(e: CustomEvent) => this.onUpdate('connectionPath', e.detail.value)}
+          @create-entry=${(e: CustomEvent) => this.onCreateKvEntry?.(e.detail)}
         ></nr-db-connection-select>
       </div>
     `;

@@ -6,8 +6,6 @@
 
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
-import { getKvEntry } from '../../../../../../../../../../redux/store/kv.js';
-import { getVarValue } from '../../../../../../../../../../redux/store/context.js';
 
 interface OllamaModel {
   name: string;
@@ -134,9 +132,9 @@ export class NrOllamaModelSelect extends LitElement {
     }
   `;
 
-  /** KV path to the server URL */
+  /** Resolved server URL (host resolves KV lookup and passes URL directly) */
   @property({ type: String })
-  serverUrlPath: string = '';
+  serverUrl: string = 'http://localhost:11434';
 
   /** Currently selected model */
   @property({ type: String })
@@ -149,47 +147,16 @@ export class NrOllamaModelSelect extends LitElement {
   @state() private models: OllamaModel[] = [];
   @state() private loading = false;
   @state() private error = '';
-  @state() private serverUrl = '';
-
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.resolveServerUrlAndFetch();
+    this.fetchModels();
   }
 
   override updated(changedProperties: Map<string, unknown>): void {
-    if (changedProperties.has('serverUrlPath')) {
-      this.resolveServerUrlAndFetch();
+    if (changedProperties.has('serverUrl')) {
+      this.fetchModels();
     }
-  }
-
-  private async resolveServerUrlAndFetch(): Promise<void> {
-    if (!this.serverUrlPath) {
-      // Use default Ollama URL if no path provided
-      this.serverUrl = 'http://localhost:11434';
-      await this.fetchModels();
-      return;
-    }
-
-    const appId = this.getAppId();
-    if (!appId) {
-      this.serverUrl = 'http://localhost:11434';
-      await this.fetchModels();
-      return;
-    }
-
-    try {
-      const entry = await getKvEntry(appId, this.serverUrlPath);
-      this.serverUrl = entry?.value || 'http://localhost:11434';
-    } catch {
-      this.serverUrl = 'http://localhost:11434';
-    }
-
-    await this.fetchModels();
   }
 
   private async fetchModels(): Promise<void> {
@@ -244,7 +211,7 @@ export class NrOllamaModelSelect extends LitElement {
   }
 
   private handleRefresh(): void {
-    this.resolveServerUrlAndFetch();
+    this.fetchModels();
   }
 
   private formatSize(bytes: number): string {

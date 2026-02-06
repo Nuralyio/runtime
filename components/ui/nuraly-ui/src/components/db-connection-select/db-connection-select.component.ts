@@ -6,27 +6,44 @@
 
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
-import { getKvEntries, setKvEntry, type KvEntry } from '../../../../../../redux/store/kv.js';
-import { getVarValue } from '../../../../../../redux/store/context.js';
-import { testConnection } from '../../../../../../redux/store/database.js';
 import type { DatabaseType } from '../canvas/data-node/data-node.types.js';
+
+/**
+ * Minimal KV entry shape this component needs.
+ */
+export interface KvConnectionEntry {
+  keyPath: string;
+  value?: any;
+  isSecret: boolean;
+}
 
 /**
  * Database Connection Select Component
  *
- * A select component for choosing database connections from KV store, filtered by database type.
+ * A select component for choosing database connections.
  * Includes inline creation of new connections with connection testing.
+ *
+ * Data-in / events-out:
+ * - Host provides `entries`, `loading`, and `testResult`
+ * - Component fires `create-entry` when the user submits the create form
+ * - Component fires `test-connection` when the user clicks test
+ * - Component fires `value-change` when the selection changes
  *
  * @example
  * ```html
  * <nr-db-connection-select
  *   dbType="postgresql"
+ *   .entries=${connectionEntries}
  *   value="postgresql/my-db"
  *   @value-change=${(e) => console.log(e.detail.value)}
+ *   @create-entry=${(e) => handleCreate(e.detail)}
+ *   @test-connection=${(e) => handleTest(e.detail)}
  * ></nr-db-connection-select>
  * ```
  *
  * @fires value-change - Fired when selection changes
+ * @fires create-entry - Fired when user submits the create form
+ * @fires test-connection - Fired when user clicks Test Connection
  */
 @customElement('nr-db-connection-select')
 export class NrDbConnectionSelect extends LitElement {
@@ -217,13 +234,22 @@ export class NrDbConnectionSelect extends LitElement {
   @property({ type: String })
   placeholder: string = 'Select database connection...';
 
-  @state() private entries: KvEntry[] = [];
-  @state() private loading = false;
+  /** Entries provided by the host */
+  @property({ attribute: false })
+  entries: KvConnectionEntry[] = [];
+
+  /** Loading state provided by the host */
+  @property({ type: Boolean })
+  loading = false;
+
+  /** Test result pushed by the host */
+  @property({ attribute: false })
+  testResult: { success: boolean; message: string } | null = null;
+
   @state() private showCreateForm = false;
   @state() private creating = false;
   @state() private testing = false;
   @state() private error = '';
-  @state() private testResult: { success: boolean; message: string } | null = null;
 
   // New connection form fields
   @state() private newConnectionName = '';
@@ -234,20 +260,13 @@ export class NrDbConnectionSelect extends LitElement {
   @state() private newPassword = '';
   @state() private newSsl = false;
 
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
-
   override connectedCallback(): void {
     super.connectedCallback();
-    this.loadEntries();
     this.updateDefaultPort();
   }
 
   override updated(changedProperties: Map<string, unknown>): void {
     if (changedProperties.has('dbType')) {
-      this.loadEntries();
       this.updateDefaultPort();
     }
   }
@@ -262,21 +281,6 @@ export class NrDbConnectionSelect extends LitElement {
       sqlite: 0,
     };
     this.newPort = defaultPorts[this.dbType] || 5432;
-  }
-
-  private async loadEntries(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.dbType) return;
-
-    this.loading = true;
-    try {
-      const entries = await getKvEntries(appId, { scope: this.dbType });
-      this.entries = (entries || []).filter(e => e.isSecret);
-    } catch (err) {
-      console.error('Failed to load KV entries:', err);
-      this.entries = [];
-    }
-    this.loading = false;
   }
 
   private handleSelectChange(e: CustomEvent): void {
@@ -305,16 +309,15 @@ export class NrDbConnectionSelect extends LitElement {
     this.newPassword = '';
     this.newSsl = false;
     this.error = '';
-    this.testResult = null;
+    this.testing = false;
+    this.creating = false;
   }
 
-  private async handleTestConnection(): Promise<void> {
+  private handleTestConnection(): void {
     this.testing = true;
-    this.testResult = null;
-    this.error = '';
 
-    try {
-      const result = await testConnection({
+    this.dispatchEvent(new CustomEvent('test-connection', {
+      detail: {
         type: this.dbType,
         host: this.newHost,
         port: this.newPort,
@@ -322,76 +325,81 @@ export class NrDbConnectionSelect extends LitElement {
         username: this.newUsername,
         password: this.newPassword,
         ssl: this.newSsl,
-      });
+      },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-      if (result.success) {
-        this.testResult = {
-          success: true,
-          message: `Connected successfully! ${result.databaseVersion || ''}`
-        };
-      } else {
-        this.testResult = {
-          success: false,
-          message: result.error || 'Connection failed'
-        };
-      }
-    } catch (err: any) {
-      this.testResult = {
-        success: false,
-        message: err.message || 'Connection test failed'
-      };
-    }
-
+  /**
+   * Called by host after test-connection completes.
+   */
+  public notifyTestResult(result: { success: boolean; message: string }): void {
+    this.testResult = result;
     this.testing = false;
   }
 
-  private async handleCreate(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.newConnectionName || !this.newHost || !this.newDatabase) return;
+  private handleCreate(): void {
+    if (!this.newConnectionName || !this.newHost || !this.newDatabase) return;
 
     this.creating = true;
     this.error = '';
 
-    try {
-      const keyPath = `${this.dbType}/${this.newConnectionName}`;
-      const credentialValue = {
-        type: this.dbType,
-        host: this.newHost,
-        port: this.newPort,
-        database: this.newDatabase,
-        username: this.newUsername,
-        password: this.newPassword,
-        ssl: this.newSsl,
-      };
+    const keyPath = `${this.dbType}/${this.newConnectionName}`;
+    const credentialValue = {
+      type: this.dbType,
+      host: this.newHost,
+      port: this.newPort,
+      database: this.newDatabase,
+      username: this.newUsername,
+      password: this.newPassword,
+      ssl: this.newSsl,
+    };
 
-      const result = await setKvEntry(keyPath, {
-        applicationId: appId,
-        scope: this.dbType,
+    this.dispatchEvent(new CustomEvent('create-entry', {
+      detail: {
+        keyPath,
         value: JSON.stringify(credentialValue),
-        isSecret: true
-      });
+        scope: this.dbType,
+        isSecret: true,
+      },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-      if (result) {
-        // Refresh entries
-        await this.loadEntries();
-        // Select the new connection
-        this.value = keyPath;
-        this.dispatchEvent(new CustomEvent('value-change', {
-          detail: { value: keyPath },
-          bubbles: true,
-          composed: true
-        }));
-        // Close form
-        this.showCreateForm = false;
-        this.resetCreateForm();
-      } else {
-        this.error = 'Failed to create connection';
-      }
-    } catch (err: any) {
-      this.error = err.message || 'Failed to create connection';
-    }
+  /**
+   * Called by host after create-entry succeeds.
+   */
+  public notifyCreateSuccess(keyPath: string): void {
+    this.value = keyPath;
+    this.showCreateForm = false;
+    this.resetCreateForm();
+    this.dispatchEvent(new CustomEvent('value-change', {
+      detail: { value: keyPath },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
+  /**
+   * Called by host if create-entry fails.
+   */
+  public notifyCreateError(message: string): void {
+    this.error = message;
     this.creating = false;
+  }
+
+  private getDbTypeLabel(): string {
+    const labels: Record<string, string> = {
+      postgresql: 'PostgreSQL',
+      mysql: 'MySQL',
+      mongodb: 'MongoDB',
+      mssql: 'SQL Server',
+      oracle: 'Oracle',
+      sqlite: 'SQLite',
+    };
+    return labels[this.dbType] || this.dbType;
   }
 
   private renderCreateForm() {
@@ -520,20 +528,9 @@ export class NrDbConnectionSelect extends LitElement {
     `;
   }
 
-  private getDbTypeLabel(): string {
-    const labels: Record<string, string> = {
-      postgresql: 'PostgreSQL',
-      mysql: 'MySQL',
-      mongodb: 'MongoDB',
-      mssql: 'SQL Server',
-      oracle: 'Oracle',
-      sqlite: 'SQLite',
-    };
-    return labels[this.dbType] || this.dbType;
-  }
-
   override render() {
-    const options = this.entries.map(entry => ({
+    const secretEntries = this.entries.filter(e => e.isSecret);
+    const options = secretEntries.map(entry => ({
       label: entry.keyPath.replace(`${this.dbType}/`, ''),
       value: entry.keyPath,
       icon: 'database'

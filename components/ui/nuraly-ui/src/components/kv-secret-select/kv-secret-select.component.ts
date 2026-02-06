@@ -6,25 +6,41 @@
 
 import { LitElement, html, css, nothing } from 'lit';
 import { property, customElement, state } from 'lit/decorators.js';
-import { getKvEntries, setKvEntry, type KvEntry } from '../../../../../../redux/store/kv.js';
-import { getVarValue } from '../../../../../../redux/store/context.js';
+
+/**
+ * Minimal KV entry shape this component needs.
+ * Avoids importing from the redux store.
+ */
+export interface KvSecretEntry {
+  keyPath: string;
+  value?: any;
+  isSecret: boolean;
+}
 
 /**
  * KV Secret Select Component
  *
- * A select component for choosing API keys from KV store, filtered by provider scope.
+ * A select component for choosing API keys, filtered by provider scope.
  * Includes inline creation of new secrets.
+ *
+ * Data-in / events-out:
+ * - Host provides `entries` and `loading`
+ * - Component fires `create-entry` when the user submits the create form
+ * - Component fires `value-change` when the selection changes
  *
  * @example
  * ```html
  * <nr-kv-secret-select
  *   provider="openai"
+ *   .entries=${secretEntries}
  *   value="openai/my-key"
  *   @value-change=${(e) => console.log(e.detail.value)}
+ *   @create-entry=${(e) => handleCreate(e.detail)}
  * ></nr-kv-secret-select>
  * ```
  *
  * @fires value-change - Fired when selection changes
+ * @fires create-entry - Fired when user submits the create form. Detail: { keyPath, value, scope, isSecret }
  */
 @customElement('nr-kv-secret-select')
 export class NrKvSecretSelect extends LitElement {
@@ -144,7 +160,7 @@ export class NrKvSecretSelect extends LitElement {
     }
   `;
 
-  /** Provider/scope to filter KV entries by */
+  /** Provider/scope to filter display labels */
   @property({ type: String })
   provider: string = 'openai';
 
@@ -160,55 +176,19 @@ export class NrKvSecretSelect extends LitElement {
   @property({ type: String })
   type: 'api-key' | 'url' = 'api-key';
 
-  @state() private entries: KvEntry[] = [];
-  @state() private loading = false;
+  /** Entries provided by the host */
+  @property({ attribute: false })
+  entries: KvSecretEntry[] = [];
+
+  /** Loading state provided by the host */
+  @property({ type: Boolean })
+  loading = false;
+
   @state() private showCreateForm = false;
   @state() private newKeyName = '';
   @state() private newKeyValue = '';
   @state() private creating = false;
   @state() private error = '';
-
-  private getAppId(): string | null {
-    const app = getVarValue('global', 'currentEditingApplication') as any;
-    return app?.uuid || null;
-  }
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.loadEntries();
-  }
-
-  override updated(changedProperties: Map<string, unknown>): void {
-    if (changedProperties.has('provider')) {
-      this.loadEntries();
-    }
-  }
-
-  private async loadEntries(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.provider) return;
-
-    const savedValue = this.value;
-    this.loading = true;
-    try {
-      const entries = await getKvEntries(appId, { scope: this.provider });
-      this.entries = (entries || []).filter(e => e.isSecret);
-
-      // If we have a saved value and entries loaded, force nr-select to reinitialize
-      // by temporarily clearing and restoring the value
-      if (savedValue && this.entries.length > 0) {
-        await this.updateComplete;
-        // This triggers nr-select to see value as changed and reinitialize
-        this.value = '';
-        await this.updateComplete;
-        this.value = savedValue;
-      }
-    } catch (err) {
-      console.error('Failed to load KV entries:', err);
-      this.entries = [];
-    }
-    this.loading = false;
-  }
 
   private handleSelectChange(e: CustomEvent): void {
     const value = e.detail?.value || '';
@@ -231,44 +211,48 @@ export class NrKvSecretSelect extends LitElement {
     this.newKeyName = '';
     this.newKeyValue = '';
     this.error = '';
+    this.creating = false;
   }
 
-  private async handleCreate(): Promise<void> {
-    const appId = this.getAppId();
-    if (!appId || !this.newKeyName || !this.newKeyValue) return;
+  private handleCreate(): void {
+    if (!this.newKeyName || !this.newKeyValue) return;
 
     this.creating = true;
     this.error = '';
 
-    try {
-      const keyPath = `${this.provider}/${this.newKeyName}`;
-      const result = await setKvEntry(keyPath, {
-        applicationId: appId,
-        scope: this.provider,
+    const keyPath = `${this.provider}/${this.newKeyName}`;
+
+    this.dispatchEvent(new CustomEvent('create-entry', {
+      detail: {
+        keyPath,
         value: this.newKeyValue,
-        isSecret: true
-      });
+        scope: this.provider,
+        isSecret: true,
+      },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-      if (result) {
-        // Refresh entries
-        await this.loadEntries();
-        // Select the new key
-        this.value = keyPath;
-        this.dispatchEvent(new CustomEvent('value-change', {
-          detail: { value: keyPath },
-          bubbles: true,
-          composed: true
-        }));
-        // Close form
-        this.showCreateForm = false;
-        this.resetCreateForm();
-      } else {
-        this.error = 'Failed to create API key';
-      }
-    } catch (err: any) {
-      this.error = err.message || 'Failed to create API key';
-    }
+  /**
+   * Called by host after create-entry succeeds to reset the form and select the new entry.
+   */
+  public notifyCreateSuccess(keyPath: string): void {
+    this.value = keyPath;
+    this.showCreateForm = false;
+    this.resetCreateForm();
+    this.dispatchEvent(new CustomEvent('value-change', {
+      detail: { value: keyPath },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
+  /**
+   * Called by host if create-entry fails.
+   */
+  public notifyCreateError(message: string): void {
+    this.error = message;
     this.creating = false;
   }
 
@@ -343,7 +327,8 @@ export class NrKvSecretSelect extends LitElement {
   }
 
   override render() {
-    const options = this.entries.map(entry => ({
+    const secretEntries = this.entries.filter(e => e.isSecret);
+    const options = secretEntries.map(entry => ({
       label: entry.keyPath.replace(`${this.provider}/`, ''),
       value: entry.keyPath,
       icon: this.type === 'url' ? 'link' : 'key'
