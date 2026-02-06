@@ -11,7 +11,7 @@ import {
   formatDate,
   type ApplicationWithStatus
 } from '../services/dashboard.service';
-import type { KvEntry } from '../../runtime/redux/store/kv';
+import type { KvEntry } from '../../../services/kv/kv.types';
 import type { IHeader } from '../../runtime/components/ui/nuraly-ui/src/components/table/table.types';
 
 // Import NuralyUI components
