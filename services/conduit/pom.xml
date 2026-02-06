@@ -105,11 +105,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- RabbitMQ (for Journal logging) -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.16.0</version>
+        </dependency>
+
         <!-- Shared Permission Library -->
         <dependency>
             <groupId>com.github.Nuralyio</groupId>
             <artifactId>shared-java-library</artifactId>
-            <version>10fc7fc</version>
+            <version>1.2.0</version>
         </dependency>
 
         <!-- Testing -->
