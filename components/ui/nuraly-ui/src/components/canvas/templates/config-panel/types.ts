@@ -62,4 +62,8 @@ export interface ConfigPanelTemplateData {
   nodeExecution?: NodeExecutionData;
   /** Current execution ID for retry functionality */
   executionId?: string;
+  /** KV entries for secret/connection selects (host-provided) */
+  kvEntries?: { keyPath: string; value?: any; isSecret: boolean }[];
+  /** Callback when a KV entry needs to be created */
+  onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void;
 }

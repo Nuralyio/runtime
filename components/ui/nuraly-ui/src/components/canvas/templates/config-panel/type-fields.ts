@@ -70,7 +70,9 @@ export function renderTypeFields(
   type: string,
   config: NodeConfiguration,
   onUpdate: (key: string, value: unknown) => void,
-  workflowId?: string
+  workflowId?: string,
+  kvEntries?: { keyPath: string; value?: any; isSecret: boolean }[],
+  onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void,
 ): TemplateResult | typeof nothing {
   switch (type) {
     // Workflow nodes
@@ -165,7 +167,7 @@ export function renderTypeFields(
       return renderAgentFields(config, onUpdate);
 
     case AgentNodeType.LLM:
-      return renderLlmFields(config, onUpdate);
+      return renderLlmFields(config, onUpdate, kvEntries, onCreateKvEntry);
 
     case AgentNodeType.PROMPT:
       return renderPromptFields(config, onUpdate);

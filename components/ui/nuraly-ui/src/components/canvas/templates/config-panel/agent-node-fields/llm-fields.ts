@@ -16,12 +16,20 @@ import './ollama-model-select/ollama-model-select.component.js';
 // Import provider configurations
 import { getProviderConfig, PROVIDER_OPTIONS } from './llm-providers/index.js';
 
+interface KvEntryLike {
+  keyPath: string;
+  value?: any;
+  isSecret: boolean;
+}
+
 /**
  * Render LLM node fields
  */
 export function renderLlmFields(
   config: NodeConfiguration,
-  onUpdate: (key: string, value: unknown) => void
+  onUpdate: (key: string, value: unknown) => void,
+  kvEntries?: KvEntryLike[],
+  onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void,
 ): TemplateResult {
   const provider = (config.provider as string) || 'openai';
   const providerConfig = getProviderConfig(provider);
@@ -29,6 +37,23 @@ export function renderLlmFields(
   // Use provider-specific default if no model set
   const currentModel = config.model as string || '';
   const displayModel = currentModel || providerConfig.defaultModel;
+
+  // Filter entries for the current provider
+  const providerEntries = (kvEntries || []).filter(
+    e => e.keyPath.startsWith(`${provider}/`)
+  );
+
+  // Resolve the Ollama server URL from KV entries
+  const apiUrlPath = config.apiUrlPath as string || '';
+  const resolvedServerUrl = apiUrlPath
+    ? (kvEntries || []).find(e => e.keyPath === apiUrlPath)?.value || 'http://localhost:11434'
+    : 'http://localhost:11434';
+
+  const handleCreateEntry = (e: CustomEvent) => {
+    if (onCreateKvEntry) {
+      onCreateKvEntry(e.detail);
+    }
+  };
 
   return html`
     <div class="config-field">
@@ -53,10 +78,12 @@ export function renderLlmFields(
         <label>API URL${providerConfig.requiresApiKey ? '' : ' (Required)'}</label>
         <nr-kv-secret-select
           .provider=${provider}
-          .value=${config.apiUrlPath || ''}
+          .entries=${providerEntries}
+          .value=${apiUrlPath}
           type="url"
           placeholder="Select or create server URL..."
           @value-change=${(e: CustomEvent) => onUpdate('apiUrlPath', e.detail.value)}
+          @create-entry=${handleCreateEntry}
         ></nr-kv-secret-select>
         <span class="field-description">
           ${providerConfig.apiUrlDescription || 'URL of your LLM server'}
@@ -69,9 +96,11 @@ export function renderLlmFields(
       <label>API Key${!providerConfig.requiresApiKey ? ' (Optional)' : ''}</label>
       <nr-kv-secret-select
         .provider=${provider}
+        .entries=${providerEntries}
         .value=${config.apiKeyPath || ''}
         placeholder="Select API key..."
         @value-change=${(e: CustomEvent) => onUpdate('apiKeyPath', e.detail.value)}
+        @create-entry=${handleCreateEntry}
       ></nr-kv-secret-select>
       <span class="field-description">${providerConfig.apiKeyDescription}</span>
     </div>
@@ -82,7 +111,7 @@ export function renderLlmFields(
       ${provider === 'ollama' ? html`
         <!-- Ollama: fetch models dynamically from server -->
         <nr-ollama-model-select
-          .serverUrlPath=${config.apiUrlPath || ''}
+          .serverUrl=${resolvedServerUrl}
           .value=${displayModel}
           placeholder=${providerConfig.modelPlaceholder}
           @value-change=${(e: CustomEvent) => onUpdate('model', e.detail.value)}
