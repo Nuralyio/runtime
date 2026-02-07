@@ -14,6 +14,7 @@ import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.entity.enums.WorkflowStatus;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
+import com.nuraly.library.logging.LogClient;
 import com.nuraly.library.permission.PermissionCheckRequest;
 import com.nuraly.library.permission.PermissionClient;
 import com.nuraly.library.permission.PermissionDeniedException;
@@ -40,6 +41,9 @@ public class WorkflowService {
 
     @Inject
     PermissionClient permissionClient;
+
+    @Inject
+    LogClient logClient;
 
     @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
     boolean permissionsEnabled;
@@ -102,6 +106,13 @@ public class WorkflowService {
             permissionClient.initOwnerPermissions("workflow", String.valueOf(entity.id), userUuid);
         }
 
+        logClient.info("workflow", null, Map.of(
+                "action", "created",
+                "workflow_id", String.valueOf(entity.id),
+                "name", entity.name != null ? entity.name : "",
+                "created_by", userUuid != null ? userUuid : "unknown"
+        ));
+
         return workflowDTOMapper.toDTO(entity);
     }
 
@@ -114,6 +125,11 @@ public class WorkflowService {
         workflowDTOMapper.updateEntity(workflowDTO, entity);
         entity.persist();
 
+        logClient.info("workflow", null, Map.of(
+                "action", "updated",
+                "workflow_id", String.valueOf(workflowId)
+        ));
+
         return workflowDTOMapper.toDTO(entity);
     }
 
@@ -123,6 +139,11 @@ public class WorkflowService {
             throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
         }
         entity.delete();
+
+        logClient.info("workflow", null, Map.of(
+                "action", "deleted",
+                "workflow_id", String.valueOf(workflowId)
+        ));
     }
 
     public WorkflowDTO publishWorkflow(UUID workflowId) throws WorkflowNotFoundException, InvalidWorkflowException {
@@ -140,6 +161,12 @@ public class WorkflowService {
         entity.status = WorkflowStatus.ACTIVE;
         entity.persist();
 
+        logClient.info("workflow", null, Map.of(
+                "action", "published",
+                "workflow_id", String.valueOf(workflowId),
+                "name", entity.name != null ? entity.name : ""
+        ));
+
         return workflowDTOMapper.toDTO(entity);
     }
 
@@ -151,6 +178,11 @@ public class WorkflowService {
 
         entity.status = WorkflowStatus.PAUSED;
         entity.persist();
+
+        logClient.info("workflow", null, Map.of(
+                "action", "paused",
+                "workflow_id", String.valueOf(workflowId)
+        ));
 
         return workflowDTOMapper.toDTO(entity);
     }

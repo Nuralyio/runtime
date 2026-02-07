@@ -17,12 +17,14 @@ import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.messaging.WorkflowExecutionMessage;
 import com.nuraly.workflows.messaging.WorkflowExecutionProducer;
+import com.nuraly.library.logging.LogClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -43,6 +45,9 @@ public class WorkflowExecutionService {
 
     @Inject
     WorkflowExecutionProducer executionProducer;
+
+    @Inject
+    LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -112,6 +117,13 @@ public class WorkflowExecutionService {
             execution.status = ExecutionStatus.QUEUED;
             execution.persist();
 
+            logClient.info("execution", null, Map.of(
+                    "action", "queued",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "trigger_type", "manual"
+            ));
+
         } catch (Exception e) {
             // If queueing fails, mark as failed
             execution.status = ExecutionStatus.FAILED;
@@ -121,6 +133,13 @@ public class WorkflowExecutionService {
             execution.persist();
 
             eventService.logExecutionFailed(execution, e.getMessage());
+
+            logClient.error("execution", null, Map.of(
+                    "action", "queue_failed",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
         }
 
         return executionDTOMapper.toDTO(execution);
@@ -187,6 +206,14 @@ public class WorkflowExecutionService {
             execution.status = ExecutionStatus.QUEUED;
             execution.persist();
 
+            logClient.info("execution", null, Map.of(
+                    "action", "queued",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "trigger_type", "manual",
+                    "revision", String.valueOf(revision)
+            ));
+
         } catch (Exception e) {
             // If queueing fails, mark as failed
             execution.status = ExecutionStatus.FAILED;
@@ -196,6 +223,13 @@ public class WorkflowExecutionService {
             execution.persist();
 
             eventService.logExecutionFailed(execution, e.getMessage());
+
+            logClient.error("execution", null, Map.of(
+                    "action", "queue_failed",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
         }
 
         return executionDTOMapper.toDTO(execution);
@@ -236,6 +270,12 @@ public class WorkflowExecutionService {
             execution.persist();
 
             eventService.logExecutionCancelled(execution);
+
+            logClient.info("execution", null, Map.of(
+                    "action", "cancelled",
+                    "execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(execution.workflow.id)
+            ));
         }
     }
 
@@ -278,6 +318,13 @@ public class WorkflowExecutionService {
             newExecution.status = ExecutionStatus.QUEUED;
             newExecution.persist();
 
+            logClient.info("execution", null, Map.of(
+                    "action", "retry_queued",
+                    "execution_id", String.valueOf(newExecution.id),
+                    "original_execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(newExecution.workflow.id)
+            ));
+
         } catch (Exception e) {
             newExecution.status = ExecutionStatus.FAILED;
             newExecution.errorMessage = "Failed to queue retry execution: " + e.getMessage();
@@ -286,6 +333,13 @@ public class WorkflowExecutionService {
             newExecution.persist();
 
             eventService.logExecutionFailed(newExecution, e.getMessage());
+
+            logClient.error("execution", null, Map.of(
+                    "action", "retry_queue_failed",
+                    "execution_id", String.valueOf(newExecution.id),
+                    "workflow_id", String.valueOf(newExecution.workflow.id),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
         }
 
         return executionDTOMapper.toDTO(newExecution);
@@ -319,6 +373,12 @@ public class WorkflowExecutionService {
             execution.status = ExecutionStatus.QUEUED;
             execution.persist();
 
+            logClient.info("execution", null, Map.of(
+                    "action", "resumed",
+                    "execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(execution.workflow.id)
+            ));
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = "Failed to queue resume execution: " + e.getMessage();
@@ -327,6 +387,13 @@ public class WorkflowExecutionService {
             execution.persist();
 
             eventService.logExecutionFailed(execution, e.getMessage());
+
+            logClient.error("execution", null, Map.of(
+                    "action", "resume_failed",
+                    "execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(execution.workflow.id),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
         }
 
         return executionDTOMapper.toDTO(execution);
@@ -365,6 +432,13 @@ public class WorkflowExecutionService {
             execution.status = ExecutionStatus.QUEUED;
             execution.persist();
 
+            logClient.info("execution", null, Map.of(
+                    "action", "node_retry_queued",
+                    "execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(execution.workflow.id),
+                    "node_id", String.valueOf(nodeId)
+            ));
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = "Failed to queue node retry: " + e.getMessage();
@@ -373,6 +447,13 @@ public class WorkflowExecutionService {
             execution.persist();
 
             eventService.logExecutionFailed(execution, e.getMessage());
+
+            logClient.error("execution", null, Map.of(
+                    "action", "node_retry_failed",
+                    "execution_id", String.valueOf(executionId),
+                    "workflow_id", String.valueOf(execution.workflow.id),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
         }
 
         return executionDTOMapper.toDTO(execution);
