@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.whiteboard.dto.*;
 import com.nuraly.whiteboard.entity.*;
+import com.nuraly.whiteboard.registry.WhiteboardConfigMergeService;
 import com.nuraly.whiteboard.repository.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,6 +35,9 @@ public class WhiteboardService {
 
     @Inject
     WhiteboardRevisionRepository revisionRepository;
+
+    @Inject
+    WhiteboardConfigMergeService configMergeService;
 
     @Inject
     ObjectMapper objectMapper;
@@ -77,7 +81,8 @@ public class WhiteboardService {
     @Transactional
     public Optional<WhiteboardDTO> getByIdAsDTO(UUID id) {
         return whiteboardRepository.findByIdWithAll(id)
-                .map(WhiteboardDTO::from);
+                .map(WhiteboardDTO::from)
+                .map(this::mergeElementConfigs);
     }
 
     @Transactional
@@ -110,7 +115,7 @@ public class WhiteboardService {
         if (dto.gridSize != null) whiteboard.gridSize = dto.gridSize;
         if (dto.snapToGrid != null) whiteboard.snapToGrid = dto.snapToGrid;
 
-        return WhiteboardDTO.from(whiteboard);
+        return mergeElementConfigs(WhiteboardDTO.from(whiteboard));
     }
 
     @Transactional
@@ -201,12 +206,16 @@ public class WhiteboardService {
 
     @Transactional
     public WhiteboardElementDTO addElementAndMap(UUID whiteboardId, CreateElementDTO dto, UUID createdBy) {
-        return WhiteboardElementDTO.from(addElement(whiteboardId, dto, createdBy));
+        WhiteboardElementDTO result = WhiteboardElementDTO.from(addElement(whiteboardId, dto, createdBy));
+        configMergeService.mergeElement(result);
+        return result;
     }
 
     @Transactional
     public WhiteboardElementDTO updateElementAndMap(UUID whiteboardId, UUID elementId, CreateElementDTO dto, UUID editedBy) {
-        return WhiteboardElementDTO.from(updateElement(whiteboardId, elementId, dto, editedBy));
+        WhiteboardElementDTO result = WhiteboardElementDTO.from(updateElement(whiteboardId, elementId, dto, editedBy));
+        configMergeService.mergeElement(result);
+        return result;
     }
 
     @Transactional
@@ -389,6 +398,22 @@ public class WhiteboardService {
     @Transactional
     public WhiteboardDTO restoreRevisionAndMap(UUID whiteboardId, Integer revisionNumber) {
         WhiteboardEntity whiteboard = restoreRevision(whiteboardId, revisionNumber);
-        return WhiteboardDTO.from(whiteboard);
+        return mergeElementConfigs(WhiteboardDTO.from(whiteboard));
+    }
+
+    // ========================================================================
+    // Config merge-on-read helpers
+    // ========================================================================
+
+    /**
+     * Merge canonical config definitions into all elements of a whiteboard DTO.
+     * Elements created under an older schema automatically pick up new config
+     * properties defined in WhiteboardElementTypeRegistry without delete/recreate.
+     */
+    private WhiteboardDTO mergeElementConfigs(WhiteboardDTO dto) {
+        if (dto.elements != null) {
+            dto.elements.forEach(configMergeService::mergeElement);
+        }
+        return dto;
     }
 }
