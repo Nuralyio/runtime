@@ -10,6 +10,7 @@ import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.exception.WorkflowExecutionException;
 import com.nuraly.workflows.dto.revision.RevisionSnapshotDTO;
 import com.nuraly.workflows.exception.RevisionNotFoundException;
+import com.nuraly.library.logging.LogClient;
 import com.nuraly.workflows.monitoring.WorkflowMetricsService;
 import com.nuraly.workflows.redis.ExecutionCheckpointService;
 import com.nuraly.workflows.redis.ExecutionCheckpointService.ExecutionCheckpoint;
@@ -53,6 +54,9 @@ public class WorkflowEngine {
 
     @Inject
     WorkflowRevisionService revisionService;
+
+    @Inject
+    LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -110,6 +114,10 @@ public class WorkflowEngine {
             metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
                     System.currentTimeMillis() - startTime);
 
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "COMPLETED",
+                    null, null, execution.durationMs);
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = e.getMessage();
@@ -123,6 +131,10 @@ public class WorkflowEngine {
             eventService.logExecutionFailed(execution, e.getMessage());
             metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
                     System.currentTimeMillis() - startTime);
+
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "FAILED",
+                    null, null, execution.durationMs);
 
             throw new WorkflowExecutionException("Workflow execution failed: " + e.getMessage(), e);
         }
@@ -253,6 +265,10 @@ public class WorkflowEngine {
             metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
                     System.currentTimeMillis() - startTime);
 
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "COMPLETED",
+                    null, null, execution.durationMs);
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = e.getMessage();
@@ -263,6 +279,10 @@ public class WorkflowEngine {
             eventService.logExecutionFailed(execution, e.getMessage());
             metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
                     System.currentTimeMillis() - startTime);
+
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "FAILED",
+                    null, null, execution.durationMs);
 
             throw new WorkflowExecutionException("Workflow execution from node failed: " + e.getMessage(), e);
         }
@@ -334,6 +354,10 @@ public class WorkflowEngine {
             metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
                     System.currentTimeMillis() - startTime);
 
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "COMPLETED",
+                    null, null, execution.durationMs);
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = e.getMessage();
@@ -344,6 +368,10 @@ public class WorkflowEngine {
             eventService.logExecutionFailed(execution, e.getMessage());
             metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
                     System.currentTimeMillis() - startTime);
+
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "FAILED",
+                    null, null, execution.durationMs);
 
             throw new WorkflowExecutionException("Node retry failed: " + e.getMessage(), e);
         }
@@ -426,6 +454,13 @@ public class WorkflowEngine {
 
         nodeExecution.persist();
         eventService.logNodeExecuted(nodeExecution);
+
+        logClient.logNodeExecution(null, String.valueOf(context.getExecution().id),
+                String.valueOf(node.id), node.type.name(),
+                result.isSuccess() ? "COMPLETED" : "FAILED",
+                null, null,
+                nodeExecution.durationMs,
+                result.isSuccess() ? null : result.getErrorMessage());
 
         // Record node metrics
         metricsService.recordNodeExecution(
