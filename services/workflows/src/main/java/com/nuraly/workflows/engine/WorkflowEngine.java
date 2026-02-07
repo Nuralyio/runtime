@@ -265,6 +265,10 @@ public class WorkflowEngine {
             metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
                     System.currentTimeMillis() - startTime);
 
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "COMPLETED",
+                    null, null, execution.durationMs);
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = e.getMessage();
@@ -275,6 +279,10 @@ public class WorkflowEngine {
             eventService.logExecutionFailed(execution, e.getMessage());
             metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
                     System.currentTimeMillis() - startTime);
+
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "FAILED",
+                    null, null, execution.durationMs);
 
             throw new WorkflowExecutionException("Workflow execution from node failed: " + e.getMessage(), e);
         }
@@ -346,6 +354,10 @@ public class WorkflowEngine {
             metricsService.recordExecutionComplete(ExecutionStatus.COMPLETED,
                     System.currentTimeMillis() - startTime);
 
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "COMPLETED",
+                    null, null, execution.durationMs);
+
         } catch (Exception e) {
             execution.status = ExecutionStatus.FAILED;
             execution.errorMessage = e.getMessage();
@@ -356,6 +368,10 @@ public class WorkflowEngine {
             eventService.logExecutionFailed(execution, e.getMessage());
             metricsService.recordExecutionComplete(ExecutionStatus.FAILED,
                     System.currentTimeMillis() - startTime);
+
+            logClient.logWorkflowExecution(null, String.valueOf(execution.id),
+                    String.valueOf(execution.workflow.id), "FAILED",
+                    null, null, execution.durationMs);
 
             throw new WorkflowExecutionException("Node retry failed: " + e.getMessage(), e);
         }

@@ -161,34 +161,11 @@ class WebCrawlNodeExecutorTest {
     }
 
     private ExecutionContext createContext(JsonNode input) {
-        return new ExecutionContext() {
-            @Override
-            public JsonNode getInput() {
-                return input;
-            }
-
-            @Override
-            public void setVariable(String name, Object value) {}
-
-            @Override
-            public Object getVariable(String name) {
-                return null;
-            }
-
-            @Override
-            public String getExecutionId() {
-                return UUID.randomUUID().toString();
-            }
-
-            @Override
-            public String getWorkflowId() {
-                return UUID.randomUUID().toString();
-            }
-
-            @Override
-            public String getUserId() {
-                return "test-user";
-            }
-        };
+        WorkflowExecutionEntity execution = new WorkflowExecutionEntity();
+        execution.id = UUID.randomUUID();
+        execution.inputData = input.toString();
+        ExecutionContext context = new ExecutionContext(execution);
+        context.setInput(input);
+        return context;
     }
 }

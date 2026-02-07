@@ -19,6 +19,7 @@ import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.messaging.RabbitMQConnectionManager;
 import com.nuraly.workflows.messaging.WorkflowExecutionMessage;
 import com.nuraly.workflows.messaging.WorkflowExecutionProducer;
+import com.nuraly.library.logging.LogClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -51,6 +52,9 @@ public class WorkflowTriggerService {
 
     @Inject
     Configuration configuration;
+
+    @Inject
+    LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -158,6 +162,11 @@ public class WorkflowTriggerService {
             throw new IllegalStateException("Workflow has no HTTP trigger (HTTP_START node)");
         }
 
+        logClient.info("trigger", null, java.util.Map.of(
+                "action", "http_triggered",
+                "workflow_id", String.valueOf(workflowId)
+        ));
+
         // Execute synchronously
         return executeSyncFromWorkflow(workflow, payload, "http_trigger", timeoutMs);
     }
@@ -182,6 +191,12 @@ public class WorkflowTriggerService {
         // Update last triggered time
         trigger.lastTriggeredAt = Instant.now();
         trigger.persist();
+
+        logClient.info("trigger", null, java.util.Map.of(
+                "action", "webhook_triggered",
+                "trigger_id", String.valueOf(trigger.id),
+                "workflow_id", String.valueOf(trigger.workflow.id)
+        ));
 
         // Create and execute
         executeFromTrigger(trigger, payload, "webhook");
@@ -328,6 +343,13 @@ public class WorkflowTriggerService {
 
             eventService.logExecutionQueued(execution);
 
+            logClient.info("execution", null, java.util.Map.of(
+                    "action", "async_queued",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "trigger_type", triggerType.toLowerCase()
+            ));
+
             return execution;
 
         } catch (Exception e) {
@@ -339,6 +361,14 @@ public class WorkflowTriggerService {
 
             eventService.logExecutionFailed(execution, e.getMessage());
             LOG.errorf(e, "Failed to queue async execution for workflow %s", workflowId);
+
+            logClient.error("execution", null, java.util.Map.of(
+                    "action", "async_queue_failed",
+                    "execution_id", String.valueOf(execution.id),
+                    "workflow_id", String.valueOf(workflowId),
+                    "error", e.getMessage() != null ? e.getMessage() : "unknown"
+            ));
+
             return null;
         }
     }
