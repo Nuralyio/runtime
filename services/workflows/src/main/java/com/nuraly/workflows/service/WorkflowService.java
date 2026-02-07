@@ -12,6 +12,7 @@ import com.nuraly.workflows.entity.WorkflowEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.entity.enums.WorkflowStatus;
+import com.nuraly.workflows.engine.registry.PortMergeService;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.library.logging.LogClient;
@@ -45,6 +46,9 @@ public class WorkflowService {
     @Inject
     LogClient logClient;
 
+    @Inject
+    PortMergeService portMergeService;
+
     @ConfigProperty(name = "permissions.enabled", defaultValue = "true")
     boolean permissionsEnabled;
 
@@ -60,16 +64,20 @@ public class WorkflowService {
 
         // Skip permission filtering if disabled
         if (!permissionsEnabled) {
-            return workflowDTOMapper.toDTOList(entities);
+            List<WorkflowDTO> dtos = workflowDTOMapper.toDTOList(entities);
+            dtos.forEach(this::mergeNodePorts);
+            return dtos;
         }
 
         // Filter by permission
         List<String> accessibleIds = permissionClient.getAccessibleResources("workflow", userHeader);
-        return workflowDTOMapper.toDTOList(
+        List<WorkflowDTO> dtos = workflowDTOMapper.toDTOList(
                 entities.stream()
                         .filter(e -> accessibleIds.contains(String.valueOf(e.id)))
                         .collect(Collectors.toList())
         );
+        dtos.forEach(this::mergeNodePorts);
+        return dtos;
     }
 
     public WorkflowDTO getWorkflowById(UUID workflowId) throws WorkflowNotFoundException {
@@ -77,7 +85,9 @@ public class WorkflowService {
         if (entity == null) {
             throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
         }
-        return workflowDTOMapper.toDTO(entity);
+        WorkflowDTO dto = workflowDTOMapper.toDTO(entity);
+        mergeNodePorts(dto);
+        return dto;
     }
 
     public WorkflowDTO createWorkflow(WorkflowDTO workflowDTO, String userUuid) {
@@ -507,7 +517,9 @@ public class WorkflowService {
         node.workflow = workflow;
         node.persist();
 
-        return workflowNodeDTOMapper.toDTO(node);
+        WorkflowNodeDTO result = workflowNodeDTOMapper.toDTO(node);
+        mergeNodePorts(result);
+        return result;
     }
 
     public WorkflowNodeDTO updateNode(UUID nodeId, WorkflowNodeDTO nodeDTO) throws Exception {
@@ -519,7 +531,9 @@ public class WorkflowService {
         workflowNodeDTOMapper.updateEntity(nodeDTO, node);
         node.persist();
 
-        return workflowNodeDTOMapper.toDTO(node);
+        WorkflowNodeDTO result = workflowNodeDTOMapper.toDTO(node);
+        mergeNodePorts(result);
+        return result;
     }
 
     public void deleteNode(UUID nodeId) throws Exception {
@@ -589,5 +603,31 @@ public class WorkflowService {
             throw new Exception("Edge not found with id: " + edgeId);
         }
         edge.delete();
+    }
+
+    // ========================================================================
+    // Port merge-on-read helpers
+    // ========================================================================
+
+    /**
+     * Merge canonical port definitions into all nodes of a workflow DTO.
+     * This ensures nodes created under an older schema automatically pick up
+     * new ports defined in NodeTypeRegistry without delete/recreate.
+     */
+    private void mergeNodePorts(WorkflowDTO workflowDTO) {
+        if (workflowDTO.getNodes() == null) {
+            return;
+        }
+        for (WorkflowNodeDTO nodeDTO : workflowDTO.getNodes()) {
+            mergeNodePorts(nodeDTO);
+        }
+    }
+
+    private void mergeNodePorts(WorkflowNodeDTO nodeDTO) {
+        if (nodeDTO.getType() == null) {
+            return;
+        }
+        String merged = portMergeService.mergePorts(nodeDTO.getType(), nodeDTO.getPorts());
+        nodeDTO.setPorts(merged);
     }
 }
