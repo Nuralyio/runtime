@@ -1,7 +1,7 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { shareModalStyles } from './ShareModal.style';
-import { getVarValue } from '../../runtime/redux/store/context';
+import { getVarValue } from '../../../runtime/redux/store/context';
 import {
   getAppMembersData,
   updateCachedMembers,
@@ -12,7 +12,7 @@ import {
   type AppMember,
   type AppRole,
   type PendingInvite
-} from '../../runtime/redux/store/app-members';
+} from '../../../runtime/redux/store/app-members';
 
 // Type aliases for backwards compatibility
 type Role = AppRole;

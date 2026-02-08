@@ -1,10 +1,10 @@
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { type ComponentElement } from '../../runtime/redux/store/component/component.interface.ts';
-import { BaseElementBlock } from "../../runtime/components/ui/components/base/BaseElement.ts";
+import { type ComponentElement } from '../../../runtime/redux/store/component/component.interface.ts';
+import { BaseElementBlock } from "../../../runtime/components/ui/components/base/BaseElement.ts";
 import { styleMap } from "lit/directives/style-map.js";
-import { executeHandler } from '../../runtime/state/runtime-context.ts';
-import { eventDispatcher } from '../../runtime/utils/change-detection.ts';
+import { executeHandler } from '../../../runtime/state/runtime-context.ts';
+import { eventDispatcher } from '../../../runtime/utils/change-detection.ts';
 
 @customElement("handler-block")
 export class HandlerBlock extends BaseElementBlock {

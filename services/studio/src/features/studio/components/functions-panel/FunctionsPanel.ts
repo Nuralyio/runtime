@@ -22,9 +22,9 @@
 
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { ExecuteInstance } from '../../runtime/state/runtime-context';
-import { openEditorTab, setCurrentEditorTab } from '../../runtime/redux/actions/editor';
-import { $editorState, $currentApplication } from '../../runtime/redux/store/apps';
+import { ExecuteInstance } from '../../../runtime/state/runtime-context';
+import { openEditorTab, setCurrentEditorTab } from '../../../runtime/redux/actions/editor';
+import { $editorState, $currentApplication } from '../../../runtime/redux/store/apps';
 
 // Import nuraly-ui components
 import '@nuralyui/button';

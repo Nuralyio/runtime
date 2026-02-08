@@ -1,20 +1,20 @@
-import { LitElement, html, nothing, TemplateResult } from 'lit';
+import { LitElement, html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { revisionPanelStyles } from './RevisionPanel.style';
-import { getVarValue } from '../../runtime/redux/store/context';
+import { getVarValue } from '../../../runtime/redux/store/context';
 
 // Import nuraly-ui components
-import '../../../nuraly-ui/src/components/button/button.component';
-import '../../../nuraly-ui/src/components/icon/icon.component';
-import '../../../nuraly-ui/src/components/badge/badge.component';
-import '../../../nuraly-ui/src/components/skeleton/skeleton.component';
-import '../../../nuraly-ui/src/components/alert/alert.component';
-import '../../../nuraly-ui/src/components/tabs/tabs.component';
-import '../../../nuraly-ui/src/components/card/card.component';
-import '../../../nuraly-ui/src/components/tag/tag.component';
-import '../../../nuraly-ui/src/components/divider/divider.component';
-import '../../../nuraly-ui/src/components/timeline/timeline.component';
-import '../../../nuraly-ui/src/components/label/label.component';
+import '@nuralyui/button';
+import '@nuralyui/icon';
+import '@nuralyui/badge';
+import '@nuralyui/skeleton';
+import '@nuralyui/alert';
+import '@nuralyui/tabs';
+import '@nuralyui/card';
+import '@nuralyui/tag';
+import '@nuralyui/divider';
+import '@nuralyui/timeline';
+import '@nuralyui/label';
 
 export interface Revision {
   id: string;

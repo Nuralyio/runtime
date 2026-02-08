@@ -1,9 +1,9 @@
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { type ComponentElement } from '../../runtime/redux/store/component/component.interface.ts';
-import { BaseElementBlock } from "../../runtime/components/ui/components/base/BaseElement.ts";
-import { $componentsByUUIDs, $selectedComponent } from '../../runtime/redux/store/component/store.ts';
-import { $currentApplication } from '../../runtime/redux/store/apps.ts';
+import { type ComponentElement } from '../../../runtime/redux/store/component/component.interface.ts';
+import { BaseElementBlock } from "../../../runtime/components/ui/components/base/BaseElement.ts";
+import { $componentsByUUIDs, $selectedComponent } from '../../../runtime/redux/store/component/store.ts';
+import { $currentApplication } from '../../../runtime/redux/store/apps.ts';
 
 @customElement("export-import-block")
 export class ExportImportBlock extends BaseElementBlock {
