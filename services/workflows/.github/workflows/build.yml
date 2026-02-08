@@ -79,6 +79,18 @@ jobs:
           name: test-results
           path: target/surefire-reports/
 
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t workflows .
+
   native-build:
     runs-on: ubuntu-latest
     needs: build
