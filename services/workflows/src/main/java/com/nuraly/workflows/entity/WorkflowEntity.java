@@ -50,6 +50,9 @@ public class WorkflowEntity extends PanacheEntityBase {
     @Column(columnDefinition = "TEXT")
     public String viewport; // JSON: canvas viewport state {"zoom": 1, "panX": 0, "panY": 0}
 
+    @Column(name = "is_template")
+    public Boolean isTemplate = false;
+
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     public List<WorkflowNodeEntity> nodes = new ArrayList<>();
 

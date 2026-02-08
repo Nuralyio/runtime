@@ -55,8 +55,9 @@ public class WorkflowResource {
     })
     public RestResponse<List<WorkflowDTO>> getWorkflows(
             @HeaderParam("X-USER") String userHeader,
-            @QueryParam("applicationId") String applicationId) {
-        List<WorkflowDTO> workflows = workflowService.getWorkflows(applicationId, userHeader);
+            @QueryParam("applicationId") String applicationId,
+            @QueryParam("isTemplate") Boolean isTemplate) {
+        List<WorkflowDTO> workflows = workflowService.getWorkflows(applicationId, userHeader, isTemplate);
         return RestResponse.ok(workflows);
     }
 
@@ -205,6 +206,66 @@ public class WorkflowResource {
             return RestResponse.status(RestResponse.Status.CREATED, cloned);
         } catch (WorkflowNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    // Template endpoints
+
+    @GET
+    @Path("/templates")
+    @Operation(summary = "List all workflow templates")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Templates retrieved successfully")
+    })
+    public RestResponse<List<WorkflowDTO>> getTemplates() {
+        List<WorkflowDTO> templates = workflowService.getTemplates();
+        return RestResponse.ok(templates);
+    }
+
+    @PUT
+    @Path("/{id}/template")
+    @RequiresPermission(
+            permissionType = "workflow:write",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Set or unset a workflow as a template")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Template flag updated successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<WorkflowDTO> setTemplate(
+            @PathParam("id") UUID id,
+            Map<String, Boolean> body) {
+        try {
+            boolean isTemplate = body != null && Boolean.TRUE.equals(body.get("isTemplate"));
+            WorkflowDTO updated = workflowService.setTemplate(id, isTemplate);
+            return RestResponse.ok(updated);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @POST
+    @Path("/create-from-template/{templateId}")
+    @Operation(summary = "Create a new workflow from a template")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "201", description = "Workflow created from template successfully"),
+            @APIResponse(responseCode = "400", description = "Workflow is not a template"),
+            @APIResponse(responseCode = "404", description = "Template not found")
+    })
+    public RestResponse<WorkflowDTO> createFromTemplate(
+            @PathParam("templateId") UUID templateId,
+            @HeaderParam("X-USER") String userHeader,
+            @Valid CreateFromTemplateRequest request) {
+        try {
+            String userUuid = extractUserUuid(userHeader);
+            WorkflowDTO created = workflowService.createFromTemplate(templateId, request, userUuid);
+            return RestResponse.status(RestResponse.Status.CREATED, created);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST);
         }
     }
 
