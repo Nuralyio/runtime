@@ -1,7 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { getVarValue } from '../../runtime/redux/store/context';
-import { $currentApplication } from '../../runtime/redux/store';
+import { getVarValue } from '../../../runtime/redux/store/context';
+import { $currentApplication } from '../../../runtime/redux/store';
 
 // Import access roles component
 import '../access-roles/AccessRoles';

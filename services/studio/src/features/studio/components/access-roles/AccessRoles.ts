@@ -1,5 +1,5 @@
-import type { ComponentElement } from '../../runtime/redux/store/component/component.interface.ts';
-import { BaseElementBlock } from '../../base/BaseElement';
+import type { ComponentElement } from '../../../runtime/redux/store/component/component.interface.ts';
+import { BaseElementBlock } from '../../../runtime/components/ui/components/base/BaseElement';
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { accessRolesStyles } from './AccessRoles.style';
@@ -9,8 +9,8 @@ import {
   getCachedPermissions,
   $permissionsCache,
   type ParsedPermissions
-} from '../../runtime/redux/store/permissions';
-import { $currentApplication } from '../../runtime/redux/store/apps';
+} from '../../../runtime/redux/store/permissions';
+import { $currentApplication } from '../../../runtime/redux/store/apps';
 
 /**
  * ApplicationRole interface matching backend model

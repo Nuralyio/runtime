@@ -1,8 +1,8 @@
 import { customElement } from "lit/decorators.js";
 import { css, html } from "lit";
-import { BaseElementBlock } from '../../runtime/components/ui/components/base/BaseElement';
-import { getVar } from '../../runtime/redux/store/context';
-import { invokeFunctionHandler } from '../../runtime/redux/handlers/functions/invoke-function-handler';
+import { BaseElementBlock } from '../../../runtime/components/ui/components/base/BaseElement';
+import { getVar } from '../../../runtime/redux/store/context';
+import { invokeFunctionHandler } from '../../../runtime/redux/handlers/functions/invoke-function-handler';
 
 @customElement("invoke-function-block")
 export class InvokeFunctionBlock extends BaseElementBlock {

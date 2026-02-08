@@ -1,14 +1,14 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { kvModalStyles } from './KvModal.style';
-import { getVarValue } from '../../runtime/redux/store/context';
+import { getVarValue } from '../../../runtime/redux/store/context';
 import {
   setEntry,
   deleteEntry,
   rotateSecret,
   getVersionHistory,
   rollbackEntry,
-} from '../../../services/kv/kv.service';
+} from '../../../../services/kv/kv.service';
 import {
   getKvEntries,
   getCachedKvEntries,
@@ -17,7 +17,7 @@ import {
   type KvEntry,
   type KvValueType,
   type KvEntryVersion
-} from '../../runtime/redux/store/kv';
+} from '../../../runtime/redux/store/kv';
 
 /**
  * KvModal Component

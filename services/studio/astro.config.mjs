@@ -30,7 +30,7 @@ export default defineConfig({
   vite: {
    plugins: [yaml()],
    resolve: {
-     dedupe: ['dayjs', 'lit', 'lucide', 'vanilla-colorful', '@lit/reactive-element', '@lit/localize'],
+     dedupe: ['dayjs', 'lit', 'lucide', 'vanilla-colorful', '@lit/reactive-element', '@lit/localize', 'monaco-editor'],
      alias: {
        '@nuralyui/alert': path.join(nuralyUIPath, 'alert'),
        '@nuralyui/badge': path.join(nuralyUIPath, 'badge'),
