@@ -82,11 +82,6 @@ The Nuraly stack consists of 15+ services orchestrated via `docker-compose.prod.
   ```bash
   git submodule update --init --recursive
   ```
-- Minikube running (required by the `functions` service for Kubernetes-based function execution):
-  ```bash
-  minikube start
-  ```
-
 ### 2. Configure Environment Variables
 
 Copy the example env file:
@@ -283,13 +278,6 @@ Keycloak has a `start_period: 120s` in its healthcheck. It needs time to initial
 
 ### Native build (kv/journal) fails with out of memory
 GraalVM native image compilation is memory-intensive. Increase Docker memory allocation to at least 8GB in Docker Desktop settings.
-
-### Functions service can't connect to Minikube
-The functions service requires Minikube to be running and the `minikube` Docker network to exist:
-```bash
-minikube start
-docker network ls | grep minikube
-```
 
 ### parcour/Playwright browser issues
 The parcour service installs Chromium system dependencies in its Dockerfile. If the browser fails to launch, check that all system libraries are installed by inspecting the container:
