@@ -9,9 +9,10 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import jakarta.annotation.PostConstruct;
+import io.quarkus.runtime.StartupEvent;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import java.nio.charset.StandardCharsets;
@@ -34,8 +35,7 @@ public class LogConsumer {
     private Connection connection;
     private Channel channel;
 
-    @PostConstruct
-    void init() {
+    void onStart(@Observes StartupEvent ev) {
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost(config.rabbitmqHost);
