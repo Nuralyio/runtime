@@ -1,3 +1,11 @@
+# Build stage
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn package -DskipTests
+
+# Runtime stage
 FROM eclipse-temurin:21-jre
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
@@ -18,38 +26,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxfixes3 \
     libxrandr2 \
     libgbm1 \
-    libasound2 \
+    libasound2t64 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Configure the JAVA_OPTIONS
-ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-
-# Environment variables
-ENV RABBITMQ_HOST=rabbitmq
-ENV RABBITMQ_PORT=5672
-ENV RABBITMQ_USER=guest
-ENV RABBITMQ_PASS=guest
-ENV RABBITMQ_QUEUE=crawl-requests
-
-# Create app directory
 WORKDIR /app
 
-# Create non-root user for security
-RUN useradd -m -u 1000 crawler && chown -R crawler:crawler /app
+RUN useradd -m crawler && chown -R crawler:crawler /app
 
-# Copy the built artifact
-COPY --chown=crawler:crawler target/quarkus-app/lib/ /app/lib/
-COPY --chown=crawler:crawler target/quarkus-app/*.jar /app/
-COPY --chown=crawler:crawler target/quarkus-app/app/ /app/app/
-COPY --chown=crawler:crawler target/quarkus-app/quarkus/ /app/quarkus/
+COPY --from=build --chown=crawler:crawler /app/target/quarkus-app/lib/ /app/lib/
+COPY --from=build --chown=crawler:crawler /app/target/quarkus-app/*.jar /app/
+COPY --from=build --chown=crawler:crawler /app/target/quarkus-app/app/ /app/app/
+COPY --from=build --chown=crawler:crawler /app/target/quarkus-app/quarkus/ /app/quarkus/
 
 USER crawler
 
-EXPOSE 8080
+EXPOSE 7007
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "/app/quarkus-run.jar"]
+CMD ["java", "-jar", "/app/quarkus-run.jar"]
