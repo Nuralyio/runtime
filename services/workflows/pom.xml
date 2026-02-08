@@ -81,6 +81,12 @@
             <artifactId>quarkus-quartz</artifactId>
         </dependency>
 
+        <!-- WebSocket Client (for Slack Socket Mode, Discord Gateway, etc.) -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-websockets-client</artifactId>
+        </dependency>
+
         <!-- HTTP Client (for HTTP node) - with connection pooling support -->
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
