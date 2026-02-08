@@ -4,6 +4,7 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.nuraly.library.logging.LogClient;
 import com.nuraly.parcour.configuration.CrawlerConfiguration;
 import com.nuraly.parcour.dto.CrawlRequestDTO;
 import com.nuraly.parcour.dto.CrawlResultDTO;
@@ -43,6 +44,9 @@ public class CrawlerService {
 
     @Inject
     UrlValidator urlValidator;
+
+    @Inject
+    LogClient logClient;
 
     private HttpClient httpClient;
     private Playwright playwright;
@@ -88,6 +92,17 @@ public class CrawlerService {
     }
 
     public CrawlResultDTO crawl(CrawlRequestDTO request) {
+        long startTime = System.currentTimeMillis();
+
+        logClient.info("crawl", null, Map.of(
+                "action", "started",
+                "url_count", request.getUrls() != null ? request.getUrls().size() : 0,
+                "max_depth", request.getMaxDepth(),
+                "max_pages", request.getMaxPages(),
+                "render_js", request.isRenderJs(),
+                "same_domain_only", request.isSameDomainOnly()
+        ));
+
         CrawlResultDTO result = CrawlResultDTO.builder()
                 .pages(new ArrayList<>())
                 .errors(new ArrayList<>())
@@ -198,6 +213,16 @@ public class CrawlerService {
         }
 
         result.setTotalPages(result.getPages().size());
+
+        long durationMs = System.currentTimeMillis() - startTime;
+        logClient.info("crawl", null, Map.of(
+                "action", "completed",
+                "total_pages", result.getTotalPages(),
+                "total_characters", result.getTotalCharacters(),
+                "error_count", result.getErrors() != null ? result.getErrors().size() : 0,
+                "duration_ms", durationMs
+        ));
+
         return result;
     }
 
