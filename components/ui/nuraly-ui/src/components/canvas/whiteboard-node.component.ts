@@ -12,8 +12,6 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import mermaid from 'mermaid';
 import {
   WorkflowNode,
-  NodePort,
-  PortType,
   NODE_COLORS,
   WhiteboardNodeType,
 } from './workflow-canvas.types.js';
@@ -59,9 +57,6 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
   remoteTyping: { userId: string; username: string; color: string } | null = null;
 
   @state()
-  private hoveredPort: string | null = null;
-
-  @state()
   private _mermaidSvg = '';
 
   @state()
@@ -69,7 +64,6 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
   private _lastMermaidDef = '';
   private _lastMermaidTheme = '';
-  private static _mermaidInitialized = false;
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
@@ -96,7 +90,6 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
   private async _renderMermaid(definition: string, theme: string = 'default') {
     mermaid.initialize({ startOnLoad: false, theme: theme as any });
-    WhiteboardNodeElement._mermaidInitialized = true;
     try {
       const { svg } = await mermaid.render(`mermaid-${this.node.id.replace(/[^a-zA-Z0-9]/g, '')}`, definition);
       this._mermaidSvg = svg;
@@ -124,71 +117,6 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
       bubbles: true,
       composed: true,
     }));
-  }
-
-  private handlePortMouseDown(e: MouseEvent, port: NodePort, isInput: boolean) {
-    e.stopPropagation();
-    e.preventDefault();
-    this.dispatchEvent(new CustomEvent('port-mousedown', {
-      detail: { node: this.node, port, isInput, event: e },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private handlePortMouseUp(e: MouseEvent, port: NodePort, isInput: boolean) {
-    e.stopPropagation();
-    this.dispatchEvent(new CustomEvent('port-mouseup', {
-      detail: { node: this.node, port, isInput, event: e },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private handlePortMouseEnter(portId: string) {
-    this.hoveredPort = portId;
-  }
-
-  private handlePortMouseLeave() {
-    this.hoveredPort = null;
-  }
-
-  private getPortClasses(port: NodePort, isInput: boolean): Record<string, boolean> {
-    return {
-      port: true,
-      input: isInput,
-      output: !isInput,
-      connecting: this.connectingPortId === port.id,
-      compatible: this.connectingPortId !== null && this.connectingPortId !== port.id,
-    };
-  }
-
-  private renderPort(port: NodePort, isInput: boolean, index: number, total: number) {
-    const nodeHeight = 80;
-    const portSpacing = 20;
-    const totalPortsHeight = (total - 1) * portSpacing;
-    const startY = (nodeHeight - totalPortsHeight) / 2;
-    const topOffset = startY + (index * portSpacing) - 5;
-
-    const style = { top: `${topOffset}px` };
-
-    return html`
-      <div
-        class=${classMap(this.getPortClasses(port, isInput))}
-        style=${styleMap(style)}
-        @mousedown=${(e: MouseEvent) => this.handlePortMouseDown(e, port, isInput)}
-        @mouseup=${(e: MouseEvent) => this.handlePortMouseUp(e, port, isInput)}
-        @mouseenter=${() => this.handlePortMouseEnter(port.id)}
-        @mouseleave=${() => this.handlePortMouseLeave()}
-        data-port-id=${port.id}
-        data-node-id=${this.node.id}
-        title=${port.label || port.id}
-      >
-        ${this.hoveredPort === port.id && port.label ? html`
-          <span class="port-label ${isInput ? 'input' : 'output'}">${port.label}</span>
-        ` : nothing}
-      </div>
-    `;
   }
 
   private handleWbTextBlur(e: FocusEvent) {

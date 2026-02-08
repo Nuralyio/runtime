@@ -18,7 +18,6 @@ import {
   NODE_ICONS,
   isAgentNode,
   isNoteNode,
-  isPersistentTriggerNode,
   WorkflowNodeType,
   DbDesignerNodeType,
 } from './workflow-canvas.types.js';

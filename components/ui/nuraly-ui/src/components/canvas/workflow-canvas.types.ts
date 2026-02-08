@@ -76,7 +76,7 @@ export enum AgentNodeType {
   MEMORY = 'MEMORY',
   CONTEXT_MEMORY = 'CONTEXT_MEMORY',
   PROMPT = 'PROMPT',
-  LLM = 'LLM',
+  LLM = 'AGENT_LLM',
   RETRIEVER = 'RETRIEVER',
   CHAIN = 'CHAIN',
   ROUTER = 'ROUTER',

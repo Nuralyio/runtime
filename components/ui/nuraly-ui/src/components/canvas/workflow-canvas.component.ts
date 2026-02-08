@@ -514,11 +514,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (!this.workflow.id) return;
 
     try {
-      // Dynamically import APIS_URL to avoid circular deps at module level
-      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
-
       // Step 1: Get all triggers for this workflow
-      const triggersRes = await fetch(APIS_URL.getWorkflowTriggers(this.workflow.id));
+      const triggersRes = await fetch(`/api/v1/workflows/${this.workflow.id}/triggers`);
       if (!triggersRes.ok) return;
       const triggers: Array<{ id: string; type: string; name: string }> = await triggersRes.json();
 
@@ -530,7 +527,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
       const statusPromises = persistentTriggers.map(async (trigger) => {
         try {
-          const statusRes = await fetch(APIS_URL.getTriggerStatus(trigger.id));
+          const statusRes = await fetch(`/api/v1/triggers/${trigger.id}/status`);
           if (!statusRes.ok) return null;
           const status = await statusRes.json();
           return { trigger, status };
@@ -574,8 +571,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   async activateTrigger(triggerId: string) {
     try {
-      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
-      const res = await fetch(APIS_URL.activateTrigger(triggerId), { method: 'POST' });
+      const res = await fetch(`/api/v1/triggers/${triggerId}/activate`, { method: 'POST' });
       if (res.ok) {
         // Refresh statuses after activation
         await this.fetchTriggerStatuses();
@@ -590,8 +586,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   async deactivateTrigger(triggerId: string) {
     try {
-      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
-      const res = await fetch(APIS_URL.deactivateTrigger(triggerId), { method: 'POST' });
+      const res = await fetch(`/api/v1/triggers/${triggerId}/deactivate`, { method: 'POST' });
       if (res.ok) {
         // Refresh statuses after deactivation
         await this.fetchTriggerStatuses();
