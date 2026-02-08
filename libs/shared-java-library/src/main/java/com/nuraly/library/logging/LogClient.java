@@ -68,27 +68,49 @@ public class LogClient {
 
     private Connection connection;
     private Channel channel;
+    private final Object connectionLock = new Object();
 
     @PostConstruct
     void init() {
         if (!enabled) {
             return;
         }
-        try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(host);
-            factory.setPort(port);
-            factory.setUsername(username);
-            factory.setPassword(password);
+        connect();
+    }
 
-            connection = factory.newConnection();
-            channel = connection.createChannel();
-            channel.queueDeclare(queueName, true, false, false, null);
+    private void connect() {
+        synchronized (connectionLock) {
+            try {
+                if (channel != null && channel.isOpen()) {
+                    return;
+                }
 
-            LOGGER.info("Connected to RabbitMQ and declared queue: " + queueName);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to connect to RabbitMQ: " + e.getMessage() + ". Logs will not be published.");
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost(host);
+                factory.setPort(port);
+                factory.setUsername(username);
+                factory.setPassword(password);
+                factory.setAutomaticRecoveryEnabled(true);
+                factory.setNetworkRecoveryInterval(5000);
+
+                connection = factory.newConnection();
+                channel = connection.createChannel();
+                channel.queueDeclare(queueName, true, false, false, null);
+
+                LOGGER.info("Connected to RabbitMQ and declared queue: " + queueName);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to connect to RabbitMQ: " + e.getMessage() + ". Logs will not be published.");
+                channel = null;
+                connection = null;
+            }
         }
+    }
+
+    private Channel getChannel() {
+        if (channel == null || !channel.isOpen()) {
+            connect();
+        }
+        return channel;
     }
 
     @PreDestroy
@@ -251,17 +273,20 @@ public class LogClient {
     }
 
     private void publishLog(LogRequest request) {
-        if (channel == null || !channel.isOpen()) {
-            LOGGER.fine("RabbitMQ channel not available, skipping log");
+        Channel ch = getChannel();
+        if (ch == null) {
+            LOGGER.warning("RabbitMQ channel not available, skipping log for type: " + request.getType());
             return;
         }
 
         try {
             String message = objectMapper.writeValueAsString(request);
-            channel.basicPublish("", queueName, null, message.getBytes(StandardCharsets.UTF_8));
+            ch.basicPublish("", queueName, null, message.getBytes(StandardCharsets.UTF_8));
             LOGGER.fine("Published log to queue: " + queueName);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to publish log to RabbitMQ: " + e.getMessage());
+            // Reset channel so next call attempts reconnection
+            channel = null;
         }
     }
 }
