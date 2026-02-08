@@ -18,10 +18,10 @@ import {
   ExecutionStatus,
   WorkflowNodeType,
   NodeConfiguration,
+  TriggerConnectionState,
   createNodeFromTemplate,
   isFrameNode,
-  isWhiteboardNode,
-  WhiteboardNodeType,
+  isPersistentTriggerNode,
   type UndoProvider,
 } from './workflow-canvas.types.js';
 import type { DatabaseProvider } from './data-node/data-node.types.js';
@@ -47,6 +47,7 @@ import {
   ClipboardController,
   UndoController,
   FrameController,
+  CollaborationController,
   type MarqueeState,
 } from './controllers/index.js';
 
@@ -59,6 +60,8 @@ import {
   renderEmptyStateTemplate,
   renderConfigPanelTemplate,
   renderEdgesTemplate,
+  renderRemoteCursorsTemplate,
+  renderPresenceBarTemplate,
 } from './templates/index.js';
 
 // Interfaces
@@ -213,6 +216,12 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: Boolean })
   listenToExecutionEvents = false;
 
+  @property({ type: String, attribute: 'canvas-id' })
+  canvasId: string = '';
+
+  @property({ type: Boolean, attribute: 'collaborative' })
+  collaborative: boolean = false;
+
   /**
    * Current execution ID to display in config panel.
    * Set this from the parent component when an execution is active.
@@ -317,9 +326,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private marqueeState: MarqueeState | null = null;
 
   @state()
-  private _wbActiveColorPicker: 'fill' | 'text' | null = null;
-
-  @state()
   // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
   private lastMousePosition: Position | null = null;
 
@@ -363,6 +369,18 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   private editingNoteId: string | null = null;
 
+  // Trigger status polling
+  private triggerStatuses: Map<string, {
+    triggerId: string;
+    connectionState: TriggerConnectionState;
+    health?: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | 'UNKNOWN';
+    messagesReceived?: number;
+    lastMessageAt?: string;
+    stateReason?: string;
+  }> = new Map();
+
+  private triggerPollingInterval: ReturnType<typeof setInterval> | null = null;
+
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
 
@@ -383,6 +401,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private keyboardController!: KeyboardController;
   private undoController!: UndoController;
   private frameController!: FrameController;
+  private collaborationController!: CollaborationController;
 
   constructor() {
     super();
@@ -418,6 +437,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
     // Set frame controller on drag controller for frame-aware movement
     this.dragController.setFrameController(this.frameController);
+
+    this.collaborationController = new CollaborationController(this as unknown as CanvasHost & LitElement);
   }
 
   // CanvasHost interface methods for controllers
@@ -433,6 +454,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.addEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     await this.updateComplete;
     this.viewportController.updateTransform();
+
+    if (this.collaborative && this.canvasId) {
+      this.collaborationController.connect(this.canvasId, 'WORKFLOW');
+    }
+
+    // Start trigger status polling if workflow has persistent trigger nodes
+    this.startTriggerPollingIfNeeded();
   }
 
   override disconnectedCallback() {
@@ -442,6 +470,135 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.removeEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     // Clean up chat preview resources
     this.cleanupChatPreview();
+    // Clean up trigger polling
+    this.stopTriggerPolling();
+  }
+
+  override willUpdate(changedProperties: Map<string | number | symbol, unknown>) {
+    super.willUpdate(changedProperties);
+
+    if (this.collaborative && changedProperties.has('selectedNodeIds')) {
+      this.collaborationController.broadcastSelectionChange(Array.from(this.selectedNodeIds));
+    }
+
+    // Restart trigger polling when workflow changes (new triggers may be added/removed)
+    if (changedProperties.has('workflow')) {
+      this.startTriggerPollingIfNeeded();
+    }
+  }
+
+  // ---- Trigger Status Polling ----
+
+  private hasPersistentTriggerNodes(): boolean {
+    return this.workflow.nodes.some(n => isPersistentTriggerNode(n.type));
+  }
+
+  private startTriggerPollingIfNeeded() {
+    if (this.hasPersistentTriggerNodes() && !this.triggerPollingInterval) {
+      // Fetch immediately, then poll every 10s
+      this.fetchTriggerStatuses();
+      this.triggerPollingInterval = setInterval(() => this.fetchTriggerStatuses(), 10_000);
+    } else if (!this.hasPersistentTriggerNodes() && this.triggerPollingInterval) {
+      this.stopTriggerPolling();
+    }
+  }
+
+  private stopTriggerPolling() {
+    if (this.triggerPollingInterval) {
+      clearInterval(this.triggerPollingInterval);
+      this.triggerPollingInterval = null;
+    }
+  }
+
+  private async fetchTriggerStatuses() {
+    if (!this.workflow.id) return;
+
+    try {
+      // Dynamically import APIS_URL to avoid circular deps at module level
+      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
+
+      // Step 1: Get all triggers for this workflow
+      const triggersRes = await fetch(APIS_URL.getWorkflowTriggers(this.workflow.id));
+      if (!triggersRes.ok) return;
+      const triggers: Array<{ id: string; type: string; name: string }> = await triggersRes.json();
+
+      // Step 2: For each persistent trigger, fetch its status
+      const persistentTypes = new Set([
+        'TELEGRAM_BOT', 'SLACK_SOCKET', 'DISCORD_BOT', 'WHATSAPP_WEBHOOK', 'CUSTOM_WEBSOCKET',
+      ]);
+      const persistentTriggers = triggers.filter(t => persistentTypes.has(t.type));
+
+      const statusPromises = persistentTriggers.map(async (trigger) => {
+        try {
+          const statusRes = await fetch(APIS_URL.getTriggerStatus(trigger.id));
+          if (!statusRes.ok) return null;
+          const status = await statusRes.json();
+          return { trigger, status };
+        } catch {
+          return null;
+        }
+      });
+
+      const results = await Promise.all(statusPromises);
+
+      // Step 3: Map trigger statuses to node types
+      // Match triggers to nodes by type (e.g., TELEGRAM_BOT trigger -> TELEGRAM_BOT node)
+      const newStatuses = new Map<string, typeof this.triggerStatuses extends Map<string, infer V> ? V : never>();
+
+      for (const result of results) {
+        if (!result) continue;
+        const { trigger, status } = result;
+        // Find the node in the workflow that matches this trigger type
+        const matchingNode = this.workflow.nodes.find(n => n.type === trigger.type);
+        if (matchingNode) {
+          newStatuses.set(matchingNode.id, {
+            triggerId: trigger.id,
+            connectionState: (status.connectionState || 'DISCONNECTED') as TriggerConnectionState,
+            health: status.health,
+            messagesReceived: status.messagesReceived,
+            lastMessageAt: status.lastMessageAt,
+            stateReason: status.stateReason,
+          });
+        }
+      }
+
+      this.triggerStatuses = newStatuses;
+      this.requestUpdate();
+    } catch {
+      // Silently fail - trigger status is non-critical
+    }
+  }
+
+  /**
+   * Activate a persistent trigger (start its connection)
+   */
+  async activateTrigger(triggerId: string) {
+    try {
+      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
+      const res = await fetch(APIS_URL.activateTrigger(triggerId), { method: 'POST' });
+      if (res.ok) {
+        // Refresh statuses after activation
+        await this.fetchTriggerStatuses();
+      }
+    } catch {
+      // Silently fail
+    }
+  }
+
+  /**
+   * Deactivate a persistent trigger (stop its connection)
+   */
+  async deactivateTrigger(triggerId: string) {
+    try {
+      const { APIS_URL } = await import('../../../../../../../../services/constants.js');
+      const res = await fetch(APIS_URL.deactivateTrigger(triggerId), { method: 'POST' });
+      if (res.ok) {
+        // Refresh statuses after deactivation
+        await this.fetchTriggerStatuses();
+      }
+    } catch {
+      // Silently fail
+    }
   }
 
   /**
@@ -473,6 +630,11 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleGlobalMouseUp = (e: MouseEvent) => {
     if (this.disabled) return;
+
+    // Capture drag state before stopping to broadcast MOVE operations
+    const wasDragging = this.dragState;
+    const draggedNodeIds = wasDragging ? new Set(this.selectedNodeIds) : null;
+
     this.dragController.stopDrag();
     this.viewportController.stopPan();
     this.connectionController.cancelConnection();
@@ -480,6 +642,19 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     // End marquee selection
     if (this.marqueeState) {
       this.marqueeController.endSelection(e.shiftKey);
+    }
+
+    // Broadcast MOVE for all dragged nodes
+    if (this.collaborative && wasDragging && draggedNodeIds) {
+      for (const nodeId of draggedNodeIds) {
+        const node = this.workflow.nodes.find(n => n.id === nodeId);
+        if (node) {
+          this.collaborationController.broadcastOperation('MOVE', nodeId, {
+            x: node.position.x,
+            y: node.position.y,
+          });
+        }
+      }
     }
   };
 
@@ -493,6 +668,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         x: (e.clientX - rect.left - this.viewport.panX) / this.viewport.zoom,
         y: (e.clientY - rect.top - this.viewport.panY) / this.viewport.zoom,
       };
+    }
+
+    if (this.collaborative && this.lastMousePosition) {
+      this.collaborationController.broadcastCursorMove(this.lastMousePosition.x, this.lastMousePosition.y);
     }
 
     if (this.dragState) {
@@ -512,8 +691,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleCanvasMouseDown = (e: MouseEvent) => {
     if (this.disabled) return;
-    // Close any open whiteboard color picker
-    if (this._wbActiveColorPicker) this._wbActiveColorPicker = null;
     const target = e.target as HTMLElement;
     const isCanvasBackground = target.classList.contains('canvas-grid') || target.classList.contains('canvas-wrapper');
 
@@ -597,25 +774,22 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (this.disabled) return;
     const { node } = e.detail;
 
-    // For NOTE nodes and whiteboard text nodes, enter inline edit mode instead of opening config panel
-    if (node.type === WorkflowNodeType.NOTE || node.type === 'WB_STICKY_NOTE' || node.type === 'WB_TEXT_BLOCK') {
+    // For NOTE nodes, enter inline edit mode instead of opening config panel
+    if (node.type === WorkflowNodeType.NOTE) {
       if (this.readonly) return;
       this.editingNoteId = node.id;
+      if (this.collaborative) {
+        this.collaborationController.broadcastTypingStart(node.id);
+      }
       // Focus the textarea after render
       this.updateComplete.then(() => {
         const nodeEl = this.shadowRoot?.querySelector(`workflow-node[data-node-id="${node.id}"]`);
-        const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea, .wb-textarea') as HTMLTextAreaElement;
+        const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea') as HTMLTextAreaElement;
         if (textarea) {
           textarea.focus();
           textarea.select();
         }
       });
-      return;
-    }
-
-    // For all other whiteboard nodes, open config panel but skip workflow variable fetch
-    if (isWhiteboardNode(node.type)) {
-      this.configuredNode = node;
       return;
     }
 
@@ -903,7 +1077,29 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handleNodeTrigger(e: CustomEvent) {
-    const { node } = e.detail;
+    const { node } = e.detail as { node: WorkflowNode };
+
+    // For persistent trigger nodes, activate/deactivate instead of running workflow
+    if (isPersistentTriggerNode(node.type)) {
+      const status = this.triggerStatuses.get(node.id);
+      if (status) {
+        const isActive = status.connectionState === TriggerConnectionState.CONNECTED
+          || status.connectionState === TriggerConnectionState.CONNECTING;
+        if (isActive) {
+          this.deactivateTrigger(status.triggerId);
+        } else {
+          this.activateTrigger(status.triggerId);
+        }
+      }
+      // Also bubble up for the host to handle if needed
+      this.dispatchEvent(new CustomEvent('trigger-toggle', {
+        detail: { node, triggerStatus: status },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
+
     console.log('[Canvas] Node trigger clicked:', node.name, node.type);
     // Bubble up the trigger event for workflow execution
     this.dispatchEvent(new CustomEvent('workflow-trigger', {
@@ -974,7 +1170,16 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private handlePortMouseUp(e: CustomEvent) {
     if (this.disabled) return;
     const { node, port, isInput } = e.detail;
+    const edgesBefore = this.workflow.edges.length;
     this.connectionController.completeConnection(node, port, isInput);
+
+    // Broadcast new edge if one was created
+    if (this.collaborative && this.workflow.edges.length > edgesBefore) {
+      const newEdge = this.workflow.edges[this.workflow.edges.length - 1];
+      if (newEdge) {
+        this.collaborationController.broadcastOperation('ADD_CONNECTOR', newEdge.id, { edge: newEdge });
+      }
+    }
   }
 
   // Note: Connection line update is now in ConnectionController
@@ -1017,6 +1222,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         this.frameController.updateAllFrameContainments();
       }
       this.dispatchWorkflowChanged();
+      if (this.collaborative) {
+        this.collaborationController.broadcastOperation('ADD', newNode.id, { node: newNode });
+      }
     }
   }
 
@@ -1511,6 +1719,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
 
     this.dispatchWorkflowChanged();
+    if (this.collaborative) {
+      this.collaborationController.broadcastOperation('UPDATE', frame.id, { frameLabel: newLabel });
+    }
   }
 
   // ===== NOTE NODE EDITING =====
@@ -1520,15 +1731,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
    */
   private handleNoteContentChange(e: CustomEvent) {
     const { node, content } = e.detail;
-    // Whiteboard nodes use 'textContent', workflow notes use 'noteContent'
-    const configKey = isWhiteboardNode(node.type) ? 'textContent' : 'noteContent';
     const updatedNodes = this.workflow.nodes.map(n => {
       if (n.id === node.id) {
         return {
           ...n,
           configuration: {
             ...n.configuration,
-            [configKey]: content,
+            noteContent: content,
           },
         };
       }
@@ -1541,12 +1750,18 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
 
     this.dispatchWorkflowChanged();
+    if (this.collaborative) {
+      this.collaborationController.broadcastOperation('UPDATE_TEXT', node.id, { noteContent: content });
+    }
   }
 
   /**
    * Handle note edit end
    */
   private handleNoteEditEnd(_e: CustomEvent) {
+    if (this.collaborative && this.editingNoteId) {
+      this.collaborationController.broadcastTypingStop(this.editingNoteId);
+    }
     this.editingNoteId = null;
   }
 
@@ -1643,6 +1858,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       showToolbar: this.showToolbar,
       mode: this.mode,
       showPalette: this.showPalette,
+      canvasType: this.canvasType,
       hasSelection: this.selectedNodeIds.size > 0 || this.selectedEdgeIds.size > 0,
       hasSingleSelection: this.selectedNodeIds.size === 1,
       readonly: this.readonly,
@@ -1685,224 +1901,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       onNodeDoubleClick: (type) => this.addNode(type),
       onSearchChange: (term) => { this.paletteSearchTerm = term; },
     });
-  }
-
-  // ==================== Whiteboard Floating Toolbar ====================
-
-  private getSelectedWhiteboardNode(): WorkflowNode | null {
-    if (this.canvasType !== CanvasType.WHITEBOARD) return null;
-    if (this.selectedNodeIds.size !== 1) return null;
-    const nodeId = Array.from(this.selectedNodeIds)[0];
-    const node = this.workflow?.nodes.find(n => n.id === nodeId);
-    if (!node || !isWhiteboardNode(node.type)) return null;
-    return node;
-  }
-
-  private getNodeScreenPosition(node: WorkflowNode): { x: number; y: number } {
-    const config = node.configuration || {};
-    const width = (config.width as number) || 200;
-    const x = (node.position.x + width / 2) * this.viewport.zoom + this.viewport.panX;
-    const y = node.position.y * this.viewport.zoom + this.viewport.panY;
-    return { x, y };
-  }
-
-  private wbHasText(node: WorkflowNode): boolean {
-    return node.type === WhiteboardNodeType.STICKY_NOTE ||
-           node.type === WhiteboardNodeType.TEXT_BLOCK ||
-           node.type === WhiteboardNodeType.VOTING;
-  }
-
-  private wbHasFill(node: WorkflowNode): boolean {
-    return node.type !== WhiteboardNodeType.DRAWING &&
-           node.type !== WhiteboardNodeType.SHAPE_LINE &&
-           node.type !== WhiteboardNodeType.SHAPE_ARROW;
-  }
-
-  private handleWbToolbarAction(nodeId: string, key: string, value: unknown) {
-    const updatedNodes = this.workflow.nodes.map(n => {
-      if (n.id === nodeId) {
-        return {
-          ...n,
-          configuration: { ...n.configuration, [key]: value },
-        };
-      }
-      return n;
-    });
-    this.setWorkflow({ ...this.workflow, nodes: updatedNodes });
-    this.dispatchWorkflowChanged();
-  }
-
-  private handleWbDeleteNode(nodeId: string) {
-    this.selectionController.deleteSelected();
-  }
-
-  private _handleWbColorHolderClick(type: 'fill' | 'text', e: MouseEvent) {
-    e.stopPropagation();
-    this._wbActiveColorPicker = this._wbActiveColorPicker === type ? null : type;
-  }
-
-  private renderWbFloatingToolbar() {
-    const node = this.getSelectedWhiteboardNode();
-    if (!node || this.readonly || this.editingNoteId) {
-      if (this._wbActiveColorPicker) this._wbActiveColorPicker = null;
-      return nothing;
-    }
-
-    const pos = this.getNodeScreenPosition(node);
-    const hasText = this.wbHasText(node);
-    const hasFill = this.wbHasFill(node);
-    const config = node.configuration || {};
-
-    const nodeWidth = ((config.width as number) || 200) * this.viewport.zoom;
-    const toolbarStyles = {
-      left: `${pos.x + nodeWidth / 2}px`,
-      top: `${pos.y - 52}px`,
-    };
-
-    const fontFamilyOptions = [
-      { value: 'Inter, sans-serif', label: 'Inter' },
-      { value: 'Arial, sans-serif', label: 'Arial' },
-      { value: 'Georgia, serif', label: 'Georgia' },
-      { value: 'Courier New, monospace', label: 'Courier New' },
-      { value: 'Comic Sans MS, cursive', label: 'Comic Sans' },
-      { value: 'Verdana, sans-serif', label: 'Verdana' },
-    ];
-
-    // Color picker panel rendered OUTSIDE the toolbar (no transform ancestor)
-    const renderColorPicker = () => {
-      if (!this._wbActiveColorPicker) return nothing;
-      const holderEl = this.shadowRoot?.querySelector(
-        `.wb-color-trigger-${this._wbActiveColorPicker}`
-      ) as HTMLElement;
-      if (!holderEl) return nothing;
-
-      const rect = holderEl.getBoundingClientRect();
-      const canvasRect = this.getBoundingClientRect();
-      const pickerStyles = {
-        left: `${rect.left - canvasRect.left}px`,
-        top: `${rect.bottom - canvasRect.top + 6}px`,
-      };
-
-      const isFill = this._wbActiveColorPicker === 'fill';
-      const currentColor = isFill
-        ? (config.backgroundColor || config.fillColor || '#fef08a')
-        : (config.textColor || '#1a1a1a');
-      const presets = isFill
-        ? ['#fef08a', '#bbf7d0', '#bfdbfe', '#fecaca', '#e9d5ff', '#fed7aa', '#ffffff', '#f3f4f6']
-        : ['#1a1a1a', '#374151', '#713f12', '#1e3a5f', '#7f1d1d', '#4c1d95', '#ffffff'];
-      const configKey = isFill ? 'backgroundColor' : 'textColor';
-
-      return html`
-        <div class="wb-color-picker-panel" style=${styleMap(pickerStyles)} @mousedown=${(e: MouseEvent) => e.stopPropagation()}>
-          <div class="wb-picker-presets">
-            ${presets.map(c => html`
-              <button
-                class="wb-picker-swatch ${currentColor === c ? 'active' : ''}"
-                style="background: ${c};"
-                @click=${() => this.handleWbToolbarAction(node.id, configKey, c)}
-              ></button>
-            `)}
-          </div>
-          <div class="wb-picker-custom">
-            <input
-              type="color"
-              class="wb-picker-native"
-              .value=${currentColor}
-              @input=${(e: Event) => this.handleWbToolbarAction(node.id, configKey, (e.target as HTMLInputElement).value)}
-            />
-            <nr-input
-              type="text"
-              size="small"
-              variant="outlined"
-              .value=${currentColor}
-              placeholder="#hex"
-              style="flex: 1;"
-              @nr-input=${(e: CustomEvent) => {
-                const val = (e.target as any).value;
-                if (val && CSS.supports('color', val)) {
-                  this.handleWbToolbarAction(node.id, configKey, val);
-                }
-              }}
-            ></nr-input>
-          </div>
-        </div>
-      `;
-    };
-
-    return html`
-      <div class="wb-floating-toolbar" style=${styleMap(toolbarStyles)} @mousedown=${(e: MouseEvent) => e.stopPropagation()}>
-        ${hasFill ? html`
-          <div class="wb-toolbar-group">
-            <label class="wb-toolbar-label">Fill</label>
-            <nr-colorholder-box
-              class="wb-color-trigger-fill"
-              .color=${config.backgroundColor || config.fillColor || '#fef08a'}
-              size="small"
-              @click=${(e: MouseEvent) => this._handleWbColorHolderClick('fill', e)}
-            ></nr-colorholder-box>
-          </div>
-        ` : nothing}
-
-        ${hasText ? html`
-          <div class="wb-toolbar-divider"></div>
-          <div class="wb-toolbar-group">
-            <label class="wb-toolbar-label">Text</label>
-            <nr-colorholder-box
-              class="wb-color-trigger-text"
-              .color=${config.textColor || '#1a1a1a'}
-              size="small"
-              @click=${(e: MouseEvent) => this._handleWbColorHolderClick('text', e)}
-            ></nr-colorholder-box>
-          </div>
-          <div class="wb-toolbar-divider"></div>
-          <div class="wb-toolbar-group">
-            <label class="wb-toolbar-label">Size</label>
-            <nr-input
-              type="number"
-              size="small"
-              variant="outlined"
-              .value=${String(config.fontSize || 14)}
-              min="8"
-              max="120"
-              step="1"
-              style="width: 80px;"
-              @nr-input=${(e: CustomEvent) => {
-                const val = parseInt((e.target as any).value, 10);
-                if (!isNaN(val) && val > 0) {
-                  this.handleWbToolbarAction(node.id, 'fontSize', val);
-                }
-              }}
-            ></nr-input>
-          </div>
-          <div class="wb-toolbar-divider"></div>
-          <div class="wb-toolbar-group">
-            <label class="wb-toolbar-label">Font</label>
-            <nr-select
-              size="small"
-              .options=${fontFamilyOptions}
-              .value=${config.fontFamily || 'Inter, sans-serif'}
-              placeholder="Font"
-              style="width: 130px;"
-              @nr-change=${(e: CustomEvent) => {
-                const select = e.target as any;
-                const selected = select.value;
-                if (selected) {
-                  this.handleWbToolbarAction(node.id, 'fontFamily', selected);
-                }
-              }}
-            ></nr-select>
-          </div>
-        ` : nothing}
-
-        <div class="wb-toolbar-divider"></div>
-        <div class="wb-toolbar-group">
-          <button class="wb-toolbar-btn danger" title="Delete" @click=${() => this.handleWbDeleteNode(node.id)}>
-            <nr-icon name="trash-2" size="small"></nr-icon>
-          </button>
-        </div>
-      </div>
-      ${renderColorPicker()}
-    `;
   }
 
   private renderContextMenu() {
@@ -2266,6 +2264,33 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  // ==================== Collaboration Renders ====================
+
+  private handlePanToUser(userId: string): void {
+    const cursors = this.collaborationController.getCursors();
+    const cursor = cursors.find(c => c.userId === userId);
+    if (cursor) {
+      this.viewportController.panToPosition(cursor.x, cursor.y);
+    }
+  }
+
+  private renderRemoteCursors() {
+    if (!this.collaborative) return nothing;
+    return renderRemoteCursorsTemplate({
+      cursors: this.collaborationController.getCursors(),
+      viewport: this.viewport,
+    });
+  }
+
+  private renderPresenceBar() {
+    if (!this.collaborative) return nothing;
+    return renderPresenceBarTemplate({
+      users: this.collaborationController.getUsers(),
+      connected: this.collaborationController.isConnected(),
+      onUserClick: (userId: string) => this.handlePanToUser(userId),
+    });
+  }
+
   override render() {
     return html`
       <div
@@ -2297,14 +2322,25 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
           <!-- Nodes layer -->
           <div class="nodes-layer">
-            ${this.getVisibleNonFrameNodes().map(node => html`
+            ${this.getVisibleNonFrameNodes().map(node => {
+              // Enrich node with trigger status if available
+              const enrichedNode = this.triggerStatuses.has(node.id)
+                ? { ...node, triggerStatus: this.triggerStatuses.get(node.id) }
+                : node;
+              return html`
               <workflow-node
                 data-node-id=${node.id}
-                .node=${node}
+                .node=${enrichedNode}
                 ?selected=${this.selectedNodeIds.has(node.id)}
                 ?dragging=${this.dragState?.nodeId === node.id}
                 ?editing=${this.editingNoteId === node.id}
                 .connectingPortId=${this.connectionState?.sourcePortId || null}
+                .remoteSelection=${this.collaborative
+                  ? this.collaborationController.isElementSelectedByRemote(node.id)
+                  : null}
+                .remoteTyping=${this.collaborative
+                  ? this.collaborationController.isElementBeingTypedByRemote(node.id)
+                  : null}
                 @node-mousedown=${this.handleNodeMouseDown}
                 @node-dblclick=${this.handleNodeDblClick}
                 @node-preview=${this.handleNodePreview}
@@ -2316,14 +2352,15 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
                 @note-resize-start=${this.handleNoteResizeStart}
                 @note-settings=${this.handleNoteSettings}
               ></workflow-node>
-            `)}
+            `; })}
           </div>
         </div>
 
+        ${this.renderRemoteCursors()}
         ${this.renderMarqueeBox()}
         ${this.renderEmptyState()}
         ${this.renderDisabledOverlay()}
-        ${this.renderWbFloatingToolbar()}
+        ${this.renderPresenceBar()}
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}

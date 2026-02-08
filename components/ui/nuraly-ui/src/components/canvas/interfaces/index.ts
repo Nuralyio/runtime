@@ -13,3 +13,5 @@ export {
   type ContextMenuState,
   type CanvasViewport,
 } from './canvas-host.interface.js';
+
+export * from './collaboration.interface.js';

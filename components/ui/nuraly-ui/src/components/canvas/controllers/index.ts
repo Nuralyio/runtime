@@ -36,3 +36,6 @@ export { UndoController } from './undo.controller.js';
 
 // Frame controller for frame node operations
 export { FrameController } from './frame.controller.js';
+
+// Collaboration controller for real-time multi-user sync
+export { CollaborationController } from './collaboration.controller.js';

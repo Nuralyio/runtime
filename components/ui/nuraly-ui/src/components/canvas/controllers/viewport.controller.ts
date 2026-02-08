@@ -211,6 +211,25 @@ export class ViewportController extends BaseCanvasController {
   }
 
   /**
+   * Pan the viewport to center on a specific canvas coordinate.
+   * Preserves the current zoom level.
+   */
+  panToPosition(canvasX: number, canvasY: number): void {
+    const wrapper = this.canvasWrapper;
+    if (!wrapper) return;
+
+    const rect = wrapper.getBoundingClientRect();
+    const { zoom } = this._host.viewport;
+
+    const panX = rect.width / 2 - canvasX * zoom;
+    const panY = rect.height / 2 - canvasY * zoom;
+
+    this._host.viewport = { zoom, panX, panY };
+    this.updateTransform();
+    this._host.dispatchViewportChanged();
+  }
+
+  /**
    * Reset view to default
    */
   resetView(): void {

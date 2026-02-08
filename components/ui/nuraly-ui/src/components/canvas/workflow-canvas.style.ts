@@ -2565,166 +2565,120 @@ export const workflowCanvasStyles = css`
   }
 
   /* ========================================
-   * WHITEBOARD FLOATING TOOLBAR
+   * COLLABORATION: REMOTE CURSORS
    * ======================================== */
 
-  .wb-floating-toolbar {
+  .remote-cursor {
     position: absolute;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 10px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
-    pointer-events: auto;
-    white-space: nowrap;
+    pointer-events: none;
+    z-index: 9999;
+    transition: left 50ms linear, top 50ms linear;
+    will-change: left, top;
   }
 
-  .wb-color-picker-panel {
-    position: absolute;
-    z-index: 1001;
-    pointer-events: auto;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
-    padding: 8px;
-    width: 200px;
+  .remote-cursor svg {
+    display: block;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
   }
 
-  .wb-picker-presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 8px;
-  }
-
-  .wb-picker-swatch {
-    width: 24px;
-    height: 24px;
+  .remote-cursor-label {
+    display: inline-block;
+    margin-left: 16px;
+    margin-top: -2px;
+    padding: 2px 8px;
     border-radius: 4px;
-    border: 1.5px solid #d1d5db;
-    cursor: pointer;
-    padding: 0;
-    transition: transform 0.1s ease, border-color 0.1s ease;
+    font-family: var(--nuraly-font-family);
+    font-size: 11px;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
-  .wb-picker-swatch:hover {
-    transform: scale(1.15);
-    border-color: #9ca3af;
-  }
+  /* ========================================
+   * COLLABORATION: PRESENCE BAR
+   * ======================================== */
 
-  .wb-picker-swatch.active {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1.5px #3b82f6;
-  }
-
-  .wb-picker-custom {
+  .presence-bar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    pointer-events: auto;
   }
 
-  .wb-picker-native {
-    width: 32px;
-    height: 32px;
-    padding: 1px;
-    border: 1.5px solid #d1d5db;
-    border-radius: 6px;
-    background: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  .wb-picker-native::-webkit-color-swatch-wrapper {
-    padding: 2px;
-  }
-
-  .wb-picker-native::-webkit-color-swatch {
-    border: none;
-    border-radius: 3px;
-  }
-
-  .wb-picker-native::-moz-color-swatch {
-    border: none;
-    border-radius: 3px;
-  }
-
-  .wb-picker-native:hover {
-    border-color: #9ca3af;
-  }
-
-  .wb-toolbar-group {
+  .presence-avatars {
     display: flex;
-    align-items: center;
-    gap: 4px;
+    flex-direction: row-reverse;
   }
 
-  .wb-toolbar-label {
-    font-size: 10px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-right: 2px;
-    user-select: none;
-  }
-
-  .wb-toolbar-divider {
-    width: 1px;
-    height: 20px;
-    background: #e5e7eb;
-    margin: 0 4px;
-  }
-
-  .wb-floating-toolbar nr-colorholder-box {
-    cursor: pointer;
-  }
-
-  .wb-floating-toolbar nr-input {
-    --nr-input-height: 28px;
-    --nr-input-font-size: 12px;
-  }
-
-  .wb-floating-toolbar nr-select {
-    --nr-select-height: 28px;
-    --nr-select-font-size: 12px;
-  }
-
-  .wb-toolbar-btn {
+  .presence-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    background: #f9fafb;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    margin-left: -8px;
+    cursor: default;
+    position: relative;
+    transition: transform 0.15s ease;
+  }
+
+  .presence-avatar-clickable {
     cursor: pointer;
-    transition: all 0.1s ease;
-    color: #374151;
   }
 
-  .wb-toolbar-btn:hover {
-    background: #e5e7eb;
+  .presence-avatar:hover {
+    transform: scale(1.15);
+    z-index: 1;
   }
 
-  .wb-toolbar-btn.danger:hover {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #dc2626;
+  .presence-avatar-clickable:hover {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.6);
   }
 
-  .wb-toolbar-btn nr-icon {
-    --icon-size: 14px;
+  .presence-avatar:last-child {
+    margin-left: 0;
   }
+
+  .presence-avatar-typing {
+    animation: presence-typing-pulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes presence-typing-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); }
+  }
+
+  .presence-avatar-extra {
+    background: #6b7280 !important;
+    font-size: 10px;
+  }
+
+  .presence-count {
+    font-family: var(--nuraly-font-family);
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+
 `;
 
 export const styles = workflowCanvasStyles;
