@@ -368,6 +368,7 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
+                <quarkus.native.additional-build-args>-H:+AllowDeprecatedBuilderClassesOnImageClasspath</quarkus.native.additional-build-args>
             </properties>
         </profile>
     </profiles>
