@@ -97,6 +97,234 @@ services:
       timeout: 10s
       retries: 3
 
+  # Workflow Engine
+  workflows:
+    build:
+      context: ./services/workflows
+      dockerfile: Dockerfile
+    expose:
+      - "7002"
+    environment:
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/workflows_prod
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=postgres
+      - NURALY_FUNCTIONS_SERVICE_URL=http://functions:9000
+      - NURALY_KV_SERVICE_URL=http://kv:7003
+      - NURALY_CONDUIT_SERVICE_URL=http://conduit:7004
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+      - WORKFLOWS_WEBHOOK_BASE_URL=http://workflows:7002
+      - QUARKUS_REDIS_HOSTS=redis://redis:6379
+    env_file:
+      - config/prod.env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+      - api
+      - functions
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7002/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # KV Storage Service
+  kv:
+    build:
+      context: ./services/kv
+      dockerfile: Dockerfile
+    expose:
+      - "7003"
+    environment:
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/kv_prod
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=postgres
+      - KV_MASTER_KEY=${KV_MASTER_KEY}
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/prod.env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7003/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Conduit - Database Connection & Query Service
+  conduit:
+    build:
+      context: ./services/conduit
+      dockerfile: Dockerfile
+    expose:
+      - "7004"
+    environment:
+      - KV_SERVICE_URL=http://kv:7003
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/prod.env
+    depends_on:
+      - kv
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7004/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Journal - Audit Log Service
+  journal:
+    build:
+      context: ./services/journal
+      dockerfile: Dockerfile
+    expose:
+      - "7005"
+    environment:
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/journal_prod
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=postgres
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    env_file:
+      - config/prod.env
+    depends_on:
+      - postgres
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7005/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Parcour - Web Crawler Service
+  parcour:
+    build:
+      context: ./services/parcour
+      dockerfile: Dockerfile
+    expose:
+      - "7007"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+      - RABBITMQ_QUEUE=crawl-requests
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/prod.env
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7007/q/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # TextLens - OCR API Service
+  textlens-api:
+    build:
+      context: ./services/textlens
+      dockerfile: Dockerfile.api
+    expose:
+      - "7006"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - PERMISSION_API_BASE_URL=http://api:8000/api
+      - PERMISSIONS_API_URL=http://api:8000/api/permissions/has
+    env_file:
+      - config/prod.env
+    depends_on:
+      - redis
+      - rabbitmq
+      - api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # TextLens - OCR Worker Service
+  textlens-worker:
+    build:
+      context: ./services/textlens
+      dockerfile: Dockerfile.worker
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    env_file:
+      - config/prod.env
+    depends_on:
+      - redis
+      - rabbitmq
+      - textlens-api
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
+  # Deno Worker - Function Execution Workers
+  deno-worker:
+    build:
+      context: ./services/functions/worker
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - EXECUTE_QUEUE=functions.execute
+      - RESULTS_QUEUE=functions.results
+      - DLQ_QUEUE=functions.dlq
+      - PREFETCH_COUNT=5
+      - DEFAULT_TIMEOUT=30000
+      - ALLOWED_HOSTS=esm.sh,cdn.jsdelivr.net,cdn.skypack.dev,unpkg.com,esm.run
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 2
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # API Gateway (handles all routing like in dev)
   gateway:
     build:
@@ -108,12 +336,20 @@ services:
       - NODE_ENV=production
       - API_URL=http://api:8000
       - FUNCTIONS_URL=http://functions:9000
+      - WORKFLOWS_URL=http://workflows:7002
+      - KV_URL=http://kv:7003
+      - CONDUIT_URL=http://conduit:7004
       - REDIS_URL=redis://redis:6379
     env_file:
       - config/prod.env
     depends_on:
       - api
       - functions
+      - workflows
+      - kv
+      - conduit
+      - journal
+      - textlens-api
       - redis
       - keycloak
     networks:
