@@ -25,6 +25,13 @@ public enum NodeType {
     LLM,            // LLM node - call AI providers (OpenAI, Anthropic, Gemini) with tool calling
     CHATBOT,        // Chatbot trigger - legacy/alternative chatbot trigger
 
+    // Slack integration nodes
+    SLACK_SEND_MESSAGE,     // Send message to Slack channel or user
+    SLACK_GET_CHANNEL_INFO, // Get information about a Slack channel
+    SLACK_LIST_CHANNELS,    // List available Slack channels
+    SLACK_ADD_REACTION,     // Add reaction emoji to a Slack message
+    SLACK_UPLOAD_FILE,      // Upload file to Slack channel
+
     // Agent nodes
     AGENT,          // Autonomous AI agent that can use tools
     TOOL,           // A tool that can be used by an agent

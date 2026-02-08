@@ -1,5 +1,6 @@
 package com.nuraly.workflows.entity;
 
+import com.nuraly.workflows.entity.enums.TriggerDesiredState;
 import com.nuraly.workflows.entity.enums.TriggerType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
@@ -41,6 +42,40 @@ public class WorkflowTriggerEntity extends PanacheEntityBase {
     // For webhooks
     @Column(name = "webhook_token", unique = true)
     public String webhookToken;
+
+    // For persistent triggers (Telegram, Slack Socket Mode, etc.)
+    /**
+     * Reference key for credentials (stored securely elsewhere).
+     * e.g., "telegram_bot_prod" or "slack_app_dev"
+     */
+    @Column(name = "credential_key")
+    public String credentialKey;
+
+    /**
+     * Environment tag for dev/prod switching.
+     */
+    @Column(name = "environment")
+    public String environment = "production";
+
+    /**
+     * Whether this is the primary trigger for the credential.
+     * Primary triggers have priority when multiple triggers share the same credential.
+     */
+    @Column(name = "is_primary")
+    public Boolean isPrimary = false;
+
+    /**
+     * Desired state of the trigger (what user wants).
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "desired_state")
+    public TriggerDesiredState desiredState = TriggerDesiredState.ACTIVE;
+
+    /**
+     * Buffer queue name for message buffering during handoffs.
+     */
+    @Column(name = "buffer_queue")
+    public String bufferQueue;
 
     @Column(name = "created_at")
     public Instant createdAt;
