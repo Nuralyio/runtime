@@ -1,17 +1,14 @@
-# Build stage
-FROM maven:3.9-eclipse-temurin-21 AS build
+# Build stage - GraalVM native image
+FROM ghcr.io/graalvm/graalvm-community:21 AS build
+RUN microdnf install -y findutils
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn package -DskipTests
+RUN mvn package -Pnative -DskipTests
 
-# Runtime stage
-FROM eclipse-temurin:21-jre
+# Runtime stage - minimal distroless
+FROM quay.io/quarkus/quarkus-micro-image:2.0
 WORKDIR /app
-COPY --from=build /app/target/quarkus-app/lib/ /app/lib/
-COPY --from=build /app/target/quarkus-app/*.jar /app/
-COPY --from=build /app/target/quarkus-app/app/ /app/app/
-COPY --from=build /app/target/quarkus-app/quarkus/ /app/quarkus/
+COPY --from=build /app/target/*-runner /app/application
 EXPOSE 7005
-ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-CMD ["java", "-jar", "/app/quarkus-run.jar"]
+CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
