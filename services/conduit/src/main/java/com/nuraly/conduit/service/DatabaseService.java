@@ -129,7 +129,7 @@ public class DatabaseService {
 
                 logClient.info("query", null, Map.of(
                         "action", "execute",
-                        "operation", request.getOperation() != null ? request.getOperation().name() : "unknown",
+                        "operation", request.getOperation() != null ? request.getOperation() : "unknown",
                         "table", request.getTable() != null ? request.getTable() : "unknown",
                         "schema", request.getSchema() != null ? request.getSchema() : "default",
                         "db_type", credential.getType() != null ? credential.getType() : "unknown",
