@@ -63,7 +63,7 @@ export const workflowsListStyles = css`
     color: var(--nuraly-color-primary, #14144b);
   }
 
-  /* Pin icon styles - follows dashboard color scheme */
+  /* Pin icon styles */
   .pin-icon {
     cursor: pointer;
     --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
@@ -78,7 +78,6 @@ export const workflowsListStyles = css`
     --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
   }
 
-  /* Unpin icon in cards - follows dashboard color scheme */
   .unpin-icon {
     cursor: pointer;
     --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
@@ -94,6 +93,7 @@ export const workflowsListStyles = css`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px;
+    align-items: stretch;
   }
 
   /* Card styles */
@@ -102,6 +102,8 @@ export const workflowsListStyles = css`
     transition: box-shadow 150ms ease;
     --nuraly-card-padding: 14px;
     --nuraly-card-border-radius: 8px;
+    height: 100%;
+    box-sizing: border-box;
   }
 
   .pinned-grid nr-card:hover {
@@ -209,6 +211,13 @@ export const workflowsListStyles = css`
     display: flex;
     gap: 6px;
     justify-content: flex-end;
+  }
+
+  /* Workflow name cell with template badge */
+  .workflow-name-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
 
   /* nr-table styling overrides */
@@ -497,13 +506,49 @@ export const workflowsListStyles = css`
     margin: 0;
   }
 
+  .template-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
   .template-card-category {
     font-size: 10px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--nuraly-color-text-tertiary, #8c8ca8);
-    margin-top: 12px;
+  }
+
+  .template-card-nodes {
+    font-size: 10px;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .template-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .template-section-title:not(:first-child) {
+    margin-top: 20px;
+  }
+
+  .template-card-icon.user-template {
+    background: var(--nuraly-color-primary, #14144b);
+    --nuraly-icon-color: white;
+  }
+
+  .template-app-select {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
   }
 
   .template-modal-footer {
@@ -537,6 +582,310 @@ export const workflowsListStyles = css`
     background: var(--nuraly-color-background-hover, #f5f5f7);
     color: var(--nuraly-color-text, #0f0f3c);
     --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  /* Draggable workflow name cursor hint */
+  .workflow-name[draggable="true"] {
+    cursor: grab;
+  }
+
+  .workflow-name[draggable="true"]:active {
+    cursor: grabbing;
+  }
+
+  /* ─── Breadcrumb bar ────────────────────────────────────────── */
+
+  .breadcrumb-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .breadcrumb-segment {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 150ms ease;
+  }
+
+  .breadcrumb-segment:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+    color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .breadcrumb-segment.active {
+    color: var(--nuraly-color-text, #0f0f3c);
+    font-weight: 600;
+    cursor: default;
+  }
+
+  .breadcrumb-segment.root.drag-over {
+    background: var(--nuraly-color-primary-bg, #f0f0ff);
+    outline: 2px dashed var(--nuraly-color-primary, #14144b);
+  }
+
+  .breadcrumb-segment svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+  }
+
+  .breadcrumb-separator {
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    font-size: 12px;
+    user-select: none;
+  }
+
+  /* ─── New Folder button ─────────────────────────────────────── */
+
+  .new-folder-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px dashed var(--nuraly-color-border, #e8e8f0);
+    border-radius: 6px;
+    background: var(--nuraly-color-surface, #ffffff);
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 150ms ease;
+  }
+
+  .new-folder-btn:hover {
+    color: var(--nuraly-color-primary, #14144b);
+    border-color: var(--nuraly-color-primary, #14144b);
+    background: var(--nuraly-color-primary-bg, #f0f0ff);
+  }
+
+  .new-folder-btn svg {
+    stroke: currentColor;
+  }
+
+  /* ─── Loading state ─────────────────────────────────────────── */
+
+  .loading-folder {
+    text-align: center;
+    padding: 12px;
+    font-size: 13px;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  /* ─── Folder container ───────────────────────────────────── */
+
+  .folder-container {
+    padding: 16px;
+    background: var(--nuraly-color-background, #fafafa);
+    border: 1px solid var(--nuraly-color-border, #e8e8f0);
+    border-radius: 10px;
+  }
+
+  .folder-container.collapsed {
+    padding: 10px 16px;
+  }
+
+  .folder-container-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .folder-container:not(.collapsed) .folder-container-header {
+    margin-bottom: 12px;
+  }
+
+  .folder-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    border: none;
+    background: transparent;
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 150ms ease;
+    flex-shrink: 0;
+  }
+
+  .folder-toggle-btn:hover {
+    color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .folder-toggle-btn svg {
+    stroke: currentColor;
+    transition: transform 150ms ease;
+  }
+
+  /* ─── Folder icon & count (shared) ────────────────────────── */
+
+  .folder-icon {
+    flex-shrink: 0;
+    stroke: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .folder-item-count {
+    font-size: 11px;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    padding: 1px 6px;
+    background: var(--nuraly-color-background-active, #e8e8f0);
+    border-radius: 10px;
+  }
+
+  /* ─── Folder drop target ────────────────────────────────────── */
+
+  .folder-drop-target {
+    background: var(--nuraly-color-primary-bg, #f0f0ff) !important;
+    outline: 2px dashed var(--nuraly-color-primary, #14144b);
+    outline-offset: -2px;
+  }
+
+  /* ─── Folder cards (cards view) ─────────────────────────────── */
+
+  .folder-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    background: var(--nuraly-color-surface, #ffffff);
+    border: 1px solid var(--nuraly-color-border, #e8e8f0);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 150ms ease;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .folder-card:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+    border-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .folder-card.folder-drop-target {
+    background: var(--nuraly-color-primary-bg, #f0f0ff);
+    border-color: var(--nuraly-color-primary, #14144b);
+    border-style: dashed;
+  }
+
+  .folder-card.new-folder {
+    border-style: dashed;
+    border-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .folder-card-icon {
+    stroke: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .folder-card:hover .folder-card-icon {
+    stroke: var(--nuraly-color-primary, #14144b);
+  }
+
+  .folder-card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--nuraly-color-text, #0f0f3c);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  /* ─── New folder input ──────────────────────────────────────── */
+
+  .new-folder-input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0;
+  }
+
+  .new-folder-input,
+  .rename-folder-input {
+    padding: 5px 10px;
+    border: 1px solid var(--nuraly-color-primary, #14144b);
+    border-radius: 6px;
+    background: var(--nuraly-color-surface, #ffffff);
+    color: var(--nuraly-color-text, #0f0f3c);
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    outline: none;
+    width: 160px;
+    box-shadow: 0 0 0 2px rgba(20, 20, 75, 0.1);
+  }
+
+  .new-folder-input::placeholder {
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    font-weight: 400;
+  }
+
+  /* ─── Context menu ──────────────────────────────────────────── */
+
+  .context-menu {
+    position: fixed;
+    z-index: 1000;
+    background: var(--nuraly-color-surface, #ffffff);
+    border: 1px solid var(--nuraly-color-border, #e8e8f0);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    padding: 4px;
+    min-width: 140px;
+    animation: fadeIn 100ms ease;
+  }
+
+  .context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--nuraly-color-text, #0f0f3c);
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 100ms ease;
+  }
+
+  .context-menu-item:hover {
+    background: var(--nuraly-color-background-hover, #f5f5f7);
+  }
+
+  .context-menu-item.danger {
+    color: var(--nuraly-color-danger, #dc2626);
+  }
+
+  .context-menu-item.danger:hover {
+    background: #fef2f2;
+  }
+
+  .context-menu-item svg {
+    flex-shrink: 0;
+  }
+
+  .context-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 `;
 

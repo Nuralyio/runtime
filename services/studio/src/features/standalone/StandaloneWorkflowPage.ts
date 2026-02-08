@@ -177,6 +177,20 @@ export class StandaloneWorkflowPage extends LitElement {
       background: var(--n-color-surface-hover, #f9fafb);
     }
 
+    .toolbar-button.template-active {
+      background: var(--n-color-primary, #3b82f6);
+      color: white;
+      border: 1px solid var(--n-color-primary, #3b82f6);
+    }
+
+    .toolbar-button.template-active:hover {
+      background: var(--n-color-primary-dark, #2563eb);
+    }
+
+    .toolbar-button svg {
+      flex-shrink: 0;
+    }
+
     .canvas-container {
       flex: 1;
       overflow: hidden;
@@ -319,6 +333,12 @@ export class StandaloneWorkflowPage extends LitElement {
 
   @state()
   private isExecuting = false;
+
+  @state()
+  private isTemplate = false;
+
+  @state()
+  private togglingTemplate = false;
 
   @state()
   private nodeStatuses: Record<string, NodeStatus> = {};
@@ -524,6 +544,7 @@ export class StandaloneWorkflowPage extends LitElement {
       // Store IDs separately so they survive canvas events
       this.loadedWorkflowId = workflow.id;
       this.loadedApplicationId = workflow.applicationId || null;
+      this.isTemplate = !!(workflow as any).isTemplate;
 
       // Load KV entries for this application (needed for API key selects etc.)
       if (this.loadedApplicationId) {
@@ -925,6 +946,20 @@ export class StandaloneWorkflowPage extends LitElement {
     await this.saveWorkflow();
   }
 
+  private async handleToggleTemplate(): Promise<void> {
+    if (!this.workflowId || this.togglingTemplate) return;
+    this.togglingTemplate = true;
+    try {
+      const newValue = !this.isTemplate;
+      await workflowService.setTemplate(this.workflowId, newValue);
+      this.isTemplate = newValue;
+    } catch (error) {
+      console.error('[StandaloneWorkflow] Failed to toggle template:', error);
+    } finally {
+      this.togglingTemplate = false;
+    }
+  }
+
   private getSaveStatusLabel(): string {
     switch (this.saveStatus) {
       case 'saved':
@@ -998,6 +1033,20 @@ export class StandaloneWorkflowPage extends LitElement {
             ${!this.readonly
               ? html`
                   <button
+                    class="toolbar-button ${this.isTemplate ? 'template-active' : 'secondary'}"
+                    @click=${this.handleToggleTemplate}
+                    ?disabled=${this.togglingTemplate}
+                    title=${this.isTemplate ? 'Remove from templates' : 'Save as template'}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    ${this.isTemplate ? 'Template' : 'Save as Template'}
+                  </button>
+                  <button
                     class="toolbar-button secondary"
                     @click=${this.handleManualSave}
                     ?disabled=${this.saveStatus === 'saving'}
@@ -1043,6 +1092,8 @@ export class StandaloneWorkflowPage extends LitElement {
             .applicationId=${this.loadedApplicationId || ''}
             .kvEntries=${this.kvEntries.map(e => ({ keyPath: e.keyPath, value: e.value, isSecret: e.isSecret }))}
             .onCreateKvEntry=${(detail: any) => this.handleCreateKvEntry(detail)}
+            canvas-id=${this.workflowId}
+            ?collaborative=${true}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}

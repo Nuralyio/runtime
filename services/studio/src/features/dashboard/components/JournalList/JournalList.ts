@@ -6,7 +6,6 @@
 import { html, LitElement, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import styles from './JournalList.style';
-import { formatDate } from '../../services/dashboard.service';
 import {
   $journalState,
   queryLogs,
@@ -39,6 +38,7 @@ const SERVICE_OPTIONS = [
   { value: 'parcour', label: 'Parcour' },
   { value: 'gateway', label: 'Gateway' },
   { value: 'api', label: 'API' },
+  { value: 'textlens', label: 'TextLens' },
 ];
 
 const LEVEL_OPTIONS = [
@@ -69,13 +69,17 @@ export class DashboardJournalList extends LitElement {
   @state() private error: string | null = null;
   @state() private total = 0;
   @state() private offset = 0;
-  @state() private limit = 50;
+  @state() private limit = 20;
   @state() private filters: JournalFilters = {};
   @state() private streaming = false;
   @state() private stats: { totalLogs: number; errorCount: number; warnCount: number } | null = null;
   @state() private selectedLog: JournalLogEntry | null = null;
+  @state() private detailPanelWidth = 420;
+  @state() private isResizing = false;
 
   private unsubscribes: (() => void)[] = [];
+  private boundHandleResizeMove = this.handleResizeMove.bind(this);
+  private boundHandleResizeEnd = this.handleResizeEnd.bind(this);
 
   override connectedCallback() {
     super.connectedCallback();
@@ -112,6 +116,8 @@ export class DashboardJournalList extends LitElement {
     this.unsubscribes.forEach(unsub => unsub());
     this.unsubscribes = [];
     stopStreaming();
+    document.removeEventListener('mousemove', this.boundHandleResizeMove);
+    document.removeEventListener('mouseup', this.boundHandleResizeEnd);
   }
 
   private handleServiceFilter(e: CustomEvent) {
@@ -171,6 +177,26 @@ export class DashboardJournalList extends LitElement {
 
   private handleCloseDetail() {
     selectLog(null);
+  }
+
+  private handleResizeStart(e: MouseEvent) {
+    e.preventDefault();
+    this.isResizing = true;
+    document.addEventListener('mousemove', this.boundHandleResizeMove);
+    document.addEventListener('mouseup', this.boundHandleResizeEnd);
+  }
+
+  private handleResizeMove(e: MouseEvent) {
+    if (!this.isResizing) return;
+    const hostRect = this.getBoundingClientRect();
+    const newWidth = hostRect.right - e.clientX;
+    this.detailPanelWidth = Math.max(280, Math.min(newWidth, hostRect.width * 0.7));
+  }
+
+  private handleResizeEnd() {
+    this.isResizing = false;
+    document.removeEventListener('mousemove', this.boundHandleResizeMove);
+    document.removeEventListener('mouseup', this.boundHandleResizeEnd);
   }
 
   private removeFilter(key: keyof JournalFilters) {
@@ -287,40 +313,10 @@ export class DashboardJournalList extends LitElement {
     if (!this.stats) return nothing;
 
     return html`
-      <div class="stats-bar">
-        <div class="stat-card">
-          <div class="stat-icon total">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">${this.stats.totalLogs.toLocaleString()}</span>
-            <span class="stat-label">Total Logs</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon errors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">${this.stats.errorCount.toLocaleString()}</span>
-            <span class="stat-label">Errors</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon warnings">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
-            </svg>
-          </div>
-          <div class="stat-content">
-            <span class="stat-value">${this.stats.warnCount.toLocaleString()}</span>
-            <span class="stat-label">Warnings</span>
-          </div>
-        </div>
+      <div class="stats-inline">
+        <nr-tag color="blue" size="small">${this.stats.totalLogs.toLocaleString()} logs</nr-tag>
+        <nr-tag color="red" size="small">${this.stats.errorCount.toLocaleString()} errors</nr-tag>
+        <nr-tag color="gold" size="small">${this.stats.warnCount.toLocaleString()} warnings</nr-tag>
       </div>
     `;
   }
@@ -367,6 +363,7 @@ export class DashboardJournalList extends LitElement {
           ` : nothing}
         </div>
         <div class="toolbar-actions">
+          ${this.renderStats()}
           ${this.streaming ? html`
             <span class="streaming-indicator">
               <span class="streaming-dot"></span>
@@ -479,6 +476,7 @@ export class DashboardJournalList extends LitElement {
         <nr-table
           .headers=${this.getTableHeaders()}
           .rows=${this.logs}
+          .pageSize=${15}
           size="small"
           emptyText="No logs found"
           clickable
@@ -519,80 +517,79 @@ export class DashboardJournalList extends LitElement {
     `;
   }
 
-  private renderDetailModal() {
+  private renderDetailPanel() {
     if (!this.selectedLog) return nothing;
 
     const log = this.selectedLog;
     const jsonData = log.data ? this.formatJson(log.data) : null;
 
     return html`
-      <div class="detail-overlay" @click=${this.handleCloseDetail}>
-        <div class="detail-modal" @click=${(e: Event) => e.stopPropagation()}>
-          <div class="detail-header">
-            <div class="detail-header-left">
-              <span class="level-badge ${log.level}">${log.level}</span>
-              <h3 class="detail-title">${this.extractMessage(log)}</h3>
-            </div>
-            <button class="detail-close" @click=${this.handleCloseDetail}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
+      <div class="resize-handle ${this.isResizing ? 'active' : ''}" @mousedown=${this.handleResizeStart}></div>
+      <div class="detail-panel" style="width: ${this.detailPanelWidth}px">
+        <div class="detail-header">
+          <div class="detail-header-left">
+            <span class="level-badge ${log.level}">${log.level}</span>
+            <h3 class="detail-title">${this.extractMessage(log)}</h3>
           </div>
-          <div class="detail-body">
-            <div class="detail-section">
-              <h4 class="detail-section-title">Details</h4>
-              <div class="detail-fields">
-                <div class="detail-field">
-                  <span class="detail-field-label">Timestamp</span>
-                  <span class="detail-field-value">${this.formatTimestamp(log.timestamp)}</span>
-                </div>
-                <div class="detail-field">
-                  <span class="detail-field-label">Service</span>
-                  <span class="detail-field-value"><span class="service-tag">${log.service}</span></span>
-                </div>
-                <div class="detail-field">
-                  <span class="detail-field-label">Type</span>
-                  <span class="detail-field-value"><span class="type-tag">${log.type}</span></span>
-                </div>
-                <div class="detail-field">
-                  <span class="detail-field-label">Log ID</span>
-                  <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.id}</span>
-                </div>
-                ${log.traceId ? html`
-                  <div class="detail-field">
-                    <span class="detail-field-label">Trace ID</span>
-                    <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.traceId}</span>
-                  </div>
-                ` : nothing}
-                ${log.executionId ? html`
-                  <div class="detail-field">
-                    <span class="detail-field-label">Execution ID</span>
-                    <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.executionId}</span>
-                  </div>
-                ` : nothing}
-                ${log.workflowId ? html`
-                  <div class="detail-field">
-                    <span class="detail-field-label">Workflow ID</span>
-                    <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.workflowId}</span>
-                  </div>
-                ` : nothing}
-                ${log.userId ? html`
-                  <div class="detail-field">
-                    <span class="detail-field-label">User ID</span>
-                    <span class="detail-field-value">${log.userId}</span>
-                  </div>
-                ` : nothing}
+          <button class="detail-close" @click=${this.handleCloseDetail}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="detail-body">
+          <div class="detail-section">
+            <h4 class="detail-section-title">Details</h4>
+            <div class="detail-fields">
+              <div class="detail-field">
+                <span class="detail-field-label">Timestamp</span>
+                <span class="detail-field-value">${this.formatTimestamp(log.timestamp)}</span>
               </div>
+              <div class="detail-field">
+                <span class="detail-field-label">Service</span>
+                <span class="detail-field-value"><span class="service-tag">${log.service}</span></span>
+              </div>
+              <div class="detail-field">
+                <span class="detail-field-label">Type</span>
+                <span class="detail-field-value"><span class="type-tag">${log.type}</span></span>
+              </div>
+              <div class="detail-field">
+                <span class="detail-field-label">Log ID</span>
+                <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.id}</span>
+              </div>
+              ${log.traceId ? html`
+                <div class="detail-field">
+                  <span class="detail-field-label">Trace ID</span>
+                  <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.traceId}</span>
+                </div>
+              ` : nothing}
+              ${log.executionId ? html`
+                <div class="detail-field">
+                  <span class="detail-field-label">Execution ID</span>
+                  <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.executionId}</span>
+                </div>
+              ` : nothing}
+              ${log.workflowId ? html`
+                <div class="detail-field">
+                  <span class="detail-field-label">Workflow ID</span>
+                  <span class="detail-field-value" style="font-family: var(--nuraly-font-mono); font-size: 11px;">${log.workflowId}</span>
+                </div>
+              ` : nothing}
+              ${log.userId ? html`
+                <div class="detail-field">
+                  <span class="detail-field-label">User ID</span>
+                  <span class="detail-field-value">${log.userId}</span>
+                </div>
+              ` : nothing}
             </div>
+          </div>
 
-            ${jsonData ? html`
-              <div class="detail-section">
-                <h4 class="detail-section-title">Data</h4>
-                <div class="json-viewer" .innerHTML=${this.syntaxHighlight(jsonData)}></div>
-              </div>
-            ` : nothing}
-          </div>
+          ${jsonData ? html`
+            <div class="detail-section">
+              <h4 class="detail-section-title">Data</h4>
+              <div class="json-viewer" .innerHTML=${this.syntaxHighlight(jsonData)}></div>
+            </div>
+          ` : nothing}
         </div>
       </div>
     `;
@@ -600,11 +597,14 @@ export class DashboardJournalList extends LitElement {
 
   render() {
     return html`
-      ${this.renderStats()}
       ${this.renderToolbar()}
       ${this.renderActiveFilters()}
-      ${this.renderTable()}
-      ${this.renderDetailModal()}
+      <div class="journal-content">
+        <div class="table-area">
+          ${this.renderTable()}
+        </div>
+        ${this.renderDetailPanel()}
+      </div>
     `;
   }
 }

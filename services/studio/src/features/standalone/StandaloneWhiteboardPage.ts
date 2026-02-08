@@ -3,13 +3,12 @@
  * A whiteboard canvas editor that can be accessed directly via URL.
  * Route: /dashboard/whiteboard/edit/{whiteboardId}
  *
- * Follows the same pattern as StandaloneWorkflowPage, reusing <workflow-canvas>
- * with canvasType='WHITEBOARD'.
+ * Uses the dedicated <whiteboard-canvas> element for whiteboard editing.
  */
 
 import { customElement, property, state } from 'lit/decorators.js';
 import { html, LitElement, css } from 'lit';
-import '../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component';
+import '../runtime/components/ui/nuraly-ui/src/components/canvas/whiteboard-canvas.component';
 import type {
   Workflow,
   WorkflowNode,
@@ -17,7 +16,6 @@ import type {
   CanvasViewport,
 } from '../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types';
 import {
-  CanvasType,
   WhiteboardNodeType,
   PortType,
   NODE_ICONS,
@@ -49,6 +47,7 @@ const ELEMENT_TYPE_TO_NODE_TYPE: Record<string, WhiteboardNodeType> = {
   'DRAWING': WhiteboardNodeType.DRAWING,
   'FRAME': WhiteboardNodeType.FRAME,
   'VOTING': WhiteboardNodeType.VOTING,
+  'MERMAID_DIAGRAM': WhiteboardNodeType.MERMAID,
 };
 
 /** Reverse map: WhiteboardNodeType → backend elementType string */
@@ -288,7 +287,7 @@ export class StandaloneWhiteboardPage extends LitElement {
       position: relative;
     }
 
-    workflow-canvas {
+    whiteboard-canvas {
       width: 100%;
       height: 100%;
     }
@@ -681,12 +680,13 @@ export class StandaloneWhiteboardPage extends LitElement {
         </div>
 
         <div class="canvas-container">
-          <workflow-canvas
+          <whiteboard-canvas
             .workflow=${this.workflow}
-            .canvasType=${'WHITEBOARD'}
+            canvas-id=${this.whiteboardId}
+            ?collaborative=${true}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @viewport-changed=${this.handleViewportChanged}
-          ></workflow-canvas>
+          ></whiteboard-canvas>
         </div>
       </div>
     `;

@@ -1,5 +1,6 @@
 import { APIS_URL } from './constants';
 import type { Workflow, WorkflowNode, WorkflowEdge } from '../features/runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types';
+import type { WorkflowTemplateDefinition } from './workflow-templates';
 
 export interface WorkflowDTO {
   id: string;
@@ -12,6 +13,7 @@ export interface WorkflowDTO {
   viewport?: string; // JSON string: {"zoom": 1, "panX": 0, "panY": 0}
   nodes: WorkflowNodeDTO[];
   edges: WorkflowEdgeDTO[];
+  isTemplate?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -46,6 +48,45 @@ export interface CreateWorkflowDTO {
   name: string;
   description?: string;
   applicationId: string;
+}
+
+export interface TriggerDTO {
+  id: string;
+  workflowId: string;
+  name: string;
+  type: string;
+  configuration: string;
+  enabled: boolean;
+  webhookToken?: string;
+  webhookUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastTriggeredAt?: string;
+}
+
+export interface TriggerStatusDTO {
+  triggerId: string;
+  name: string;
+  type: string;
+  desiredState?: string;
+  connectionState: string;
+  ownerInstance?: string;
+  lastHeartbeat?: string;
+  connectedSince?: string;
+  messagesReceived?: number;
+  lastMessageAt?: string;
+  stateReason?: string;
+  health?: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | 'UNKNOWN';
+  healthMessage?: string;
+  inDevMode?: boolean;
+  devModeTriggerId?: string;
+  devModeExpiresAt?: string;
+}
+
+export interface TriggerActivationResult {
+  success: boolean;
+  triggerId: string;
+  message?: string;
 }
 
 export interface ExecutionResult {
@@ -178,12 +219,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export const workflowService = {
   // Get all workflows across all applications
-  async getAllWorkflows(): Promise<(Workflow & { applicationId: string })[]> {
+  async getAllWorkflows(): Promise<(Workflow & { applicationId: string; isTemplate: boolean })[]> {
     const response = await fetch(APIS_URL.getAllWorkflows());
     const dtos = await handleResponse<WorkflowDTO[]>(response);
     return dtos.map(dto => ({
       ...dtoToWorkflow(dto),
       applicationId: dto.applicationId,
+      isTemplate: dto.isTemplate ?? false,
     }));
   },
 
@@ -207,6 +249,128 @@ export const workflowService = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, description, applicationId }),
+    });
+    const dto = await handleResponse<WorkflowDTO>(response);
+    return dtoToWorkflow(dto);
+  },
+
+  // Create a workflow from a template definition (sends nodes + edges)
+  async createWorkflowFromTemplate(
+    applicationId: string,
+    template: WorkflowTemplateDefinition,
+    customName?: string
+  ): Promise<Workflow> {
+    // Build node DTOs from the template, mapping tempIds to placeholder UUIDs
+    // The backend will generate real UUIDs — we use tempIds to wire edges
+    const tempIdToPlaceholder = new Map<string, string>();
+    template.nodes.forEach((n, i) => {
+      // Use a predictable placeholder UUID format the backend will replace
+      const placeholder = `00000000-0000-0000-0000-${String(i + 1).padStart(12, '0')}`;
+      tempIdToPlaceholder.set(n.tempId, placeholder);
+    });
+
+    const nodes: Partial<WorkflowNodeDTO>[] = template.nodes.map(n => ({
+      name: n.name,
+      type: n.type,
+      configuration: n.configuration,
+      ports: n.ports,
+      positionX: n.positionX,
+      positionY: n.positionY,
+    }));
+
+    const edges: Partial<WorkflowEdgeDTO>[] = template.edges.map(e => ({
+      sourceNodeId: tempIdToPlaceholder.get(e.sourceTempId),
+      sourcePortId: e.sourcePortId,
+      targetNodeId: tempIdToPlaceholder.get(e.targetTempId),
+      targetPortId: e.targetPortId,
+      label: e.label,
+    }));
+
+    // Step 1: Create the workflow (empty)
+    const createResponse = await fetch(APIS_URL.createWorkflow(), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: customName || template.name,
+        description: template.description,
+        applicationId,
+      }),
+    });
+    const created = await handleResponse<WorkflowDTO>(createResponse);
+    const workflowId = created.id;
+
+    // Step 2: Add nodes one by one and collect real IDs
+    const tempIdToRealId = new Map<string, string>();
+    for (let i = 0; i < template.nodes.length; i++) {
+      const nodePayload = { ...nodes[i], workflowId };
+      const nodeResponse = await fetch(APIS_URL.addWorkflowNode(workflowId), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nodePayload),
+      });
+      const nodeDto = await handleResponse<WorkflowNodeDTO>(nodeResponse);
+      tempIdToRealId.set(template.nodes[i].tempId, nodeDto.id);
+    }
+
+    // Step 3: Add edges using real node IDs
+    for (const tmplEdge of template.edges) {
+      const edgePayload = {
+        workflowId,
+        sourceNodeId: tempIdToRealId.get(tmplEdge.sourceTempId),
+        sourcePortId: tmplEdge.sourcePortId,
+        targetNodeId: tempIdToRealId.get(tmplEdge.targetTempId),
+        targetPortId: tmplEdge.targetPortId,
+        label: tmplEdge.label,
+      };
+      await fetch(APIS_URL.addWorkflowEdge(workflowId), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(edgePayload),
+      });
+    }
+
+    // Step 4: Fetch the complete workflow with all nodes/edges
+    const finalResponse = await fetch(APIS_URL.getWorkflow(workflowId));
+    const finalDto = await handleResponse<WorkflowDTO>(finalResponse);
+    return dtoToWorkflow(finalDto);
+  },
+
+  // Get all workflow templates
+  async getTemplates(): Promise<(Workflow & { applicationId: string; isTemplate: boolean })[]> {
+    const response = await fetch(APIS_URL.getWorkflowTemplates());
+    const dtos = await handleResponse<WorkflowDTO[]>(response);
+    return dtos.map(dto => ({
+      ...dtoToWorkflow(dto),
+      applicationId: dto.applicationId,
+      isTemplate: dto.isTemplate ?? false,
+    }));
+  },
+
+  // Set or unset a workflow as a template
+  async setTemplate(workflowId: string, isTemplate: boolean): Promise<WorkflowDTO> {
+    const response = await fetch(APIS_URL.setWorkflowTemplate(workflowId), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isTemplate }),
+    });
+    return handleResponse<WorkflowDTO>(response);
+  },
+
+  // Create a new workflow from a user template
+  async createFromTemplate(templateId: string, name: string, applicationId: string): Promise<Workflow> {
+    const response = await fetch(APIS_URL.createFromTemplate(templateId), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, applicationId }),
+    });
+    const dto = await handleResponse<WorkflowDTO>(response);
+    return dtoToWorkflow(dto);
+  },
+
+  // Clone an existing workflow
+  async cloneWorkflow(workflowId: string): Promise<Workflow> {
+    const response = await fetch(APIS_URL.cloneWorkflow(workflowId), {
+      method: 'POST',
     });
     const dto = await handleResponse<WorkflowDTO>(response);
     return dtoToWorkflow(dto);
@@ -338,5 +502,32 @@ export const workflowService = {
   async getExecution(executionId: string): Promise<ExecutionResult> {
     const response = await fetch(APIS_URL.getWorkflowExecution(executionId));
     return handleResponse<ExecutionResult>(response);
+  },
+
+  // Trigger operations
+  async getTriggers(workflowId: string): Promise<TriggerDTO[]> {
+    const response = await fetch(APIS_URL.getWorkflowTriggers(workflowId));
+    return handleResponse<TriggerDTO[]>(response);
+  },
+
+  async getTriggerStatus(triggerId: string): Promise<TriggerStatusDTO> {
+    const response = await fetch(APIS_URL.getTriggerStatus(triggerId));
+    return handleResponse<TriggerStatusDTO>(response);
+  },
+
+  async activateTrigger(triggerId: string): Promise<TriggerActivationResult> {
+    const response = await fetch(APIS_URL.activateTrigger(triggerId), {
+      method: 'POST',
+    });
+    return handleResponse<TriggerActivationResult>(response);
+  },
+
+  async deactivateTrigger(triggerId: string): Promise<void> {
+    const response = await fetch(APIS_URL.deactivateTrigger(triggerId), {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to deactivate trigger');
+    }
   },
 };
