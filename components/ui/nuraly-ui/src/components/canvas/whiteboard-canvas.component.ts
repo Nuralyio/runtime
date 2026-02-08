@@ -15,7 +15,6 @@ import {
   Position,
   CanvasMode,
   CanvasType,
-  NodeConfiguration,
   createNodeFromTemplate,
   isFrameNode,
   isWhiteboardNode,
@@ -200,9 +199,6 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
   private panStart: Position = { x: 0, y: 0 };
-
-  @state()
-  private expandedCategories: Set<string> = new Set();
 
   @state()
   private configuredNode: WorkflowNode | null = null;
