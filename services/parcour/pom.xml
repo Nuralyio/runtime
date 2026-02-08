@@ -98,6 +98,13 @@
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
 
+        <!-- Shared Library (LogClient + Permissions) -->
+        <dependency>
+            <groupId>com.github.Nuralyio</groupId>
+            <artifactId>shared-java-library</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -230,6 +237,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <profiles>
         <profile>
