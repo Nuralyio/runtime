@@ -24,6 +24,10 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nuraly.workflows.dto.CreateFromTemplateRequest;
+import com.nuraly.workflows.entity.WorkflowTriggerEntity;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,12 +58,29 @@ public class WorkflowService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<WorkflowDTO> getWorkflows(String applicationId, String userHeader) {
+    private static final Map<NodeType, Set<String>> SENSITIVE_CONFIG_KEYS = Map.of(
+            NodeType.LLM, Set.of("apiKeyPath", "apiUrlPath"),
+            NodeType.EMBEDDING, Set.of("apiKeyPath", "apiUrlPath"),
+            NodeType.VECTOR_SEARCH, Set.of("apiKeyPath", "apiUrlPath"),
+            NodeType.CONTEXT_MEMORY, Set.of("embeddingApiKeyPath", "embeddingApiUrlPath"),
+            NodeType.FILE_STORAGE, Set.of("storageConfigPath"),
+            NodeType.DATABASE, Set.of("connectionPath"),
+            NodeType.HTTP, Set.of("headers")
+    );
+
+    public List<WorkflowDTO> getWorkflows(String applicationId, String userHeader, Boolean isTemplate) {
         List<WorkflowEntity> entities;
         if (applicationId != null && !applicationId.isEmpty()) {
             entities = WorkflowEntity.list("applicationId", applicationId);
         } else {
             entities = WorkflowEntity.listAll();
+        }
+
+        // Filter by template flag
+        if (isTemplate != null) {
+            entities = entities.stream()
+                    .filter(e -> isTemplate.equals(e.isTemplate))
+                    .collect(Collectors.toList());
         }
 
         // Skip permission filtering if disabled
@@ -248,6 +269,131 @@ public class WorkflowService {
         }
 
         return workflowDTOMapper.toDTO(clone);
+    }
+
+    // Template Management
+
+    public List<WorkflowDTO> getTemplates() {
+        List<WorkflowEntity> entities = WorkflowEntity.list("isTemplate", true);
+        return workflowDTOMapper.toDTOList(entities);
+    }
+
+    public WorkflowDTO setTemplate(UUID workflowId, boolean isTemplate) throws WorkflowNotFoundException {
+        WorkflowEntity entity = WorkflowEntity.findById(workflowId);
+        if (entity == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+        entity.isTemplate = isTemplate;
+        entity.persist();
+        return workflowDTOMapper.toDTO(entity);
+    }
+
+    public WorkflowDTO createFromTemplate(UUID templateId, CreateFromTemplateRequest request, String userUuid)
+            throws WorkflowNotFoundException {
+        WorkflowEntity template = WorkflowEntity.findById(templateId);
+        if (template == null) {
+            throw new WorkflowNotFoundException("Template not found with id: " + templateId);
+        }
+        if (!Boolean.TRUE.equals(template.isTemplate)) {
+            throw new IllegalArgumentException("Workflow is not marked as a template");
+        }
+
+        // Check application permission
+        String applicationId = request.getApplicationId();
+        if (permissionsEnabled && applicationId != null && !applicationId.isEmpty() && userUuid != null) {
+            PermissionCheckRequest checkRequest = PermissionCheckRequest.builder()
+                    .userId(userUuid)
+                    .permissionType("application:write")
+                    .resourceType("application")
+                    .resourceId(applicationId)
+                    .build();
+            if (!permissionClient.hasPermission(checkRequest)) {
+                throw new PermissionDeniedException("Permission denied: application:write on " + applicationId);
+            }
+        }
+
+        // Create new workflow from template
+        WorkflowEntity newWorkflow = new WorkflowEntity();
+        newWorkflow.name = request.getName() != null ? request.getName() : template.name + " (from template)";
+        newWorkflow.description = request.getDescription() != null ? request.getDescription() : template.description;
+        newWorkflow.applicationId = applicationId;
+        newWorkflow.createdBy = userUuid;
+        newWorkflow.status = WorkflowStatus.DRAFT;
+        newWorkflow.isTemplate = false;
+        newWorkflow.variables = template.variables;
+        newWorkflow.viewport = template.viewport;
+        newWorkflow.persist();
+
+        // Clone nodes with sanitized configuration and ID mapping
+        Map<UUID, WorkflowNodeEntity> nodeIdMapping = new HashMap<>();
+        for (WorkflowNodeEntity templateNode : template.nodes) {
+            WorkflowNodeEntity newNode = new WorkflowNodeEntity();
+            newNode.workflow = newWorkflow;
+            newNode.name = templateNode.name;
+            newNode.type = templateNode.type;
+            newNode.configuration = sanitizeNodeConfiguration(templateNode.type, templateNode.configuration);
+            newNode.ports = templateNode.ports;
+            newNode.positionX = templateNode.positionX;
+            newNode.positionY = templateNode.positionY;
+            newNode.maxRetries = templateNode.maxRetries;
+            newNode.retryDelayMs = templateNode.retryDelayMs;
+            newNode.timeoutMs = templateNode.timeoutMs;
+            newNode.persist();
+            nodeIdMapping.put(templateNode.id, newNode);
+        }
+
+        // Clone edges with remapped node IDs
+        for (WorkflowEdgeEntity templateEdge : template.edges) {
+            WorkflowEdgeEntity newEdge = new WorkflowEdgeEntity();
+            newEdge.workflow = newWorkflow;
+            newEdge.sourceNode = nodeIdMapping.get(templateEdge.sourceNode.id);
+            newEdge.targetNode = nodeIdMapping.get(templateEdge.targetNode.id);
+            newEdge.sourcePortId = templateEdge.sourcePortId;
+            newEdge.targetPortId = templateEdge.targetPortId;
+            newEdge.condition = templateEdge.condition;
+            newEdge.label = templateEdge.label;
+            newEdge.priority = templateEdge.priority;
+            newEdge.persist();
+        }
+
+        // Clone triggers with stripped secrets
+        for (WorkflowTriggerEntity templateTrigger : template.triggers) {
+            WorkflowTriggerEntity newTrigger = new WorkflowTriggerEntity();
+            newTrigger.workflow = newWorkflow;
+            newTrigger.name = templateTrigger.name;
+            newTrigger.type = templateTrigger.type;
+            newTrigger.configuration = templateTrigger.configuration;
+            newTrigger.enabled = templateTrigger.enabled;
+            newTrigger.webhookToken = null; // auto-generated by @PrePersist
+            newTrigger.lastTriggeredAt = null;
+            newTrigger.persist();
+        }
+
+        // Initialize owner permissions
+        if (permissionsEnabled && userUuid != null) {
+            permissionClient.initOwnerPermissions("workflow", String.valueOf(newWorkflow.id), userUuid);
+        }
+
+        return workflowDTOMapper.toDTO(newWorkflow);
+    }
+
+    private String sanitizeNodeConfiguration(NodeType type, String configuration) {
+        if (configuration == null || configuration.isEmpty()) {
+            return configuration;
+        }
+        Set<String> keysToRemove = SENSITIVE_CONFIG_KEYS.get(type);
+        if (keysToRemove == null || keysToRemove.isEmpty()) {
+            return configuration;
+        }
+        try {
+            ObjectNode configNode = (ObjectNode) objectMapper.readTree(configuration);
+            for (String key : keysToRemove) {
+                configNode.remove(key);
+            }
+            return objectMapper.writeValueAsString(configNode);
+        } catch (Exception e) {
+            return configuration;
+        }
     }
 
     public ValidationResult validateWorkflow(UUID workflowId) throws WorkflowNotFoundException {
