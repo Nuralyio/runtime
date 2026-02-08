@@ -561,6 +561,8 @@ export class WorkflowWrapper extends LitElement {
           ?showToolbar=${false}
           ?showPalette=${false}
           ?showMinimap=${false}
+          canvas-id=${this.workflowId}
+          ?collaborative=${true}
           @viewport-changed=${this.handleViewportChanged}
           @canvas-enabled=${this.handleCanvasEnabled}
         ></workflow-canvas>
