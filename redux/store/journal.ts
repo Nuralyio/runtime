@@ -41,7 +41,7 @@ export interface JournalState {
 const initialState: JournalState = {
   logs: [],
   total: 0,
-  limit: 50,
+  limit: 20,
   offset: 0,
   loading: false,
   error: null,
