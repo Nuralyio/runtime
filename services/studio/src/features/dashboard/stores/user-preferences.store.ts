@@ -6,6 +6,7 @@
 import { atom } from 'nanostores';
 import {
   loadAllPreferences,
+  loadFromLocalStorage,
   setPreference,
   migrateFromLocalStorage,
   cleanupPinnedApplications as cleanupApps,
@@ -48,6 +49,11 @@ export const $workflowsViewMode = atom<'cards' | 'table'>('table');
 export const $whiteboardsViewMode = atom<'cards' | 'table'>('cards');
 
 /**
+ * Whether the folder section is visible
+ */
+export const $folderSectionVisible = atom<boolean>(true);
+
+/**
  * Loading state for preferences
  */
 export const $preferencesLoading = atom<boolean>(true);
@@ -65,8 +71,31 @@ let initialized = false;
 let initPromise: Promise<void> | null = null;
 
 /**
- * Initialize user preferences from KV
- * Safe to call multiple times - will only initialize once
+ * Apply a preferences object to all stores
+ */
+function applyPreferences(prefs: {
+  pinnedApplications: string[];
+  pinnedWorkflows: string[];
+  pinnedWhiteboards: string[];
+  applicationsViewMode: 'cards' | 'table';
+  workflowsViewMode: 'cards' | 'table';
+  whiteboardsViewMode: 'cards' | 'table';
+  folderSectionVisible: boolean;
+}): void {
+  $pinnedApplications.set(new Set(prefs.pinnedApplications));
+  $pinnedWorkflows.set(new Set(prefs.pinnedWorkflows));
+  $pinnedWhiteboards.set(new Set(prefs.pinnedWhiteboards));
+  $applicationsViewMode.set(prefs.applicationsViewMode);
+  $workflowsViewMode.set(prefs.workflowsViewMode);
+  $whiteboardsViewMode.set(prefs.whiteboardsViewMode);
+  $folderSectionVisible.set(prefs.folderSectionVisible);
+}
+
+/**
+ * Initialize user preferences.
+ * 1. Instantly hydrates from localStorage (no loading flash).
+ * 2. Revalidates from KV in the background and updates stores + localStorage.
+ * Safe to call multiple times — will only initialize once.
  */
 export async function initUserPreferences(): Promise<void> {
   if (initialized) return;
@@ -76,22 +105,23 @@ export async function initUserPreferences(): Promise<void> {
 
   initPromise = (async () => {
     try {
-      $preferencesLoading.set(true);
       $preferencesError.set(null);
 
-      // Migrate from localStorage first (one-time)
+      // Step 1: Instant hydration from localStorage cache
+      const cached = loadFromLocalStorage();
+      if (cached) {
+        applyPreferences(cached);
+        $preferencesLoading.set(false);
+      } else {
+        $preferencesLoading.set(true);
+      }
+
+      // Step 2: One-time migration (no-op if already done)
       await migrateFromLocalStorage();
 
-      // Load preferences from KV
+      // Step 3: Revalidate from KV (also persists to localStorage)
       const prefs = await loadAllPreferences();
-
-      // Update stores
-      $pinnedApplications.set(new Set(prefs.pinnedApplications));
-      $pinnedWorkflows.set(new Set(prefs.pinnedWorkflows));
-      $pinnedWhiteboards.set(new Set(prefs.pinnedWhiteboards));
-      $applicationsViewMode.set(prefs.applicationsViewMode);
-      $workflowsViewMode.set(prefs.workflowsViewMode);
-      $whiteboardsViewMode.set(prefs.whiteboardsViewMode);
+      applyPreferences(prefs);
 
       initialized = true;
     } catch (error) {
@@ -322,5 +352,26 @@ export async function setWhiteboardsViewMode(mode: 'cards' | 'table'): Promise<v
     // Revert on failure
     $whiteboardsViewMode.set(current);
     console.error('Failed to persist whiteboards view mode');
+  }
+}
+
+// ============================================
+// Folder Section Visibility
+// ============================================
+
+/**
+ * Toggle folder section visibility
+ */
+export async function toggleFolderSectionVisible(): Promise<void> {
+  const current = $folderSectionVisible.get();
+  const next = !current;
+
+  $folderSectionVisible.set(next);
+
+  const success = await setPreference('folderSectionVisible', next);
+
+  if (!success) {
+    $folderSectionVisible.set(current);
+    console.error('Failed to persist folder section visibility');
   }
 }

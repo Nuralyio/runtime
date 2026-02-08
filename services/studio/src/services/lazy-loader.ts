@@ -62,6 +62,17 @@ export async function getRevisionService() {
 }
 
 /**
+ * Lazily load the category service
+ */
+export async function getCategoryService() {
+  if (!serviceCache.has('category')) {
+    const module = await import('./category.service');
+    serviceCache.set('category', module.categoryService);
+  }
+  return serviceCache.get('category') as typeof import('./category.service').categoryService;
+}
+
+/**
  * Check if a service is already loaded
  */
 export function isServiceLoaded(serviceName: string): boolean {

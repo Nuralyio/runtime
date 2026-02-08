@@ -55,6 +55,10 @@ export const APIS_URL = {
   deleteWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
   addWorkflowEdge: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges`,
   deleteWorkflowEdge: (workflowId: string, edgeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/edges/${edgeId}`,
+  getWorkflowTemplates: () => `${API_BASE}/api/v1/workflows?isTemplate=true`,
+  setWorkflowTemplate: (id: string) => `${API_BASE}/api/v1/workflows/${id}/template`,
+  createFromTemplate: (id: string) => `${API_BASE}/api/v1/workflows/${id}/create-from-template`,
+  cloneWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}/clone`,
 
   // Whiteboards
   getAllWhiteboards: () => `${API_BASE}/api/v1/whiteboards`,
@@ -130,6 +134,26 @@ export const APIS_URL = {
   dbHealth: () =>
     `${API_BASE}/api/v1/db/health`,
 
+  // Categories
+  getCategories: (applicationId: string, resourceType?: string) => {
+    const params = new URLSearchParams({ applicationId });
+    if (resourceType) params.append('resourceType', resourceType);
+    return `${API_BASE}/api/categories?${params.toString()}`;
+  },
+  getCategory: (uuid: string) => `${API_BASE}/api/categories/${uuid}`,
+  getCategoryTree: (uuid: string) => `${API_BASE}/api/categories/${uuid}/tree`,
+  createCategory: () => `${API_BASE}/api/categories`,
+  updateCategory: (uuid: string) => `${API_BASE}/api/categories/${uuid}`,
+  deleteCategory: (uuid: string) => `${API_BASE}/api/categories/${uuid}`,
+  moveCategory: (uuid: string) => `${API_BASE}/api/categories/${uuid}/move`,
+  getCategoryResources: (uuid: string) => `${API_BASE}/api/categories/${uuid}/resources`,
+  assignCategoryResource: (uuid: string) => `${API_BASE}/api/categories/${uuid}/resources`,
+  bulkAssignCategoryResources: (uuid: string) => `${API_BASE}/api/categories/${uuid}/resources/bulk`,
+  removeCategoryResource: (uuid: string, resourceId: string, resourceType: string) =>
+    `${API_BASE}/api/categories/${uuid}/resources/${resourceId}?resourceType=${resourceType}`,
+  findCategoryByResource: (resourceType: string, resourceId: string) =>
+    `${API_BASE}/api/categories/resource/${resourceType}/${resourceId}`,
+
   // Journal Logs Endpoints
   getJournalLogs: (params: {
     service?: string;
@@ -160,4 +184,10 @@ export const APIS_URL = {
   getJournalStats: () => `${API_BASE}/api/v1/logs/stats`,
   getJournalTrace: (correlationId: string) =>
     `${API_BASE}/api/v1/logs/trace/${correlationId}`,
+
+  // Workflow Triggers
+  getWorkflowTriggers: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/triggers`,
+  getTriggerStatus: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/status`,
+  activateTrigger: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/activate`,
+  deactivateTrigger: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/deactivate`,
 };

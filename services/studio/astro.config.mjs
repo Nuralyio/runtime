@@ -81,7 +81,7 @@ export default defineConfig({
 
    },
    ssr:{
-    noExternal:['monaco-editor']
+    noExternal:['monaco-editor', 'mermaid']
    }
   },
 });

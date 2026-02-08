@@ -39,6 +39,7 @@ export interface WorkflowWithAppName {
   status: string;
   nodes: any[];
   edges: any[];
+  isTemplate?: boolean;
   createdAt?: string;
   updatedAt?: string;
   isPinned?: boolean;
@@ -123,6 +124,7 @@ export async function fetchAllWorkflowsAcrossApps(
     status: 'active',
     nodes: [],
     edges: [],
+    isTemplate: (workflow as any).isTemplate ?? false,
     createdAt: workflow.createdAt,
     updatedAt: workflow.updatedAt,
     isPinned: pinnedIds.has((workflow as any).uuid || workflow.id)
