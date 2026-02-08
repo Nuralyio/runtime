@@ -22,7 +22,7 @@ RUN microdnf install -y \
     atk \
     at-spi2-atk \
     cups-libs \
-    libXkbcommon \
+    libxkbcommon \
     && microdnf clean all
 
 WORKDIR /app
