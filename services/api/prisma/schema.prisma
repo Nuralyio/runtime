@@ -245,3 +245,48 @@ model PublishedVersion {
 
   @@map("published_versions")
 }
+
+// ============================================
+// CROSS-SERVICE CATEGORY SYSTEM
+// ============================================
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid())
+  name          String
+  description   String?
+  icon          String?
+  color         String?
+  applicationId String    @map("application_id")
+  parentId      Int?      @map("parent_id")
+  resourceType  String    @map("resource_type")   // "workflow", "page", "function", "whiteboard", "all"
+  createdBy     String    @map("created_by")
+  position      Int       @default(0)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Category[] @relation("CategoryTree")
+  resources CategoryResource[]
+
+  @@unique([applicationId, parentId, name])
+  @@index([applicationId])
+  @@index([parentId])
+  @@map("categories")
+}
+
+model CategoryResource {
+  id           Int      @id @default(autoincrement())
+  categoryId   Int      @map("category_id")
+  resourceId   String   @map("resource_id")
+  resourceType String   @map("resource_type")
+  position     Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, resourceType])
+  @@index([categoryId])
+  @@index([resourceType, resourceId])
+  @@map("category_resources")
+}

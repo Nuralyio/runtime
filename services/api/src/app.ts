@@ -10,6 +10,7 @@ import { schema } from '../prisma/prisma';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { PresenceGateway } from './presence';
 import { WorkflowGateway } from './workflow';
+import { getJournalClient } from './journal/journal.client';
 var { ruruHTML } = require("ruru/server")
 
 dotenv.config();
@@ -24,6 +25,12 @@ const presenceGateway = new PresenceGateway(httpServer);
 const workflowGateway = new WorkflowGateway(httpServer);
 workflowGateway.start().catch(err => {
   console.error('Failed to start workflow gateway:', err);
+});
+
+// Initialize journal client (RabbitMQ logging)
+const journalClient = getJournalClient();
+journalClient.connect().catch(err => {
+  console.error('Failed to connect journal client:', err);
 });
 
 app.use(express.json());

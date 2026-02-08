@@ -14,6 +14,17 @@ import {
   PresenceUser,
   PresenceMetadata,
 } from './interfaces/presence.interface';
+import {
+  CanvasClientToServerEvents,
+  CanvasServerToClientEvents,
+  CanvasSocketData,
+} from './interfaces/canvas.interface';
+import { setupCanvasHandlers } from './canvas.gateway';
+
+// Combined event types for presence + canvas
+type CombinedClientEvents = ClientToServerEvents & CanvasClientToServerEvents;
+type CombinedServerEvents = ServerToClientEvents & CanvasServerToClientEvents;
+type CombinedSocketData = SocketData & CanvasSocketData;
 
 const logger = new Logger({ name: 'PresenceGateway' });
 
@@ -44,7 +55,10 @@ export class PresenceGateway {
     this.setupMiddleware();
     this.setupHandlers();
 
-    logger.info('Presence gateway initialized');
+    // Initialize canvas collaboration handlers
+    setupCanvasHandlers(this.io as any);
+
+    logger.info('Presence gateway initialized with canvas support');
   }
 
   private setupMiddleware(): void {
