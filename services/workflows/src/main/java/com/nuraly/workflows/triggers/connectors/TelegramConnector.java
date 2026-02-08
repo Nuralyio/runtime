@@ -2,6 +2,7 @@ package com.nuraly.workflows.triggers.connectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.entity.WorkflowTriggerEntity;
 import com.nuraly.workflows.entity.enums.TriggerType;
@@ -260,11 +261,8 @@ public class TelegramConnector implements TriggerConnector {
             body.put("timeout", pollingTimeout);
 
             if (!allowedUpdates.isEmpty()) {
-                body.putArray("allowed_updates").addAll(
-                    allowedUpdates.stream()
-                        .map(objectMapper::valueToTree)
-                        .toList()
-                );
+                ArrayNode arr = body.putArray("allowed_updates");
+                allowedUpdates.forEach(arr::add);
             }
 
             try (CloseableHttpClient client = HttpClients.createDefault()) {
