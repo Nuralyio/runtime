@@ -36,3 +36,21 @@ export {
   type EdgesTemplateData,
   type EdgeCallbacks,
 } from './edges.template.js';
+
+// Whiteboard sidebar template
+export {
+  renderWbSidebarTemplate,
+  type WbSidebarTemplateData,
+} from './wb-sidebar.template.js';
+
+// Remote cursors template
+export {
+  renderRemoteCursorsTemplate,
+  type RemoteCursorsTemplateData,
+} from './remote-cursors.template.js';
+
+// Presence bar template
+export {
+  renderPresenceBarTemplate,
+  type PresenceBarTemplateData,
+} from './presence-bar.template.js';

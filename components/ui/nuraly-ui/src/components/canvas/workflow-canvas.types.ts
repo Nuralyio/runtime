@@ -48,6 +48,20 @@ export enum WorkflowNodeType {
   CONTEXT_BUILDER = 'CONTEXT_BUILDER',
   // Safety nodes
   GUARDRAIL = 'GUARDRAIL',
+  // Slack integration nodes
+  SLACK_SEND_MESSAGE = 'SLACK_SEND_MESSAGE',
+  SLACK_GET_CHANNEL_INFO = 'SLACK_GET_CHANNEL_INFO',
+  SLACK_LIST_CHANNELS = 'SLACK_LIST_CHANNELS',
+  SLACK_ADD_REACTION = 'SLACK_ADD_REACTION',
+  SLACK_UPLOAD_FILE = 'SLACK_UPLOAD_FILE',
+  // RAG nodes (continued)
+  RERANKER = 'RERANKER',
+  // Persistent trigger nodes
+  TELEGRAM_BOT = 'TELEGRAM_BOT',
+  SLACK_SOCKET = 'SLACK_SOCKET',
+  DISCORD_BOT = 'DISCORD_BOT',
+  WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
+  CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
   // Annotation nodes
   NOTE = 'NOTE',
   FRAME = 'FRAME',
@@ -60,6 +74,7 @@ export enum AgentNodeType {
   AGENT = 'AGENT',
   TOOL = 'TOOL',
   MEMORY = 'MEMORY',
+  CONTEXT_MEMORY = 'CONTEXT_MEMORY',
   PROMPT = 'PROMPT',
   LLM = 'LLM',
   RETRIEVER = 'RETRIEVER',
@@ -99,6 +114,7 @@ export enum WhiteboardNodeType {
   DRAWING = 'WB_DRAWING',
   FRAME = 'WB_FRAME',
   VOTING = 'WB_VOTING',
+  MERMAID = 'WB_MERMAID',
 }
 
 /**
@@ -114,6 +130,18 @@ export enum CanvasType {
  * Combined node type union
  */
 export type NodeType = WorkflowNodeType | AgentNodeType | DbDesignerNodeType | WhiteboardNodeType;
+
+/**
+ * Connection state for long-running/persistent triggers (Telegram, Slack, etc.)
+ */
+export enum TriggerConnectionState {
+  DISCONNECTED = 'DISCONNECTED',
+  CONNECTING = 'CONNECTING',
+  CONNECTED = 'CONNECTED',
+  PAUSED = 'PAUSED',
+  HANDOFF_PENDING = 'HANDOFF_PENDING',
+  ERROR = 'ERROR',
+}
 
 /**
  * Execution status for nodes and workflows
@@ -333,6 +361,36 @@ export interface NodeConfiguration {
   /** Stored dimensions when collapsed (for restore) */
   _frameExpandedWidth?: number;
   _frameExpandedHeight?: number;
+  // Slack nodes
+  slackMethod?: 'webhook' | 'api';
+  botToken?: string;
+  channel?: string;
+  text?: string;
+  webhookUrl?: string;
+  blocks?: unknown;
+  threadTs?: string;
+  unfurlLinks?: boolean;
+  unfurlMedia?: boolean;
+  includeLocale?: boolean;
+  includeNumMembers?: boolean;
+  types?: string;
+  excludeArchived?: boolean;
+  cursor?: string;
+  teamId?: string;
+  timestamp?: string;
+  name?: string;
+  channels?: string;
+  filename?: string;
+  content?: string;
+  fileBase64?: string;
+  filetype?: string;
+  title?: string;
+  initialComment?: string;
+  // Reranker node
+  topK?: number;
+  threshold?: number;
+  // Context Memory node
+  memoryType?: 'buffer' | 'semantic' | 'hybrid';
 }
 
 /**
@@ -370,6 +428,15 @@ export interface WorkflowNode {
   containedNodeIds?: string[];
   /** For regular nodes: ID of the frame that contains this node (if any) */
   parentFrameId?: string | null;
+  /** Trigger connection status for persistent trigger nodes (Telegram, Slack, etc.) */
+  triggerStatus?: {
+    triggerId: string;
+    connectionState: TriggerConnectionState;
+    health?: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | 'UNKNOWN';
+    messagesReceived?: number;
+    lastMessageAt?: string;
+    stateReason?: string;
+  };
 }
 
 /**
@@ -528,6 +595,20 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.CONTEXT_BUILDER]: '#a855f7',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: '#ef4444',
+  // Slack integration nodes
+  [WorkflowNodeType.SLACK_SEND_MESSAGE]: '#4A154B',
+  [WorkflowNodeType.SLACK_GET_CHANNEL_INFO]: '#4A154B',
+  [WorkflowNodeType.SLACK_LIST_CHANNELS]: '#4A154B',
+  [WorkflowNodeType.SLACK_ADD_REACTION]: '#4A154B',
+  [WorkflowNodeType.SLACK_UPLOAD_FILE]: '#4A154B',
+  // RAG nodes (continued)
+  [WorkflowNodeType.RERANKER]: '#d946ef',
+  // Persistent trigger nodes
+  [WorkflowNodeType.TELEGRAM_BOT]: '#0088cc',
+  [WorkflowNodeType.SLACK_SOCKET]: '#4A154B',
+  [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
+  [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
+  [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
   // Annotation nodes
   [WorkflowNodeType.NOTE]: '#fef08a',
   [WorkflowNodeType.FRAME]: '#6366f1',
@@ -535,6 +616,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [AgentNodeType.AGENT]: '#10b981',
   [AgentNodeType.TOOL]: '#0ea5e9',
   [AgentNodeType.MEMORY]: '#d946ef',
+  [AgentNodeType.CONTEXT_MEMORY]: '#c026d3',
   [AgentNodeType.PROMPT]: '#f472b6',
   [AgentNodeType.LLM]: '#22d3ee',
   [AgentNodeType.RETRIEVER]: '#a78bfa',
@@ -564,6 +646,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WhiteboardNodeType.DRAWING]: '#14b8a6',
   [WhiteboardNodeType.FRAME]: '#6366f1',
   [WhiteboardNodeType.VOTING]: '#ef4444',
+  [WhiteboardNodeType.MERMAID]: '#8b5cf6',
 };
 
 /**
@@ -607,6 +690,20 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.CONTEXT_BUILDER]: 'layers',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: 'shield',
+  // Slack integration nodes
+  [WorkflowNodeType.SLACK_SEND_MESSAGE]: 'message-square',
+  [WorkflowNodeType.SLACK_GET_CHANNEL_INFO]: 'hash',
+  [WorkflowNodeType.SLACK_LIST_CHANNELS]: 'list',
+  [WorkflowNodeType.SLACK_ADD_REACTION]: 'smile-plus',
+  [WorkflowNodeType.SLACK_UPLOAD_FILE]: 'upload',
+  // RAG nodes (continued)
+  [WorkflowNodeType.RERANKER]: 'arrow-up-down',
+  // Persistent trigger nodes
+  [WorkflowNodeType.TELEGRAM_BOT]: 'message-circle',
+  [WorkflowNodeType.SLACK_SOCKET]: 'message-square',
+  [WorkflowNodeType.DISCORD_BOT]: 'message-circle',
+  [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
+  [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
   // Annotation nodes
   [WorkflowNodeType.NOTE]: 'sticky-note',
   [WorkflowNodeType.FRAME]: 'square',
@@ -614,6 +711,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [AgentNodeType.AGENT]: 'cpu',
   [AgentNodeType.TOOL]: 'tool',
   [AgentNodeType.MEMORY]: 'hard-drive',
+  [AgentNodeType.CONTEXT_MEMORY]: 'brain',
   [AgentNodeType.PROMPT]: 'message-square',
   [AgentNodeType.LLM]: 'brain',
   [AgentNodeType.RETRIEVER]: 'search',
@@ -643,6 +741,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WhiteboardNodeType.DRAWING]: 'pen-tool',
   [WhiteboardNodeType.FRAME]: 'frame',
   [WhiteboardNodeType.VOTING]: 'thumbs-up',
+  [WhiteboardNodeType.MERMAID]: 'git-branch',
 };
 
 /**
@@ -1232,6 +1331,23 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Context' }],
     },
   },
+  {
+    type: WorkflowNodeType.RERANKER,
+    name: 'Reranker',
+    description: 'Re-rank search results by relevance',
+    icon: NODE_ICONS[WorkflowNodeType.RERANKER],
+    color: NODE_COLORS[WorkflowNodeType.RERANKER],
+    category: 'rag',
+    defaultConfig: {
+      model: 'cross-encoder',
+      topK: 5,
+      threshold: 0.5,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Results' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Reranked' }],
+    },
+  },
   // Safety nodes
   {
     type: WorkflowNodeType.GUARDRAIL,
@@ -1251,6 +1367,196 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Passed' },
         { id: 'blocked', type: PortType.ERROR, label: 'Blocked' },
+      ],
+    },
+  },
+  // Slack integration nodes
+  {
+    type: WorkflowNodeType.SLACK_SEND_MESSAGE,
+    name: 'Slack: Send Message',
+    description: 'Send a message to a Slack channel or user',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_SEND_MESSAGE],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_SEND_MESSAGE],
+    category: 'slack',
+    defaultConfig: {
+      slackMethod: 'api',
+      botToken: '',
+      channel: '',
+      text: '',
+      unfurlLinks: true,
+      unfurlMedia: true,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.SLACK_GET_CHANNEL_INFO,
+    name: 'Slack: Channel Info',
+    description: 'Get information about a Slack channel',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_GET_CHANNEL_INFO],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_GET_CHANNEL_INFO],
+    category: 'slack',
+    defaultConfig: {
+      botToken: '',
+      channel: '',
+      includeLocale: false,
+      includeNumMembers: false,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Info' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.SLACK_LIST_CHANNELS,
+    name: 'Slack: List Channels',
+    description: 'List available Slack channels in the workspace',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_LIST_CHANNELS],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_LIST_CHANNELS],
+    category: 'slack',
+    defaultConfig: {
+      botToken: '',
+      types: 'public_channel',
+      excludeArchived: true,
+      limit: 100,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Channels' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.SLACK_ADD_REACTION,
+    name: 'Slack: Add Reaction',
+    description: 'Add a reaction emoji to a Slack message',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_ADD_REACTION],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_ADD_REACTION],
+    category: 'slack',
+    defaultConfig: {
+      botToken: '',
+      channel: '',
+      timestamp: '',
+      name: 'thumbsup',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.SLACK_UPLOAD_FILE,
+    name: 'Slack: Upload File',
+    description: 'Upload a file to a Slack channel',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_UPLOAD_FILE],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_UPLOAD_FILE],
+    category: 'slack',
+    defaultConfig: {
+      botToken: '',
+      channels: '',
+      filename: '',
+      content: '',
+      title: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Persistent trigger nodes
+  {
+    type: WorkflowNodeType.TELEGRAM_BOT,
+    name: 'Telegram Bot',
+    description: 'Receive messages from a Telegram bot (long-polling)',
+    icon: NODE_ICONS[WorkflowNodeType.TELEGRAM_BOT],
+    color: NODE_COLORS[WorkflowNodeType.TELEGRAM_BOT],
+    category: 'trigger',
+    defaultConfig: { botToken: '' },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.SLACK_SOCKET,
+    name: 'Slack Socket',
+    description: 'Receive events via Slack Socket Mode (WebSocket)',
+    icon: NODE_ICONS[WorkflowNodeType.SLACK_SOCKET],
+    color: NODE_COLORS[WorkflowNodeType.SLACK_SOCKET],
+    category: 'trigger',
+    defaultConfig: { appToken: '', botToken: '' },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Event' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.DISCORD_BOT,
+    name: 'Discord Bot',
+    description: 'Receive events from a Discord bot (Gateway WebSocket)',
+    icon: NODE_ICONS[WorkflowNodeType.DISCORD_BOT],
+    color: NODE_COLORS[WorkflowNodeType.DISCORD_BOT],
+    category: 'trigger',
+    defaultConfig: { botToken: '' },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Event' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.WHATSAPP_WEBHOOK,
+    name: 'WhatsApp',
+    description: 'Receive messages via WhatsApp Business API',
+    icon: NODE_ICONS[WorkflowNodeType.WHATSAPP_WEBHOOK],
+    color: NODE_COLORS[WorkflowNodeType.WHATSAPP_WEBHOOK],
+    category: 'trigger',
+    defaultConfig: {},
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.CUSTOM_WEBSOCKET,
+    name: 'WebSocket Listener',
+    description: 'Listen for messages on a custom WebSocket endpoint',
+    icon: NODE_ICONS[WorkflowNodeType.CUSTOM_WEBSOCKET],
+    color: NODE_COLORS[WorkflowNodeType.CUSTOM_WEBSOCKET],
+    category: 'trigger',
+    defaultConfig: { url: '' },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
     },
   },
@@ -1345,6 +1651,25 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: NODE_COLORS[AgentNodeType.MEMORY],
     category: 'agent',
     defaultConfig: {
+      cutoffMode: 'message',
+      maxMessages: 50,
+      maxTokens: 4000,
+      conversationIdExpression: '${input.threadId}',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Memory Config' }],
+    },
+  },
+  {
+    type: AgentNodeType.CONTEXT_MEMORY,
+    name: 'Context Memory (RAG)',
+    description: 'RAG-enhanced conversation memory with buffer, semantic, or hybrid modes',
+    icon: NODE_ICONS[AgentNodeType.CONTEXT_MEMORY],
+    color: NODE_COLORS[AgentNodeType.CONTEXT_MEMORY],
+    category: 'agent',
+    defaultConfig: {
+      memoryType: 'hybrid',
       cutoffMode: 'message',
       maxMessages: 50,
       maxTokens: 4000,
@@ -1749,6 +2074,19 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     },
   },
   {
+    type: WhiteboardNodeType.MERMAID,
+    name: 'Mermaid Diagram',
+    description: 'Add a Mermaid diagram to the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.MERMAID],
+    color: NODE_COLORS[WhiteboardNodeType.MERMAID],
+    category: 'wb-media',
+    defaultConfig: { textContent: 'graph TD\n  A[Start] --> B[End]', width: 400, height: 300 },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
     type: WhiteboardNodeType.FRAME,
     name: 'Frame',
     description: 'Group whiteboard elements together',
@@ -1861,6 +2199,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.VECTOR_WRITE,
       WorkflowNodeType.VECTOR_SEARCH,
       WorkflowNodeType.CONTEXT_BUILDER,
+      WorkflowNodeType.RERANKER,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
@@ -1870,6 +2209,19 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'shield',
     nodeTypes: [
       WorkflowNodeType.GUARDRAIL,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'slack',
+    name: 'Slack',
+    icon: 'message-square',
+    nodeTypes: [
+      WorkflowNodeType.SLACK_SEND_MESSAGE,
+      WorkflowNodeType.SLACK_GET_CHANNEL_INFO,
+      WorkflowNodeType.SLACK_LIST_CHANNELS,
+      WorkflowNodeType.SLACK_ADD_REACTION,
+      WorkflowNodeType.SLACK_UPLOAD_FILE,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
@@ -1892,6 +2244,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       AgentNodeType.LLM,
       AgentNodeType.PROMPT,
       AgentNodeType.MEMORY,
+      AgentNodeType.CONTEXT_MEMORY,
       AgentNodeType.TOOL,
       AgentNodeType.RETRIEVER,
       AgentNodeType.CHAIN,
@@ -1960,7 +2313,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     id: 'wb-media',
     name: 'Media & Interactive',
     icon: 'image',
-    nodeTypes: [WhiteboardNodeType.IMAGE, WhiteboardNodeType.DRAWING, WhiteboardNodeType.VOTING],
+    nodeTypes: [WhiteboardNodeType.IMAGE, WhiteboardNodeType.DRAWING, WhiteboardNodeType.VOTING, WhiteboardNodeType.MERMAID],
     canvasType: CanvasType.WHITEBOARD,
   },
   {
@@ -2112,6 +2465,21 @@ export function isFrameNode(type: NodeType): boolean {
  */
 export function isNoteNode(type: NodeType): boolean {
   return type === WorkflowNodeType.NOTE;
+}
+
+/**
+ * Set of node types that are persistent/long-running triggers
+ */
+export const PERSISTENT_TRIGGER_TYPES: Set<NodeType> = new Set([
+  WorkflowNodeType.TELEGRAM_BOT,
+  WorkflowNodeType.SLACK_SOCKET,
+  WorkflowNodeType.DISCORD_BOT,
+  WorkflowNodeType.WHATSAPP_WEBHOOK,
+  WorkflowNodeType.CUSTOM_WEBSOCKET,
+]);
+
+export function isPersistentTriggerNode(type: NodeType): boolean {
+  return PERSISTENT_TRIGGER_TYPES.has(type);
 }
 
 /**

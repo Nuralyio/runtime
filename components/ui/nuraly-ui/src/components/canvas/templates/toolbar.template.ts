@@ -5,7 +5,7 @@
  */
 
 import { html, nothing, TemplateResult } from 'lit';
-import { CanvasMode } from '../workflow-canvas.types.js';
+import { CanvasMode, CanvasType } from '../workflow-canvas.types.js';
 
 /**
  * Data required for rendering the toolbar
@@ -21,6 +21,7 @@ export interface ToolbarTemplateData {
   canRedo?: boolean;
   undoTooltip?: string;
   redoTooltip?: string;
+  canvasType?: CanvasType;
   onModeChange: (mode: CanvasMode) => void;
   onTogglePalette: () => void;
   onZoomIn: () => void;
@@ -54,14 +55,16 @@ export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult
       >
         <nr-icon name="hand" size="small"></nr-icon>
       </button>
-      <button
-        class="toolbar-btn ${data.showPalette ? 'active' : ''}"
-        @click=${data.onTogglePalette}
-        ?disabled=${data.readonly}
-        title="Add Node (N)"
-      >
-        <nr-icon name="plus" size="small"></nr-icon>
-      </button>
+      ${data.canvasType !== CanvasType.WHITEBOARD ? html`
+        <button
+          class="toolbar-btn ${data.showPalette ? 'active' : ''}"
+          @click=${data.onTogglePalette}
+          ?disabled=${data.readonly}
+          title="Add Node (N)"
+        >
+          <nr-icon name="plus" size="small"></nr-icon>
+        </button>
+      ` : nothing}
       <div class="toolbar-divider"></div>
       <button
         class="toolbar-btn"

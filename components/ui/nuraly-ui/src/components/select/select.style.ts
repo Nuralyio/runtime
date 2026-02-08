@@ -460,8 +460,8 @@ export const styles = css`
   }
 
   .option.selected {
-    background-color: var(--nuraly-select-option-selected-background, var(--nuraly-color-primary-light));
-    color: var(--nuraly-select-option-selected-color, var(--nuraly-color-primary));
+    background-color: var(--nuraly-select-option-selected-background, var(--nuraly-color-primary));
+    color: var(--nuraly-select-option-selected-color, #fff);
   }
 
   .option.focused {
@@ -502,7 +502,7 @@ export const styles = css`
 
   .check-icon {
     --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
-    --nuraly-icon-color: var(--nuraly-select-option-selected-color, var(--nuraly-color-primary));
+    --nuraly-icon-color: var(--nuraly-select-option-selected-color, #fff);
   }
 
   .no-options {

@@ -10,6 +10,7 @@ import {
   WorkflowNodeType,
   AgentNodeType,
   DbDesignerNodeType,
+  WhiteboardNodeType,
 } from '../../workflow-canvas.types.js';
 import type { DatabaseProvider } from '../../data-node/data-node.types.js';
 
@@ -63,6 +64,7 @@ import {
   renderRetrieverFields,
 } from './agent-node-fields.js';
 import { renderNoteFields } from './note-node-fields.js';
+import { renderMermaidFields } from './mermaid-fields.js';
 
 /**
  * Render type-specific config fields
@@ -202,6 +204,10 @@ export function renderTypeFields(
 
     case DbDesignerNodeType.QUERY:
       return renderQueryNodeFields(config, onUpdate);
+
+    // Whiteboard nodes
+    case WhiteboardNodeType.MERMAID:
+      return renderMermaidFields(config, onUpdate);
 
     default:
       return nothing;
