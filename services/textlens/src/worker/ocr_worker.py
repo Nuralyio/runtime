@@ -17,6 +17,7 @@ from src.queue.connection import get_rabbitmq_manager
 from src.queue.exchanges import get_topology
 from src.storage.result_store import get_result_store
 from src.worker.processor import OCRProcessor
+from src.journal.client import get_journal_client
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class OCRWorker:
         self.processor = OCRProcessor(
             languages=self.settings.language_list, use_gpu=self.settings.use_gpu
         )
+        self.journal = get_journal_client()
 
         self._running = False
         self._current_task: Optional[str] = None
@@ -135,6 +137,13 @@ class OCRWorker:
 
                 logger.info(f"Processing task {task.task_id} (attempt {task.attempt})")
 
+                await self.journal.log_ocr_task(
+                    task_id=task.task_id,
+                    status="processing",
+                    worker_id=self.settings.node_id,
+                    correlation_id=task.correlation_id,
+                )
+
                 # Update status to processing
                 await self.result_store.update_status(
                     task.task_id, TaskStatus.PROCESSING, worker_id=self.settings.node_id
@@ -176,6 +185,15 @@ class OCRWorker:
                     f"(status={status.value})"
                 )
 
+                await self.journal.log_ocr_task(
+                    task_id=task.task_id,
+                    status=status.value,
+                    duration_ms=processing_time,
+                    worker_id=self.settings.node_id,
+                    error=error,
+                    correlation_id=task.correlation_id,
+                )
+
             except Exception as e:
                 logger.exception(f"Failed to process task: {e}")
                 self._tasks_failed += 1
@@ -201,6 +219,15 @@ class OCRWorker:
                         error=str(e),
                     )
                     await self._publish_result(result, task.reply_to)
+
+                    await self.journal.log_ocr_task(
+                        task_id=task.task_id,
+                        status="failed",
+                        duration_ms=processing_time,
+                        worker_id=self.settings.node_id,
+                        error=str(e),
+                        correlation_id=task.correlation_id,
+                    )
 
             finally:
                 self._current_task = None
