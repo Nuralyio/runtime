@@ -3,10 +3,11 @@ package com.nuraly.workflows.api.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.workflows.configuration.Configuration;
-import com.nuraly.workflows.dto.HttpWorkflowResponse;
-import com.nuraly.workflows.dto.WorkflowTriggerDTO;
+import com.nuraly.workflows.dto.*;
+import com.nuraly.workflows.entity.enums.TriggerType;
 import com.nuraly.workflows.exception.TriggerNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
+import com.nuraly.workflows.service.TriggerManagerService;
 import com.nuraly.workflows.service.WorkflowTriggerService;
 import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
@@ -34,6 +35,9 @@ public class WorkflowTriggerResource {
 
     @Inject
     WorkflowTriggerService triggerService;
+
+    @Inject
+    TriggerManagerService triggerManagerService;
 
     @Inject
     Configuration configuration;
@@ -238,5 +242,111 @@ public class WorkflowTriggerResource {
                     .entity("{\"error\": \"" + e.getMessage() + "\"}")
                     .build();
         }
+    }
+
+    // =====================================================
+    // Persistent Trigger Management Endpoints
+    // =====================================================
+
+    @POST
+    @Path("/triggers/{triggerId}/activate")
+    @Operation(summary = "Activate a persistent trigger (start connection)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Trigger activation initiated"),
+            @APIResponse(responseCode = "404", description = "Trigger not found"),
+            @APIResponse(responseCode = "409", description = "Resource busy")
+    })
+    public RestResponse<TriggerActivationResult> activateTrigger(
+            @PathParam("triggerId") UUID triggerId) {
+        TriggerActivationResult result = triggerManagerService.activateTrigger(triggerId);
+        if (result.isSuccess()) {
+            return RestResponse.ok(result);
+        } else if (result.getFailureReason() != null && result.getFailureReason().contains("not found")) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND, result);
+        } else {
+            return RestResponse.status(RestResponse.Status.CONFLICT, result);
+        }
+    }
+
+    @POST
+    @Path("/triggers/{triggerId}/deactivate")
+    @Operation(summary = "Deactivate a persistent trigger (stop connection)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "204", description = "Trigger deactivated"),
+            @APIResponse(responseCode = "404", description = "Trigger not found or not active")
+    })
+    public RestResponse<Void> deactivateTrigger(
+            @PathParam("triggerId") UUID triggerId,
+            @QueryParam("graceful") @DefaultValue("true") boolean graceful) {
+        triggerManagerService.deactivateTrigger(triggerId, graceful);
+        return RestResponse.noContent();
+    }
+
+    @POST
+    @Path("/triggers/{triggerId}/dev-mode")
+    @Operation(summary = "Enable dev mode (pause production trigger, start dev trigger)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Dev mode enabled"),
+            @APIResponse(responseCode = "404", description = "Trigger not found"),
+            @APIResponse(responseCode = "400", description = "Failed to enable dev mode")
+    })
+    public RestResponse<DevModeResult> enableDevMode(
+            @PathParam("triggerId") UUID devTriggerId,
+            @QueryParam("duration") @DefaultValue("3600000") long durationMs) {
+        DevModeResult result = triggerManagerService.requestDevMode(devTriggerId, durationMs);
+        if (result.isSuccess()) {
+            return RestResponse.ok(result);
+        } else {
+            return RestResponse.status(RestResponse.Status.BAD_REQUEST, result);
+        }
+    }
+
+    @DELETE
+    @Path("/triggers/{triggerId}/dev-mode")
+    @Operation(summary = "Disable dev mode (stop dev trigger, resume production)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "204", description = "Dev mode disabled")
+    })
+    public RestResponse<Void> disableDevMode(@PathParam("triggerId") UUID devTriggerId) {
+        triggerManagerService.releaseDevMode(devTriggerId);
+        return RestResponse.noContent();
+    }
+
+    @GET
+    @Path("/triggers/{triggerId}/status")
+    @Operation(summary = "Get trigger connection status")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Trigger status retrieved"),
+            @APIResponse(responseCode = "404", description = "Trigger not found")
+    })
+    public RestResponse<TriggerStatusDTO> getTriggerStatus(@PathParam("triggerId") UUID triggerId) {
+        TriggerStatusDTO status = triggerManagerService.getTriggerStatus(triggerId);
+        if (status == null) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+        return RestResponse.ok(status);
+    }
+
+    @GET
+    @Path("/trigger-resources")
+    @Operation(summary = "List all trigger resources and their ownership status")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Resources listed")
+    })
+    public RestResponse<List<TriggerResourceDTO>> listTriggerResources(
+            @QueryParam("type") TriggerType type) {
+        List<TriggerResourceDTO> resources = triggerManagerService.listResources(type);
+        return RestResponse.ok(resources);
+    }
+
+    @DELETE
+    @Path("/trigger-resources/{resourceKey}")
+    @Operation(summary = "Force release resource ownership (admin)")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "204", description = "Resource released")
+    })
+    public RestResponse<Void> forceReleaseResource(@PathParam("resourceKey") String resourceKey) {
+        triggerManagerService.forceReleaseResource(resourceKey);
+        return RestResponse.noContent();
     }
 }
