@@ -43,7 +43,10 @@
       "Bash(xargs:*)",
       "Bash(npx vite build)",
       "Bash(wc:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(mvn clean compile:*)",
+      "Bash(java:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

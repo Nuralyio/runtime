@@ -42,6 +42,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - rabbitmq
     networks:
       - nuraly-network
     restart: unless-stopped
