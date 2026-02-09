@@ -296,6 +296,7 @@ curl http://<NEW_IP>:8090/auth/realms/nuraly-prod    # Keycloak: realm info
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | Port 80 already in use | Host nginx from template | `sudo systemctl stop nginx && sudo systemctl disable nginx` |
+| SSH host key prompt on first connect | New VM has a new host key not in your `known_hosts` | Use `ssh -o StrictHostKeyChecking=accept-new gateway@<NEW_IP>` for the first connection, or run `ssh-keyscan <NEW_IP> >> ~/.ssh/known_hosts` beforehand |
 | Git clone fails (no auth) | Private repo, no credentials | Set up `.git-credentials` (step 3) |
 | Submodule clone fails (SSH) | Some submodules use `git@github.com:` URLs | Git URL rewrite (step 4) |
 
