@@ -48,7 +48,8 @@
       "Bash(grep:*)",
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
-      "Bash(docker run:*)"
+      "Bash(docker run:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
