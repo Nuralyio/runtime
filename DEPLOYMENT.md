@@ -25,7 +25,7 @@ sudo usermod -aG docker $USER
 sudo apt install docker-compose-plugin
 
 # Authenticate with GitHub Container Registry
-echo <YOUR_GITHUB_PAT> | docker login ghcr.io -u <your-github-username> --password-stdin
+echo <GITHUB_GHRC> | docker login ghcr.io -u <your-github-username> --password-stdin
 ```
 
 ### Step 2: Clone Repository
