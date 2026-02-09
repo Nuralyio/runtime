@@ -66,8 +66,6 @@ services:
       - "9000:9000"
     volumes:
       - ./services/functions:/app
-      - ./services/functions/.kube/config:/root/.kube/config:ro
-      - ~/.minikube/certs:/certs:ro
     environment:
       - NODE_ENV=development
       - PORT=9000
@@ -77,10 +75,6 @@ services:
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/functions_prod
       - REDIS_URL=redis://redis:6379
       # Use minikube's Docker daemon for building images (connects via minikube network)
-      - DOCKER_HOST=tcp://minikube:2376
-      - DOCKER_TLS_VERIFY=1
-      - DOCKER_CERT_PATH=/certs
-      - KUBECONFIG=/root/.kube/config
     env_file:
       - config/prod.env
     depends_on:
@@ -89,7 +83,6 @@ services:
       - rabbitmq
     networks:
       - nuraly-network
-      - minikube
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
@@ -331,7 +324,7 @@ services:
       context: ./services/gateway
       dockerfile: Dockerfile
     ports:
-      - "8094:80"
+      - "80:80"
     environment:
       - NODE_ENV=production
       - API_URL=http://api:8000
@@ -392,9 +385,9 @@ services:
       KC_DB_PASSWORD: postgres
       KC_DB_SCHEMA: public
       KC_HOSTNAME_STRICT_HTTPS: 'false'
-      KC_HOSTNAME_ADMIN_URL: http://localhost:8090/auth
+      MAIN_DOMAIN: ${MAIN_DOMAIN}
+      MAIN_PROTOCOL: ${MAIN_PROTOCOL}
       KC_HTTP_RELATIVE_PATH: "/auth"
-      KC_HOSTNAME: localhost
     env_file:
       - config/prod.env
     ports:
@@ -472,5 +465,3 @@ volumes:
 networks:
   nuraly-network:
     driver: bridge
-  minikube:
-    external: true
