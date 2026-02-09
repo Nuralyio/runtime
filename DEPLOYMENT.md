@@ -246,7 +246,8 @@ mkdir -p ~/.docker
 # 3. Set up git credentials (copy from Hyper-V host credentials folder)
 #    From the Hyper-V host (Windows):
 scp /c/Users/Mega-pc/nuraly/credentials/git-credentials gateway@<NEW_IP>:~/.git-credentials
-#    Then on the new VM:
+#    Fix Windows CRLF line endings (breaks git auth on Linux):
+sed -i 's/\r//' ~/.git-credentials
 git config --global credential.helper store
 
 # 4. Rewrite SSH submodule URLs to HTTPS (some submodules use git@github.com:)
@@ -302,6 +303,7 @@ curl http://<NEW_IP>:8090/auth/realms/nuraly-prod    # Keycloak: realm info
 | SSH host key prompt on first connect | New VM has a new host key not in your `known_hosts` | Use `ssh -o StrictHostKeyChecking=accept-new gateway@<NEW_IP>` for the first connection, or run `ssh-keyscan <NEW_IP> >> ~/.ssh/known_hosts` beforehand |
 | Git clone fails (no auth) | Private repo, no credentials | Set up `.git-credentials` (step 3) |
 | Submodule clone fails (SSH) | Some submodules use `git@github.com:` URLs | Git URL rewrite (step 4) |
+| Git clone fails after SCP creds from Windows | `.git-credentials` has CRLF line endings | `sed -i 's/\r//' ~/.git-credentials` (step 3) |
 
 ---
 
