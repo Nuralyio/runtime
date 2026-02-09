@@ -9,7 +9,7 @@ COPY src ./src
 RUN mvn package -Pnative -DskipTests
 
 # Runtime stage - minimal distroless
-FROM quay.io/quarkus/quarkus-micro-image:2.0
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.3
 WORKDIR /app
 COPY --from=build /app/target/*-runner /app/application
 EXPOSE 7005
