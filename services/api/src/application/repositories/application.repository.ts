@@ -31,6 +31,7 @@ export class ApplicationRepository implements IApplicationRepository {
   }
 
   public async findAll(applicationIds : string[]): Promise<Application[]> {
+    if (applicationIds.length === 0) return [];
     // Use raw query to join applications with published_versions in one query
     const applications = await prisma.$queryRaw<Array<{
       id: number;
