@@ -10,7 +10,7 @@ import {
   type WorkflowExecutionState
 } from "../../../../../redux/store/workflow.ts";
 import type { Workflow, CanvasViewport } from "@nuralyui/canvas";
-import { workflowService } from "../../../../../../../services/workflow.service.ts";
+import { workflowService } from "../../../../../services/workflow.service.ts";
 import { updateComponentAttributes } from "../../../../../redux/actions/component/updateComponentAttributes.ts";
 import { createSocketFunctions } from "../../../../../handlers/runtime-api/socket.ts";
 import "@nuralyui/canvas";

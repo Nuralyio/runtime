@@ -1,7 +1,7 @@
 import { FRONT_API_URLS } from '../api-urls';
 import { validateAndEmitErrors } from "./validation-handler";
-import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
-import { showError } from '../../../../runtime/utils/toast';
+import { eventDispatcher } from '../../../utils/change-detection.ts';
+import { showError } from '../../../utils/toast';
 
 export const updateComponentHandler = (component: any, application_id: string) => {
   // Validate handlers before saving

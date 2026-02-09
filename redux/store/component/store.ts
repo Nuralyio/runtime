@@ -3,7 +3,7 @@ import { type ComponentElement } from "./component.interface";
 import { atom, computed, deepMap } from "nanostores";
 import { currentLoadedApplication } from '../ssr/server-data';
 import { fillApplicationComponents } from "./helper";
-import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
+import { eventDispatcher } from '../../../utils/change-detection.ts';
 
 export interface ComponentStore {
   [key: string]: ComponentElement[];
