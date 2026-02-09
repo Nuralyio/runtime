@@ -4,6 +4,7 @@
 - [Prerequisites](#prerequisites)
 - [Architecture Overview](#architecture-overview)
 - [Environment Configuration](#environment-configuration)
+- [Deploying from VM Template](#deploying-from-vm-template)
 - [Deployment Steps](#deployment-steps)
 - [Database Migrations](#database-migrations)
 - [Gateway (Nginx) Configuration](#gateway-nginx-configuration)
@@ -35,7 +36,12 @@ sudo usermod -aG docker $USER
 
 # Authenticate with GHCR
 echo <GITHUB_PAT> | docker login ghcr.io -u <github-username> --password-stdin
+
+# Disable host nginx if installed (conflicts with gateway container on port 80)
+sudo systemctl stop nginx && sudo systemctl disable nginx
 ```
+
+**Note**: The Gateway VM template ships with nginx pre-installed on the host. It **must** be stopped and disabled before deploying, otherwise the gateway container cannot bind to port 80.
 
 ---
 
@@ -218,6 +224,80 @@ For HTTPS deployments, also change:
 - `MAIN_PROTOCOL=https`
 - `KEYCLOAK_SCHEME=https`
 - `KEYCLOAK_URL=https://<DOMAIN>:8090/auth` (or without port if behind reverse proxy)
+
+---
+
+## Deploying from VM Template
+
+When spinning up a new instance from the Gateway VM template (`D:\VMs\Templates\Gateway\`), run these steps on the new VM. Replace `<NEW_IP>` with the VM's IP address.
+
+```bash
+# 1. Disable host nginx (template ships with it, conflicts with gateway on port 80)
+echo server | sudo -S systemctl stop nginx
+echo server | sudo -S systemctl disable nginx
+
+# 2. Set up GHCR auth (copy from existing VM or use a GitHub PAT)
+#    Option A: Copy from existing VM
+scp gateway@192.168.1.145:/home/gateway/.docker/config.json ~/.docker/config.json
+#    Option B: Authenticate with a PAT
+echo <GITHUB_PAT> | docker login ghcr.io -u Nuralyio --password-stdin
+
+# 3. Set up git credentials (for cloning private repos)
+echo 'https://Nuralyio:<GITHUB_PAT>@github.com' > ~/.git-credentials
+git config --global credential.helper store
+
+# 4. Rewrite SSH submodule URLs to HTTPS (some submodules use git@github.com:)
+git config --global url.'https://github.com/'.insteadOf 'git@github.com:'
+
+# 5. Clone and init submodules
+git clone https://github.com/Nuralyio/stack.git /home/gateway/stack
+cd /home/gateway/stack
+git submodule update --init --recursive
+
+# 6. Create root .env (update MAIN_DOMAIN to new IP)
+cat > .env << EOF
+KV_MASTER_KEY=nuraly-kv-master-key-prod-2026
+MAIN_DOMAIN=<NEW_IP>
+MAIN_PROTOCOL=http
+POSTGRES_PASSWORD=postgres
+EOF
+
+# 7. Create config/prod.env (copy from existing VM and replace IP)
+#    Copy from an existing deployment:
+scp gateway@192.168.1.145:/home/gateway/stack/config/prod.env config/prod.env
+#    Then replace all old IPs with the new IP:
+sed -i 's/192.168.1.145/<NEW_IP>/g' config/prod.env
+
+# 8. Pull images and start
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
+
+# 9. Wait ~30s for postgres to be healthy, then run Prisma migrations
+docker exec stack-api-1 npx prisma db push --accept-data-loss
+docker exec stack-api-1 npx prisma migrate resolve --applied 20240913162744_init
+docker exec stack-api-1 npx prisma migrate resolve --applied 20250107000000_add_pending_invites
+docker exec stack-api-1 npx prisma migrate resolve --applied 20250401212311_pages
+docker exec stack-api-1 npx prisma migrate resolve --applied 20250417111209_description
+
+# 10. Apply seed data
+docker exec stack-api-1 cat prisma/seed-data.sql | docker exec -i stack-postgres-1 psql -U postgres -d nuraly_prod
+
+# 11. Restart API to pick up seeded data
+docker restart stack-api-1
+
+# 12. Verify
+curl http://<NEW_IP>/health                          # Gateway: {"status":"UP"}
+curl http://<NEW_IP>/api/applications                # API: returns JSON array
+curl http://<NEW_IP>:8090/auth/realms/nuraly-prod    # Keycloak: realm info
+```
+
+### Known Template Issues
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Port 80 already in use | Host nginx from template | `sudo systemctl stop nginx && sudo systemctl disable nginx` |
+| Git clone fails (no auth) | Private repo, no credentials | Set up `.git-credentials` (step 3) |
+| Submodule clone fails (SSH) | Some submodules use `git@github.com:` URLs | Git URL rewrite (step 4) |
 
 ---
 
