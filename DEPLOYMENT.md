@@ -10,8 +10,8 @@ After debugging production deployment issues on the current gateway VM (Keycloak
 3. **Software to install**:
    - Docker & Docker Compose
    - Git
-   - SSH keys with access to GitHub (Nuralyio org)
 4. **Network**: Static IP on the Hyper-V virtual switch, port 80 accessible
+5. **GitHub PAT**: A Personal Access Token with `read:packages` scope (for pulling images from GHCR)
 
 ## Deployment Steps
 
@@ -24,16 +24,14 @@ sudo usermod -aG docker $USER
 # Install Docker Compose plugin (if not bundled)
 sudo apt install docker-compose-plugin
 
-# Setup SSH key for GitHub access
-ssh-keygen -t ed25519
-# Add public key to GitHub
+# Authenticate with GitHub Container Registry
+echo <YOUR_GITHUB_PAT> | docker login ghcr.io -u <your-github-username> --password-stdin
 ```
 
-### Step 2: Clone & Initialize
+### Step 2: Clone Repository
 ```bash
 git clone <stack-repo-url> /home/gateway/stack
 cd /home/gateway/stack
-make init   # initializes all 12 submodules
 ```
 
 ### Step 3: Configure Environment
@@ -62,9 +60,10 @@ POSTGRES_PASSWORD=<same-as-prod.env>
 EOF
 ```
 
-### Step 4: Build & Start Services
+### Step 4: Pull Images & Start Services
 ```bash
-make prod
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 # Wait for postgres healthcheck (~30s)
 docker compose -f docker-compose.prod.yml ps
 ```
