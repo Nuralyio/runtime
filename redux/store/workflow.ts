@@ -1,6 +1,6 @@
 import { atom, map } from "nanostores";
 import type { Workflow, WorkflowNode, WorkflowEdge, CanvasViewport } from "../../components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types";
-import { workflowService, type ExecutionResult } from "../../../../services/workflow.service";
+import { workflowService, type ExecutionResult } from "../../services/workflow.service";
 import { getKvEntry, setKvEntry } from "./kv";
 
 /**

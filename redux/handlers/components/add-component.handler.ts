@@ -1,6 +1,6 @@
 import { FRONT_API_URLS } from '../api-urls';
 import type { AddComponentRequest } from "./interfaces/add-component.request";
-import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
+import { eventDispatcher } from '../../../utils/change-detection.ts';
 import { validateAndEmitErrors } from "./validation-handler";
 
 export const addComponentHandler = ({ component }: AddComponentRequest, currentApplicatinId) => {

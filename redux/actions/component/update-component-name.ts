@@ -2,7 +2,7 @@
 
 import { $components } from '../../store/component/store.ts';
 import type { ComponentElement } from '../../store/component/component.interface.ts';
-import { eventDispatcher } from "../../../../runtime/utils/change-detection.ts";
+import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from '../../handlers/components/update-component.handler.ts';
 import deepEqual from "fast-deep-equal"; // Import fast-deep-equal for deep comparison
 import { $pages, refreshPageStoreVar } from '../../store/page.ts';

@@ -4,7 +4,7 @@ import {
   type JournalLogEntry,
   type JournalQueryParams,
   type JournalStatsResponse,
-} from "../../../../services/journal.service";
+} from "../../services/journal.service";
 
 /**
  * Filter state for journal logs

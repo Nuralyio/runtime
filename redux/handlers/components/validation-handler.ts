@@ -1,5 +1,5 @@
 import { validateComponentHandlers } from '../../../utils/handler-validator';
-import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
+import { eventDispatcher } from '../../../utils/change-detection.ts';
 
 function formatValidationErrors(errors: any[]): string {
   if (errors.length === 0) return "";

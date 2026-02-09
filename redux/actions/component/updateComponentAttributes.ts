@@ -2,13 +2,13 @@
 
 import { $components } from '../../store/component/store.ts';
 import type { ComponentElement } from '../../store/component/component.interface.ts';
-import { eventDispatcher } from "../../../../runtime/utils/change-detection.ts";
+import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { updateComponentHandler } from '../../handlers/components/update-component.handler.ts';
 import type { UpdateType } from '../component.ts';
 import deepEqual from "fast-deep-equal";
 import { ExecuteInstance } from '../../../state/runtime-context';
-import { validateComponentHandlers } from '../../../../runtime/utils/handler-validator.ts';
-import { formatValidationErrors } from '../../../../runtime/utils/validation-error-formatter.ts';
+import { validateComponentHandlers } from '../../../utils/handler-validator.ts';
+import { formatValidationErrors } from '../../../utils/validation-error-formatter.ts';
 
 // Debounce timers for component update events (prevents rapid re-renders during typing)
 const componentUpdateTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();

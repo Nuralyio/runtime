@@ -2,7 +2,7 @@ import { $components } from '../../store/component/store.ts';
 import type { ComponentElement } from '../../store/component/component.interface.ts';
 import { updateComponentHandler } from '../../handlers/components/update-component.handler.ts';
 import { deleteComponentActionHandler } from '../../handlers/components/delete-component.handler.ts';
-import { eventDispatcher } from "../../../../runtime/utils/change-detection.ts";
+import { eventDispatcher } from "../../../utils/change-detection.ts";
 import { removeComponentToCurrentPageAction } from '../page/removeComponentToCurrentPageAction.ts';
 
 
