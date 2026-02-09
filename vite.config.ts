@@ -44,23 +44,11 @@ export default defineConfig({
           return /^node:/.test(id) || id.startsWith('@nuralyui/');
         }
 
-        // For regular builds, externalize all external dependencies and node_modules
-        const externals = [
-          'lit',
-          'lit/',
-          'nanostores',
-          'rxjs',
-          'rxjs/',
-          'immer',
-          'uuid',
-          '@nuralyui/',
-          'acorn',
-          'acorn-walk',
-          'fast-deep-equal'
-        ];
-
-        return externals.some(ext => id.startsWith(ext)) ||
-               id.includes('node_modules');
+        // For regular builds, externalize all non-relative imports (bare module specifiers)
+        // This covers all npm dependencies and their sub-paths
+        if (id.includes('node_modules')) return true;
+        if (id.startsWith('.') || id.startsWith('/')) return false;
+        return true;
       },
       output: {
         // Always output to local dist folder for publishing
@@ -91,6 +79,7 @@ export default defineConfig({
       { find: 'acorn', replacement: findNodeModule('acorn') },
       { find: 'acorn-walk', replacement: findNodeModule('acorn-walk') },
       { find: 'fast-deep-equal', replacement: findNodeModule('fast-deep-equal') },
+      { find: 'socket.io-client', replacement: findNodeModule('socket.io-client') },
       // Resolve all nuralyui packages - check local first, then parent
       {
         find: /^@nuralyui\/(.*)$/,

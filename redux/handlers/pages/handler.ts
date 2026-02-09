@@ -2,7 +2,7 @@ import { $currentApplication } from '../../store/apps';
 import { type PageElement } from "./page.interface";
 import { addPageToApplicationAction } from '../../actions/application/addPageToApplicationAction';
 import { updatePageAction } from '../../actions/page/updatePageAction';
-import { eventDispatcher } from '../../../../runtime/utils/change-detection.ts';
+import { eventDispatcher } from '../../../utils/change-detection.ts';
 
 export const addPageHandler = (page: PageElement, resolve?, reject ?) => {
 

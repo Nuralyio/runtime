@@ -1,9 +1,9 @@
 import { map } from "nanostores";
-import * as kvService from "../../../../services/kv/kv.service";
+import * as kvService from "../../services/kv/kv.service";
 
 // Re-export types from the service layer — single source of truth
-export type { KvValueType, KvEntry, KvEntryVersion, FetchEntriesOptions, SetEntryRequest } from "../../../../services/kv/kv.types";
-import type { KvEntry, FetchEntriesOptions, SetEntryRequest, KvEntryVersion } from "../../../../services/kv/kv.types";
+export type { KvValueType, KvEntry, KvEntryVersion, FetchEntriesOptions, SetEntryRequest } from "../../services/kv/kv.types";
+import type { KvEntry, FetchEntriesOptions, SetEntryRequest, KvEntryVersion } from "../../services/kv/kv.types";
 
 /**
  * KV Data structure for cache
