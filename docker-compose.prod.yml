@@ -181,9 +181,12 @@ services:
     env_file:
       - config/prod.env
     depends_on:
-      - postgres
-      - rabbitmq
-      - api
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
     networks:
       - nuraly-network
     restart: unless-stopped
