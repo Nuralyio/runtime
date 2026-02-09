@@ -1,9 +1,11 @@
 FROM openresty/openresty:alpine-fat
 
+RUN apk add --no-cache gettext
+
 WORKDIR /usr/local/openresty/nginx
 
-# Copy the full Nginx configuration
-COPY Nginx/nginx-fully.conf /usr/local/openresty/nginx/conf/nginx.conf
+# Copy nginx config as template (contains ${MAIN_DOMAIN})
+COPY Nginx/nginx-fully.conf /usr/local/openresty/nginx/conf/nginx.conf.template
 COPY Nginx/config /usr/local/openresty/nginx/conf/config
 COPY Nginx/locations /usr/local/openresty/nginx/conf/locations
 
@@ -17,6 +19,9 @@ RUN /usr/local/openresty/luajit/bin/luarocks install lua-resty-openidc
 # Create logs directory
 RUN mkdir -p logs
 
+# Copy entrypoint
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
 EXPOSE 80
 
-CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
