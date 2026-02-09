@@ -1,14 +1,7 @@
 services:
   # Frontend - Studio
   studio:
-    build:
-      context: ./services/studio
-      dockerfile: Dockerfile
-      args:
-        DASHBOARD_APP_UUID: e5ea6ef3-f467-402c-bacf-199d68bdc63d
-        DASHBOARD_PAGE_UUID: f4cfcf9a-9439-4db2-aa60-9680d7c94acc
-        HOME_APP_UUID: 862d84a4-0be4-4cd0-8255-77f270094ff8
-        HOME_PAGE_UUID: bc16eab3-9d6d-433a-8550-53f26897574c
+    image: ghcr.io/nuralyio/studio:latest
     expose:
       - "4321"
     environment:
@@ -33,9 +26,7 @@ services:
 
   # Core Backend - API
   api:
-    build:
-      context: ./services/api
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/api:latest
     expose:
       - "8000"
     environment:
@@ -57,15 +48,11 @@ services:
       timeout: 10s
       retries: 3
 
-  # Serverless Functions (dev mode for hot reload)
+  # Serverless Functions
   functions:
-    build:
-      context: ./services/functions
-      dockerfile: Dockerfile.dev
+    image: ghcr.io/nuralyio/functions:latest
     ports:
       - "9000:9000"
-    volumes:
-      - ./services/functions:/app
     environment:
       - NODE_ENV=development
       - PORT=9000
@@ -74,7 +61,6 @@ services:
       - QUARKUS_DATASOURCE_PASSWORD=postgres
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/functions_prod
       - REDIS_URL=redis://redis:6379
-      # Use minikube's Docker daemon for building images (connects via minikube network)
     env_file:
       - config/prod.env
     depends_on:
@@ -92,9 +78,7 @@ services:
 
   # Workflow Engine
   workflows:
-    build:
-      context: ./services/workflows
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/workflows:latest
     expose:
       - "7002"
     environment:
@@ -129,9 +113,7 @@ services:
 
   # KV Storage Service
   kv:
-    build:
-      context: ./services/kv
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/kv:latest
     expose:
       - "7003"
     environment:
@@ -160,9 +142,7 @@ services:
 
   # Conduit - Database Connection & Query Service
   conduit:
-    build:
-      context: ./services/conduit
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/conduit:latest
     expose:
       - "7004"
     environment:
@@ -185,9 +165,7 @@ services:
 
   # Journal - Audit Log Service
   journal:
-    build:
-      context: ./services/journal
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/journal:latest
     expose:
       - "7005"
     environment:
@@ -217,9 +195,7 @@ services:
 
   # Parcour - Web Crawler Service
   parcour:
-    build:
-      context: ./services/parcour
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/parcour:latest
     expose:
       - "7007"
     environment:
@@ -246,9 +222,7 @@ services:
 
   # TextLens - OCR API Service
   textlens-api:
-    build:
-      context: ./services/textlens
-      dockerfile: Dockerfile.api
+    image: ghcr.io/nuralyio/textlens-api:latest
     expose:
       - "7006"
     environment:
@@ -277,9 +251,7 @@ services:
 
   # TextLens - OCR Worker Service
   textlens-worker:
-    build:
-      context: ./services/textlens
-      dockerfile: Dockerfile.worker
+    image: ghcr.io/nuralyio/textlens-worker:latest
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -299,9 +271,7 @@ services:
 
   # Deno Worker - Function Execution Workers
   deno-worker:
-    build:
-      context: ./services/functions/worker
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/deno-worker:latest
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - EXECUTE_QUEUE=functions.execute
@@ -318,11 +288,9 @@ services:
       - nuraly-network
     restart: unless-stopped
 
-  # API Gateway (handles all routing like in dev)
+  # API Gateway
   gateway:
-    build:
-      context: ./services/gateway
-      dockerfile: Dockerfile
+    image: ghcr.io/nuralyio/gateway:latest
     ports:
       - "80:80"
     environment:
@@ -356,8 +324,7 @@ services:
 
   # Documentation Site
   docs:
-    build:
-      context: ./services/docs
+    image: ghcr.io/nuralyio/docs:latest
     ports:
       - "6009:80"
     environment:
@@ -375,9 +342,7 @@ services:
 
   # Keycloak - Authentication
   keycloak:
-    build:
-      context: ./services/gateway/Keycloack
-      dockerfile: Dockerfile.prod
+    image: ghcr.io/nuralyio/keycloak:latest
     environment:
       KC_DB: postgres
       KC_DB_URL: 'jdbc:postgresql://postgres/keycloak'
