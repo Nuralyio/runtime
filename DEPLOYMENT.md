@@ -236,14 +236,17 @@ When spinning up a new instance from the Gateway VM template (`D:\VMs\Templates\
 echo server | sudo -S systemctl stop nginx
 echo server | sudo -S systemctl disable nginx
 
-# 2. Set up GHCR auth (copy from existing VM or use a GitHub PAT)
-#    Option A: Copy from existing VM
-scp gateway@192.168.1.145:/home/gateway/.docker/config.json ~/.docker/config.json
-#    Option B: Authenticate with a PAT
-echo <GITHUB_PAT> | docker login ghcr.io -u Nuralyio --password-stdin
+# 2. Set up GHCR auth (copy from Hyper-V host credentials folder)
+#    From the Hyper-V host (Windows):
+scp /c/Users/Mega-pc/nuraly/credentials/docker-config.json gateway@<NEW_IP>:~/.docker/config.json
+#    Or from inside the new VM:
+mkdir -p ~/.docker
+# then paste the contents of docker-config.json into ~/.docker/config.json
 
-# 3. Set up git credentials (for cloning private repos)
-echo 'https://Nuralyio:<GITHUB_PAT>@github.com' > ~/.git-credentials
+# 3. Set up git credentials (copy from Hyper-V host credentials folder)
+#    From the Hyper-V host (Windows):
+scp /c/Users/Mega-pc/nuraly/credentials/git-credentials gateway@<NEW_IP>:~/.git-credentials
+#    Then on the new VM:
 git config --global credential.helper store
 
 # 4. Rewrite SSH submodule URLs to HTTPS (some submodules use git@github.com:)
@@ -262,10 +265,10 @@ MAIN_PROTOCOL=http
 POSTGRES_PASSWORD=postgres
 EOF
 
-# 7. Create config/prod.env (copy from existing VM and replace IP)
-#    Copy from an existing deployment:
-scp gateway@192.168.1.145:/home/gateway/stack/config/prod.env config/prod.env
-#    Then replace all old IPs with the new IP:
+# 7. Create config/prod.env
+#    Copy the template from the Hyper-V host:
+scp /c/Users/Mega-pc/nuraly/credentials/prod.env.template gateway@<NEW_IP>:/home/gateway/stack/config/prod.env
+#    Then replace the placeholder IP with the new VM IP:
 sed -i 's/192.168.1.145/<NEW_IP>/g' config/prod.env
 
 # 8. Pull images and start
