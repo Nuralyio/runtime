@@ -563,7 +563,7 @@ export class DashboardOverview extends LitElement {
 
   private handleWhiteboardClick(whiteboard: WhiteboardWithAppName) {
     this.dispatchEvent(new CustomEvent('navigate', {
-      detail: { path: `/dashboard/whiteboard/${whiteboard.id}` },
+      detail: { path: `/dashboard/whiteboard/edit/${whiteboard.id}` },
       bubbles: true,
       composed: true
     }));
