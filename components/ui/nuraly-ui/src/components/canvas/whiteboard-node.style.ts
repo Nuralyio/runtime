@@ -373,6 +373,18 @@ export const whiteboardNodeStyles = css`
     text-overflow: ellipsis;
   }
 
+  .wb-anchor-input {
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    min-width: 40px;
+  }
+
   /* ---- Whiteboard Ports (hidden, show on hover) ---- */
   .wb-ports-container {
     position: absolute;

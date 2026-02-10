@@ -66,18 +66,44 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
   private _lastMermaidDef = '';
   private _lastMermaidTheme = '';
 
+  /** Track mousedown position to distinguish clicks from drags */
+  private _mouseDownPos: { x: number; y: number } | null = null;
+  private static readonly CLICK_THRESHOLD = 5;
+
   override connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('click', this._onHostClick);
+    this.addEventListener('mousedown', this._trackMouseDown);
+    this.addEventListener('click', this._handleHostClick);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.removeEventListener('click', this._onHostClick);
+    this.removeEventListener('mousedown', this._trackMouseDown);
+    this.removeEventListener('click', this._handleHostClick);
   }
 
-  private _onHostClick = (e: MouseEvent) => {
-    this.handleNodeClick(e);
+  private _trackMouseDown = (e: MouseEvent) => {
+    this._mouseDownPos = { x: e.clientX, y: e.clientY };
+  };
+
+  private _handleHostClick = (e: MouseEvent) => {
+    // Suppress click if mouse moved beyond threshold (i.e. a drag happened)
+    if (this._mouseDownPos) {
+      const dx = e.clientX - this._mouseDownPos.x;
+      const dy = e.clientY - this._mouseDownPos.y;
+      if (Math.abs(dx) > WhiteboardNodeElement.CLICK_THRESHOLD ||
+          Math.abs(dy) > WhiteboardNodeElement.CLICK_THRESHOLD) {
+        this._mouseDownPos = null;
+        return;
+      }
+    }
+    this._mouseDownPos = null;
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('node-click', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
   };
 
   override updated(changedProperties: Map<string, unknown>) {
@@ -163,15 +189,6 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     e.stopPropagation();
     e.preventDefault();
     this.dispatchEvent(new CustomEvent('note-resize-start', {
-      detail: { node: this.node, event: e },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private handleNodeClick(e: MouseEvent) {
-    e.stopPropagation();
-    this.dispatchEvent(new CustomEvent('node-click', {
       detail: { node: this.node, event: e },
       bubbles: true,
       composed: true,
@@ -471,7 +488,36 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
         @dblclick=${this.handleNodeDblClick}
       >
         <nr-icon name="anchor" size="small"></nr-icon>
-        <span class="wb-anchor-label">${label}</span>
+        ${this.editing ? html`
+          <input
+            type="text"
+            class="wb-anchor-input"
+            .value=${label}
+            @blur=${(e: FocusEvent) => {
+              const input = e.target as HTMLInputElement;
+              this.dispatchEvent(new CustomEvent('note-content-change', {
+                detail: { node: this.node, content: input.value },
+                bubbles: true,
+                composed: true,
+              }));
+              this.dispatchEvent(new CustomEvent('note-edit-end', {
+                detail: { node: this.node },
+                bubbles: true,
+                composed: true,
+              }));
+            }}
+            @keydown=${(e: KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === 'Escape') {
+                e.preventDefault();
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+            @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+            @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+          />
+        ` : html`
+          <span class="wb-anchor-label">${label}</span>
+        `}
       </div>
     `;
   }
