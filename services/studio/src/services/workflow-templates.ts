@@ -8,6 +8,7 @@ export interface WorkflowTemplateNode {
   tempId: string; // temporary ID for wiring edges — backend generates real UUIDs
   name: string;
   type: string;
+  description?: string; // shown inside the node on the canvas
   positionX: number;
   positionY: number;
   configuration: string; // JSON string
@@ -72,6 +73,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'http-start',
         name: 'HTTP Trigger',
         type: 'HTTP_START',
+        description: 'Listens for incoming POST requests at /webhook',
         positionX: 250,
         positionY: 100,
         configuration: JSON.stringify({
@@ -86,6 +88,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'transform',
         name: 'Process Payload',
         type: 'TRANSFORM',
+        description: 'Extracts and transforms the request body using JSONata',
         positionX: 250,
         positionY: 250,
         configuration: JSON.stringify({
@@ -98,6 +101,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'http-end',
         name: 'HTTP Response',
         type: 'HTTP_END',
+        description: 'Returns a JSON response with status 200',
         positionX: 250,
         positionY: 400,
         configuration: JSON.stringify({
@@ -126,6 +130,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'start',
         name: 'Start',
         type: 'START',
+        description: 'Begins the email automation workflow',
         positionX: 250,
         positionY: 80,
         configuration: '{}',
@@ -135,6 +140,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'condition',
         name: 'Check Condition',
         type: 'CONDITION',
+        description: 'Evaluates if a notification should be sent',
         positionX: 250,
         positionY: 230,
         configuration: JSON.stringify({
@@ -147,6 +153,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'email',
         name: 'Send Email',
         type: 'EMAIL',
+        description: 'Sends an automated email notification',
         positionX: 100,
         positionY: 400,
         configuration: JSON.stringify({
@@ -160,6 +167,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'end',
         name: 'End',
         type: 'END',
+        description: 'Completes the workflow execution',
         positionX: 250,
         positionY: 560,
         configuration: '{}',
@@ -186,6 +194,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'start',
         name: 'Start',
         type: 'START',
+        description: 'Initiates the data sync process',
         positionX: 250,
         positionY: 80,
         configuration: '{}',
@@ -195,6 +204,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'fetch',
         name: 'Fetch Data',
         type: 'HTTP',
+        description: 'Makes a GET request to the external API',
         positionX: 250,
         positionY: 230,
         configuration: JSON.stringify({
@@ -209,6 +219,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'transform',
         name: 'Transform',
         type: 'TRANSFORM',
+        description: 'Transforms the API response using JSONata',
         positionX: 250,
         positionY: 380,
         configuration: JSON.stringify({
@@ -221,6 +232,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'db-write',
         name: 'Write to DB',
         type: 'DATABASE',
+        description: 'Inserts transformed data into the database',
         positionX: 250,
         positionY: 530,
         configuration: JSON.stringify({
@@ -232,6 +244,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'end',
         name: 'End',
         type: 'END',
+        description: 'Completes the data sync pipeline',
         positionX: 250,
         positionY: 680,
         configuration: '{}',
@@ -258,6 +271,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'start',
         name: 'Start',
         type: 'START',
+        description: 'Triggers the scheduled task',
         positionX: 250,
         positionY: 80,
         configuration: '{}',
@@ -267,6 +281,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'function',
         name: 'Run Task',
         type: 'FUNCTION',
+        description: 'Executes the configured function',
         positionX: 250,
         positionY: 230,
         configuration: JSON.stringify({
@@ -278,6 +293,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'debug',
         name: 'Log Result',
         type: 'DEBUG',
+        description: 'Logs the function output for debugging',
         positionX: 250,
         positionY: 380,
         configuration: '{}',
@@ -287,6 +303,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'end',
         name: 'End',
         type: 'END',
+        description: 'Completes the scheduled task',
         positionX: 250,
         positionY: 530,
         configuration: '{}',
@@ -312,6 +329,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'http-start',
         name: 'API Endpoint',
         type: 'HTTP_START',
+        description: 'Exposes GET/POST endpoint at /integrate',
         positionX: 250,
         positionY: 80,
         configuration: JSON.stringify({
@@ -326,6 +344,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'http-call',
         name: 'Call External API',
         type: 'HTTP',
+        description: 'Fetches data from the external resource',
         positionX: 250,
         positionY: 250,
         configuration: JSON.stringify({
@@ -340,6 +359,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'transform',
         name: 'Format Response',
         type: 'TRANSFORM',
+        description: 'Transforms API response for the client',
         positionX: 250,
         positionY: 400,
         configuration: JSON.stringify({
@@ -352,6 +372,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'http-end',
         name: 'Return Response',
         type: 'HTTP_END',
+        description: 'Sends the formatted response back',
         positionX: 250,
         positionY: 550,
         configuration: JSON.stringify({
@@ -380,6 +401,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'start',
         name: 'Start',
         type: 'START',
+        description: 'Begins the report generation',
         positionX: 250,
         positionY: 80,
         configuration: '{}',
@@ -389,6 +411,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'db-query',
         name: 'Query Data',
         type: 'DATABASE',
+        description: 'Retrieves records from the database',
         positionX: 250,
         positionY: 230,
         configuration: JSON.stringify({
@@ -400,6 +423,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'transform',
         name: 'Build Report',
         type: 'TRANSFORM',
+        description: 'Transforms query results into report format',
         positionX: 250,
         positionY: 380,
         configuration: JSON.stringify({
@@ -412,6 +436,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'email',
         name: 'Email Report',
         type: 'EMAIL',
+        description: 'Sends the generated report via email',
         positionX: 250,
         positionY: 530,
         configuration: JSON.stringify({
@@ -425,6 +450,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplateDefinition[] = [
         tempId: 'end',
         name: 'End',
         type: 'END',
+        description: 'Completes the report generation',
         positionX: 250,
         positionY: 680,
         configuration: '{}',
