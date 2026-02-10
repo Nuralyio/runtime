@@ -6,6 +6,7 @@
 
 import HomeHeader from '../../components/home/HomeHeader.astro';
 import HomeFooter from '../../components/home/HomeFooter.astro';
+import '../../styles/showcase-common.css';
 
 export const prerender = false;
 
@@ -133,99 +134,14 @@ const categories = [...new Set(agents.map(a => a.category))];
 
     <style is:global>
       :root {
-        --color-bg: #f8fafc;
-        --color-bg-secondary: #f1f5f9;
-        --color-text: #0f0f3c;
-        --color-text-secondary: #5c5c7a;
-        --color-text-muted: #8c8ca8;
-        --color-border: #e8e8f0;
         --color-border-dashed: #d8d8e4;
-        --color-primary: #14144b;
-        --color-primary-light: #1e1e6e;
         --color-primary-dark: #0a0a32;
-        --color-primary-bg: #f0f0f8;
         --color-accent: #14144b;
-        --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
-        --transition: 150ms ease;
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html { scroll-behavior: smooth; }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background: var(--color-bg);
-        color: var(--color-text);
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
-
-      /* Page Header */
-      .page-hero {
-        padding: 80px 0 60px;
-        border-bottom: 1px solid var(--color-border);
-        text-align: center;
-      }
-
-      .page-hero h1 {
-        font-size: 48px;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        margin-bottom: 16px;
-      }
-
-      .page-hero p {
-        font-size: 18px;
-        color: var(--color-text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      /* Filter */
-      .filter-bar {
-        padding: 24px 0;
-        border-bottom: 1px solid var(--color-border);
-      }
-
-      .filter-tabs {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      .filter-tab {
-        padding: 8px 16px;
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        background: transparent;
-        border: 1px solid var(--color-border);
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all var(--transition);
-      }
-
-      .filter-tab:hover {
-        border-color: var(--color-text-muted);
-      }
-
-      .filter-tab.active {
-        background: var(--color-primary);
-        color: white;
-        border-color: var(--color-primary);
-      }
+      /* Agent-specific overrides */
+      .filter-bar { padding: 24px 0; }
+      .filter-tab { padding: 8px 16px; font-size: 13px; }
 
       /* Agent Grid */
       .agents-section {
@@ -418,7 +334,6 @@ const categories = [...new Set(agents.map(a => a.category))];
 
       /* Responsive */
       @media (max-width: 768px) {
-        .page-hero h1 { font-size: 36px; }
         .agents-grid { grid-template-columns: 1fr; }
       }
     </style>

@@ -1,0 +1,85 @@
+/**
+ * Shared CSS for showcase pages (agents, apps, templates).
+ * Avoids duplicating variables, resets, and common layout across pages.
+ */
+
+:root {
+  /* Showcase page design tokens */
+  --color-bg: #f8fafc;
+  --color-bg-secondary: #f1f5f9;
+  --color-text: #0f0f3c;
+  --color-text-secondary: #5c5c7a;
+  --color-text-muted: #8c8ca8;
+  --color-border: #e8e8f0;
+  --color-primary: #14144b;
+  --color-primary-light: #1e1e6e;
+  --color-primary-bg: #f0f0f8;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  --transition: 150ms ease;
+
+  /* NuralyUI design-system vars (canvas/whiteboard Shadow DOM reads these) */
+  --n-color-primary: #3b82f6;
+  --n-color-primary-dark: #2563eb;
+  --n-color-primary-light: #60a5fa;
+  --n-color-surface: #ffffff;
+  --n-color-surface-secondary: #f9fafb;
+  --n-color-surface-hover: #f3f4f6;
+  --n-color-text: #111827;
+  --n-color-text-secondary: #6b7280;
+  --n-color-text-muted: #9ca3af;
+  --n-color-border: #e5e7eb;
+  --n-color-border-light: #f3f4f6;
+  --n-color-success: #22c55e;
+  --n-color-warning: #f59e0b;
+  --n-color-error: #ef4444;
+  --n-color-info: #3b82f6;
+  --n-color-disabled: #9ca3af;
+
+  /* Nuraly brand vars */
+  --nuraly-color-primary: #14144b;
+  --nuraly-color-primary-light: #1e1e6e;
+  --nuraly-color-primary-dark: #0a0a32;
+  --nuraly-color-text: #0f0f3c;
+  --nuraly-color-text-secondary: #5c5c7a;
+  --nuraly-color-border: #e8e8f0;
+  --nuraly-color-background: #f8fafc;
+  --nuraly-color-surface: #ffffff;
+  --nuraly-color-button-primary: var(--nuraly-color-primary);
+  --nuraly-color-button-primary-hover: var(--nuraly-color-primary-light);
+  --nuraly-color-button-primary-active: var(--nuraly-color-primary-dark);
+  --nuraly-color-text-on-color: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.page-hero { padding: 80px 0 60px; border-bottom: 1px solid var(--color-border); text-align: center; }
+.page-hero h1 { font-size: 48px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 16px; }
+.page-hero p { font-size: 18px; color: var(--color-text-secondary); max-width: 600px; margin: 0 auto; }
+
+/* Filter pills */
+.filter-bar { padding: 20px 0; border-bottom: 1px solid var(--color-border); }
+.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.filter-tab {
+  padding: 6px 14px; font-size: 12px; font-weight: 500;
+  color: var(--color-text-secondary); background: transparent;
+  border: 1px solid var(--color-border); border-radius: 20px;
+  cursor: pointer; transition: all var(--transition);
+}
+.filter-tab:hover { border-color: var(--color-text-muted); }
+.filter-tab.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+@media (max-width: 768px) {
+  .page-hero h1 { font-size: 36px; }
+}
