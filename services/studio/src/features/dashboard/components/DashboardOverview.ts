@@ -243,7 +243,7 @@ export class DashboardOverview extends LitElement {
         transition: transform 200ms ease;
       }
 
-      :host([sidebarOpen]) .overview-sider {
+      :host([sidebaropen]) .overview-sider {
         transform: translateX(0);
       }
 
@@ -258,7 +258,7 @@ export class DashboardOverview extends LitElement {
         z-index: 99;
       }
 
-      :host([sidebarOpen]) .sidebar-overlay {
+      :host([sidebaropen]) .sidebar-overlay {
         display: block;
       }
 
