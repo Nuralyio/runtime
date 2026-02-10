@@ -44,7 +44,7 @@ interface MenuItem {
 
 @customElement('dashboard-overview')
 export class DashboardOverview extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: flex;
       flex: 1;
