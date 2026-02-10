@@ -227,6 +227,34 @@ export const dashboardStyles = css`
     margin: 0;
     max-width: 360px;
   }
+
+  /* Responsive: tablet — sidebar overlay */
+  @media (max-width: 1024px) {
+    .dashboard-sider {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 200ms ease;
+    }
+
+    :host([sidebaropen]) .dashboard-sider {
+      transform: translateX(0);
+    }
+  }
+
+  /* Responsive: mobile */
+  @media (max-width: 768px) {
+    .dashboard-content {
+      padding: 12px;
+    }
+
+    .dashboard-header {
+      padding: 0 12px;
+    }
+  }
 `;
 
 export default [dashboardStyles];
