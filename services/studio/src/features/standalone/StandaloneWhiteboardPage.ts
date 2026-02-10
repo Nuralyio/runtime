@@ -48,6 +48,7 @@ const ELEMENT_TYPE_TO_NODE_TYPE: Record<string, WhiteboardNodeType> = {
   'FRAME': WhiteboardNodeType.FRAME,
   'VOTING': WhiteboardNodeType.VOTING,
   'MERMAID_DIAGRAM': WhiteboardNodeType.MERMAID,
+  'ANCHOR': WhiteboardNodeType.ANCHOR,
 };
 
 /** Reverse map: WhiteboardNodeType → backend elementType string */
@@ -58,6 +59,17 @@ for (const [backendType, nodeType] of Object.entries(ELEMENT_TYPE_TO_NODE_TYPE))
 
 function elementToNode(el: WhiteboardElementDTO): WorkflowNode {
   const nodeType = ELEMENT_TYPE_TO_NODE_TYPE[el.elementType] || WhiteboardNodeType.SHAPE_RECTANGLE;
+
+  // Parse the catch-all configuration JSON for extra fields (e.g. onClickAction)
+  let extraConfig: Record<string, unknown> = {};
+  if (el.configuration) {
+    try {
+      extraConfig = JSON.parse(el.configuration);
+    } catch {
+      // ignore invalid JSON
+    }
+  }
+
   return {
     id: el.id,
     name: el.name || el.elementType,
@@ -95,6 +107,12 @@ function elementToNode(el: WhiteboardElementDTO): WorkflowNode {
         frameShowLabel: true,
         frameCollapsed: false,
       } : {}),
+      // Anchor-specific fields
+      ...(nodeType === WhiteboardNodeType.ANCHOR ? {
+        anchorLabel: el.textContent || el.name || 'Anchor',
+      } : {}),
+      // Extra config from catch-all JSON (onClickAction, onClickTargetAnchorId, etc.)
+      ...extraConfig,
     },
     ports: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
@@ -118,9 +136,36 @@ function connectorToEdge(conn: WhiteboardConnectorDTO): WorkflowEdge {
   };
 }
 
+/** Config keys that map to dedicated WhiteboardElementDTO columns */
+const DEDICATED_ELEMENT_FIELDS = new Set([
+  'width', 'height', 'zIndex', 'rotation', 'opacity', 'textContent',
+  'backgroundColor', 'borderColor', 'borderWidth', 'borderRadius',
+  'fontSize', 'fontFamily', 'fontWeight', 'textColor', 'textAlign',
+  'imageUrl', 'fillColor', 'shapeType', 'pathData',
+  // Frame-specific (not persisted as extra config)
+  'frameLabel', 'frameWidth', 'frameHeight', 'frameBackgroundColor',
+  'frameBorderColor', 'frameLabelPosition', 'frameLabelPlacement',
+  'frameShowLabel', 'frameCollapsed',
+  // Anchor-specific
+  'anchorLabel',
+]);
+
 function nodeToElementDTO(node: WorkflowNode, whiteboardId: string): Partial<WhiteboardElementDTO> {
   const config = node.configuration || {};
   const backendType = NODE_TYPE_TO_ELEMENT_TYPE[node.type] || 'SHAPE_RECTANGLE';
+  // Anchor nodes store their label in anchorLabel, persist it as textContent
+  const textContent = node.type === WhiteboardNodeType.ANCHOR
+    ? (config.anchorLabel as string | undefined)
+    : (config.textContent as string | undefined);
+
+  // Collect extra config fields that don't have dedicated columns
+  const extraConfig: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(config)) {
+    if (!DEDICATED_ELEMENT_FIELDS.has(key) && value !== undefined && value !== null && value !== '') {
+      extraConfig[key] = value;
+    }
+  }
+
   return {
     id: node.id,
     whiteboardId,
@@ -133,7 +178,7 @@ function nodeToElementDTO(node: WorkflowNode, whiteboardId: string): Partial<Whi
     zIndex: config.zIndex as number | undefined,
     rotation: config.rotation as number | undefined,
     opacity: config.opacity as number | undefined,
-    textContent: config.textContent as string | undefined,
+    textContent,
     backgroundColor: config.backgroundColor as string | undefined,
     borderColor: config.borderColor as string | undefined,
     borderWidth: config.borderWidth as number | undefined,
@@ -147,6 +192,8 @@ function nodeToElementDTO(node: WorkflowNode, whiteboardId: string): Partial<Whi
     fillColor: config.fillColor as string | undefined,
     shapeType: config.shapeType as string | undefined,
     pathData: config.pathData as string | undefined,
+    // Persist extra config (onClickAction, onClickTargetAnchorId, etc.) as JSON
+    configuration: Object.keys(extraConfig).length > 0 ? JSON.stringify(extraConfig) : undefined,
   };
 }
 

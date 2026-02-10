@@ -123,6 +123,8 @@ function dtoToNode(dto: WorkflowNodeDTO): WorkflowNode {
   const configuration = dto.configuration ? JSON.parse(dto.configuration) : {};
   const metadata = configuration.metadata || {};
   delete configuration.metadata;
+  // Strip transient runtime flags that should never be persisted
+  delete metadata._hiddenByFrame;
 
   return {
     id: dto.id,
@@ -166,12 +168,19 @@ function workflowToDTO(workflow: Workflow, applicationId: string): Partial<Workf
   };
 }
 
+/** Strip transient runtime flags that should never be persisted */
+function stripTransientMetadata(metadata: Record<string, unknown> | undefined): Record<string, unknown> | undefined {
+  if (!metadata) return metadata;
+  const { _hiddenByFrame, ...rest } = metadata as Record<string, unknown>;
+  return rest;
+}
+
 function nodeToDTO(node: WorkflowNode, workflowId: string, includeId = true): Partial<WorkflowNodeDTO> {
   const dto: Partial<WorkflowNodeDTO> = {
     workflowId,
     name: node.name,
     type: node.type,
-    configuration: JSON.stringify({ ...node.configuration, metadata: node.metadata }),
+    configuration: JSON.stringify({ ...node.configuration, metadata: stripTransientMetadata(node.metadata) }),
     ports: JSON.stringify(node.ports),
     positionX: node.position.x,
     positionY: node.position.y,
