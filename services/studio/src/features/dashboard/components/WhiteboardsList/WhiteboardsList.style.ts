@@ -275,6 +275,21 @@ export const whiteboardsListStyles = css`
     border-top: 1px solid var(--nuraly-color-border, #e8e8f0);
     margin-top: 4px;
   }
+
+  /* Responsive: mobile */
+  @media (max-width: 768px) {
+    .pinned-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .card-actions {
+      opacity: 1;
+    }
+  }
 `;
 
 export default [whiteboardsListStyles];
