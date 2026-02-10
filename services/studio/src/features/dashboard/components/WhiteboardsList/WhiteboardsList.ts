@@ -176,7 +176,7 @@ export class WhiteboardsList extends LitElement {
   }
 
   private handleRowClick(whiteboard: WhiteboardWithAppName) {
-    window.location.href = `/dashboard/whiteboard/${whiteboard.id}`;
+    window.location.href = `/dashboard/whiteboard/edit/${whiteboard.id}`;
   }
 
   private handleOpen(e: Event, whiteboard: WhiteboardWithAppName) {
