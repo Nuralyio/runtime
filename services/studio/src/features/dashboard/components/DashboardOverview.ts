@@ -376,117 +376,108 @@ export class DashboardOverview extends LitElement {
   }
 
   private async loadDataForView(view: ActiveView) {
-    // Skip if already loaded (unless forced refresh)
     if (this.isViewLoaded(view)) return;
 
-    const headers: Record<string, string> = {};
+    const loaders: Record<string, () => Promise<void>> = {
+      'applications': () => this.loadApplications(),
+      'workflows': () => this.loadWorkflows(),
+      'whiteboards': () => this.loadWhiteboards(),
+      'kv': () => this.loadKvEntries(),
+      'database': () => this.loadDatabases(),
+    };
 
-    switch (view) {
-      case 'applications':
-        if (!this.loadingApps) {
-          this.loadingApps = true;
-          this.error = null;
-          try {
-            this.applications = await fetchApplicationsWithStatus(headers);
-            this.appsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load applications:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load applications';
-          } finally {
-            this.loadingApps = false;
-          }
-        }
-        break;
+    const loader = loaders[view];
+    if (loader) await loader();
+  }
 
-      case 'workflows':
-        if (!this.loadingWorkflows) {
-          this.loadingWorkflows = true;
-          this.error = null;
-          try {
-            // Load apps too for the workflow creation dropdown
-            const [workflows, apps] = await Promise.all([
-              fetchAllWorkflowsAcrossApps(headers),
-              this.appsLoaded
-                ? Promise.resolve(this.applications)
-                : fetchApplicationsWithStatus(headers)
-            ]);
-            this.workflows = workflows;
-            if (!this.appsLoaded) {
-              this.applications = apps;
-              this.appsLoaded = true;
-            }
-            this.workflowsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load workflows:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load workflows';
-          } finally {
-            this.loadingWorkflows = false;
-          }
-        }
-        break;
+  private async loadApplications() {
+    if (this.loadingApps) return;
+    this.loadingApps = true;
+    this.error = null;
+    try {
+      this.applications = await fetchApplicationsWithStatus({});
+      this.appsLoaded = true;
+    } catch (err) {
+      console.error('Failed to load applications:', err);
+      this.error = err instanceof Error ? err.message : 'Failed to load applications';
+    } finally {
+      this.loadingApps = false;
+    }
+  }
 
-      case 'whiteboards':
-        if (!this.loadingWhiteboards) {
-          this.loadingWhiteboards = true;
-          this.error = null;
-          try {
-            const [whiteboards, apps] = await Promise.all([
-              fetchAllWhiteboardsAcrossApps(headers),
-              this.appsLoaded
-                ? Promise.resolve(this.applications)
-                : fetchApplicationsWithStatus(headers)
-            ]);
-            this.whiteboards = whiteboards;
-            if (!this.appsLoaded) {
-              this.applications = apps;
-              this.appsLoaded = true;
-            }
-            this.whiteboardsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load whiteboards:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load whiteboards';
-          } finally {
-            this.loadingWhiteboards = false;
-          }
-        }
-        break;
+  private async loadWorkflows() {
+    if (this.loadingWorkflows) return;
+    this.loadingWorkflows = true;
+    this.error = null;
+    try {
+      const [workflows, apps] = await Promise.all([
+        fetchAllWorkflowsAcrossApps({}),
+        this.appsLoaded ? Promise.resolve(this.applications) : fetchApplicationsWithStatus({})
+      ]);
+      this.workflows = workflows;
+      if (!this.appsLoaded) {
+        this.applications = apps;
+        this.appsLoaded = true;
+      }
+      this.workflowsLoaded = true;
+    } catch (err) {
+      console.error('Failed to load workflows:', err);
+      this.error = err instanceof Error ? err.message : 'Failed to load workflows';
+    } finally {
+      this.loadingWorkflows = false;
+    }
+  }
 
-      case 'kv':
-        if (!this.loadingKv) {
-          this.loadingKv = true;
-          this.error = null;
-          try {
-            this.kvEntries = await fetchAllKvEntriesAcrossApps(headers);
-            this.kvLoaded = true;
-          } catch (err) {
-            console.error('Failed to load KV entries:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load KV entries';
-          } finally {
-            this.loadingKv = false;
-          }
-        }
-        break;
+  private async loadWhiteboards() {
+    if (this.loadingWhiteboards) return;
+    this.loadingWhiteboards = true;
+    this.error = null;
+    try {
+      const [whiteboards, apps] = await Promise.all([
+        fetchAllWhiteboardsAcrossApps({}),
+        this.appsLoaded ? Promise.resolve(this.applications) : fetchApplicationsWithStatus({})
+      ]);
+      this.whiteboards = whiteboards;
+      if (!this.appsLoaded) {
+        this.applications = apps;
+        this.appsLoaded = true;
+      }
+      this.whiteboardsLoaded = true;
+    } catch (err) {
+      console.error('Failed to load whiteboards:', err);
+      this.error = err instanceof Error ? err.message : 'Failed to load whiteboards';
+    } finally {
+      this.loadingWhiteboards = false;
+    }
+  }
 
-      case 'database':
-        if (!this.loadingDatabases) {
-          this.loadingDatabases = true;
-          this.error = null;
-          try {
-            this.databases = await fetchAllDatabaseConnections(headers);
-            this.databasesLoaded = true;
-          } catch (err) {
-            console.error('Failed to load databases:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load databases';
-          } finally {
-            this.loadingDatabases = false;
-          }
-        }
-        break;
+  private async loadKvEntries() {
+    if (this.loadingKv) return;
+    this.loadingKv = true;
+    this.error = null;
+    try {
+      this.kvEntries = await fetchAllKvEntriesAcrossApps({});
+      this.kvLoaded = true;
+    } catch (err) {
+      console.error('Failed to load KV entries:', err);
+      this.error = err instanceof Error ? err.message : 'Failed to load KV entries';
+    } finally {
+      this.loadingKv = false;
+    }
+  }
 
-      // journal and services don't need pre-loaded data
-      case 'journal':
-      case 'services':
-        break;
+  private async loadDatabases() {
+    if (this.loadingDatabases) return;
+    this.loadingDatabases = true;
+    this.error = null;
+    try {
+      this.databases = await fetchAllDatabaseConnections({});
+      this.databasesLoaded = true;
+    } catch (err) {
+      console.error('Failed to load databases:', err);
+      this.error = err instanceof Error ? err.message : 'Failed to load databases';
+    } finally {
+      this.loadingDatabases = false;
     }
   }
 
