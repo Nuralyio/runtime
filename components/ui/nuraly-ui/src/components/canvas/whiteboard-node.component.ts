@@ -57,6 +57,9 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
   @property({ type: Object })
   remoteTyping: { userId: string; username: string; color: string } | null = null;
 
+  @property({ type: String })
+  actionTargetLabel = '';
+
   @state()
   private _mermaidSvg = '';
 
@@ -105,6 +108,32 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
       composed: true,
     }));
   };
+
+  private _handleActionBadgeMouseDown(e: MouseEvent) {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+
+  private _handleActionBadgeClick(e: MouseEvent) {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    this.dispatchEvent(new CustomEvent('node-action-trigger', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _handleActionBadgeTouchEnd(e: TouchEvent) {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent('node-action-trigger', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
@@ -522,6 +551,34 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private renderActionIndicator() {
+    const action = this.node.configuration?.onClickAction;
+    if (!action || action === 'none') return nothing;
+
+    const config = this.node.configuration || {};
+    const width = (config.width as number) || 200;
+    const height = (config.height as number) || 200;
+
+    // Use a proxy container that matches the node's position and size so the
+    // badge can use simple bottom/left:50% positioning relative to it.
+    return html`
+      <div
+        class="wb-action-badge-anchor"
+        style="position:absolute; left:${this.node.position.x}px; top:${this.node.position.y}px; width:${width}px; height:${height}px; pointer-events:none;"
+      >
+        <div
+          class="wb-action-indicator"
+          @mousedown=${this._handleActionBadgeMouseDown}
+          @click=${this._handleActionBadgeClick}
+          @touchend=${this._handleActionBadgeTouchEnd}
+        >
+          <nr-icon name="navigation" size="small"></nr-icon>
+          <span class="wb-action-indicator-label">${this.actionTargetLabel || 'Anchor'}</span>
+        </div>
+      </div>
+    `;
+  }
+
   private renderRemoteOverlays() {
     return html`
       ${this.remoteSelection ? html`
@@ -646,6 +703,12 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
         break;
     }
 
+    // Action badge is rendered as a standalone absolute-positioned element
+    // (not inside the wrapper) because the node container uses position: relative
+    // with left/top offsets, making wrapper-relative positioning incorrect.
+    const hasAction = this.node.configuration?.onClickAction &&
+                      this.node.configuration.onClickAction !== 'none';
+
     // If we have remote overlays, wrap in a container
     if (this.remoteSelection || this.remoteTyping) {
       return html`
@@ -653,7 +716,12 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
           ${nodeContent}
           ${this.renderRemoteOverlays()}
         </div>
+        ${hasAction ? this.renderActionIndicator() : nothing}
       `;
+    }
+
+    if (hasAction) {
+      return html`${nodeContent}${this.renderActionIndicator()}`;
     }
 
     return nodeContent;

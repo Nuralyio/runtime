@@ -58,17 +58,19 @@ export class FrameController extends BaseCanvasController {
     // Add global listeners
     document.addEventListener('mousemove', this.handleResizeDrag);
     document.addEventListener('mouseup', this.stopResize);
+    document.addEventListener('touchmove', this.handleResizeTouchDrag, { passive: false });
+    document.addEventListener('touchend', this.stopResizeTouch);
   }
 
-  private handleResizeDrag = (event: MouseEvent): void => {
+  private handleResizeDragWithCoords(clientX: number, clientY: number): void {
     if (!this.resizeState) return;
 
     const { handle, startX, startY, startWidth, startHeight, startPosition, frameId } = this.resizeState;
     const frame = this._host.workflow.nodes.find(n => n.id === frameId);
     if (!frame) return;
 
-    const deltaX = (event.clientX - startX) / this._host.viewport.zoom;
-    const deltaY = (event.clientY - startY) / this._host.viewport.zoom;
+    const deltaX = (clientX - startX) / this._host.viewport.zoom;
+    const deltaY = (clientY - startY) / this._host.viewport.zoom;
 
     let newWidth = startWidth;
     let newHeight = startHeight;
@@ -129,6 +131,17 @@ export class FrameController extends BaseCanvasController {
     };
 
     this._host.requestUpdate();
+  }
+
+  private handleResizeDrag = (event: MouseEvent): void => {
+    this.handleResizeDragWithCoords(event.clientX, event.clientY);
+  };
+
+  private readonly handleResizeTouchDrag = (event: TouchEvent): void => {
+    event.preventDefault();
+    if (event.touches.length > 0) {
+      this.handleResizeDragWithCoords(event.touches[0].clientX, event.touches[0].clientY);
+    }
   };
 
   stopResize = (): void => {
@@ -143,8 +156,14 @@ export class FrameController extends BaseCanvasController {
     this.resizeState = null;
     document.removeEventListener('mousemove', this.handleResizeDrag);
     document.removeEventListener('mouseup', this.stopResize);
+    document.removeEventListener('touchmove', this.handleResizeTouchDrag);
+    document.removeEventListener('touchend', this.stopResizeTouch);
 
     this._host.dispatchWorkflowChanged();
+  };
+
+  private readonly stopResizeTouch = (): void => {
+    this.stopResize();
   };
 
   // ===== CONTAINMENT DETECTION =====
