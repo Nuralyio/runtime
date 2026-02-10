@@ -147,6 +147,15 @@ export function renderWbSidebarTemplate(data: WbSidebarTemplateData): TemplateRe
       >
         <nr-icon name="frame" size="small"></nr-icon>
       </button>
+
+      <!-- Anchor -->
+      <button
+        class="wb-sidebar-btn"
+        @click=${() => data.onAddNode(WhiteboardNodeType.ANCHOR)}
+        title="Anchor"
+      >
+        <nr-icon name="anchor" size="small"></nr-icon>
+      </button>
     </div>
   `;
 }
