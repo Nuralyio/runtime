@@ -37,7 +37,9 @@ export class DashboardServicesStatus extends LitElement {
     :host {
       display: block;
       height: 100%;
-      overflow: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .services-header {
