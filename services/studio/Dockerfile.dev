@@ -18,7 +18,6 @@ COPY . .
 RUN chown -R nodeuser:nodeuser /app
 
 # Switch to non-root user
-USER nodeuser
 
 # Expose the dev server port
 EXPOSE 4321

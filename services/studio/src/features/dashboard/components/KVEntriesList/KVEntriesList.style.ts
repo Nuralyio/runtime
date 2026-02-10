@@ -155,6 +155,13 @@ export const kvEntriesListStyles = css`
     max-width: 280px;
     line-height: 1.5;
   }
+
+  /* Responsive: mobile */
+  @media (max-width: 768px) {
+    .table-container {
+      overflow-x: auto;
+    }
+  }
 `;
 
 export default [kvEntriesListStyles];

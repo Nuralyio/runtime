@@ -51,6 +51,31 @@ export class DashboardLayout extends LitElement {
       gap: 16px;
     }
 
+    .hamburger-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--nuraly-color-text, #0f0f3c);
+      transition: background 150ms ease;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .hamburger-btn:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+    }
+
+    .hamburger-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
     .logo {
       display: flex;
       align-items: center;
@@ -204,6 +229,40 @@ export class DashboardLayout extends LitElement {
       flex: 1;
       min-height: 0;
     }
+
+    /* Responsive: show hamburger on tablet and below */
+    @media (max-width: 1024px) {
+      .hamburger-btn {
+        display: flex;
+      }
+    }
+
+    /* Responsive: mobile adjustments */
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 0 16px;
+      }
+
+      .user-info {
+        display: none;
+      }
+
+      .dropdown-chevron {
+        display: none;
+      }
+
+      .user-profile {
+        padding: 6px;
+      }
+
+      .logo-text {
+        font-size: 16px;
+      }
+
+      .header-left {
+        gap: 10px;
+      }
+    }
   `;
 
   @property({ type: String, attribute: 'data-initial-route' })
@@ -211,6 +270,7 @@ export class DashboardLayout extends LitElement {
 
   @state() private currentRoute: ParsedRoute = { type: 'overview', overviewView: 'applications' };
   @state() private currentUser: CurrentUserInfo | null = null;
+  @state() private sidebarOpen = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -267,13 +327,23 @@ export class DashboardLayout extends LitElement {
     this.currentRoute = { ...this.currentRoute, subTab };
   }
 
+  private toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  private handleCloseSidebar() {
+    this.sidebarOpen = false;
+  }
+
   private renderContent() {
     switch (this.currentRoute.type) {
       case 'overview':
         return html`
           <dashboard-overview
             .activeView=${this.currentRoute.overviewView || 'applications'}
+            ?sidebarOpen=${this.sidebarOpen}
             @navigate=${this.handleNavigate}
+            @close-sidebar=${this.handleCloseSidebar}
           ></dashboard-overview>
         `;
 
@@ -425,6 +495,13 @@ export class DashboardLayout extends LitElement {
     return html`
       <header class="dashboard-header">
         <div class="header-left">
+          <button class="hamburger-btn" @click=${this.toggleSidebar} aria-label="Toggle sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <a href="/" class="logo">
             <img class="logo-icon" src="/favicon-32x32.png" alt="Nuraly" />
             <span class="logo-text">Nuraly</span>

@@ -185,6 +185,32 @@ export class DashboardAppView extends LitElement {
       font-size: 13px;
       margin-bottom: 16px;
     }
+
+    /* Responsive: mobile */
+    @media (max-width: 768px) {
+      .app-header {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .header-left {
+        gap: 10px;
+      }
+
+      .app-name {
+        font-size: 16px;
+      }
+
+      .tabs-container {
+        padding: 0 16px;
+      }
+
+      .sub-content {
+        padding: 16px;
+      }
+    }
   `;
 
   @property({ type: String }) appId: string = '';
