@@ -39,3 +39,6 @@ export { FrameController } from './frame.controller.js';
 
 // Collaboration controller for real-time multi-user sync
 export { CollaborationController } from './collaboration.controller.js';
+
+// Touch controller for mobile gesture support
+export { TouchController } from './touch.controller.js';

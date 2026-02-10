@@ -545,6 +545,50 @@ export const whiteboardNodeStyles = css`
     outline: 2px dashed var(--remote-selection-color, #3b82f6);
     outline-offset: 4px;
   }
+
+  /* ---- Action Indicator Badge ---- */
+  .wb-action-indicator {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(245, 158, 11, 0.9);
+    border: 1px solid rgba(245, 158, 11, 1);
+    border-radius: 12px;
+    color: #fff;
+    font-family: var(--nuraly-font-family);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 6;
+    user-select: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .wb-action-indicator:hover {
+    background: rgba(217, 119, 6, 1);
+    border-color: rgba(217, 119, 6, 1);
+  }
+
+  .wb-action-indicator:active {
+    background: rgba(180, 83, 9, 1);
+    transform: scale(0.97);
+  }
+
+  .wb-action-indicator nr-icon {
+    color: #fff;
+  }
+
+  .wb-action-indicator-label {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 export const styles = whiteboardNodeStyles;
