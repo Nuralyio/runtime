@@ -443,8 +443,8 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (this.disabled) return;
     const { node } = e.detail;
 
-    // For whiteboard text nodes, enter inline edit mode
-    if (node.type === WhiteboardNodeType.STICKY_NOTE || node.type === WhiteboardNodeType.TEXT_BLOCK) {
+    // For whiteboard text nodes and anchors, enter inline edit mode
+    if (node.type === WhiteboardNodeType.STICKY_NOTE || node.type === WhiteboardNodeType.TEXT_BLOCK || node.type === WhiteboardNodeType.ANCHOR) {
       if (this.readonly) return;
       this.editingNoteId = node.id;
       if (this.collaborative) {
@@ -452,10 +452,11 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
       }
       this.updateComplete.then(() => {
         const nodeEl = this.shadowRoot?.querySelector(`whiteboard-node[data-node-id="${node.id}"]`);
-        const textarea = nodeEl?.shadowRoot?.querySelector('.wb-textarea') as HTMLTextAreaElement;
-        if (textarea) {
-          textarea.focus();
-          textarea.select();
+        const editableEl = (nodeEl?.shadowRoot?.querySelector('.wb-textarea') ||
+                            nodeEl?.shadowRoot?.querySelector('.wb-anchor-input')) as HTMLInputElement | HTMLTextAreaElement;
+        if (editableEl) {
+          editableEl.focus();
+          editableEl.select();
         }
       });
       return;
@@ -469,7 +470,7 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handleNodeClickAction(e: CustomEvent) {
-    if (this.disabled || this.readonly) return;
+    if (this.disabled) return;
     const { node } = e.detail;
     const action = node.configuration?.onClickAction;
     if (action === 'pan-to-anchor') {
@@ -566,14 +567,15 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private handleNoteContentChange(e: CustomEvent) {
     const { node, content } = e.detail;
-    // Whiteboard nodes always use 'textContent'
+    // Anchor nodes store their label in 'anchorLabel', others use 'textContent'
+    const configKey = node.type === WhiteboardNodeType.ANCHOR ? 'anchorLabel' : 'textContent';
     const updatedNodes = this.workflow.nodes.map(n => {
       if (n.id === node.id) {
         return {
           ...n,
           configuration: {
             ...n.configuration,
-            textContent: content,
+            [configKey]: content,
           },
         };
       }
@@ -926,7 +928,8 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private wbHasFill(node: WorkflowNode): boolean {
     return node.type !== WhiteboardNodeType.DRAWING &&
            node.type !== WhiteboardNodeType.SHAPE_LINE &&
-           node.type !== WhiteboardNodeType.SHAPE_ARROW;
+           node.type !== WhiteboardNodeType.SHAPE_ARROW &&
+           node.type !== WhiteboardNodeType.ANCHOR;
   }
 
   private wbHasBorder(node: WorkflowNode): boolean {
