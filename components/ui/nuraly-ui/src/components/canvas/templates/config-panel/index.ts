@@ -6,7 +6,7 @@
 
 import { html, nothing, TemplateResult } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
-import { NODE_TEMPLATES, Workflow, WorkflowNode } from '../../workflow-canvas.types.js';
+import { NODE_TEMPLATES, Workflow, WorkflowNode, WhiteboardNodeType, isWhiteboardNode } from '../../workflow-canvas.types.js';
 import { getAllAvailableVariablePaths } from '../../utils/variable-resolver.js';
 
 // Import label component
@@ -19,6 +19,7 @@ export * from './types.js';
 import { ConfigPanelTemplateData, DynamicVariable, NodeExecutionData, ConfigPanelCallbacks } from './types.js';
 import { renderCommonFields } from './common-fields.js';
 import { renderTypeFields } from './type-fields.js';
+import { renderOnClickActionFields } from './onclick-action-fields.js';
 
 /**
  * Render node execution data section (input/output)
@@ -212,6 +213,9 @@ export function renderConfigPanelTemplate(
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
         ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider)}
+        ${isWhiteboardNode(node.type) && node.type !== WhiteboardNodeType.ANCHOR
+          ? renderOnClickActionFields(node.configuration, callbacks.onUpdateConfig, workflow?.nodes || [])
+          : nothing}
         ${renderNodeExecutionData(nodeExecution, executionId, node.id, callbacks)}
         ${renderAvailableVariables(workflow, node, dynamicVariables, loadingVariables)}
       </div>

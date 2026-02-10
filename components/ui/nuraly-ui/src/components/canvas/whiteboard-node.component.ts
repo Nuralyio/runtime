@@ -27,6 +27,7 @@ import '../icon/icon.component.js';
  * @fires port-mousedown - When a port is clicked to start connection
  * @fires port-mouseup - When mouse is released on a port
  * @fires node-dblclick - When node is double-clicked for editing
+ * @fires node-click - When node is clicked (for onClick actions like pan-to-anchor)
  * @fires note-content-change - When text content changes
  * @fires note-edit-end - When editing ends
  * @fires note-resize-start - When resize handle is grabbed
@@ -64,6 +65,20 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
   private _lastMermaidDef = '';
   private _lastMermaidTheme = '';
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', this._onHostClick);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this._onHostClick);
+  }
+
+  private _onHostClick = (e: MouseEvent) => {
+    this.handleNodeClick(e);
+  };
 
   override updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
@@ -148,6 +163,15 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     e.stopPropagation();
     e.preventDefault();
     this.dispatchEvent(new CustomEvent('note-resize-start', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private handleNodeClick(e: MouseEvent) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('node-click', {
       detail: { node: this.node, event: e },
       bubbles: true,
       composed: true,
@@ -435,6 +459,23 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private renderWbAnchor(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const label = (config.anchorLabel as string) || 'Anchor';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-anchor': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <nr-icon name="anchor" size="small"></nr-icon>
+        <span class="wb-anchor-label">${label}</span>
+      </div>
+    `;
+  }
+
   private renderRemoteOverlays() {
     return html`
       ${this.remoteSelection ? html`
@@ -547,6 +588,10 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
       case WhiteboardNodeType.MERMAID:
         nodeContent = this.renderWbMermaid(containerClasses, containerStyles, config);
+        break;
+
+      case WhiteboardNodeType.ANCHOR:
+        nodeContent = this.renderWbAnchor(containerClasses, containerStyles, config);
         break;
 
       case WhiteboardNodeType.SHAPE_RECTANGLE:

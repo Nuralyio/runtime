@@ -115,6 +115,7 @@ export enum WhiteboardNodeType {
   FRAME = 'WB_FRAME',
   VOTING = 'WB_VOTING',
   MERMAID = 'WB_MERMAID',
+  ANCHOR = 'WB_ANCHOR',
 }
 
 /**
@@ -391,6 +392,10 @@ export interface NodeConfiguration {
   threshold?: number;
   // Context Memory node
   memoryType?: 'buffer' | 'semantic' | 'hybrid';
+  // Anchor / onClick action
+  anchorLabel?: string;
+  onClickAction?: 'none' | 'pan-to-anchor';
+  onClickTargetAnchorId?: string;
 }
 
 /**
@@ -647,6 +652,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WhiteboardNodeType.FRAME]: '#6366f1',
   [WhiteboardNodeType.VOTING]: '#ef4444',
   [WhiteboardNodeType.MERMAID]: '#8b5cf6',
+  [WhiteboardNodeType.ANCHOR]: '#f59e0b',
 };
 
 /**
@@ -742,6 +748,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WhiteboardNodeType.FRAME]: 'frame',
   [WhiteboardNodeType.VOTING]: 'thumbs-up',
   [WhiteboardNodeType.MERMAID]: 'git-branch',
+  [WhiteboardNodeType.ANCHOR]: 'anchor',
 };
 
 /**
@@ -2087,6 +2094,16 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     },
   },
   {
+    type: WhiteboardNodeType.ANCHOR,
+    name: 'Anchor',
+    description: 'Navigation anchor — other elements can link here',
+    icon: NODE_ICONS[WhiteboardNodeType.ANCHOR],
+    color: NODE_COLORS[WhiteboardNodeType.ANCHOR],
+    category: 'wb-navigation',
+    defaultConfig: { anchorLabel: 'Anchor', width: 120, height: 48 },
+    defaultPorts: { inputs: [], outputs: [] },
+  },
+  {
     type: WhiteboardNodeType.FRAME,
     name: 'Frame',
     description: 'Group whiteboard elements together',
@@ -2314,6 +2331,13 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     name: 'Media & Interactive',
     icon: 'image',
     nodeTypes: [WhiteboardNodeType.IMAGE, WhiteboardNodeType.DRAWING, WhiteboardNodeType.VOTING, WhiteboardNodeType.MERMAID],
+    canvasType: CanvasType.WHITEBOARD,
+  },
+  {
+    id: 'wb-navigation',
+    name: 'Navigation',
+    icon: 'anchor',
+    nodeTypes: [WhiteboardNodeType.ANCHOR],
     canvasType: CanvasType.WHITEBOARD,
   },
   {

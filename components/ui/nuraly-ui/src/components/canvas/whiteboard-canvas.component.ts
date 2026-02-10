@@ -468,6 +468,20 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
+  private handleNodeClickAction(e: CustomEvent) {
+    if (this.disabled || this.readonly) return;
+    const { node } = e.detail;
+    const action = node.configuration?.onClickAction;
+    if (action === 'pan-to-anchor') {
+      const targetId = node.configuration?.onClickTargetAnchorId;
+      if (!targetId) return;
+      const targetNode = this.workflow?.nodes.find((n: WorkflowNode) => n.id === targetId);
+      if (targetNode) {
+        this.viewportController.panToPosition(targetNode.position.x, targetNode.position.y);
+      }
+    }
+  }
+
   private handlePortMouseDown(e: CustomEvent) {
     if (this.disabled || this.readonly) return;
     const { node, port, isInput, event } = e.detail;
@@ -1338,6 +1352,7 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
                   : null}
                 @node-mousedown=${this.handleNodeMouseDown}
                 @node-dblclick=${this.handleNodeDblClick}
+                @node-click=${this.handleNodeClickAction}
                 @port-mousedown=${this.handlePortMouseDown}
                 @port-mouseup=${this.handlePortMouseUp}
                 @note-content-change=${this.handleNoteContentChange}

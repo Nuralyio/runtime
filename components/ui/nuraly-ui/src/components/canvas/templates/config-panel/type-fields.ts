@@ -65,6 +65,7 @@ import {
 } from './agent-node-fields.js';
 import { renderNoteFields } from './note-node-fields.js';
 import { renderMermaidFields } from './mermaid-fields.js';
+import { renderAnchorFields } from './anchor-node-fields.js';
 
 /**
  * Render type-specific config fields
@@ -208,6 +209,9 @@ export function renderTypeFields(
     // Whiteboard nodes
     case WhiteboardNodeType.MERMAID:
       return renderMermaidFields(config, onUpdate);
+
+    case WhiteboardNodeType.ANCHOR:
+      return renderAnchorFields(config, onUpdate);
 
     default:
       return nothing;

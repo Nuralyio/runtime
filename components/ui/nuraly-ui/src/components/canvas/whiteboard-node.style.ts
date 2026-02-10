@@ -347,6 +347,32 @@ export const whiteboardNodeStyles = css`
     font-size: 12px;
   }
 
+  /* ---- Anchor ---- */
+  .wb-anchor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #fffbeb;
+    border: 2px dashed #f59e0b;
+    border-radius: 24px;
+    color: #92400e;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .wb-anchor nr-icon {
+    color: #f59e0b;
+  }
+
+  .wb-anchor-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   /* ---- Whiteboard Ports (hidden, show on hover) ---- */
   .wb-ports-container {
     position: absolute;
