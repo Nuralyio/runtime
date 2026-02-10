@@ -104,6 +104,8 @@ export default css`
   .table-content-wrapper {
     display: block;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   input[type='checkbox'][data-indeterminate='true']::after {
