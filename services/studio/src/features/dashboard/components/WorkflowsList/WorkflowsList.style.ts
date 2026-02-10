@@ -887,6 +887,30 @@ export const workflowsListStyles = css`
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  /* Responsive: mobile */
+  @media (max-width: 768px) {
+    .pinned-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .card-actions {
+      opacity: 1;
+    }
+
+    .template-modal {
+      width: 95%;
+      max-height: 90vh;
+    }
+
+    .template-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 `;
 
 export default [workflowsListStyles];

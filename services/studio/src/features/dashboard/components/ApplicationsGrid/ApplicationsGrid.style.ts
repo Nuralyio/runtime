@@ -587,6 +587,28 @@ export const applicationsGridStyles = css`
     .status-filter {
       width: 100%;
     }
+
+    .applications-grid,
+    .pinned-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .template-modal {
+      width: 95%;
+      max-height: 90vh;
+    }
+
+    .template-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .card-actions {
+      opacity: 1;
+    }
   }
 `;
 

@@ -120,6 +120,11 @@ export class DashboardOverview extends LitElement {
       text-transform: uppercase;
     }
 
+    /* Sidebar overlay backdrop */
+    .sidebar-overlay {
+      display: none;
+    }
+
     /* Main Content */
     .overview-main {
       flex: 1;
@@ -225,9 +230,68 @@ export class DashboardOverview extends LitElement {
       font-size: 13px;
       color: var(--nuraly-color-text-tertiary, #8c8ca8);
     }
+
+    /* Tablet: sidebar overlay */
+    @media (max-width: 1024px) {
+      .overview-sider {
+        position: fixed;
+        top: 49px;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 200ms ease;
+      }
+
+      :host([sidebaropen]) .overview-sider {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 49px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 99;
+      }
+
+      :host([sidebaropen]) .sidebar-overlay {
+        display: block;
+      }
+
+      .overview-content {
+        overflow-y: auto;
+        height: auto;
+      }
+
+      .overview-content > * {
+        overflow: visible;
+      }
+    }
+
+    /* Mobile: reduce content padding */
+    @media (max-width: 768px) {
+      .overview-content {
+        padding: 12px;
+        overflow-y: auto;
+        height: auto;
+      }
+
+      .overview-content > * {
+        overflow: visible;
+      }
+
+      .overview-header {
+        padding: 0 12px;
+      }
+    }
   `;
 
   @property({ type: String }) activeView: ActiveView = 'applications';
+  @property({ type: Boolean, reflect: true }) sidebarOpen = false;
 
   @state() private applications: ApplicationWithStatus[] = [];
   @state() private workflows: WorkflowWithAppName[] = [];
@@ -439,6 +503,13 @@ export class DashboardOverview extends LitElement {
     await this.loadDataForView(this.activeView);
   }
 
+  private closeSidebar() {
+    this.dispatchEvent(new CustomEvent('close-sidebar', {
+      bubbles: true,
+      composed: true
+    }));
+  }
+
   private handleMenuChange(e: CustomEvent) {
     const { value } = e.detail;
     const routes: Record<string, string> = {
@@ -451,6 +522,10 @@ export class DashboardOverview extends LitElement {
       'Services': '/dashboard/services'
     };
     const path = routes[value] || '/dashboard/applications';
+
+    // Close sidebar on mobile/tablet when a menu item is selected
+    this.closeSidebar();
+
     this.dispatchEvent(new CustomEvent('navigate', {
       detail: { path },
       bubbles: true,
@@ -657,6 +732,7 @@ export class DashboardOverview extends LitElement {
   render() {
     return html`
       <div class="overview-layout">
+        <div class="sidebar-overlay" @click=${this.closeSidebar}></div>
         <aside class="overview-sider">
           <nav class="sider-nav">
             <nr-menu
