@@ -26,6 +26,8 @@ export const whiteboardsListStyles = css`
     min-height: 0;
     overflow-y: auto;
     padding-right: 4px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .section {
