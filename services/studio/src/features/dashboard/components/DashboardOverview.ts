@@ -330,14 +330,21 @@ export class DashboardOverview extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
     await this.loadDataForView(this.activeView);
-    // Preload other views in background after current view loads
     this.preloadOtherViews();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.body.style.overflow = '';
   }
 
   updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
     if (changedProperties.has('activeView')) {
       this.loadDataForView(this.activeView);
+    }
+    if (changedProperties.has('sidebarOpen')) {
+      document.body.style.overflow = this.sidebarOpen ? 'hidden' : '';
     }
   }
 

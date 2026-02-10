@@ -272,19 +272,26 @@ export class DashboardLayout extends LitElement {
   @state() private currentUser: CurrentUserInfo | null = null;
   @state() private sidebarOpen = false;
 
+  private tabletQuery = window.matchMedia('(max-width: 1024px)');
+
   connectedCallback() {
     super.connectedCallback();
     this.initializeFromRoute();
     this.currentUser = getCurrentUser();
 
-    // Listen for browser back/forward
     window.addEventListener('popstate', this.handlePopState);
+    this.tabletQuery.addEventListener('change', this.handleMediaChange);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('popstate', this.handlePopState);
+    this.tabletQuery.removeEventListener('change', this.handleMediaChange);
   }
+
+  private handleMediaChange = (e: MediaQueryListEvent) => {
+    if (!e.matches) this.sidebarOpen = false;
+  };
 
   private handlePopState = () => {
     this.currentRoute = parseRoute(window.location.pathname, window.location.search);
@@ -313,6 +320,7 @@ export class DashboardLayout extends LitElement {
   private navigate(path: string) {
     window.history.pushState({}, '', path);
     this.currentRoute = parseRoute(path, '');
+    this.sidebarOpen = false;
   }
 
   private handleNavigate(e: CustomEvent) {
