@@ -262,6 +262,10 @@ export class DashboardOverview extends LitElement {
         display: block;
       }
 
+      .overview-main {
+        overflow: visible;
+      }
+
       .overview-content {
         overflow-y: auto;
         height: auto;

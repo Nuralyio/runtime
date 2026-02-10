@@ -26,7 +26,9 @@ export const kvEntriesListStyles = css`
     background: var(--nuraly-color-surface, #ffffff);
     border-radius: 8px;
     border: 1px solid var(--nuraly-color-border, #e8e8f0);
-    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   /* nr-table styling overrides */
