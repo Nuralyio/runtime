@@ -44,7 +44,7 @@ interface MenuItem {
 
 @customElement('dashboard-overview')
 export class DashboardOverview extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: flex;
       flex: 1;
@@ -330,14 +330,21 @@ export class DashboardOverview extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
     await this.loadDataForView(this.activeView);
-    // Preload other views in background after current view loads
     this.preloadOtherViews();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.body.style.overflow = '';
   }
 
   updated(changedProperties: Map<string, unknown>) {
     super.updated(changedProperties);
     if (changedProperties.has('activeView')) {
       this.loadDataForView(this.activeView);
+    }
+    if (changedProperties.has('sidebarOpen')) {
+      document.body.style.overflow = this.sidebarOpen ? 'hidden' : '';
     }
   }
 
@@ -375,130 +382,91 @@ export class DashboardOverview extends LitElement {
     }
   }
 
+  private readonly viewConfig: Record<string, {
+    isLoading: () => boolean;
+    setLoading: (v: boolean) => void;
+    setLoaded: (v: boolean) => void;
+    fetch: () => Promise<void>;
+    label: string;
+  }> = {
+    applications: {
+      isLoading: () => this.loadingApps,
+      setLoading: (v) => { this.loadingApps = v; },
+      setLoaded: (v) => { this.appsLoaded = v; },
+      fetch: async () => {
+        this.applications = await fetchApplicationsWithStatus({});
+      },
+      label: 'applications',
+    },
+    workflows: {
+      isLoading: () => this.loadingWorkflows,
+      setLoading: (v) => { this.loadingWorkflows = v; },
+      setLoaded: (v) => { this.workflowsLoaded = v; },
+      fetch: async () => {
+        const [workflows, apps] = await Promise.all([
+          fetchAllWorkflowsAcrossApps({}),
+          this.appsLoaded ? Promise.resolve(this.applications) : fetchApplicationsWithStatus({})
+        ]);
+        this.workflows = workflows;
+        if (!this.appsLoaded) { this.applications = apps; this.appsLoaded = true; }
+      },
+      label: 'workflows',
+    },
+    whiteboards: {
+      isLoading: () => this.loadingWhiteboards,
+      setLoading: (v) => { this.loadingWhiteboards = v; },
+      setLoaded: (v) => { this.whiteboardsLoaded = v; },
+      fetch: async () => {
+        const [whiteboards, apps] = await Promise.all([
+          fetchAllWhiteboardsAcrossApps({}),
+          this.appsLoaded ? Promise.resolve(this.applications) : fetchApplicationsWithStatus({})
+        ]);
+        this.whiteboards = whiteboards;
+        if (!this.appsLoaded) { this.applications = apps; this.appsLoaded = true; }
+      },
+      label: 'whiteboards',
+    },
+    kv: {
+      isLoading: () => this.loadingKv,
+      setLoading: (v) => { this.loadingKv = v; },
+      setLoaded: (v) => { this.kvLoaded = v; },
+      fetch: async () => {
+        this.kvEntries = await fetchAllKvEntriesAcrossApps({});
+      },
+      label: 'KV entries',
+    },
+    database: {
+      isLoading: () => this.loadingDatabases,
+      setLoading: (v) => { this.loadingDatabases = v; },
+      setLoaded: (v) => { this.databasesLoaded = v; },
+      fetch: async () => {
+        this.databases = await fetchAllDatabaseConnections({});
+      },
+      label: 'databases',
+    },
+  };
+
   private async loadDataForView(view: ActiveView) {
-    // Skip if already loaded (unless forced refresh)
     if (this.isViewLoaded(view)) return;
+    const config = this.viewConfig[view];
+    if (!config || config.isLoading()) return;
 
-    const headers: Record<string, string> = {};
-
-    switch (view) {
-      case 'applications':
-        if (!this.loadingApps) {
-          this.loadingApps = true;
-          this.error = null;
-          try {
-            this.applications = await fetchApplicationsWithStatus(headers);
-            this.appsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load applications:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load applications';
-          } finally {
-            this.loadingApps = false;
-          }
-        }
-        break;
-
-      case 'workflows':
-        if (!this.loadingWorkflows) {
-          this.loadingWorkflows = true;
-          this.error = null;
-          try {
-            // Load apps too for the workflow creation dropdown
-            const [workflows, apps] = await Promise.all([
-              fetchAllWorkflowsAcrossApps(headers),
-              this.appsLoaded
-                ? Promise.resolve(this.applications)
-                : fetchApplicationsWithStatus(headers)
-            ]);
-            this.workflows = workflows;
-            if (!this.appsLoaded) {
-              this.applications = apps;
-              this.appsLoaded = true;
-            }
-            this.workflowsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load workflows:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load workflows';
-          } finally {
-            this.loadingWorkflows = false;
-          }
-        }
-        break;
-
-      case 'whiteboards':
-        if (!this.loadingWhiteboards) {
-          this.loadingWhiteboards = true;
-          this.error = null;
-          try {
-            const [whiteboards, apps] = await Promise.all([
-              fetchAllWhiteboardsAcrossApps(headers),
-              this.appsLoaded
-                ? Promise.resolve(this.applications)
-                : fetchApplicationsWithStatus(headers)
-            ]);
-            this.whiteboards = whiteboards;
-            if (!this.appsLoaded) {
-              this.applications = apps;
-              this.appsLoaded = true;
-            }
-            this.whiteboardsLoaded = true;
-          } catch (err) {
-            console.error('Failed to load whiteboards:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load whiteboards';
-          } finally {
-            this.loadingWhiteboards = false;
-          }
-        }
-        break;
-
-      case 'kv':
-        if (!this.loadingKv) {
-          this.loadingKv = true;
-          this.error = null;
-          try {
-            this.kvEntries = await fetchAllKvEntriesAcrossApps(headers);
-            this.kvLoaded = true;
-          } catch (err) {
-            console.error('Failed to load KV entries:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load KV entries';
-          } finally {
-            this.loadingKv = false;
-          }
-        }
-        break;
-
-      case 'database':
-        if (!this.loadingDatabases) {
-          this.loadingDatabases = true;
-          this.error = null;
-          try {
-            this.databases = await fetchAllDatabaseConnections(headers);
-            this.databasesLoaded = true;
-          } catch (err) {
-            console.error('Failed to load databases:', err);
-            this.error = err instanceof Error ? err.message : 'Failed to load databases';
-          } finally {
-            this.loadingDatabases = false;
-          }
-        }
-        break;
-
-      // journal and services don't need pre-loaded data
-      case 'journal':
-      case 'services':
-        break;
+    config.setLoading(true);
+    this.error = null;
+    try {
+      await config.fetch();
+      config.setLoaded(true);
+    } catch (err) {
+      console.error(`Failed to load ${config.label}:`, err);
+      this.error = err instanceof Error ? err.message : `Failed to load ${config.label}`;
+    } finally {
+      config.setLoading(false);
     }
   }
 
   private async refreshCurrentView() {
-    // Force reload current view
-    switch (this.activeView) {
-      case 'applications': this.appsLoaded = false; break;
-      case 'workflows': this.workflowsLoaded = false; break;
-      case 'whiteboards': this.whiteboardsLoaded = false; break;
-      case 'kv': this.kvLoaded = false; break;
-      case 'database': this.databasesLoaded = false; break;
-    }
+    const config = this.viewConfig[this.activeView];
+    if (config) config.setLoaded(false);
     this.error = null;
     await this.loadDataForView(this.activeView);
   }
