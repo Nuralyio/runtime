@@ -240,7 +240,7 @@ export const dashboardStyles = css`
       transition: transform 200ms ease;
     }
 
-    :host([sidebarOpen]) .dashboard-sider {
+    :host([sidebaropen]) .dashboard-sider {
       transform: translateX(0);
     }
   }
