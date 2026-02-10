@@ -25,7 +25,7 @@ import '../../runtime/components/ui/nuraly-ui/src/components/dropdown';
 
 @customElement('dashboard-layout')
 export class DashboardLayout extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: flex;
       flex-direction: column;
@@ -272,29 +272,29 @@ export class DashboardLayout extends LitElement {
   @state() private currentUser: CurrentUserInfo | null = null;
   @state() private sidebarOpen = false;
 
-  private tabletQuery = window.matchMedia('(max-width: 1024px)');
+  private readonly tabletQuery = globalThis.matchMedia('(max-width: 1024px)');
 
   connectedCallback() {
     super.connectedCallback();
     this.initializeFromRoute();
     this.currentUser = getCurrentUser();
 
-    window.addEventListener('popstate', this.handlePopState);
+    globalThis.addEventListener('popstate', this.handlePopState);
     this.tabletQuery.addEventListener('change', this.handleMediaChange);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('popstate', this.handlePopState);
+    globalThis.removeEventListener('popstate', this.handlePopState);
     this.tabletQuery.removeEventListener('change', this.handleMediaChange);
   }
 
-  private handleMediaChange = (e: MediaQueryListEvent) => {
+  private readonly handleMediaChange = (e: MediaQueryListEvent) => {
     if (!e.matches) this.sidebarOpen = false;
   };
 
-  private handlePopState = () => {
-    this.currentRoute = parseRoute(window.location.pathname, window.location.search);
+  private readonly handlePopState = () => {
+    this.currentRoute = parseRoute(globalThis.location.pathname, globalThis.location.search);
   };
 
   private initializeFromRoute() {
@@ -313,12 +313,12 @@ export class DashboardLayout extends LitElement {
         this.currentRoute = { type: 'overview', overviewView: 'applications' };
       }
     } else {
-      this.currentRoute = parseRoute(window.location.pathname, window.location.search);
+      this.currentRoute = parseRoute(globalThis.location.pathname, globalThis.location.search);
     }
   }
 
   private navigate(path: string) {
-    window.history.pushState({}, '', path);
+    globalThis.history.pushState({}, '', path);
     this.currentRoute = parseRoute(path, '');
     this.sidebarOpen = false;
   }
@@ -331,7 +331,7 @@ export class DashboardLayout extends LitElement {
   private handleSubTabChange(e: CustomEvent) {
     const { subTab } = e.detail;
     const newPath = `/dashboard/app/${this.currentRoute.resourceId}/${subTab}`;
-    window.history.pushState({}, '', newPath);
+    globalThis.history.pushState({}, '', newPath);
     this.currentRoute = { ...this.currentRoute, subTab };
   }
 
@@ -439,18 +439,18 @@ export class DashboardLayout extends LitElement {
 
   private handleLogout() {
     // Redirect to logout
-    window.location.href = '/logout';
+    globalThis.location.href = '/logout';
   }
 
   private handleProfile() {
     // Navigate to profile page
-    window.location.href = '/dashboard/profile';
+    globalThis.location.href = '/dashboard/profile';
   }
 
   private renderUserProfile() {
     if (!this.currentUser || this.currentUser.anonymous) {
       return html`
-        <nr-button type="primary" size="small" @click=${() => window.location.href = '/auth/login'}>
+        <nr-button type="primary" size="small" @click=${() => globalThis.location.href = '/auth/login'}>
           Sign In
         </nr-button>
       `;
