@@ -25,6 +25,16 @@ export interface ToolbarTemplateData {
   showChatbot?: boolean;
   onToggleChatbot?: () => void;
   chatbotUnreadCount?: number;
+  // Name editing
+  name?: string;
+  isEditingName?: boolean;
+  onStartEditName?: () => void;
+  onNameInput?: (e: Event) => void;
+  onNameBlur?: (e: FocusEvent) => void;
+  onNameKeydown?: (e: KeyboardEvent) => void;
+  onNamePaste?: (e: ClipboardEvent) => void;
+  onSaveName?: () => void;
+  onCancelEditName?: () => void;
   onModeChange: (mode: CanvasMode) => void;
   onTogglePalette: () => void;
   onZoomIn: () => void;
@@ -64,6 +74,48 @@ function renderChatbotToggle(data: ToolbarTemplateData): TemplateResult | typeof
 }
 
 /**
+ * Render the editable name section in the toolbar
+ */
+function renderToolbarName(data: ToolbarTemplateData): TemplateResult | typeof nothing {
+  if (data.name == null || !data.onStartEditName) return nothing;
+
+  if (data.isEditingName) {
+    return html`
+      <div class="toolbar-divider"></div>
+      <div class="toolbar-name-container">
+        <span
+          class="toolbar-name editing"
+          contenteditable="true"
+          @input=${data.onNameInput}
+          @blur=${data.onNameBlur}
+          @keydown=${data.onNameKeydown}
+          @paste=${data.onNamePaste}
+        ></span>
+        <button class="toolbar-name-action save" @click=${data.onSaveName} title="Save">
+          <nr-icon name="check" size="small"></nr-icon>
+        </button>
+        <button class="toolbar-name-action cancel" @click=${data.onCancelEditName} title="Cancel">
+          <nr-icon name="x" size="small"></nr-icon>
+        </button>
+      </div>
+    `;
+  }
+
+  return html`
+    <div class="toolbar-divider"></div>
+    <button
+      class="toolbar-name-btn"
+      @click=${data.onStartEditName}
+      ?disabled=${data.readonly}
+      title="Click to rename"
+    >
+      <span class="toolbar-name-text">${data.name}</span>
+      <nr-icon name="pencil" size="small" class="toolbar-name-edit-icon"></nr-icon>
+    </button>
+  `;
+}
+
+/**
  * Render the canvas toolbar
  */
 export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult | typeof nothing {
@@ -95,6 +147,7 @@ export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult
           <nr-icon name="plus" size="small"></nr-icon>
         </button>
       ` : nothing}
+      ${renderToolbarName(data)}
       <div class="toolbar-divider"></div>
       <button
         class="toolbar-btn"
