@@ -15,6 +15,7 @@ import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 import '../../runtime/components/ui/nuraly-ui/src/components/input';
+import '../../runtime/components/ui/nuraly-ui/src/components/select';
 import '../../runtime/components/ui/nuraly-ui/src/components/table';
 import type { IHeader } from '../../runtime/components/ui/nuraly-ui/src/components/table/table.types';
 
@@ -195,7 +196,7 @@ export class DashboardWorkflowView extends LitElement {
       background: var(--nuraly-color-surface, #ffffff);
       border-radius: 8px;
       border: 1px solid var(--nuraly-color-border, #e8e8f0);
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     .card-header {
@@ -312,21 +313,6 @@ export class DashboardWorkflowView extends LitElement {
     .filter-bar label {
       font-size: 13px;
       color: var(--nuraly-color-text-secondary, #5c5c7a);
-    }
-
-    .filter-bar select {
-      padding: 4px 8px;
-      font-size: 13px;
-      border: 1px solid var(--nuraly-color-border, #e8e8f0);
-      border-radius: 6px;
-      background: var(--nuraly-color-surface, #ffffff);
-      color: var(--nuraly-color-text, #0f0f3c);
-      cursor: pointer;
-      outline: none;
-    }
-
-    .filter-bar select:focus {
-      border-color: var(--nuraly-color-primary, #14144b);
     }
 
     @media (max-width: 768px) {
@@ -464,8 +450,8 @@ export class DashboardWorkflowView extends LitElement {
     });
   }
 
-  private handleStatusFilterChange(e: Event) {
-    this.statusFilter = (e.target as HTMLSelectElement).value;
+  private handleStatusFilterChange(e: CustomEvent) {
+    this.statusFilter = e.detail.value;
   }
 
   private navigateToExecution(execId: string) {
@@ -734,13 +720,18 @@ export class DashboardWorkflowView extends LitElement {
               </div>
               <div class="filter-bar">
                 <label>Status:</label>
-                <select @change=${this.handleStatusFilterChange} .value=${this.statusFilter}>
-                  <option value="all">All</option>
-                  <option value="completed">Completed</option>
-                  <option value="failed">Failed</option>
-                  <option value="running">Running</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                <nr-select
+                  size="small"
+                  .value=${this.statusFilter}
+                  .options=${[
+                    { label: 'All', value: 'all' },
+                    { label: 'Completed', value: 'completed' },
+                    { label: 'Failed', value: 'failed' },
+                    { label: 'Running', value: 'running' },
+                    { label: 'Cancelled', value: 'cancelled' },
+                  ]}
+                  @nr-change=${this.handleStatusFilterChange}
+                ></nr-select>
               </div>
               ${this.executions.length === 0 ? html`
                 <div class="empty-state">
