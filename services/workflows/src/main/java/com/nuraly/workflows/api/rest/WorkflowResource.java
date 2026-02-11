@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuraly.workflows.configuration.Configuration;
 import com.nuraly.workflows.dto.*;
+import com.nuraly.workflows.dto.revision.RevisionSnapshotDTO;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
+import com.nuraly.workflows.exception.RevisionNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.WorkflowService;
 import com.nuraly.workflows.service.WorkflowExecutionService;
+import com.nuraly.workflows.service.WorkflowRevisionService;
 import com.nuraly.workflows.service.WorkflowTriggerService;
 import jakarta.ws.rs.core.Response;
 import com.nuraly.library.permission.RequiresPermission;
@@ -38,6 +41,9 @@ public class WorkflowResource {
 
     @Inject
     WorkflowExecutionService executionService;
+
+    @Inject
+    WorkflowRevisionService revisionService;
 
     @Inject
     WorkflowTriggerService triggerService;
@@ -565,6 +571,35 @@ public class WorkflowResource {
             List<NodeExecutionDTO> nodeExecutions = executionService.getNodeExecutions(executionId);
             return RestResponse.ok(nodeExecutions);
         } catch (com.nuraly.workflows.exception.ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @GET
+    @Path("/{id}/executions/{executionId}/snapshot")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Get workflow snapshot from execution time")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Snapshot retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Execution not found or no snapshot available")
+    })
+    public RestResponse<RevisionSnapshotDTO> getExecutionSnapshot(
+            @PathParam("id") UUID id,
+            @PathParam("executionId") UUID executionId) {
+        try {
+            WorkflowExecutionDTO execution = executionService.getExecution(executionId);
+            if (execution.getRevision() == null) {
+                return RestResponse.status(RestResponse.Status.NOT_FOUND);
+            }
+            RevisionSnapshotDTO snapshot = revisionService.getRevisionSnapshot(id, execution.getRevision());
+            return RestResponse.ok(snapshot);
+        } catch (com.nuraly.workflows.exception.ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        } catch (RevisionNotFoundException e) {
             return RestResponse.status(RestResponse.Status.NOT_FOUND);
         }
     }

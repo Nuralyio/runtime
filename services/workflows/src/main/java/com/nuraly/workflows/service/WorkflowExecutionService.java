@@ -12,6 +12,7 @@ import com.nuraly.workflows.entity.WorkflowEntity;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
 import com.nuraly.workflows.entity.enums.WorkflowStatus;
+import com.nuraly.workflows.dto.revision.WorkflowRevisionDTO;
 import com.nuraly.workflows.exception.ExecutionNotFoundException;
 import com.nuraly.workflows.exception.InvalidWorkflowException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
@@ -47,6 +48,9 @@ public class WorkflowExecutionService {
     WorkflowExecutionProducer executionProducer;
 
     @Inject
+    WorkflowRevisionService revisionService;
+
+    @Inject
     LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -65,12 +69,17 @@ public class WorkflowExecutionService {
             throw new InvalidWorkflowException("Workflow cannot be executed. Current status: " + workflow.status);
         }
 
+        // Snapshot current workflow state as a revision
+        WorkflowRevisionDTO revisionDTO = revisionService.createRevision(
+                workflowId, userUuid != null ? userUuid : "system", null);
+
         // Create execution record
         WorkflowExecutionEntity execution = new WorkflowExecutionEntity();
         execution.workflow = workflow;
         execution.status = ExecutionStatus.PENDING;
         execution.triggeredBy = userUuid != null ? userUuid : "system";
         execution.triggerType = "manual";
+        execution.revision = revisionDTO.getRevision();
         execution.startedAt = Instant.now();
 
         String inputData = "{}";
