@@ -466,6 +466,18 @@ public class NodeTypeRegistry {
         register(NodeType.DB_CONSTRAINT, NodeTypeDefinition.builder().schemaVersion(1).build());
         register(NodeType.DB_QUERY, NodeTypeDefinition.builder().schemaVersion(1).build());
 
+        // --- Display nodes ---
+
+        register(NodeType.UI_TABLE, NodeTypeDefinition.builder()
+                .schemaVersion(1)
+                .inputs(List.of(
+                        port("input", "Data", true, 1)
+                ))
+                .outputs(List.of(
+                        port("output", "Output", true, 1)
+                ))
+                .build());
+
         // --- Annotation nodes (visual only, no ports) ---
 
         register(NodeType.NOTE, NodeTypeDefinition.builder().schemaVersion(1).build());

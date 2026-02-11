@@ -230,6 +230,24 @@ public class WhiteboardElementTypeRegistry {
                         colDefault("backgroundColor", "#E8F4FD", 1)
                 ))
                 .build());
+
+        // --- MERMAID_DIAGRAM ---
+        register(WhiteboardElementType.MERMAID_DIAGRAM, WhiteboardElementTypeDefinition.builder()
+                .schemaVersion(1)
+                .properties(List.of(
+                        configProp("diagramType", "Diagram Type", "select", "flowchart", 1,
+                                List.of("flowchart", "sequence", "class", "state", "er", "gantt", "pie", "mindmap"))
+                ))
+                .columnDefaults(List.of(
+                        colDefault("backgroundColor", "#FFFFFF", 1)
+                ))
+                .build());
+
+        // --- ANCHOR ---
+        register(WhiteboardElementType.ANCHOR, WhiteboardElementTypeDefinition.builder()
+                .schemaVersion(1)
+                .properties(List.of())
+                .build());
     }
 
     // ========================================================================
