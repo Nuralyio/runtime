@@ -450,6 +450,45 @@ public class WorkflowResource {
         }
     }
 
+    @GET
+    @Path("/{id}/executions")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "List workflow executions")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Executions retrieved successfully")
+    })
+    public RestResponse<List<WorkflowExecutionDTO>> getExecutions(@PathParam("id") UUID id) {
+        List<WorkflowExecutionDTO> executions = executionService.getExecutions(id);
+        return RestResponse.ok(executions);
+    }
+
+    @GET
+    @Path("/{id}/executions/{executionId}")
+    @RequiresPermission(
+            permissionType = "workflow:read",
+            resourceType = "workflow",
+            resourceId = "#{id}"
+    )
+    @Operation(summary = "Get execution details")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Execution retrieved successfully"),
+            @APIResponse(responseCode = "404", description = "Execution not found")
+    })
+    public RestResponse<WorkflowExecutionDTO> getExecution(
+            @PathParam("id") UUID id,
+            @PathParam("executionId") UUID executionId) {
+        try {
+            WorkflowExecutionDTO execution = executionService.getExecution(executionId);
+            return RestResponse.ok(execution);
+        } catch (com.nuraly.workflows.exception.ExecutionNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
     private String extractUserUuid(String userHeader) {
         if (userHeader == null || userHeader.isEmpty()) {
             return null;
