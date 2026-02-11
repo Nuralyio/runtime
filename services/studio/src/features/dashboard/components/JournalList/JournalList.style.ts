@@ -85,7 +85,9 @@ export const journalListStyles = css`
     background: var(--nuraly-color-surface, #ffffff);
     border-radius: 8px;
     border: 1px solid var(--nuraly-color-border, #e8e8f0);
-    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .table-container nr-table {
@@ -372,6 +374,8 @@ export const journalListStyles = css`
     padding: 20px;
     overflow-y: auto;
     flex: 1;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .detail-section {

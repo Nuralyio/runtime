@@ -137,6 +137,7 @@ export class DashboardOverview extends LitElement {
 
     .overview-header {
       height: 48px;
+      flex-shrink: 0;
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
       padding: 0 20px;
@@ -160,18 +161,16 @@ export class DashboardOverview extends LitElement {
 
     .overview-content {
       flex: 1;
-      padding: 20px;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      height: calc(100vh - 49px - 48px);
+      padding: 20px;
+      overflow: hidden;
     }
 
     .overview-content > * {
       flex: 1;
       min-height: 0;
-      overflow: hidden;
     }
 
     /* Loading */
@@ -262,13 +261,13 @@ export class DashboardOverview extends LitElement {
         display: block;
       }
 
-      .overview-content {
-        overflow-y: auto;
-        height: auto;
+      .overview-main {
+        overflow: visible;
       }
 
-      .overview-content > * {
-        overflow: visible;
+      .overview-content {
+        height: auto;
+        overflow-y: auto;
       }
     }
 
@@ -276,12 +275,8 @@ export class DashboardOverview extends LitElement {
     @media (max-width: 768px) {
       .overview-content {
         padding: 12px;
-        overflow-y: auto;
         height: auto;
-      }
-
-      .overview-content > * {
-        overflow: visible;
+        overflow-y: auto;
       }
 
       .overview-header {
