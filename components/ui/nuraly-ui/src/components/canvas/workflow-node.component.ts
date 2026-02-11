@@ -131,6 +131,10 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     return this.node.type === DbDesignerNodeType.TABLE;
   }
 
+  private isUiTableNode(): boolean {
+    return this.node.type === WorkflowNodeType.UI_TABLE;
+  }
+
   private isNoteNode(): boolean {
     return isNoteNode(this.node.type);
   }
@@ -412,6 +416,98 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  /**
+   * Render a UI Table node - shows configured columns on the canvas
+   */
+  private renderUiTableNode() {
+    const nodeColor = this.getNodeColor();
+    const status = this.node.status || ExecutionStatus.IDLE;
+    const config = this.node.configuration || {};
+    const userColumns = (config.tableColumns as Array<{ name: string; key: string }>) || [];
+
+    // Dummy data shown when no columns are configured
+    const dummyColumns = [
+      { name: 'ID', key: 'id' },
+      { name: 'Name', key: 'name' },
+      { name: 'Email', key: 'email' },
+      { name: 'Status', key: 'status' },
+    ];
+    const dummyRows = [
+      { id: '1', name: 'Alice', email: 'alice@demo.io', status: 'Active' },
+      { id: '2', name: 'Bob', email: 'bob@demo.io', status: 'Pending' },
+      { id: '3', name: 'Carol', email: 'carol@demo.io', status: 'Active' },
+    ];
+
+    const hasUserColumns = userColumns.length > 0;
+    const displayColumns = hasUserColumns ? userColumns : dummyColumns;
+
+    const containerClasses = {
+      'node-container': true,
+      'ui-table-node': true,
+      selected: this.selected,
+      dragging: this.dragging,
+      [`status-${status.toLowerCase()}`]: true,
+    };
+
+    const containerStyles = {
+      '--node-accent': nodeColor,
+      left: `${this.node.position.x}px`,
+      top: `${this.node.position.y}px`,
+    };
+
+    return html`
+      <div
+        class=${classMap(containerClasses)}
+        style=${styleMap(containerStyles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="ui-table-header" style="background: ${nodeColor}">
+          <nr-icon name="table" size="small" style="color: white;"></nr-icon>
+          <span class="ui-table-name">${this.node.name || 'Table'}</span>
+        </div>
+
+        <div class="ui-table-grid ${!hasUserColumns ? 'placeholder' : ''}">
+          <!-- Column headers -->
+          <div class="ui-table-row ui-table-head-row">
+            ${displayColumns.map(col => html`
+              <div class="ui-table-cell ui-table-head-cell">${col.name || col.key}</div>
+            `)}
+          </div>
+          <!-- Data rows (dummy when no columns configured) -->
+          ${(!hasUserColumns ? dummyRows : [{}, {}, {}]).map(row => html`
+            <div class="ui-table-row">
+              ${displayColumns.map(col => html`
+                <div class="ui-table-cell">${!hasUserColumns ? (row as any)[col.key] || '—' : '—'}</div>
+              `)}
+            </div>
+          `)}
+        </div>
+
+        ${!hasUserColumns ? html`
+          <div class="ui-table-hint">Sample data — configure columns to customize</div>
+        ` : nothing}
+
+        ${status !== ExecutionStatus.IDLE ? html`
+          <div class="node-status">
+            <span class="status-dot ${status.toLowerCase()}"></span>
+            <span class="status-text">${this.getStatusText()}</span>
+          </div>
+        ` : nothing}
+
+        <div class="ports-container">
+          ${this.node.ports.inputs.map((port, i) =>
+            this.renderPort(port, true, i, this.node.ports.inputs.length)
+          )}
+          ${this.node.ports.outputs.map((port, i) =>
+            this.renderPort(port, false, i, this.node.ports.outputs.length)
+          )}
+        </div>
+      </div>
+    `;
+  }
+
   private handlePortMouseDown(e: MouseEvent, port: NodePort, isInput: boolean) {
     e.stopPropagation();
     e.preventDefault();
@@ -564,6 +660,11 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     // Use special rendering for DB Table nodes
     if (this.isDbTableNode()) {
       return this.wrapWithRemoteOverlays(this.renderDbTableNode());
+    }
+
+    // Use special rendering for UI Table nodes
+    if (this.isUiTableNode()) {
+      return this.wrapWithRemoteOverlays(this.renderUiTableNode());
     }
 
     // Use special rendering for Note nodes
