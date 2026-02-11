@@ -97,6 +97,7 @@ export interface ExecutionResult {
   inputData?: string;
   outputData?: string;
   errorMessage?: string;
+  revision?: number;
   startedAt?: string;
   completedAt?: string;
   durationMs?: number;
@@ -232,6 +233,83 @@ function edgeToDTO(edge: WorkflowEdge, workflowId: string, includeId = true): Pa
     dto.id = edge.id;
   }
   return dto;
+}
+
+// Revision snapshot types (from backend RevisionSnapshotDTO)
+interface NodeVersionDTO {
+  id: string;
+  nodeId: string;
+  workflowId: string;
+  version: number;
+  name: string;
+  type: string;
+  configuration: string;
+  ports: string;
+  positionX: number;
+  positionY: number;
+  maxRetries?: number;
+  retryDelayMs?: number;
+  timeoutMs?: number;
+}
+
+interface EdgeVersionDTO {
+  id: string;
+  edgeId: string;
+  workflowId: string;
+  version: number;
+  sourceNodeId: string;
+  sourcePortId: string;
+  targetNodeId: string;
+  targetPortId: string;
+  condition?: string;
+  label?: string;
+  priority?: number;
+}
+
+interface RevisionSnapshotDTO {
+  revision: unknown;
+  workflow: { id: string; workflowId: string; name: string; description?: string; version: number };
+  nodes: NodeVersionDTO[];
+  edges: EdgeVersionDTO[];
+  triggers: unknown[];
+}
+
+function snapshotToWorkflow(snapshot: RevisionSnapshotDTO): Workflow {
+  return {
+    id: snapshot.workflow.workflowId,
+    name: snapshot.workflow.name,
+    description: snapshot.workflow.description,
+    nodes: snapshot.nodes.map(n => {
+      const ports = n.ports ? JSON.parse(n.ports) : { inputs: [], outputs: [] };
+      const configuration = n.configuration ? JSON.parse(n.configuration) : {};
+      const metadata = configuration.metadata || {};
+      delete configuration.metadata;
+      return {
+        id: n.nodeId,
+        name: n.name,
+        type: n.type as any,
+        position: { x: n.positionX || 0, y: n.positionY || 0 },
+        configuration,
+        ports,
+        metadata: {
+          maxRetries: n.maxRetries,
+          retryDelayMs: n.retryDelayMs,
+          timeoutMs: n.timeoutMs,
+          ...metadata,
+        },
+      };
+    }),
+    edges: snapshot.edges.map(e => ({
+      id: e.edgeId,
+      sourceNodeId: e.sourceNodeId,
+      sourcePortId: e.sourcePortId || 'out',
+      targetNodeId: e.targetNodeId,
+      targetPortId: e.targetPortId || 'in',
+      label: e.label,
+      condition: e.condition,
+      priority: e.priority,
+    })),
+  };
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -532,6 +610,12 @@ export const workflowService = {
   async getNodeExecutions(workflowId: string, executionId: string): Promise<NodeExecutionDTO[]> {
     const response = await fetch(APIS_URL.getExecutionNodes(workflowId, executionId));
     return handleResponse<NodeExecutionDTO[]>(response);
+  },
+
+  async getExecutionSnapshot(workflowId: string, executionId: string): Promise<Workflow> {
+    const response = await fetch(APIS_URL.getExecutionSnapshot(workflowId, executionId));
+    const snapshot = await handleResponse<RevisionSnapshotDTO>(response);
+    return snapshotToWorkflow(snapshot);
   },
 
   // Trigger operations
