@@ -170,22 +170,18 @@ export class DashboardWorkflowView extends LitElement {
     .workflow-content {
       flex: 1;
       display: flex;
-      gap: 24px;
       padding: 24px;
       overflow: auto;
     }
 
     .content-main {
-      flex: 2;
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 20px;
-    }
-
-    .content-sidebar {
-      flex: 1;
-      min-width: 280px;
-      max-width: 360px;
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
     }
 
     /* Card styles */
@@ -296,6 +292,97 @@ export class DashboardWorkflowView extends LitElement {
       color: var(--nuraly-color-text-secondary, #5c5c7a);
       font-size: 13px;
     }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+    }
+
+    .filter-bar label {
+      font-size: 13px;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+    }
+
+    .filter-bar select {
+      padding: 4px 8px;
+      font-size: 13px;
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 6px;
+      background: var(--nuraly-color-surface, #ffffff);
+      color: var(--nuraly-color-text, #0f0f3c);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .filter-bar select:focus {
+      border-color: var(--nuraly-color-primary, #14144b);
+    }
+
+    /* Execution table */
+    .execution-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .execution-table th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--nuraly-color-text-tertiary, #8c8ca8);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+      background: var(--nuraly-color-background, #f8fafc);
+    }
+
+    .execution-row {
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .execution-row:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
+    }
+
+    .execution-row td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--nuraly-color-text, #0f0f3c);
+      border-bottom: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
+    }
+
+    .execution-row:last-child td {
+      border-bottom: none;
+    }
+
+    .exec-id-cell {
+      font-family: var(--nuraly-font-mono, monospace);
+      font-weight: 500;
+    }
+
+    .exec-duration-cell {
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+    }
+
+    .exec-trigger-cell {
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+      text-transform: capitalize;
+    }
+
+    .exec-view-icon {
+      --nuraly-icon-size: 16px;
+      --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+      transition: color 150ms ease;
+    }
+
+    .execution-row:hover .exec-view-icon {
+      --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
+    }
   `;
 
   @property({ type: String }) workflowId: string = '';
@@ -308,6 +395,7 @@ export class DashboardWorkflowView extends LitElement {
   @state() private isEditingName = false;
   @state() private editedName = '';
   @state() private isSavingName = false;
+  @state() private statusFilter = 'all';
 
   async connectedCallback() {
     super.connectedCallback();
@@ -400,6 +488,39 @@ export class DashboardWorkflowView extends LitElement {
       default:
         return html`<nr-badge status="default" text="${status}"></nr-badge>`;
     }
+  }
+
+  private get filteredExecutions(): ExecutionResult[] {
+    if (this.statusFilter === 'all') return this.executions;
+    return this.executions.filter(e => {
+      const s = e.status.toLowerCase();
+      switch (this.statusFilter) {
+        case 'completed': return s === 'completed' || s === 'success';
+        case 'failed': return s === 'failed' || s === 'error';
+        case 'running': return s === 'running' || s === 'in_progress';
+        case 'cancelled': return s === 'cancelled';
+        default: return true;
+      }
+    });
+  }
+
+  private handleStatusFilterChange(e: Event) {
+    this.statusFilter = (e.target as HTMLSelectElement).value;
+  }
+
+  private navigateToExecution(execId: string) {
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path: `/dashboard/workflow/${this.workflowId}/execution/${execId}` },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private formatDuration(ms?: number): string {
+    if (ms == null) return '-';
+    if (ms < 1000) return `${ms}ms`;
+    if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+    return `${Math.floor(ms / 60000)}m ${Math.round((ms % 60000) / 1000)}s`;
   }
 
   private formatDate(dateString?: string): string {
@@ -604,26 +725,55 @@ export class DashboardWorkflowView extends LitElement {
                 </div>
               </div>
             ` : nothing}
-          </div>
 
-          <div class="content-sidebar">
             <div class="card">
               <div class="card-header">
-                <span class="card-title">Recent Executions</span>
+                <span class="card-title">Execution History</span>
               </div>
-              <div class="card-content">
-                ${this.executions.length === 0 ? html`
-                  <div class="empty-state">No executions yet</div>
-                ` : this.executions.slice(0, 10).map(exec => html`
-                  <div class="execution-item">
-                    <div class="execution-info">
-                      <span class="execution-id">${exec.id.slice(0, 8)}...</span>
-                      <span class="execution-time">${this.formatDate(exec.startedAt)}</span>
-                    </div>
-                    ${this.getStatusBadge(exec.status)}
-                  </div>
-                `)}
+              <div class="filter-bar">
+                <label>Status:</label>
+                <select @change=${this.handleStatusFilterChange} .value=${this.statusFilter}>
+                  <option value="all">All</option>
+                  <option value="completed">Completed</option>
+                  <option value="failed">Failed</option>
+                  <option value="running">Running</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
+              ${this.filteredExecutions.length === 0 ? html`
+                <div class="empty-state">
+                  ${this.executions.length === 0
+                    ? 'No executions yet. Run the workflow to see results here.'
+                    : 'No executions match the selected filter.'}
+                </div>
+              ` : html`
+                <table class="execution-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Started</th>
+                      <th>Duration</th>
+                      <th>Status</th>
+                      <th>Trigger</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${this.filteredExecutions.map(exec => html`
+                      <tr class="execution-row" @click=${() => this.navigateToExecution(exec.id)}>
+                        <td class="exec-id-cell">${exec.id.slice(0, 8)}</td>
+                        <td>${this.formatDate(exec.startedAt)}</td>
+                        <td class="exec-duration-cell">${this.formatDuration(exec.durationMs)}</td>
+                        <td>${this.getStatusBadge(exec.status)}</td>
+                        <td class="exec-trigger-cell">${exec.triggerType || 'manual'}</td>
+                        <td>
+                          <nr-icon class="exec-view-icon" name="eye" title="View execution"></nr-icon>
+                        </td>
+                      </tr>
+                    `)}
+                  </tbody>
+                </table>
+              `}
             </div>
           </div>
         </div>

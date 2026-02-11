@@ -93,9 +93,25 @@ export interface ExecutionResult {
   id: string;
   workflowId: string;
   status: string;
+  triggerType?: string;
   inputData?: string;
   outputData?: string;
   errorMessage?: string;
+  startedAt?: string;
+  completedAt?: string;
+  durationMs?: number;
+}
+
+export interface NodeExecutionDTO {
+  id: string;
+  executionId: string;
+  nodeId: string;
+  nodeName: string;
+  status: string;
+  inputData?: string;
+  outputData?: string;
+  errorMessage?: string;
+  attemptNumber?: number;
   startedAt?: string;
   completedAt?: string;
   durationMs?: number;
@@ -508,9 +524,14 @@ export const workflowService = {
     return handleResponse<ExecutionResult[]>(response);
   },
 
-  async getExecution(executionId: string): Promise<ExecutionResult> {
-    const response = await fetch(APIS_URL.getWorkflowExecution(executionId));
+  async getExecution(workflowId: string, executionId: string): Promise<ExecutionResult> {
+    const response = await fetch(APIS_URL.getWorkflowExecution(workflowId, executionId));
     return handleResponse<ExecutionResult>(response);
+  },
+
+  async getNodeExecutions(workflowId: string, executionId: string): Promise<NodeExecutionDTO[]> {
+    const response = await fetch(APIS_URL.getExecutionNodes(workflowId, executionId));
+    return handleResponse<NodeExecutionDTO[]>(response);
   },
 
   // Trigger operations

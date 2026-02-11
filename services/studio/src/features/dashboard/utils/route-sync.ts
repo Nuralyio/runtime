@@ -16,6 +16,7 @@ export type OverviewView = 'applications' | 'workflows' | 'whiteboards' | 'kv' |
 export interface ParsedRoute {
   type: DashboardTabType;
   resourceId?: string;
+  executionId?: string;
   subTab?: AppSubTab;
   filters?: Record<string, string>;
   overviewView?: OverviewView;
@@ -108,6 +109,16 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     };
   }
 
+  // /dashboard/workflow/{wfId}/execution/{execId} - execution preview
+  const workflowExecMatch = path.match(/^\/dashboard\/workflow\/([^/]+)\/execution\/([^/]+)$/);
+  if (workflowExecMatch) {
+    return {
+      type: 'workflow-execution',
+      resourceId: workflowExecMatch[1],
+      executionId: workflowExecMatch[2]
+    };
+  }
+
   // /dashboard/workflow/{wfId} - workflow details view
   const workflowMatch = path.match(/^\/dashboard\/workflow\/([^/]+)$/);
   if (workflowMatch) {
@@ -165,6 +176,9 @@ export function buildRoutePath(route: ParsedRoute): string {
 
     case 'whiteboard-edit':
       return `/dashboard/whiteboard/edit/${route.resourceId}`;
+
+    case 'workflow-execution':
+      return `/dashboard/workflow/${route.resourceId}/execution/${route.executionId}`;
 
     case 'workflow-edit':
       return `/dashboard/workflow/edit/${route.resourceId}`;
