@@ -13,11 +13,13 @@ import {
   WhiteboardNodeType,
 } from '../../workflow-canvas.types.js';
 import type { DatabaseProvider } from '../../data-node/data-node.types.js';
+import type { NodeExecutionData } from './types.js';
 
 // Import field renderers
 import { renderDataNodeFields } from './data-node-fields.js';
 import { renderChatbotTriggerFields } from './chatbot-trigger-fields.js';
 import { renderDebugNodeFields } from './debug-fields.js';
+import { renderUiTableFields } from './ui-table-fields.js';
 import {
   renderTableNodeFields,
   renderViewNodeFields,
@@ -79,6 +81,7 @@ export function renderTypeFields(
   onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void,
   applicationId?: string,
   databaseProvider?: DatabaseProvider,
+  nodeExecution?: NodeExecutionData,
 ): TemplateResult | typeof nothing {
   switch (type) {
     // Workflow nodes
@@ -163,6 +166,10 @@ export function renderTypeFields(
     // Safety nodes
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
+
+    // Display nodes
+    case WorkflowNodeType.UI_TABLE:
+      return renderUiTableFields(config, onUpdate, nodeExecution);
 
     // Annotation nodes
     case WorkflowNodeType.NOTE:

@@ -605,6 +605,129 @@ export const workflowNodeStyles = css`
   }
 
   /* ========================================
+   * UI TABLE NODE STYLES
+   * ======================================== */
+
+  .node-container.ui-table-node {
+    min-width: 320px;
+    min-height: auto;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .ui-table-header {
+    display: flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-2, 8px);
+    padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .ui-table-name {
+    font-size: var(--nuraly-font-size-sm, 13px);
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    color: white;
+  }
+
+  .ui-table-grid {
+    background: var(--nuraly-color-layer-01, #1e1e1e);
+    overflow: hidden;
+  }
+
+  .ui-table-grid.placeholder {
+    opacity: 0.55;
+  }
+
+  .ui-table-row {
+    display: flex;
+    border-bottom: 1px solid var(--nuraly-color-border-subtle, rgba(255, 255, 255, 0.06));
+  }
+
+  .ui-table-row:last-child {
+    border-bottom: none;
+  }
+
+  .ui-table-cell {
+    flex: 1;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: var(--nuraly-color-text-primary, #e5e5e5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-right: 1px solid var(--nuraly-color-border-subtle, rgba(255, 255, 255, 0.06));
+  }
+
+  .ui-table-cell:last-child {
+    border-right: none;
+  }
+
+  .ui-table-head-row {
+    background: var(--nuraly-color-layer-02, #2a2a2a);
+  }
+
+  .ui-table-head-cell {
+    font-weight: var(--nuraly-font-weight-semibold, 600);
+    font-size: 11px;
+    color: var(--nuraly-color-text-secondary, #a0a0a0);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .ui-table-hint {
+    padding: 4px 10px 6px;
+    font-size: 10px;
+    color: var(--nuraly-color-text-disabled, #666);
+    text-align: center;
+    font-style: italic;
+    background: var(--nuraly-color-layer-01, #1e1e1e);
+  }
+
+  /* UI Table node - Light theme */
+  .node-container.ui-table-node[data-theme="light"] .ui-table-grid,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-grid,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-grid,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-grid {
+    background: var(--nuraly-color-layer-01, #ffffff);
+  }
+
+  .node-container.ui-table-node[data-theme="light"] .ui-table-head-row,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-head-row,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-head-row,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-head-row {
+    background: var(--nuraly-color-layer-02, #f4f4f4);
+  }
+
+  .node-container.ui-table-node[data-theme="light"] .ui-table-cell,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-cell,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-cell,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-cell {
+    color: var(--nuraly-color-text-primary, #161616);
+    border-right-color: var(--nuraly-color-border-subtle, rgba(0, 0, 0, 0.1));
+  }
+
+  .node-container.ui-table-node[data-theme="light"] .ui-table-row,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-row,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-row,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-row {
+    border-bottom-color: var(--nuraly-color-border-subtle, rgba(0, 0, 0, 0.1));
+  }
+
+  .node-container.ui-table-node[data-theme="light"] .ui-table-head-cell,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-head-cell,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-head-cell,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-head-cell {
+    color: var(--nuraly-color-text-secondary, #525252);
+  }
+
+  .node-container.ui-table-node[data-theme="light"] .ui-table-hint,
+  .node-container.ui-table-node[data-theme="carbon-light"] .ui-table-hint,
+  .node-container.ui-table-node[data-theme="default-light"] .ui-table-hint,
+  .node-container.ui-table-node[data-theme="default"] .ui-table-hint {
+    background: var(--nuraly-color-layer-01, #ffffff);
+  }
+
+  /* ========================================
    * NOTE NODE STYLES (Sticky note style)
    * ======================================== */
 

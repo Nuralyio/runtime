@@ -6,7 +6,7 @@
 
 import { html, nothing, TemplateResult } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
-import { NODE_TEMPLATES, Workflow, WorkflowNode, WhiteboardNodeType, isWhiteboardNode } from '../../workflow-canvas.types.js';
+import { NODE_TEMPLATES, Workflow, WorkflowNode, WorkflowNodeType, WhiteboardNodeType, isWhiteboardNode } from '../../workflow-canvas.types.js';
 import { getAllAvailableVariablePaths } from '../../utils/variable-resolver.js';
 
 // Import label component
@@ -28,7 +28,8 @@ function renderNodeExecutionData(
   nodeExecution: NodeExecutionData | undefined,
   executionId: string | undefined,
   nodeId: string,
-  callbacks: ConfigPanelCallbacks
+  callbacks: ConfigPanelCallbacks,
+  nodeType?: string
 ): TemplateResult | typeof nothing {
   if (!nodeExecution) return nothing;
 
@@ -83,7 +84,22 @@ function renderNodeExecutionData(
       ${nodeExecution.outputData ? html`
         <div class="execution-data-block">
           <div class="execution-data-label">Output</div>
-          <pre class="execution-data-content">${formatJson(nodeExecution.outputData)}</pre>
+          ${nodeType === WorkflowNodeType.UI_TABLE && (nodeExecution.outputData as any)?.headers
+            ? html`
+              <nr-table
+                .headers=${(nodeExecution.outputData as any).headers}
+                .rows=${(nodeExecution.outputData as any).rows || []}
+                size="small"
+                fixedHeader
+                emptyText="No data available"
+                .scrollConfig=${{ y: 300 }}
+              ></nr-table>
+              <div class="execution-duration" style="margin-top:4px;">
+                ${(nodeExecution.outputData as any).totalCount ?? (nodeExecution.outputData as any).rows?.length ?? 0} row(s)
+              </div>
+            `
+            : html`<pre class="execution-data-content">${formatJson(nodeExecution.outputData)}</pre>`
+          }
         </div>
       ` : nothing}
 
@@ -212,11 +228,11 @@ export function renderConfigPanelTemplate(
       </div>
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
-        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider)}
+        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, nodeExecution)}
         ${isWhiteboardNode(node.type) && node.type !== WhiteboardNodeType.ANCHOR
           ? renderOnClickActionFields(node.configuration, callbacks.onUpdateConfig, workflow?.nodes || [])
           : nothing}
-        ${renderNodeExecutionData(nodeExecution, executionId, node.id, callbacks)}
+        ${renderNodeExecutionData(nodeExecution, executionId, node.id, callbacks, node.type)}
         ${renderAvailableVariables(workflow, node, dynamicVariables, loadingVariables)}
       </div>
     </div>

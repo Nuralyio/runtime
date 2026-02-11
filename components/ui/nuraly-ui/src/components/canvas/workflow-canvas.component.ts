@@ -48,6 +48,7 @@ import {
   UndoController,
   FrameController,
   CollaborationController,
+  TouchController,
   type MarqueeState,
 } from './controllers/index.js';
 
@@ -426,6 +427,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.dragController = new DragController(
       this as unknown as CanvasHost & LitElement,
       this.viewportController
+    );
+
+    new TouchController( // NOSONAR — side-effect: self-registers as reactive controller via addController
+      this as unknown as CanvasHost & LitElement,
+      this.viewportController,
+      this.dragController,
+      this.selectionController
     );
 
     // Set undo controller on all controllers that need it

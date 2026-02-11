@@ -62,6 +62,8 @@ export enum WorkflowNodeType {
   DISCORD_BOT = 'DISCORD_BOT',
   WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
   CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
+  // Display nodes
+  UI_TABLE = 'UI_TABLE',
   // Annotation nodes
   NOTE = 'NOTE',
   FRAME = 'FRAME',
@@ -392,6 +394,15 @@ export interface NodeConfiguration {
   threshold?: number;
   // Context Memory node
   memoryType?: 'buffer' | 'semantic' | 'hybrid';
+  // UI Table node
+  tableColumns?: Array<{ name: string; key: string; width?: number | string; filterable?: boolean }>;
+  dataExpression?: string;
+  tablePageSize?: number;
+  tableEnableFilter?: boolean;
+  tableEnableSort?: boolean;
+  tableFixedHeader?: boolean;
+  tableSize?: 'small' | 'normal' | 'large';
+  tableEmptyText?: string;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -614,6 +625,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
+  // Display nodes
+  [WorkflowNodeType.UI_TABLE]: '#0891b2',
   // Annotation nodes
   [WorkflowNodeType.NOTE]: '#fef08a',
   [WorkflowNodeType.FRAME]: '#6366f1',
@@ -710,6 +723,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: 'message-circle',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
+  // Display nodes
+  [WorkflowNodeType.UI_TABLE]: 'table',
   // Annotation nodes
   [WorkflowNodeType.NOTE]: 'sticky-note',
   [WorkflowNodeType.FRAME]: 'square',
@@ -1142,6 +1157,29 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultConfig: {},
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
+    },
+  },
+  // Display nodes
+  {
+    type: WorkflowNodeType.UI_TABLE,
+    name: 'Table',
+    description: 'Display data as an interactive table',
+    icon: NODE_ICONS[WorkflowNodeType.UI_TABLE],
+    color: NODE_COLORS[WorkflowNodeType.UI_TABLE],
+    category: 'display',
+    defaultConfig: {
+      tableColumns: [],
+      dataExpression: '',
+      tablePageSize: 10,
+      tableEnableFilter: false,
+      tableEnableSort: true,
+      tableFixedHeader: false,
+      tableSize: 'normal',
+      tableEmptyText: 'No data available',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Data' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
     },
   },
@@ -2226,6 +2264,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'shield',
     nodeTypes: [
       WorkflowNodeType.GUARDRAIL,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'display',
+    name: 'Display',
+    icon: 'monitor',
+    nodeTypes: [
+      WorkflowNodeType.UI_TABLE,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
