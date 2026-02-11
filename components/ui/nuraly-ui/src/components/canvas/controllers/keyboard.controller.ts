@@ -208,6 +208,13 @@ export class KeyboardController extends BaseCanvasController {
           this.selectionController.openConfigForSelected();
         }
         break;
+
+      case '/':
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          this._host.toggleChatbotPanel?.();
+        }
+        break;
     }
   }
 

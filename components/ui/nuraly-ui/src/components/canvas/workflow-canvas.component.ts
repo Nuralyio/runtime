@@ -63,6 +63,7 @@ import {
   renderEdgesTemplate,
   renderRemoteCursorsTemplate,
   renderPresenceBarTemplate,
+  renderChatbotPanelTemplate,
 } from './templates/index.js';
 
 // Interfaces
@@ -333,6 +334,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   // Chatbot preview controller and provider for CHAT_START nodes
   private chatPreviewController: ChatbotCoreController | null = null;
   private chatPreviewProvider: WorkflowSocketProvider | null = null;
+
+  // Canvas chatbot panel (AI Assistant)
+  @state()
+  private showChatbotPanel = false;
+  @state()
+  private chatbotUnreadCount = 0;
+  private canvasChatbotController: ChatbotCoreController | null = null;
 
   // HTTP preview state
   @state()
@@ -1917,6 +1925,32 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
+  private initCanvasChatbotController(): void {
+    this.canvasChatbotController ??= new ChatbotCoreController();
+  }
+
+  toggleChatbotPanel(): void {
+    this.showChatbotPanel = !this.showChatbotPanel;
+    if (this.showChatbotPanel) {
+      this.initCanvasChatbotController();
+      this.chatbotUnreadCount = 0;
+    }
+  }
+
+  private renderChatbotPanel() {
+    return renderChatbotPanelTemplate(
+      {
+        isOpen: this.showChatbotPanel,
+        controller: this.canvasChatbotController,
+        unreadCount: this.chatbotUnreadCount,
+        currentTheme: this.currentTheme,
+      },
+      {
+        onClose: () => this.toggleChatbotPanel(),
+      }
+    );
+  }
+
   private renderToolbar() {
     return renderToolbarTemplate({
       showToolbar: this.showToolbar,
@@ -1930,6 +1964,9 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       canRedo: this.undoController.canRedo(),
       undoTooltip: this.undoController.getUndoTooltip(),
       redoTooltip: this.undoController.getRedoTooltip(),
+      showChatbot: this.showChatbotPanel,
+      onToggleChatbot: () => this.toggleChatbotPanel(),
+      chatbotUnreadCount: this.chatbotUnreadCount,
       onModeChange: (mode) => { this.mode = mode; },
       onTogglePalette: () => this.togglePalette(),
       onZoomIn: () => this.viewportController.zoomIn(),
@@ -2433,6 +2470,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         ${this.renderZoomControls()}
         ${this.renderContextMenu()}
       </div>
+      ${this.renderChatbotPanel()}
     `;
   }
 }

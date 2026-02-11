@@ -26,6 +26,8 @@ import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import './whiteboard-node.component.js';
 import '../icon/icon.component.js';
 import '../input/input.component.js';
+import '../chatbot/chatbot.component.js';
+import { ChatbotCoreController } from '../chatbot/core/chatbot-core.controller.js';
 
 // Controllers
 import {
@@ -55,6 +57,7 @@ import {
   renderWbSidebarTemplate,
   renderRemoteCursorsTemplate,
   renderPresenceBarTemplate,
+  renderChatbotPanelTemplate,
 } from './templates/index.js';
 
 // Interfaces
@@ -235,6 +238,13 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   @state()
   private editingFrameLabelId: string | null = null;
+
+  // Canvas chatbot panel (AI Assistant)
+  @state()
+  private showChatbotPanel = false;
+  @state()
+  private chatbotUnreadCount = 0;
+  private canvasChatbotController: ChatbotCoreController | null = null;
 
   @query('.canvas-wrapper')
   canvasWrapper!: HTMLElement;
@@ -1257,6 +1267,32 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
+  private initCanvasChatbotController(): void {
+    this.canvasChatbotController ??= new ChatbotCoreController();
+  }
+
+  toggleChatbotPanel(): void {
+    this.showChatbotPanel = !this.showChatbotPanel;
+    if (this.showChatbotPanel) {
+      this.initCanvasChatbotController();
+      this.chatbotUnreadCount = 0;
+    }
+  }
+
+  private renderChatbotPanel() {
+    return renderChatbotPanelTemplate(
+      {
+        isOpen: this.showChatbotPanel,
+        controller: this.canvasChatbotController,
+        unreadCount: this.chatbotUnreadCount,
+        currentTheme: this.currentTheme,
+      },
+      {
+        onClose: () => this.toggleChatbotPanel(),
+      }
+    );
+  }
+
   private renderToolbar() {
     return renderToolbarTemplate({
       showToolbar: this.showToolbar,
@@ -1270,6 +1306,9 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
       canRedo: this.undoController.canRedo(),
       undoTooltip: this.undoController.getUndoTooltip(),
       redoTooltip: this.undoController.getRedoTooltip(),
+      showChatbot: this.showChatbotPanel,
+      onToggleChatbot: () => this.toggleChatbotPanel(),
+      chatbotUnreadCount: this.chatbotUnreadCount,
       onModeChange: (mode) => { this.mode = mode; },
       onTogglePalette: () => { this.showPalette = !this.showPalette; },
       onZoomIn: () => this.viewportController.zoomIn(),
@@ -1452,6 +1491,7 @@ export class WhiteboardCanvasElement extends NuralyUIBaseMixin(LitElement) {
         ${this.renderZoomControls()}
         ${this.renderContextMenu()}
       </div>
+      ${this.renderChatbotPanel()}
     `;
   }
 }

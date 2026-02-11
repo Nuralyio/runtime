@@ -1,4 +1,5 @@
 import { css } from 'lit';
+import { chatbotPanelStyles } from './chatbot-panel.style.js';
 
 /**
  * Whiteboard Canvas component styles
@@ -24,6 +25,7 @@ export const whiteboardCanvasStyles = css`
     width: 100%;
     height: 100%;
     position: relative;
+    z-index: 0;
     background: var(--nuraly-color-background-inverse, #0f0f0f);
     overflow: hidden;
     font-family: var(--nuraly-font-family);
@@ -1004,6 +1006,7 @@ export const whiteboardCanvasStyles = css`
       border-radius: 0;
     }
   }
+
 `;
 
-export const styles = whiteboardCanvasStyles;
+export const styles = [whiteboardCanvasStyles, chatbotPanelStyles];
