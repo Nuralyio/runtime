@@ -609,10 +609,13 @@ export const workflowNodeStyles = css`
    * ======================================== */
 
   .node-container.ui-table-node {
-    min-width: 320px;
-    min-height: auto;
+    min-width: 200px;
+    min-height: 120px;
     padding: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
   }
 
   .ui-table-header {
@@ -630,6 +633,7 @@ export const workflowNodeStyles = css`
   }
 
   .ui-table-grid {
+    flex: 1;
     background: var(--nuraly-color-layer-01, #1e1e1e);
     overflow: hidden;
   }
@@ -725,6 +729,31 @@ export const workflowNodeStyles = css`
   .node-container.ui-table-node[data-theme="default-light"] .ui-table-hint,
   .node-container.ui-table-node[data-theme="default"] .ui-table-hint {
     background: var(--nuraly-color-layer-01, #ffffff);
+  }
+
+  /* UI Table node - Resize handle */
+  .ui-table-resize-handle {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--nuraly-color-interactive, #3b82f6);
+    border: 2px solid var(--nuraly-color-layer-01, #1a1a1a);
+    border-radius: 2px;
+    cursor: se-resize;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+  }
+
+  .node-container.ui-table-node:hover .ui-table-resize-handle,
+  .node-container.ui-table-node.selected .ui-table-resize-handle {
+    opacity: 1;
+  }
+
+  .ui-table-resize-handle:hover {
+    transform: scale(1.2);
   }
 
   /* ========================================

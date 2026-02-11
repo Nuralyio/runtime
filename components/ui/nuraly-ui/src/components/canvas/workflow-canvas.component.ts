@@ -1839,6 +1839,67 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.dispatchWorkflowChanged();
   };
 
+  // --- UI Table resize ---
+
+  private handleTableResizeStart(e: CustomEvent) {
+    const { node, event } = e.detail;
+    this.startTableResize(node, event);
+  }
+
+  private tableResizeState: {
+    nodeId: string;
+    startX: number;
+    startY: number;
+    startWidth: number;
+    startHeight: number;
+  } | null = null;
+
+  private startTableResize(node: WorkflowNode, event: MouseEvent) {
+    const config = node.configuration || {};
+    this.tableResizeState = {
+      nodeId: node.id,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: (config.tableWidth as number) || 320,
+      startHeight: (config.tableHeight as number) || 200,
+    };
+
+    document.addEventListener('mousemove', this.handleTableResizeDrag);
+    document.addEventListener('mouseup', this.stopTableResize);
+  }
+
+  private handleTableResizeDrag = (event: MouseEvent) => {
+    if (!this.tableResizeState) return;
+
+    const { nodeId, startX, startY, startWidth, startHeight } = this.tableResizeState;
+    const node = this.workflow.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const deltaX = (event.clientX - startX) / this.viewport.zoom;
+    const deltaY = (event.clientY - startY) / this.viewport.zoom;
+
+    const newWidth = Math.max(200, startWidth + deltaX);
+    const newHeight = Math.max(120, startHeight + deltaY);
+
+    node.configuration = {
+      ...node.configuration,
+      tableWidth: newWidth,
+      tableHeight: newHeight,
+    };
+
+    this.requestUpdate();
+  };
+
+  private stopTableResize = () => {
+    if (!this.tableResizeState) return;
+
+    this.tableResizeState = null;
+    document.removeEventListener('mousemove', this.handleTableResizeDrag);
+    document.removeEventListener('mouseup', this.stopTableResize);
+
+    this.dispatchWorkflowChanged();
+  };
+
   // Note: Edge rendering is now in edges.template.ts
   private renderEdges() {
     return renderEdgesTemplate({
@@ -2353,6 +2414,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
                 @note-content-change=${this.handleNoteContentChange}
                 @note-edit-end=${this.handleNoteEditEnd}
                 @note-resize-start=${this.handleNoteResizeStart}
+                @table-resize-start=${this.handleTableResizeStart}
                 @note-settings=${this.handleNoteSettings}
               ></workflow-node>
             `; })}

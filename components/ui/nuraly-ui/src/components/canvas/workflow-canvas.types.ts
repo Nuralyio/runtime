@@ -403,6 +403,8 @@ export interface NodeConfiguration {
   tableFixedHeader?: boolean;
   tableSize?: 'small' | 'normal' | 'large';
   tableEmptyText?: string;
+  tableWidth?: number;
+  tableHeight?: number;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
