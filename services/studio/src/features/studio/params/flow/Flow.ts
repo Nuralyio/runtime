@@ -840,6 +840,13 @@ export class FlowPage extends LitElement {
     handleWorkflowChanged(preservedWorkflow);
   }
 
+  private handleCanvasNameChanged(event: CustomEvent<{ name: string }>) {
+    if (!this.workflow) return;
+    const updatedWorkflow: Workflow = { ...this.workflow, name: event.detail.name };
+    this.workflow = updatedWorkflow;
+    handleWorkflowChanged(updatedWorkflow);
+  }
+
   /**
    * Handle viewport changes (pan/zoom) and save to KV
    */
@@ -1093,6 +1100,7 @@ export class FlowPage extends LitElement {
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}
+            @name-changed=${this.handleCanvasNameChanged}
           ></workflow-canvas>
         </div>
       </div>

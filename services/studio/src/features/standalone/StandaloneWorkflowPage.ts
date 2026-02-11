@@ -696,6 +696,22 @@ export class StandaloneWorkflowPage extends LitElement {
     this.saveWorkflowDebounced();
   }
 
+  private async handleNameChanged(event: CustomEvent<{ name: string }>): Promise<void> {
+    const { name } = event.detail;
+    if (!name || !this.workflowId || this.readonly) return;
+
+    // Update local state immediately
+    if (this.workflow) {
+      this.workflow = { ...this.workflow, name };
+    }
+
+    try {
+      await workflowService.patchWorkflow(this.workflowId, { name });
+    } catch (error) {
+      console.error('[StandaloneWorkflow] Failed to save workflow name:', error);
+    }
+  }
+
   private handleViewportChanged(event: CustomEvent<{ viewport: CanvasViewport }>): void {
     const { viewport } = event.detail;
     this.currentViewport = viewport;
@@ -857,57 +873,53 @@ export class StandaloneWorkflowPage extends LitElement {
     return uuidRegex.test(str);
   }
 
-  private async syncWorkflowChanges(): Promise<void> {
-    if (!this.workflow || !this.lastSavedWorkflow) return;
-
-    const nodeIdMap = new Map<string, string>();
-
-    // Sync nodes
-    const oldNodes = this.lastSavedWorkflow.nodes || [];
-    const newNodes = this.workflow.nodes || [];
+  private async syncNodes(
+    workflowId: string,
+    oldNodes: any[],
+    newNodes: any[],
+    nodeIdMap: Map<string, string>,
+  ): Promise<void> {
     const oldNodeIds = new Set(oldNodes.map((n) => n.id));
     const newNodeIds = new Set(newNodes.map((n) => n.id));
 
-    // Add new nodes
     for (const node of newNodes) {
       if (!oldNodeIds.has(node.id) || !this.isValidUUID(node.id)) {
-        const savedNode = await workflowService.addNode(this.workflow.id, node);
+        const savedNode = await workflowService.addNode(workflowId, node);
         nodeIdMap.set(node.id, savedNode.id);
       }
     }
 
-    // Update existing nodes
     for (const node of newNodes) {
-      if (oldNodeIds.has(node.id) && this.isValidUUID(node.id)) {
-        const oldNode = oldNodes.find((n) => n.id === node.id);
-        if (oldNode && JSON.stringify(oldNode) !== JSON.stringify(node)) {
-          try {
-            await workflowService.updateNode(node, this.workflow.id);
-          } catch (error: any) {
-            if (error.message?.includes('404') || error.message?.includes('not found')) {
-              const savedNode = await workflowService.addNode(this.workflow.id, node);
-              nodeIdMap.set(node.id, savedNode.id);
-            } else {
-              throw error;
-            }
-          }
+      if (!oldNodeIds.has(node.id) || !this.isValidUUID(node.id)) continue;
+      const oldNode = oldNodes.find((n) => n.id === node.id);
+      if (!oldNode || JSON.stringify(oldNode) === JSON.stringify(node)) continue;
+      try {
+        await workflowService.updateNode(node, workflowId);
+      } catch (error: any) {
+        if (error.message?.includes('404') || error.message?.includes('not found')) {
+          const savedNode = await workflowService.addNode(workflowId, node);
+          nodeIdMap.set(node.id, savedNode.id);
+        } else {
+          throw error;
         }
       }
     }
 
-    // Delete removed nodes
     for (const oldNode of oldNodes) {
       if (!newNodeIds.has(oldNode.id) && this.isValidUUID(oldNode.id)) {
-        await workflowService.deleteNode(oldNode.id, this.workflow.id);
+        await workflowService.deleteNode(oldNode.id, workflowId);
       }
     }
+  }
 
-    // Sync edges
-    const oldEdges = this.lastSavedWorkflow.edges || [];
-    const newEdges = this.workflow.edges || [];
+  private async syncEdges(
+    workflowId: string,
+    oldEdges: any[],
+    newEdges: any[],
+    nodeIdMap: Map<string, string>,
+  ): Promise<void> {
     const oldEdgeIds = new Set(oldEdges.map((e) => e.id));
 
-    // Add new edges
     for (const edge of newEdges) {
       if (!oldEdgeIds.has(edge.id) || !this.isValidUUID(edge.id)) {
         const mappedEdge = {
@@ -915,31 +927,47 @@ export class StandaloneWorkflowPage extends LitElement {
           sourceNodeId: nodeIdMap.get(edge.sourceNodeId) || edge.sourceNodeId,
           targetNodeId: nodeIdMap.get(edge.targetNodeId) || edge.targetNodeId,
         };
-        await workflowService.addEdge(this.workflow.id, mappedEdge);
+        await workflowService.addEdge(workflowId, mappedEdge);
       }
     }
 
-    // Delete removed edges
     for (const oldEdge of oldEdges) {
       const stillExists = newEdges.some((e) => e.id === oldEdge.id);
       if (!stillExists && this.isValidUUID(oldEdge.id)) {
-        await workflowService.deleteEdge(oldEdge.id, this.workflow.id);
+        await workflowService.deleteEdge(oldEdge.id, workflowId);
       }
     }
+  }
 
-    // Update local workflow with server-generated UUIDs
-    if (nodeIdMap.size > 0) {
-      const updatedNodes = this.workflow.nodes.map((node) => ({
-        ...node,
-        id: nodeIdMap.get(node.id) || node.id,
-      }));
-      const updatedEdges = this.workflow.edges.map((edge) => ({
-        ...edge,
-        sourceNodeId: nodeIdMap.get(edge.sourceNodeId) || edge.sourceNodeId,
-        targetNodeId: nodeIdMap.get(edge.targetNodeId) || edge.targetNodeId,
-      }));
-      this.workflow = { ...this.workflow, nodes: updatedNodes, edges: updatedEdges };
-    }
+  private remapNodeIds(nodeIdMap: Map<string, string>): void {
+    if (!this.workflow || nodeIdMap.size === 0) return;
+    const updatedNodes = this.workflow.nodes.map((node) => ({
+      ...node,
+      id: nodeIdMap.get(node.id) || node.id,
+    }));
+    const updatedEdges = this.workflow.edges.map((edge) => ({
+      ...edge,
+      sourceNodeId: nodeIdMap.get(edge.sourceNodeId) || edge.sourceNodeId,
+      targetNodeId: nodeIdMap.get(edge.targetNodeId) || edge.targetNodeId,
+    }));
+    this.workflow = { ...this.workflow, nodes: updatedNodes, edges: updatedEdges };
+  }
+
+  private async syncWorkflowChanges(): Promise<void> {
+    if (!this.workflow || !this.lastSavedWorkflow) return;
+
+    const nodeIdMap = new Map<string, string>();
+    const oldNodes = this.lastSavedWorkflow.nodes || [];
+    const newNodes = this.workflow.nodes || [];
+
+    await this.syncNodes(this.workflow.id, oldNodes, newNodes, nodeIdMap);
+    await this.syncEdges(
+      this.workflow.id,
+      this.lastSavedWorkflow.edges || [],
+      this.workflow.edges || [],
+      nodeIdMap,
+    );
+    this.remapNodeIds(nodeIdMap);
   }
 
   private async handleManualSave(): Promise<void> {
@@ -1097,6 +1125,7 @@ export class StandaloneWorkflowPage extends LitElement {
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}
+            @name-changed=${this.handleNameChanged}
           ></workflow-canvas>
         </div>
       </div>
