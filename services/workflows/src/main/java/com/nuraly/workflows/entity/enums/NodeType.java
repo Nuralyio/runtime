@@ -69,7 +69,28 @@ public enum NodeType {
     DB_CONSTRAINT,  // Database constraint
     DB_QUERY,       // Saved query or stored procedure
 
+    // Display nodes
+    UI_TABLE,       // Display data as an interactive table
+
     // Annotation nodes (visual only, no execution)
     NOTE,           // Text annotation for documenting workflows
-    FRAME           // Visual grouping container for organizing nodes
+    FRAME,          // Visual grouping container for organizing nodes
+
+    // Whiteboard nodes (visual only, no execution)
+    WB_STICKY_NOTE,      // Sticky note element
+    WB_SHAPE_RECTANGLE,  // Rectangle shape
+    WB_SHAPE_CIRCLE,     // Circle shape
+    WB_SHAPE_DIAMOND,    // Diamond shape
+    WB_SHAPE_TRIANGLE,   // Triangle shape
+    WB_SHAPE_ARROW,      // Arrow shape
+    WB_SHAPE_LINE,       // Line shape
+    WB_SHAPE_STAR,       // Star shape
+    WB_SHAPE_HEXAGON,    // Hexagon shape
+    WB_TEXT_BLOCK,       // Text block element
+    WB_IMAGE,            // Image element
+    WB_DRAWING,          // Freehand drawing
+    WB_FRAME,            // Visual grouping frame
+    WB_VOTING,           // Voting element
+    WB_MERMAID,          // Mermaid diagram
+    WB_ANCHOR            // Navigation anchor
 }

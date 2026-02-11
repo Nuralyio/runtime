@@ -28,5 +28,11 @@ public enum WhiteboardElementType {
     FRAME,
 
     // Interactive
-    VOTING
+    VOTING,
+
+    // Diagrams
+    MERMAID_DIAGRAM,
+
+    // Navigation
+    ANCHOR
 }
