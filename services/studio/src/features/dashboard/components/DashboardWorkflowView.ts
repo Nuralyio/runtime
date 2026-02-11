@@ -15,6 +15,8 @@ import '../../runtime/components/ui/nuraly-ui/src/components/button';
 import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 import '../../runtime/components/ui/nuraly-ui/src/components/input';
+import '../../runtime/components/ui/nuraly-ui/src/components/table';
+import type { IHeader } from '../../runtime/components/ui/nuraly-ui/src/components/table/table.types';
 
 @customElement('dashboard-workflow-view')
 export class DashboardWorkflowView extends LitElement {
@@ -22,6 +24,7 @@ export class DashboardWorkflowView extends LitElement {
     :host {
       display: block;
       height: 100%;
+      overflow: hidden;
       background: var(--nuraly-color-background, #f8fafc);
     }
 
@@ -38,12 +41,14 @@ export class DashboardWorkflowView extends LitElement {
       padding: 11px 24px;
       background: var(--nuraly-color-surface, #ffffff);
       border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+      min-width: 0;
     }
 
     .header-left {
       display: flex;
       align-items: center;
       gap: 16px;
+      min-width: 0;
     }
 
     .workflow-info {
@@ -182,6 +187,7 @@ export class DashboardWorkflowView extends LitElement {
       max-width: 960px;
       margin: 0 auto;
       width: 100%;
+      min-width: 0;
     }
 
     /* Card styles */
@@ -189,6 +195,7 @@ export class DashboardWorkflowView extends LitElement {
       background: var(--nuraly-color-surface, #ffffff);
       border-radius: 8px;
       border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      overflow: hidden;
     }
 
     .card-header {
@@ -322,67 +329,20 @@ export class DashboardWorkflowView extends LitElement {
       border-color: var(--nuraly-color-primary, #14144b);
     }
 
-    /* Execution table */
-    .execution-table {
-      width: 100%;
-      border-collapse: collapse;
+    @media (max-width: 768px) {
+      .workflow-header {
+        padding: 11px 16px;
+      }
+
+      .workflow-content {
+        padding: 16px;
+      }
+
+      .header-actions {
+        gap: 4px;
+      }
     }
 
-    .execution-table th {
-      text-align: left;
-      padding: 10px 16px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--nuraly-color-text-tertiary, #8c8ca8);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
-      background: var(--nuraly-color-background, #f8fafc);
-    }
-
-    .execution-row {
-      cursor: pointer;
-      transition: background 150ms ease;
-    }
-
-    .execution-row:hover {
-      background: var(--nuraly-color-background-hover, #f1f5f9);
-    }
-
-    .execution-row td {
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--nuraly-color-text, #0f0f3c);
-      border-bottom: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
-    }
-
-    .execution-row:last-child td {
-      border-bottom: none;
-    }
-
-    .exec-id-cell {
-      font-family: var(--nuraly-font-mono, monospace);
-      font-weight: 500;
-    }
-
-    .exec-duration-cell {
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-    }
-
-    .exec-trigger-cell {
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      text-transform: capitalize;
-    }
-
-    .exec-view-icon {
-      --nuraly-icon-size: 16px;
-      --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
-      transition: color 150ms ease;
-    }
-
-    .execution-row:hover .exec-view-icon {
-      --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
-    }
   `;
 
   @property({ type: String }) workflowId: string = '';
@@ -530,6 +490,48 @@ export class DashboardWorkflowView extends LitElement {
     } catch {
       return dateString;
     }
+  }
+
+  private getExecutionHeaders(): IHeader[] {
+    return [
+      {
+        name: 'ID',
+        key: 'id',
+        width: 100,
+        fixed: 'left',
+        render: (value: string) => html`<span style="font-family:var(--nuraly-font-mono,monospace);font-weight:500">${value.slice(0, 8)}</span>`,
+      },
+      {
+        name: 'Started',
+        key: 'startedAt',
+        render: (value: string) => html`${this.formatDate(value)}`,
+      },
+      {
+        name: 'Duration',
+        key: 'durationMs',
+        width: 100,
+        render: (value: number) => html`${this.formatDuration(value)}`,
+      },
+      {
+        name: 'Status',
+        key: 'status',
+        width: 120,
+        render: (value: string) => this.getStatusBadge(value),
+      },
+      {
+        name: 'Trigger',
+        key: 'triggerType',
+        width: 100,
+        render: (value: string) => html`<span style="text-transform:capitalize">${value || 'manual'}</span>`,
+      },
+      {
+        name: '',
+        key: '_view',
+        width: 50,
+        fixed: 'right',
+        render: () => html`<nr-icon name="eye" style="--nuraly-icon-size:16px;--nuraly-icon-color:var(--nuraly-color-text-tertiary,#8c8ca8)"></nr-icon>`,
+      },
+    ];
   }
 
   private startEditingName() {
@@ -740,39 +742,21 @@ export class DashboardWorkflowView extends LitElement {
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
-              ${this.filteredExecutions.length === 0 ? html`
+              ${this.executions.length === 0 ? html`
                 <div class="empty-state">
-                  ${this.executions.length === 0
-                    ? 'No executions yet. Run the workflow to see results here.'
-                    : 'No executions match the selected filter.'}
+                  No executions yet. Run the workflow to see results here.
                 </div>
               ` : html`
-                <table class="execution-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Started</th>
-                      <th>Duration</th>
-                      <th>Status</th>
-                      <th>Trigger</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    ${this.filteredExecutions.map(exec => html`
-                      <tr class="execution-row" @click=${() => this.navigateToExecution(exec.id)}>
-                        <td class="exec-id-cell">${exec.id.slice(0, 8)}</td>
-                        <td>${this.formatDate(exec.startedAt)}</td>
-                        <td class="exec-duration-cell">${this.formatDuration(exec.durationMs)}</td>
-                        <td>${this.getStatusBadge(exec.status)}</td>
-                        <td class="exec-trigger-cell">${exec.triggerType || 'manual'}</td>
-                        <td>
-                          <nr-icon class="exec-view-icon" name="eye" title="View execution"></nr-icon>
-                        </td>
-                      </tr>
-                    `)}
-                  </tbody>
-                </table>
+                <nr-table
+                  .headers=${this.getExecutionHeaders()}
+                  .rows=${this.filteredExecutions}
+                  size="small"
+                  clickable
+                  pageSize=${10}
+                  .scrollConfig=${{ x: 600 }}
+                  emptyText="No executions match the selected filter."
+                  @nr-row-click=${(e: CustomEvent) => this.navigateToExecution(e.detail.row.id)}
+                ></nr-table>
               `}
             </div>
           </div>
