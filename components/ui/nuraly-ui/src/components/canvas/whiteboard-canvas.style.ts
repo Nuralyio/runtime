@@ -1,6 +1,5 @@
 import { css } from 'lit';
 import { chatbotPanelStyles } from './chatbot-panel.style.js';
-import { toolbarNameStyles } from './toolbar-name.style.js';
 
 /**
  * Whiteboard Canvas component styles
@@ -1010,4 +1009,4 @@ export const whiteboardCanvasStyles = css`
 
 `;
 
-export const styles = [whiteboardCanvasStyles, chatbotPanelStyles, toolbarNameStyles];
+export const styles = [whiteboardCanvasStyles, chatbotPanelStyles];
