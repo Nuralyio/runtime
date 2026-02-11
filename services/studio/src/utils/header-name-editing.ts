@@ -1,12 +1,16 @@
 /**
  * Shared inline name editing for standalone page headers.
- * Used by StandaloneWorkflowPage and StandaloneWhiteboardPage.
+ * Reuses the same contenteditable + nr-icon pattern as the dashboard detail pages.
  */
-import { html, css, nothing, type TemplateResult } from 'lit';
+import { html, css, type TemplateResult } from 'lit';
+import {
+  focusAndSelectAll,
+  handlePlainTextPaste,
+  getInputText,
+  handleNameFieldBlur,
+  handleNameFieldKeydown,
+} from '../features/dashboard/utils/inline-edit.utils';
 
-/**
- * Host interface that standalone pages must satisfy.
- */
 export interface NameEditableHost {
   isEditingName: boolean;
   editedName: string;
@@ -16,92 +20,131 @@ export interface NameEditableHost {
   saveNameToServer(name: string): Promise<void>;
 }
 
-/**
- * Starts inline editing of the header name.
- */
-export function startEditingName(host: NameEditableHost): void {
+function startEditing(host: NameEditableHost): void {
   host.editedName = host.workflow?.name || '';
   host.isEditingName = true;
   host.updateComplete.then(() => {
-    const input = host.shadowRoot?.querySelector('.name-input') as HTMLInputElement;
-    if (input) {
-      input.focus();
-      input.select();
-    }
+    const el = host.shadowRoot?.querySelector('.header-name.editing') as HTMLElement;
+    if (el) focusAndSelectAll(el, host.editedName);
   });
 }
 
-/**
- * Saves the edited name if changed, then resets editing state.
- */
-export async function saveEditedName(host: NameEditableHost): Promise<void> {
-  const trimmed = host.editedName.trim();
+function cancelEditing(host: NameEditableHost): void {
   host.isEditingName = false;
-  if (!trimmed || trimmed === host.workflow?.name) return;
+  host.editedName = '';
+}
+
+async function saveEditing(host: NameEditableHost): Promise<void> {
+  const trimmed = host.editedName.trim();
+  if (!trimmed || trimmed === host.workflow?.name) {
+    cancelEditing(host);
+    return;
+  }
+  host.isEditingName = false;
+  host.editedName = '';
   await host.saveNameToServer(trimmed);
 }
 
-/**
- * Keydown handler: Enter saves, Escape cancels.
- */
-export function handleNameKeydown(host: NameEditableHost, e: KeyboardEvent): void {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    saveEditedName(host);
-  } else if (e.key === 'Escape') {
-    host.isEditingName = false;
-  }
-}
-
-/**
- * Renders the editable name in the page header.
- */
 export function renderEditableName(
   host: NameEditableHost,
   fallback: string,
 ): TemplateResult {
   if (host.isEditingName) {
-    return html`<input
-      class="name-input"
-      .value=${host.editedName}
-      @input=${(e: Event) => { host.editedName = (e.target as HTMLInputElement).value; }}
-      @blur=${() => saveEditedName(host)}
-      @keydown=${(e: KeyboardEvent) => handleNameKeydown(host, e)}
-    />`;
+    return html`
+      <div class="header-name-container">
+        <span
+          class="header-name editing"
+          contenteditable="true"
+          @blur=${(e: FocusEvent) => handleNameFieldBlur(e, host.isEditingName, () => saveEditing(host))}
+          @keydown=${(e: KeyboardEvent) => handleNameFieldKeydown(e, host.isEditingName, () => saveEditing(host), () => cancelEditing(host))}
+          @input=${(e: Event) => { host.editedName = getInputText(e); }}
+          @paste=${handlePlainTextPaste}
+        ></span>
+        <nr-icon name="check" class="action-icon save" title="Save" @click=${() => saveEditing(host)}></nr-icon>
+        <nr-icon name="x" class="action-icon cancel" title="Cancel" @click=${() => cancelEditing(host)}></nr-icon>
+      </div>
+    `;
   }
-  return html`<h1 class="editable-name" @click=${() => startEditingName(host)}>${host.workflow?.name || fallback}</h1>`;
+  return html`
+    <div class="header-name-container">
+      <h1 class="header-name" @click=${() => startEditing(host)}>${host.workflow?.name || fallback}</h1>
+      <nr-icon name="pencil" class="edit-icon" title="Edit name" @click=${() => startEditing(host)}></nr-icon>
+    </div>
+  `;
 }
 
-/**
- * Shared styles for the editable header name.
- */
 export const editableNameStyles = css`
-  .editable-name {
-    font-weight: 600;
+  .header-name-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-name {
     font-size: 16px;
-    color: var(--n-color-text, #111827);
+    font-weight: 600;
+    color: var(--nuraly-color-text, #0f0f3c);
     margin: 0;
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin: -2px -6px;
-  }
-
-  .editable-name:hover {
-    background: var(--n-color-surface-hover, #f3f4f6);
-  }
-
-  .name-input {
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--n-color-text, #111827);
-    border: 1px solid var(--n-color-primary, #3b82f6);
-    border-radius: 4px;
-    padding: 2px 6px;
-    margin: -2px -6px;
     outline: none;
-    background: var(--n-color-surface, #fff);
-    font-family: inherit;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin: -2px -6px;
+    transition: background 150ms ease;
+    min-width: 50px;
+    display: inline-block;
+  }
+
+  .header-name.editing {
+    background: var(--nuraly-color-background-hover, #f1f5f9);
+    box-shadow: 0 0 0 2px var(--nuraly-color-primary, #14144b);
+  }
+
+  h1.header-name:hover {
+    background: var(--nuraly-color-background-hover, #f1f5f9);
+    cursor: text;
+  }
+
+  .header-name-container:hover .edit-icon {
+    opacity: 1;
+  }
+
+  .edit-icon {
+    opacity: 0;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 150ms ease;
+    --nuraly-icon-size: 14px;
+    --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .edit-icon:hover {
+    background: var(--nuraly-color-background-hover, #f1f5f9);
+    --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .action-icon {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 150ms ease;
+    --nuraly-icon-size: 16px;
+  }
+
+  .action-icon.save {
+    --nuraly-icon-color: var(--nuraly-color-success, #22c55e);
+  }
+
+  .action-icon.save:hover {
+    background: var(--nuraly-color-success-light, #dcfce7);
+  }
+
+  .action-icon.cancel {
+    --nuraly-icon-color: var(--nuraly-color-text-tertiary, #8c8ca8);
+  }
+
+  .action-icon.cancel:hover {
+    background: var(--nuraly-color-background-hover, #f1f5f9);
+    --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
   }
 `;

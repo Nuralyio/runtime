@@ -9,6 +9,7 @@
 import { customElement, property, state } from 'lit/decorators.js';
 import { html, LitElement, css } from 'lit';
 import { renderEditableName, editableNameStyles, type NameEditableHost } from '../../utils/header-name-editing';
+import '../runtime/components/ui/nuraly-ui/src/components/icon';
 import '../runtime/components/ui/nuraly-ui/src/components/canvas/whiteboard-canvas.component';
 import type {
   Workflow,
