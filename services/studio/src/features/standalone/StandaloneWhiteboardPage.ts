@@ -8,6 +8,7 @@
 
 import { customElement, property, state } from 'lit/decorators.js';
 import { html, LitElement, css } from 'lit';
+import { renderEditableName, editableNameStyles, type NameEditableHost } from '../../utils/header-name-editing';
 import '../runtime/components/ui/nuraly-ui/src/components/canvas/whiteboard-canvas.component';
 import type {
   Workflow,
@@ -199,7 +200,7 @@ function nodeToElementDTO(node: WorkflowNode, whiteboardId: string): Partial<Whi
 
 @customElement('standalone-whiteboard-page')
 export class StandaloneWhiteboardPage extends LitElement {
-  static override styles = css`
+  static override styles = [editableNameStyles, css`
     :host {
       display: block;
       width: 100%;
@@ -401,7 +402,7 @@ export class StandaloneWhiteboardPage extends LitElement {
       color: var(--n-color-text-secondary, #6b7280);
       max-width: 400px;
     }
-  `;
+  `];
 
   /** The whiteboard ID to load */
   @property({ type: String, attribute: 'whiteboard-id' })
@@ -421,6 +422,12 @@ export class StandaloneWhiteboardPage extends LitElement {
 
   @state()
   private saveStatus: SaveStatus = 'saved';
+
+  @state()
+  private isEditingName = false;
+
+  @state()
+  private editedName = '';
 
   private viewportDebouncer: ViewportDebouncer | null = null;
   private currentViewport: CanvasViewport = getDefaultViewport();
@@ -538,18 +545,13 @@ export class StandaloneWhiteboardPage extends LitElement {
     this.saveWhiteboardDebounced();
   }
 
-  private async handleNameChanged(event: CustomEvent<{ name: string }>): Promise<void> {
-    const { name } = event.detail;
-    if (!name || !this.whiteboardId) return;
-
-    // Update local state immediately
+  async saveNameToServer(name: string): Promise<void> {
     if (this.workflow) {
       this.workflow = { ...this.workflow, name };
     }
     if (this.whiteboardData) {
       this.whiteboardData = { ...this.whiteboardData, name };
     }
-
     try {
       await whiteboardService.updateWhiteboard(this.whiteboardId, { name });
     } catch (error) {
@@ -735,7 +737,7 @@ export class StandaloneWhiteboardPage extends LitElement {
               Back
             </a>
             <div class="whiteboard-info">
-              <h1 class="whiteboard-name">${this.workflow?.name || 'Whiteboard'}</h1>
+              ${renderEditableName(this as unknown as NameEditableHost, 'Whiteboard')}
               <span class="save-status ${this.saveStatus}">${this.getSaveStatusLabel()}</span>
             </div>
           </div>
@@ -757,7 +759,6 @@ export class StandaloneWhiteboardPage extends LitElement {
             ?collaborative=${true}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @viewport-changed=${this.handleViewportChanged}
-            @name-changed=${this.handleNameChanged}
           ></whiteboard-canvas>
         </div>
       </div>

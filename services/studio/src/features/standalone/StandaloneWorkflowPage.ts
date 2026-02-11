@@ -7,6 +7,7 @@
 import { customElement, property, state } from 'lit/decorators.js';
 import { html, LitElement, css } from 'lit';
 import '../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component';
+import { renderEditableName, editableNameStyles, type NameEditableHost } from '../../utils/header-name-editing';
 import type {
   Workflow,
   CanvasViewport,
@@ -25,7 +26,7 @@ type NodeStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
 
 @customElement('standalone-workflow-page')
 export class StandaloneWorkflowPage extends LitElement {
-  static override styles = css`
+  static override styles = [editableNameStyles, css`
     :host {
       display: block;
       width: 100%;
@@ -309,7 +310,7 @@ export class StandaloneWorkflowPage extends LitElement {
       width: 16px;
       height: 16px;
     }
-  `;
+  `];
 
   /** The workflow ID to load */
   @property({ type: String, attribute: 'workflow-id' })
@@ -354,6 +355,12 @@ export class StandaloneWorkflowPage extends LitElement {
 
   @state()
   private kvEntries: KvEntry[] = [];
+
+  @state()
+  private isEditingName = false;
+
+  @state()
+  private editedName = '';
 
   private flowSocket: any = null;
   private viewportDebouncer: ViewportDebouncer | null = null;
@@ -696,15 +703,10 @@ export class StandaloneWorkflowPage extends LitElement {
     this.saveWorkflowDebounced();
   }
 
-  private async handleNameChanged(event: CustomEvent<{ name: string }>): Promise<void> {
-    const { name } = event.detail;
-    if (!name || !this.workflowId || this.readonly) return;
-
-    // Update local state immediately
+  async saveNameToServer(name: string): Promise<void> {
     if (this.workflow) {
       this.workflow = { ...this.workflow, name };
     }
-
     try {
       await workflowService.patchWorkflow(this.workflowId, { name });
     } catch (error) {
@@ -1050,7 +1052,10 @@ export class StandaloneWorkflowPage extends LitElement {
               Dashboard
             </a>
             <div class="workflow-info">
-              <h1 class="workflow-name">${this.workflow?.name || 'Workflow'}</h1>
+              ${this.readonly
+                ? html`<h1 class="workflow-name">${this.workflow?.name || 'Workflow'}</h1>`
+                : renderEditableName(this as unknown as NameEditableHost, 'Workflow')
+              }
               ${this.readonly
                 ? html`<span class="readonly-badge">Read Only</span>`
                 : html`<span class="save-status ${this.saveStatus}">${this.getSaveStatusLabel()}</span>`
@@ -1125,7 +1130,6 @@ export class StandaloneWorkflowPage extends LitElement {
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @workflow-trigger=${this.handleWorkflowTrigger}
             @viewport-changed=${this.handleViewportChanged}
-            @name-changed=${this.handleNameChanged}
           ></workflow-canvas>
         </div>
       </div>
