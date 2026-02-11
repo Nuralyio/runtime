@@ -90,6 +90,9 @@ export interface CanvasHost extends EventTarget {
   configPanel: HTMLElement | null;
   shadowRoot: ShadowRoot | null;
 
+  // Chatbot panel
+  toggleChatbotPanel?(): void;
+
   // Core methods
   requestUpdate(): void;
   updateComplete: Promise<boolean>;

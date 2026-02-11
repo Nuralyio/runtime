@@ -54,3 +54,10 @@ export {
   renderPresenceBarTemplate,
   type PresenceBarTemplateData,
 } from './presence-bar.template.js';
+
+// Chatbot panel template
+export {
+  renderChatbotPanelTemplate,
+  type ChatbotPanelTemplateData,
+  type ChatbotPanelCallbacks,
+} from './chatbot-panel.template.js';

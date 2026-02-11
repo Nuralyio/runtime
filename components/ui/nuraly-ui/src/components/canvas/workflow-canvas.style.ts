@@ -1,4 +1,5 @@
 import { css } from 'lit';
+import { chatbotPanelStyles } from './chatbot-panel.style.js';
 
 /**
  * Workflow Canvas component styles
@@ -28,6 +29,7 @@ export const workflowCanvasStyles = css`
     width: 100%;
     height: 100%;
     position: relative;
+    z-index: 0;
     background: var(--nuraly-color-background-inverse, #0f0f0f);
     overflow: hidden;
     font-family: var(--nuraly-font-family);
@@ -2681,4 +2683,4 @@ export const workflowCanvasStyles = css`
 
 `;
 
-export const styles = workflowCanvasStyles;
+export const styles = [workflowCanvasStyles, chatbotPanelStyles];

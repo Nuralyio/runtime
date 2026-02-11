@@ -22,6 +22,9 @@ export interface ToolbarTemplateData {
   undoTooltip?: string;
   redoTooltip?: string;
   canvasType?: CanvasType;
+  showChatbot?: boolean;
+  onToggleChatbot?: () => void;
+  chatbotUnreadCount?: number;
   onModeChange: (mode: CanvasMode) => void;
   onTogglePalette: () => void;
   onZoomIn: () => void;
@@ -31,6 +34,33 @@ export interface ToolbarTemplateData {
   onDelete: () => void;
   onUndo?: () => void;
   onRedo?: () => void;
+}
+
+/**
+ * Render the unread badge for the chatbot toggle button
+ */
+function renderChatbotBadge(count: number): TemplateResult | typeof nothing {
+  if (count <= 0) return nothing;
+  return html`<span class="toolbar-badge">${count}</span>`;
+}
+
+/**
+ * Render the chatbot toggle button (only when callback is provided)
+ */
+function renderChatbotToggle(data: ToolbarTemplateData): TemplateResult | typeof nothing {
+  if (!data.onToggleChatbot) return nothing;
+  const activeClass = data.showChatbot ? 'active' : '';
+  return html`
+    <div class="toolbar-divider"></div>
+    <button
+      class="toolbar-btn ${activeClass}"
+      @click=${data.onToggleChatbot}
+      title="AI Assistant (Ctrl+/)"
+    >
+      <nr-icon name="message-circle" size="small"></nr-icon>
+      ${renderChatbotBadge(data.chatbotUnreadCount ?? 0)}
+    </button>
+  `;
 }
 
 /**
@@ -121,6 +151,7 @@ export function renderToolbarTemplate(data: ToolbarTemplateData): TemplateResult
       >
         <nr-icon name="trash-2" size="small"></nr-icon>
       </button>
+      ${renderChatbotToggle(data)}
     </div>
   `;
 }
