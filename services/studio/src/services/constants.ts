@@ -51,6 +51,7 @@ export const APIS_URL = {
   getWorkflowExecutions: (id: string) => `${API_BASE}/api/v1/workflows/${id}/executions`,
   getWorkflowExecution: (workflowId: string, execId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/executions/${execId}`,
   getExecutionNodes: (workflowId: string, execId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/executions/${execId}/nodes`,
+  getExecutionSnapshot: (workflowId: string, execId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/executions/${execId}/snapshot`,
   addWorkflowNode: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes`,
   updateWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
   deleteWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,

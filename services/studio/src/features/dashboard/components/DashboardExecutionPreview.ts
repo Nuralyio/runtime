@@ -163,14 +163,15 @@ export class DashboardExecutionPreview extends LitElement {
     try {
       const workflowService = await getWorkflowService();
 
-      const [workflow, execution, nodeExecutions] = await Promise.all([
-        workflowService.getWorkflow(this.workflowId),
+      const [execution, nodeExecutions] = await Promise.all([
         workflowService.getExecution(this.workflowId, this.executionId),
         workflowService.getNodeExecutions(this.workflowId, this.executionId),
       ]);
 
-      this.workflow = workflow;
       this.execution = execution;
+
+      // Load the workflow snapshot from execution time
+      this.workflow = await workflowService.getExecutionSnapshot(this.workflowId, this.executionId);
 
       // Build nodeStatuses map: nodeId → status
       const statuses: Record<string, string> = {};
