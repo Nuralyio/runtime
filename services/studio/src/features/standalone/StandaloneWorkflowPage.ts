@@ -7,6 +7,7 @@
 import { customElement, property, state } from 'lit/decorators.js';
 import { html, LitElement, css } from 'lit';
 import '../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component';
+import '../runtime/components/ui/nuraly-ui/src/components/icon';
 import { renderEditableName, editableNameStyles, type NameEditableHost } from '../../utils/header-name-editing';
 import type {
   Workflow,
