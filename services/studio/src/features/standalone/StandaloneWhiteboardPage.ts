@@ -538,6 +538,25 @@ export class StandaloneWhiteboardPage extends LitElement {
     this.saveWhiteboardDebounced();
   }
 
+  private async handleNameChanged(event: CustomEvent<{ name: string }>): Promise<void> {
+    const { name } = event.detail;
+    if (!name || !this.whiteboardId) return;
+
+    // Update local state immediately
+    if (this.workflow) {
+      this.workflow = { ...this.workflow, name };
+    }
+    if (this.whiteboardData) {
+      this.whiteboardData = { ...this.whiteboardData, name };
+    }
+
+    try {
+      await whiteboardService.updateWhiteboard(this.whiteboardId, { name });
+    } catch (error) {
+      console.error('[StandaloneWhiteboard] Failed to save whiteboard name:', error);
+    }
+  }
+
   private handleViewportChanged(event: CustomEvent<{ viewport: CanvasViewport }>): void {
     const { viewport } = event.detail;
     this.currentViewport = viewport;
@@ -585,17 +604,14 @@ export class StandaloneWhiteboardPage extends LitElement {
     }
   }
 
-  private async syncElements(): Promise<void> {
-    if (!this.workflow || !this.lastSavedWorkflow) return;
-
-    const nodeIdMap = new Map<string, string>();
-
-    const oldNodes = this.lastSavedWorkflow.nodes || [];
-    const newNodes = this.workflow.nodes || [];
+  private async syncElementNodes(
+    oldNodes: any[],
+    newNodes: any[],
+    nodeIdMap: Map<string, string>,
+  ): Promise<void> {
     const oldNodeIds = new Set(oldNodes.map((n) => n.id));
     const newNodeIds = new Set(newNodes.map((n) => n.id));
 
-    // Add new elements
     for (const node of newNodes) {
       if (!oldNodeIds.has(node.id) || !this.isValidUUID(node.id)) {
         const elementDTO = nodeToElementDTO(node, this.whiteboardId);
@@ -604,46 +620,54 @@ export class StandaloneWhiteboardPage extends LitElement {
       }
     }
 
-    // Update existing elements
     for (const node of newNodes) {
-      if (oldNodeIds.has(node.id) && this.isValidUUID(node.id)) {
-        const oldNode = oldNodes.find((n) => n.id === node.id);
-        if (oldNode && JSON.stringify(oldNode) !== JSON.stringify(node)) {
-          const elementDTO = nodeToElementDTO(node, this.whiteboardId);
-          try {
-            await whiteboardService.updateElement(this.whiteboardId, node.id, elementDTO);
-          } catch (error: any) {
-            if (error.message?.includes('404') || error.message?.includes('not found')) {
-              const saved = await whiteboardService.addElement(this.whiteboardId, elementDTO);
-              nodeIdMap.set(node.id, saved.id);
-            } else {
-              throw error;
-            }
-          }
+      if (!oldNodeIds.has(node.id) || !this.isValidUUID(node.id)) continue;
+      const oldNode = oldNodes.find((n) => n.id === node.id);
+      if (!oldNode || JSON.stringify(oldNode) === JSON.stringify(node)) continue;
+      const elementDTO = nodeToElementDTO(node, this.whiteboardId);
+      try {
+        await whiteboardService.updateElement(this.whiteboardId, node.id, elementDTO);
+      } catch (error: any) {
+        if (error.message?.includes('404') || error.message?.includes('not found')) {
+          const saved = await whiteboardService.addElement(this.whiteboardId, elementDTO);
+          nodeIdMap.set(node.id, saved.id);
+        } else {
+          throw error;
         }
       }
     }
 
-    // Delete removed elements
     for (const oldNode of oldNodes) {
       if (!newNodeIds.has(oldNode.id) && this.isValidUUID(oldNode.id)) {
         await whiteboardService.deleteElement(this.whiteboardId, oldNode.id);
       }
     }
+  }
 
-    // Update local workflow with server-generated UUIDs
-    if (nodeIdMap.size > 0) {
-      const updatedNodes = this.workflow.nodes.map((node) => ({
-        ...node,
-        id: nodeIdMap.get(node.id) || node.id,
-      }));
-      const updatedEdges = this.workflow.edges.map((edge) => ({
-        ...edge,
-        sourceNodeId: nodeIdMap.get(edge.sourceNodeId) || edge.sourceNodeId,
-        targetNodeId: nodeIdMap.get(edge.targetNodeId) || edge.targetNodeId,
-      }));
-      this.workflow = { ...this.workflow, nodes: updatedNodes, edges: updatedEdges };
-    }
+  private remapElementIds(nodeIdMap: Map<string, string>): void {
+    if (!this.workflow || nodeIdMap.size === 0) return;
+    const updatedNodes = this.workflow.nodes.map((node) => ({
+      ...node,
+      id: nodeIdMap.get(node.id) || node.id,
+    }));
+    const updatedEdges = this.workflow.edges.map((edge) => ({
+      ...edge,
+      sourceNodeId: nodeIdMap.get(edge.sourceNodeId) || edge.sourceNodeId,
+      targetNodeId: nodeIdMap.get(edge.targetNodeId) || edge.targetNodeId,
+    }));
+    this.workflow = { ...this.workflow, nodes: updatedNodes, edges: updatedEdges };
+  }
+
+  private async syncElements(): Promise<void> {
+    if (!this.workflow || !this.lastSavedWorkflow) return;
+
+    const nodeIdMap = new Map<string, string>();
+    await this.syncElementNodes(
+      this.lastSavedWorkflow.nodes || [],
+      this.workflow.nodes || [],
+      nodeIdMap,
+    );
+    this.remapElementIds(nodeIdMap);
   }
 
   private async handleManualSave(): Promise<void> {
@@ -733,6 +757,7 @@ export class StandaloneWhiteboardPage extends LitElement {
             ?collaborative=${true}
             @workflow-changed=${this.handleCanvasWorkflowChanged}
             @viewport-changed=${this.handleViewportChanged}
+            @name-changed=${this.handleNameChanged}
           ></whiteboard-canvas>
         </div>
       </div>
