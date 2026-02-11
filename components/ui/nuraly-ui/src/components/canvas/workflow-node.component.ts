@@ -449,10 +449,15 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
       [`status-${status.toLowerCase()}`]: true,
     };
 
+    const tableWidth = (config.tableWidth as number) || 320;
+    const tableHeight = (config.tableHeight as number) || 200;
+
     const containerStyles = {
       '--node-accent': nodeColor,
       left: `${this.node.position.x}px`,
       top: `${this.node.position.y}px`,
+      width: `${tableWidth}px`,
+      height: `${tableHeight}px`,
     };
 
     return html`
@@ -504,8 +509,26 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
             this.renderPort(port, false, i, this.node.ports.outputs.length)
           )}
         </div>
+
+        <!-- Resize handle -->
+        ${this.selected ? html`
+          <div
+            class="ui-table-resize-handle"
+            @mousedown=${this.handleUiTableResizeStart}
+          ></div>
+        ` : nothing}
       </div>
     `;
+  }
+
+  private handleUiTableResizeStart(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.dispatchEvent(new CustomEvent('table-resize-start', {
+      detail: { node: this.node, event: e },
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private handlePortMouseDown(e: MouseEvent, port: NodePort, isInput: boolean) {
