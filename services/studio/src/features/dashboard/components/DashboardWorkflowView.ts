@@ -5,10 +5,10 @@
 
 import { html, LitElement, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { getStudioUrl } from '../utils/route-sync';
 import { getWorkflowService } from '../../../services/lazy-loader';
 import type { ExecutionResult } from '../../../services/workflow.service';
 import type { Workflow } from '../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.types';
+import { focusAndSelectAll, handlePlainTextPaste, getInputText, handleNameFieldBlur, handleNameFieldKeydown } from '../utils/inline-edit.utils';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
@@ -21,7 +21,7 @@ import type { IHeader } from '../../runtime/components/ui/nuraly-ui/src/componen
 
 @customElement('dashboard-workflow-view')
 export class DashboardWorkflowView extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: block;
       height: 100%;
@@ -368,8 +368,8 @@ export class DashboardWorkflowView extends LitElement {
       // Try to get executions
       try {
         this.executions = await workflowService.getExecutions(this.workflowId);
-      } catch (e) {
-        // Executions may not be available
+      } catch (execError) {
+        console.warn('[DashboardWorkflowView] Executions not available:', execError);
         this.executions = [];
       }
     } catch (e) {
@@ -381,18 +381,23 @@ export class DashboardWorkflowView extends LitElement {
 
   private openWorkflow() {
     // Opens in standalone editor (dashboard-based)
-    window.location.href = `/dashboard/workflow/edit/${this.workflowId}`;
+    globalThis.location.href = `/dashboard/workflow/edit/${this.workflowId}`;
   }
 
   private openInStudio() {
     // Opens in studio (only available for app-attached workflows)
     if (this.appId) {
-      window.location.href = `/app/studio/${this.appId}/workflows?workflow=${this.workflowId}`;
+      globalThis.location.href = `/app/studio/${this.appId}/workflows?workflow=${this.workflowId}`;
     }
   }
 
   private goBack() {
-    window.history.back();
+    const path = this.appId ? `/dashboard/app/${this.appId}` : '/dashboard';
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   private navigateToApp() {
@@ -523,19 +528,9 @@ export class DashboardWorkflowView extends LitElement {
   private startEditingName() {
     this.editedName = this.workflow?.name || '';
     this.isEditingName = true;
-    // Set text and focus after render
     this.updateComplete.then(() => {
       const element = this.shadowRoot?.querySelector('.workflow-name.editing') as HTMLElement;
-      if (element) {
-        element.textContent = this.editedName;
-        element.focus();
-        // Select all text
-        const range = document.createRange();
-        range.selectNodeContents(element);
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
+      if (element) focusAndSelectAll(element, this.editedName);
     });
   }
 
@@ -545,38 +540,19 @@ export class DashboardWorkflowView extends LitElement {
   }
 
   private handleNameInput(e: Event) {
-    const element = e.target as HTMLElement;
-    this.editedName = element.textContent?.trim() || '';
+    this.editedName = getInputText(e);
   }
 
   private handleNameBlur(e: FocusEvent) {
-    // Don't save on blur if clicking save/cancel buttons
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (relatedTarget?.closest('.action-icon')) {
-      return;
-    }
-    if (this.isEditingName) {
-      this.saveWorkflowName();
-    }
+    handleNameFieldBlur(e, this.isEditingName, () => this.saveWorkflowName());
   }
 
   private handleNameKeydown(e: KeyboardEvent) {
-    if (!this.isEditingName) return;
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      this.saveWorkflowName();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      this.cancelEditingName();
-    }
+    handleNameFieldKeydown(e, this.isEditingName, () => this.saveWorkflowName(), () => this.cancelEditingName());
   }
 
   private handlePaste(e: ClipboardEvent) {
-    e.preventDefault();
-    // Get plain text only
-    const text = e.clipboardData?.getData('text/plain') || '';
-    document.execCommand('insertText', false, text);
+    handlePlainTextPaste(e);
   }
 
   private async saveWorkflowName() {

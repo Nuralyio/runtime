@@ -7,6 +7,7 @@ import { html, LitElement, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { getWhiteboardService } from '../../../services/lazy-loader';
 import type { WhiteboardDTO } from '../../../services/whiteboard.service';
+import { focusAndSelectAll, handlePlainTextPaste, getInputText, handleNameFieldBlur, handleNameFieldKeydown } from '../utils/inline-edit.utils';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
@@ -15,7 +16,7 @@ import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 
 @customElement('dashboard-whiteboard-view')
 export class DashboardWhiteboardView extends LitElement {
-  static styles = css`
+  static readonly styles = css`
     :host {
       display: block;
       height: 100%;
@@ -330,7 +331,14 @@ export class DashboardWhiteboardView extends LitElement {
   }
 
   private goBack() {
-    window.history.back();
+    const path = this.whiteboard?.applicationId
+      ? `/dashboard/app/${this.whiteboard.applicationId}`
+      : '/dashboard';
+    this.dispatchEvent(new CustomEvent('navigate', {
+      detail: { path },
+      bubbles: true,
+      composed: true
+    }));
   }
 
   private navigateToApp() {
@@ -348,15 +356,7 @@ export class DashboardWhiteboardView extends LitElement {
     this.isEditingName = true;
     this.updateComplete.then(() => {
       const element = this.shadowRoot?.querySelector('.whiteboard-name.editing') as HTMLElement;
-      if (element) {
-        element.textContent = this.editedName;
-        element.focus();
-        const range = document.createRange();
-        range.selectNodeContents(element);
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
+      if (element) focusAndSelectAll(element, this.editedName);
     });
   }
 
@@ -366,36 +366,19 @@ export class DashboardWhiteboardView extends LitElement {
   }
 
   private handleNameInput(e: Event) {
-    const element = e.target as HTMLElement;
-    this.editedName = element.textContent?.trim() || '';
+    this.editedName = getInputText(e);
   }
 
   private handleNameBlur(e: FocusEvent) {
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (relatedTarget?.closest('.action-icon')) {
-      return;
-    }
-    if (this.isEditingName) {
-      this.saveWhiteboardName();
-    }
+    handleNameFieldBlur(e, this.isEditingName, () => this.saveWhiteboardName());
   }
 
   private handleNameKeydown(e: KeyboardEvent) {
-    if (!this.isEditingName) return;
-
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      this.saveWhiteboardName();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      this.cancelEditingName();
-    }
+    handleNameFieldKeydown(e, this.isEditingName, () => this.saveWhiteboardName(), () => this.cancelEditingName());
   }
 
   private handlePaste(e: ClipboardEvent) {
-    e.preventDefault();
-    const text = e.clipboardData?.getData('text/plain') || '';
-    document.execCommand('insertText', false, text);
+    handlePlainTextPaste(e);
   }
 
   private async saveWhiteboardName() {
@@ -419,7 +402,7 @@ export class DashboardWhiteboardView extends LitElement {
   }
 
   private openInEditor() {
-    window.location.href = `/dashboard/whiteboard/edit/${this.whiteboardId}`;
+    globalThis.location.href = `/dashboard/whiteboard/edit/${this.whiteboardId}`;
   }
 
   private async handleDelete() {
