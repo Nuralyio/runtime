@@ -51,7 +51,6 @@ import {
   TouchController,
   type MarqueeState,
 } from './controllers/index.js';
-import { createToolbarNameCallbacks } from './utils/toolbar-name.utils.js';
 
 // Templates
 import {
@@ -343,11 +342,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   private chatbotUnreadCount = 0;
   private canvasChatbotController: ChatbotCoreController | null = null;
 
-  // Toolbar name editing (non-private — accessed by createToolbarNameCallbacks via CanvasNameEditable)
-  @state()
-  isEditingName = false;
-  @state()
-  editedName = '';
 
   // HTTP preview state
   @state()
@@ -1974,9 +1968,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       showChatbot: this.showChatbotPanel,
       onToggleChatbot: () => this.toggleChatbotPanel(),
       chatbotUnreadCount: this.chatbotUnreadCount,
-      name: this.workflow.name,
-      isEditingName: this.isEditingName,
-      ...createToolbarNameCallbacks(this),
       onModeChange: (mode) => { this.mode = mode; },
       onTogglePalette: () => this.togglePalette(),
       onZoomIn: () => this.viewportController.zoomIn(),

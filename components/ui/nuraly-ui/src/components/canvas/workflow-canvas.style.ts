@@ -1,6 +1,5 @@
 import { css } from 'lit';
 import { chatbotPanelStyles } from './chatbot-panel.style.js';
-import { toolbarNameStyles } from './toolbar-name.style.js';
 
 /**
  * Workflow Canvas component styles
@@ -2684,4 +2683,4 @@ export const workflowCanvasStyles = css`
 
 `;
 
-export const styles = [workflowCanvasStyles, chatbotPanelStyles, toolbarNameStyles];
+export const styles = [workflowCanvasStyles, chatbotPanelStyles];
