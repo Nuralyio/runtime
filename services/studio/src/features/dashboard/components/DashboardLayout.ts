@@ -13,6 +13,7 @@ import { getCurrentUser, type CurrentUserInfo } from '../../runtime/handlers/run
 import './DashboardOverview';
 import './DashboardAppView';
 import './DashboardWorkflowView';
+import './DashboardExecutionPreview';
 import './DashboardWhiteboardView';
 import './DashboardDatabaseView';
 import './DashboardKVView';
@@ -371,6 +372,15 @@ export class DashboardLayout extends LitElement {
             .workflowId=${this.currentRoute.resourceId || ''}
             @navigate=${this.handleNavigate}
           ></dashboard-workflow-view>
+        `;
+
+      case 'workflow-execution':
+        return html`
+          <dashboard-execution-preview
+            .workflowId=${this.currentRoute.resourceId || ''}
+            .executionId=${this.currentRoute.executionId || ''}
+            @navigate=${this.handleNavigate}
+          ></dashboard-execution-preview>
         `;
 
       case 'whiteboard':
