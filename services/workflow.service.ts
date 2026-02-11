@@ -499,8 +499,8 @@ export const workflowService = {
     return handleResponse<ExecutionResult[]>(response);
   },
 
-  async getExecution(executionId: string): Promise<ExecutionResult> {
-    const response = await fetch(APIS_URL.getWorkflowExecution(executionId));
+  async getExecution(workflowId: string, executionId: string): Promise<ExecutionResult> {
+    const response = await fetch(APIS_URL.getWorkflowExecution(workflowId, executionId));
     return handleResponse<ExecutionResult>(response);
   },
 
