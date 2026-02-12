@@ -85,13 +85,13 @@ export abstract class BaseCanvasController<THost extends CanvasHost & ReactiveCo
    * Generate a unique node ID
    */
   protected generateNodeId(): string {
-    return `node_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    return `node_${Date.now()}_${globalThis.crypto.randomUUID().slice(0, 9)}`;
   }
 
   /**
    * Generate a unique edge ID
    */
   protected generateEdgeId(): string {
-    return `edge_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    return `edge_${Date.now()}_${globalThis.crypto.randomUUID().slice(0, 9)}`;
   }
 }
