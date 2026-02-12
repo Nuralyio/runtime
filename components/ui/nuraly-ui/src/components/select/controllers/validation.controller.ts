@@ -1,26 +1,38 @@
-import { ReactiveControllerHost } from 'lit';
-import { ValidationController, ValidationState, SelectValidationEventDetail, SelectHost } from '../interfaces/index.js';
-import { BaseValidationController } from '@nuralyui/common/controllers';
+import { ValidationController, ValidationState, SelectValidationEventDetail } from '../interfaces/index.js';
+import { BaseSelectController } from './base.controller.js';
 import { SelectSelectionController } from './selection.controller.js';
 
 /**
  * Validation controller manages form validation logic and states
  */
-export class SelectValidationController extends BaseValidationController<SelectHost & ReactiveControllerHost>
-  implements ValidationController {
+export class SelectValidationController extends BaseSelectController implements ValidationController {
+  private _isValid: boolean = true;
+  private _validationMessage: string = '';
+  private _validationState: ValidationState = ValidationState.Pristine;
 
-  private selectionController: SelectSelectionController;
-
-  constructor(host: any, selectionController: SelectSelectionController) {
+  constructor(host: any, private selectionController: SelectSelectionController) {
     super(host);
-    this.selectionController = selectionController;
   }
 
   /**
-   * Override validation state getter to return the enum type
+   * Get validation state
    */
-  override get validationState(): ValidationState {
-    return this._validationState as ValidationState;
+  get isValid(): boolean {
+    return this._isValid;
+  }
+
+  /**
+   * Get validation message
+   */
+  get validationMessage(): string {
+    return this._validationMessage;
+  }
+
+  /**
+   * Get current validation state
+   */
+  get validationState(): ValidationState {
+    return this._validationState;
   }
 
   /**
@@ -29,10 +41,10 @@ export class SelectValidationController extends BaseValidationController<SelectH
   validate(): boolean {
     try {
       this._validationState = ValidationState.Pending;
-
+      
       const selectedOptions = this.selectionController.getSelectedOptions();
       const hasValue = selectedOptions.length > 0;
-
+      
       // Required field validation
       if (this.host.required && !hasValue) {
         this.setValidationResult(false, 'This field is required', ValidationState.Invalid);
@@ -40,7 +52,7 @@ export class SelectValidationController extends BaseValidationController<SelectH
       }
 
       // Custom validation logic can be added here
-
+      
       this.setValidationResult(true, '', ValidationState.Valid);
       return true;
     } catch (error) {
@@ -59,7 +71,7 @@ export class SelectValidationController extends BaseValidationController<SelectH
       this._validationMessage = '';
       this._validationState = ValidationState.Pristine;
       this.requestUpdate();
-
+      
       this.dispatchValidationEvent();
     } catch (error) {
       this.handleError(error as Error, 'reset');
@@ -74,7 +86,7 @@ export class SelectValidationController extends BaseValidationController<SelectH
       const hostElement = this._host as any;
       const name = hostElement.name || hostElement.getAttribute('name') || 'select';
       const selectedOptions = this.selectionController.getSelectedOptions();
-
+      
       if (this.host.multiple) {
         return { [name]: selectedOptions.map(option => option.value) };
       } else {
@@ -87,11 +99,18 @@ export class SelectValidationController extends BaseValidationController<SelectH
   }
 
   /**
+   * Check validity (HTML5 constraint validation API)
+   */
+  checkValidity(): boolean {
+    return this.validate();
+  }
+
+  /**
    * Report validity (HTML5 constraint validation API)
    */
-  override reportValidity(): boolean {
+  reportValidity(): boolean {
     const isValid = this.validate();
-
+    
     if (!isValid) {
       // Focus the invalid element
       const hostElement = this._host as any;
@@ -100,7 +119,7 @@ export class SelectValidationController extends BaseValidationController<SelectH
         focusableElement.focus();
       }
     }
-
+    
     return isValid;
   }
 
@@ -142,9 +161,9 @@ export class SelectValidationController extends BaseValidationController<SelectH
    * Set validation result and dispatch event
    */
   private setValidationResult(isValid: boolean, message: string, state: ValidationState): void {
-    const hasChanged =
-      this._isValid !== isValid ||
-      this._validationMessage !== message ||
+    const hasChanged = 
+      this._isValid !== isValid || 
+      this._validationMessage !== message || 
       this._validationState !== state;
 
     this._isValid = isValid;
@@ -158,13 +177,13 @@ export class SelectValidationController extends BaseValidationController<SelectH
   }
 
   /**
-   * Override to include select-specific detail
+   * Dispatch validation event
    */
-  protected override dispatchValidationEvent(): void {
+  private dispatchValidationEvent(): void {
     const detail: SelectValidationEventDetail = {
       isValid: this._isValid,
       validationMessage: this._validationMessage,
-      validationState: this._validationState as ValidationState,
+      validationState: this._validationState,
     };
 
     this.dispatchEvent(

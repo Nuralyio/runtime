@@ -402,21 +402,21 @@ export class NrInputElement extends NumberMixin(
    * Add validation rule dynamically
    */
   addRule(rule: ValidationRule): void {
-    this.validationController.addInputRule(rule);
+    this.validationController.addRule(rule);
   }
 
   /**
    * Remove validation rule
    */
   removeRule(predicate: (rule: ValidationRule) => boolean): void {
-    this.validationController.removeInputRule(predicate);
+    this.validationController.removeRule(predicate);
   }
 
   /**
    * Clear all validation rules
    */
   clearRules(): void {
-    this.validationController.clearInputRules();
+    this.validationController.clearRules();
   }
 
   /**

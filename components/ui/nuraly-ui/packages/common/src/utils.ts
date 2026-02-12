@@ -21,6 +21,3 @@
 
 // Export utility functions
 export * from './shared/utils.js';
-
-// Export render utilities
-export * from './shared/render-utils.js';

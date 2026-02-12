@@ -38,7 +38,7 @@ export class TabsEventController extends BaseTabsController implements EventCont
     this._host = host;
   }
 
-  override get host(): TabsEventHost & ReactiveControllerHost {
+  override get host(): TabsEventHost {
     return this._host;
   }
 

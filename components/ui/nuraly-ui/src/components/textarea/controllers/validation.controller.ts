@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { BaseTextareaController, TextareaHost } from './base.controller.js';
 import { ReactiveControllerHost } from 'lit';
-import { TextareaHost } from './base.controller.js';
-import { BaseValidationController, SharedValidationRule } from '@nuralyui/common/controllers';
 import {
     ValidationRule,
     TextareaValidationResult,
@@ -45,16 +44,20 @@ export interface TextareaValidationHost extends TextareaHost {
  * - Error and warning messages
  * - Character count validation
  */
-export class TextareaValidationController extends BaseValidationController<TextareaValidationHost & ReactiveControllerHost> {
+export class TextareaValidationController extends BaseTextareaController {
   private _validationResult?: TextareaValidationResult;
   private _validationDebounceMs = 300;
   private _validationTimeout?: ReturnType<typeof setTimeout>;
+
+  constructor(host: TextareaValidationHost & ReactiveControllerHost) {
+    super(host);
+  }
 
   /**
    * Get the validation host with extended interface
    */
   get validationHost(): TextareaValidationHost & ReactiveControllerHost {
-    return this._host;
+    return this._host as TextareaValidationHost & ReactiveControllerHost;
   }
 
   /**
@@ -72,17 +75,9 @@ export class TextareaValidationController extends BaseValidationController<Texta
   }
 
   /**
-   * Validate the current value against all rules (base contract)
+   * Validate the current value against all rules
    */
-  override async validate(): Promise<boolean> {
-    const result = await this.validateTextarea();
-    return result.isValid;
-  }
-
-  /**
-   * Validate the current value against all rules (textarea-specific, returns full result)
-   */
-  async validateTextarea(value?: string): Promise<TextareaValidationResult> {
+  async validate(value?: string): Promise<TextareaValidationResult> {
     const valueToValidate = value ?? this.validationHost.value;
     const rules = this.validationHost.rules || [];
 
@@ -125,7 +120,7 @@ export class TextareaValidationController extends BaseValidationController<Texta
     }
 
     const level = hasError ? 'error' : hasWarning ? 'warning' : 'success';
-
+    
     this._validationResult = {
       isValid: !hasError && !hasWarning,
       messages,
@@ -133,16 +128,11 @@ export class TextareaValidationController extends BaseValidationController<Texta
       blocking: isBlocking
     };
 
-    // Update shared state
-    this._isValid = this._validationResult.isValid;
-    this._validationMessage = messages.join(', ');
-    this._validationState = level === 'success' ? 'valid' : level;
-
     // Update host state based on validation
     this.updateHostValidationState();
 
     // Dispatch validation event
-    this.dispatchTextareaValidationEvent();
+    this.dispatchValidationEvent();
 
     return this._validationResult;
   }
@@ -157,7 +147,7 @@ export class TextareaValidationController extends BaseValidationController<Texta
       }
 
       this._validationTimeout = setTimeout(async () => {
-        const result = await this.validateTextarea(value);
+        const result = await this.validate(value);
         resolve(result);
       }, this._validationDebounceMs);
     });
@@ -178,7 +168,7 @@ export class TextareaValidationController extends BaseValidationController<Texta
    */
   async validateOnBlurIfEnabled(value?: string): Promise<TextareaValidationResult | undefined> {
     if (this.validationHost.validateOnBlur && (this.validationHost.rules || []).length > 0) {
-      return await this.validateTextarea(value);
+      return await this.validate(value);
     }
     return undefined;
   }
@@ -186,12 +176,9 @@ export class TextareaValidationController extends BaseValidationController<Texta
   /**
    * Clear validation state
    */
-  override clearValidation(): void {
+  clearValidation(): void {
     this._validationResult = undefined;
-    this._isValid = true;
-    this._validationMessage = '';
-    this._validationState = 'pristine';
-
+    
     if (this._validationTimeout) {
       clearTimeout(this._validationTimeout);
       this._validationTimeout = undefined;
@@ -200,16 +187,16 @@ export class TextareaValidationController extends BaseValidationController<Texta
     // Reset state to default if it was set by validation
     if (this.validationHost.state !== TEXTAREA_STATE.Default) {
       this.validationHost.state = TEXTAREA_STATE.Default;
-      this.requestUpdate();
+      this.requestHostUpdate();
     }
 
-    this.dispatchTextareaValidationEvent();
+    this.dispatchValidationEvent();
   }
 
   /**
    * Check if the current value is valid according to validation rules
    */
-  isCurrentlyValid(): boolean {
+  isValid(): boolean {
     return this._validationResult?.isValid ?? true;
   }
 
@@ -228,28 +215,28 @@ export class TextareaValidationController extends BaseValidationController<Texta
   }
 
   /**
-   * Add a validation rule to the host
+   * Add a validation rule
    */
-  override addRule(rule: SharedValidationRule): void {
+  addRule(rule: ValidationRule): void {
     const rules = this.validationHost.rules || [];
-    rules.push(rule as ValidationRule);
+    rules.push(rule);
     this.validationHost.rules = rules;
-    this.requestUpdate();
+    this.requestHostUpdate();
   }
 
   /**
-   * Remove a validation rule from the host
+   * Remove a validation rule
    */
-  override removeRule(predicate: (rule: SharedValidationRule) => boolean): void {
+  removeRule(predicate: (rule: ValidationRule) => boolean): void {
     const rules = this.validationHost.rules || [];
     this.validationHost.rules = rules.filter(rule => !predicate(rule));
-    this.requestUpdate();
+    this.requestHostUpdate();
   }
 
   /**
    * Remove all validation rules
    */
-  override clearRules(): void {
+  clearRules(): void {
     this.validationHost.rules = [];
     this.clearValidation();
   }
@@ -309,7 +296,7 @@ export class TextareaValidationController extends BaseValidationController<Texta
     if (!this._validationResult) return;
 
     const { level } = this._validationResult;
-
+    
     if (level === 'error') {
       this.validationHost.state = TEXTAREA_STATE.Error;
     } else if (level === 'warning') {
@@ -319,13 +306,13 @@ export class TextareaValidationController extends BaseValidationController<Texta
       this.validationHost.state = TEXTAREA_STATE.Success;
     }
 
-    this.requestUpdate();
+    this.requestHostUpdate();
   }
 
   /**
-   * Dispatch textarea-specific validation event (standardized to nr-validation)
+   * Dispatch validation event
    */
-  private dispatchTextareaValidationEvent(): void {
+  private dispatchValidationEvent(): void {
     const detail: TextareaValidationEventDetail = {
       isValid: this._validationResult?.isValid ?? true,
       validationMessage: this._validationResult?.messages.join(', ') ?? '',
@@ -339,16 +326,13 @@ export class TextareaValidationController extends BaseValidationController<Texta
       }
     };
 
-    this.safeExecute(
-      () => this.dispatchEvent(
-        new CustomEvent('nr-validation', {
-          detail,
-          bubbles: true,
-          composed: true
-        })
-      ),
-      'dispatchValidationEvent'
-    );
+    const event = new CustomEvent('textarea-validation', {
+      detail,
+      bubbles: true,
+      composed: true
+    });
+
+    this.safeExecute(() => this._host.dispatchEvent(event), 'dispatchValidationEvent');
   }
 
   /**

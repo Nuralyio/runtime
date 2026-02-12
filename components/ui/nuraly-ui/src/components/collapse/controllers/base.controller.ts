@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { ReactiveControllerHost } from 'lit';
+import { ReactiveController, ReactiveControllerHost } from 'lit';
 import { CollapseSection } from '../collapse.type.js';
-import { BaseComponentController } from '@nuralyui/common/controllers';
 
 /**
  * Base controller interface for collapse components
@@ -24,7 +23,29 @@ export interface CollapseControllerHost extends ReactiveControllerHost {
 /**
  * Base controller for collapse component functionality
  */
-export abstract class BaseCollapseController extends BaseComponentController<CollapseControllerHost> {
+export abstract class BaseCollapseController implements ReactiveController {
+  protected host: CollapseControllerHost;
+
+  constructor(host: CollapseControllerHost) {
+    this.host = host;
+    host.addController(this);
+  }
+
+  hostConnected(): void {
+    // Base implementation - can be overridden by subclasses
+  }
+
+  hostDisconnected(): void {
+    // Base implementation - can be overridden by subclasses
+  }
+
+  hostUpdate(): void {
+    // Base implementation - can be overridden by subclasses
+  }
+
+  hostUpdated(): void {
+    // Base implementation - can be overridden by subclasses
+  }
 
   /**
    * Get section by index safely
@@ -42,7 +63,7 @@ export abstract class BaseCollapseController extends BaseComponentController<Col
       this.host.updateSection(index, updates);
       return;
     }
-
+    
     // Fallback to direct update
     const section = this.getSection(index);
     if (section) {
@@ -63,7 +84,7 @@ export abstract class BaseCollapseController extends BaseComponentController<Col
       this.host.updateSections(updates);
       return;
     }
-
+    
     // Fallback to direct batch update
     const newSections = [...this.host.sections];
     let hasChanges = false;

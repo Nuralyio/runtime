@@ -21,7 +21,6 @@ import {
   FocusOptions
 } from './textarea.types.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
-import { renderClearButton, renderValidationIcon } from '@nuralyui/common/utils';
 import { ValidatableComponent, ValidationStatus } from '@nuralyui/common/mixins';
 import {
   TextareaValidationController,
@@ -189,7 +188,7 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
    */
   private setupControllerListeners(): void {
     // Validation events
-    this.addEventListener('nr-validation', (e: any) => {
+    this.addEventListener('textarea-validation', (e: any) => {
       this.validationResult = e.detail.validationResult;
     });
 
@@ -292,7 +291,7 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
     if (changedProperties.has('rules')) {
       this.validationController.clearValidation();
       if (this.rules.length > 0 && this.value) {
-        this.validationController.validateTextarea(this.value);
+        this.validationController.validate(this.value);
       }
     }
   }
@@ -461,7 +460,7 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
    * Trigger validation manually (ValidatableComponent interface)
    */
   async validate(): Promise<boolean> {
-    const result = await this.validationController.validateTextarea(this.value);
+    const result = await this.validationController.validate(this.value);
     return result.isValid;
   }
 
@@ -516,7 +515,7 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
    * Check if the textarea value is valid
    */
   isValid(): boolean {
-    return this.validationController.isCurrentlyValid();
+    return this.validationController.isValid();
   }
 
   // Form integration methods (FormFieldCapable interface)
@@ -525,17 +524,17 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
    * Check validity (HTML form API compatibility)
    */
   checkValidity(): boolean {
-    return this.validationController.isCurrentlyValid();
+    return this.validationController.isValid();
   }
 
   /**
    * Report validity (HTML form API compatibility)
    */
   reportValidity(): boolean {
-    const isValid = this.validationController.isCurrentlyValid();
+    const isValid = this.validationController.isValid();
     if (!isValid) {
       // Trigger validation to show error messages
-      this.validationController.validateTextarea(this.value);
+      this.validationController.validate(this.value);
     }
     return isValid;
   }
@@ -562,7 +561,7 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
    * Trigger validation manually (enhanced version)
    */
   async validateTextarea(): Promise<boolean> {
-    const result = await this.validationController.validateTextarea(this.value);
+    const result = await this.validationController.validate(this.value);
     return result.isValid;
   }
 
@@ -616,21 +615,33 @@ export class NrTextareaElement extends NuralyUIBaseMixin(LitElement)
   }
 
   private renderValidationIcon() {
-    return renderValidationIcon(
-      this.validationResult?.level,
-      this.hasFeedback && !!this.validationResult,
-    );
+    if (!this.hasFeedback || !this.validationResult) return '';
+
+    const iconName = this.validationResult.level === 'error' ? 'error' :
+                     this.validationResult.level === 'warning' ? 'warning' : 'check-circle';
+
+    return html`
+      <nr-icon 
+        class="validation-icon ${this.validationResult.level}"
+        name="${iconName}"
+        size="small"
+      ></nr-icon>
+    `;
   }
 
   private renderClearButton() {
-    return renderClearButton({
-      allowClear: this.allowClear,
-      value: this.value,
-      disabled: this.disabled,
-      readonly: this.readonly,
-      onClear: this.handleClear,
-      ariaLabel: 'Clear textarea',
-    });
+    if (!this.allowClear || !this.value || this.disabled || this.readonly) return '';
+
+    return html`
+      <button
+        class="clear-button"
+        type="button"
+        @click=${this.handleClear}
+        aria-label="Clear textarea"
+      >
+        <nr-icon name="x" size="small"></nr-icon>
+      </button>
+    `;
   }
 
   private renderCharacterCount() {
