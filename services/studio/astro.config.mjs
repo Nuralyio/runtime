@@ -12,6 +12,7 @@ import compressor from "astro-compressor";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nuralyUIPath = path.resolve(__dirname, 'src/features/runtime/components/ui/nuraly-ui/src/components');
+const nuralyCommonPath = path.resolve(__dirname, 'src/features/runtime/components/ui/nuraly-ui/packages/common/src');
 
 // https://astro.build/config
 export default defineConfig({
@@ -74,6 +75,11 @@ export default defineConfig({
        '@nuralyui/iconpicker': path.join(nuralyUIPath, 'iconpicker'),
        '@nuralyui/container': path.join(nuralyUIPath, 'container'),
        '@nuralyui/code-editor': path.join(nuralyUIPath, 'code-editor'),
+       '@nuralyui/common/controllers': path.join(nuralyCommonPath, 'controllers.ts'),
+       '@nuralyui/common/mixins': path.join(nuralyCommonPath, 'mixins.ts'),
+       '@nuralyui/common/utils': path.join(nuralyCommonPath, 'utils.ts'),
+       '@nuralyui/common/themes': path.join(nuralyCommonPath, 'themes.ts'),
+       '@nuralyui/common': path.join(nuralyCommonPath, 'index.ts'),
      }
    },
    build:{
