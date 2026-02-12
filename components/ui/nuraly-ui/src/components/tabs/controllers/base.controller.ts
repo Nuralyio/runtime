@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { ReactiveController, ReactiveControllerHost } from 'lit';
+import { ReactiveControllerHost } from 'lit';
 import { TabItem } from '../tabs.types.js';
+import { BaseComponentController } from '@nuralyui/common/controllers';
+export type { ErrorHandler } from '@nuralyui/common/controllers';
 
 /**
  * Base interface for tabs host element
@@ -35,90 +37,11 @@ export interface TabsBaseController {
 }
 
 /**
- * Error handler interface for controllers
- */
-export interface ErrorHandler {
-  handleError(error: Error, context: string): void;
-}
-
-/**
  * Abstract base controller class that implements common functionality
  * for all tabs component controllers
  */
-export abstract class BaseTabsController implements TabsBaseController, ReactiveController, ErrorHandler {
-  protected _host: TabsHost & ReactiveControllerHost;
-
-  constructor(host: TabsHost & ReactiveControllerHost) {
-    this._host = host;
-    this._host.addController(this);
-  }
-
-  /**
-   * Get the host element
-   */
-  get host(): TabsHost {
-    return this._host;
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host connects
-   */
-  hostConnected(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host disconnects
-   */
-  hostDisconnected(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host updates
-   */
-  hostUpdate(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host has updated
-   */
-  hostUpdated(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Handle errors with consistent logging and optional user feedback
-   */
-  handleError(error: Error, context: string): void {
-    console.error(`[TabsController] Error in ${context}:`, error);
-    
-    // Dispatch error event for handling by parent component
-    this.dispatchEvent(
-      new CustomEvent('tabs-error', {
-        detail: {
-          error,
-          context,
-          timestamp: Date.now(),
-          controller: this.constructor.name
-        },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  /**
-   * Helper method to dispatch events consistently
-   */
-  protected dispatchEvent(event: CustomEvent): void {
-    try {
-      this._host.dispatchEvent(event);
-    } catch (error) {
-      console.error('[TabsController] Failed to dispatch event:', error);
-    }
-  }
+export abstract class BaseTabsController extends BaseComponentController<TabsHost & ReactiveControllerHost>
+  implements TabsBaseController {
 
   /**
    * Helper method to check if tab is valid

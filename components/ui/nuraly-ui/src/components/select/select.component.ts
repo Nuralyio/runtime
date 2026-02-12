@@ -12,6 +12,7 @@ import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+import { renderValidationMessage as sharedRenderValidationMessage } from '@nuralyui/common/utils';
 
 // Import types
 import {
@@ -830,13 +831,9 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
    * Renders validation message when present
    */
   private renderValidationMessage() {
-    const validationMessage = this.validationController.validationMessage;
-    if (!validationMessage) return nothing;
-
-    return html`
-      <div class="validation-message ${this.status}" id="validation-message">
-        ${validationMessage}
-      </div>
-    `;
+    return sharedRenderValidationMessage(
+      this.validationController.validationMessage,
+      { statusClass: this.status }
+    );
   }
 }

@@ -62,7 +62,7 @@ export class StateController extends BaseMenuController implements MenuStateCont
       this.clearHighlights();
       this.requestUpdate();
       
-      this.dispatchEvent('selection-changed', {
+      this.dispatchMenuEvent('selection-changed', {
         path,
         timestamp: Date.now(),
       });
@@ -101,7 +101,7 @@ export class StateController extends BaseMenuController implements MenuStateCont
         this._openSubMenus.add(pathKey);
         this.requestUpdate();
         
-        this.dispatchEvent('submenu-opened', {
+        this.dispatchMenuEvent('submenu-opened', {
           path,
           pathKey,
           timestamp: Date.now(),
@@ -124,7 +124,7 @@ export class StateController extends BaseMenuController implements MenuStateCont
         this._openSubMenus.delete(pathKey);
         this.requestUpdate();
         
-        this.dispatchEvent('submenu-closed', {
+        this.dispatchMenuEvent('submenu-closed', {
           path,
           pathKey,
           timestamp: Date.now(),
@@ -143,7 +143,7 @@ export class StateController extends BaseMenuController implements MenuStateCont
       this._openSubMenus.clear();
       this.requestUpdate();
       
-      this.dispatchEvent('all-submenus-closed', {
+      this.dispatchMenuEvent('all-submenus-closed', {
         timestamp: Date.now(),
       });
     } catch (error) {
@@ -258,7 +258,7 @@ export class StateController extends BaseMenuController implements MenuStateCont
       this._highlightedSubMenus.clear();
       this.requestUpdate();
       
-      this.dispatchEvent('state-reset', {
+      this.dispatchMenuEvent('state-reset', {
         timestamp: Date.now(),
       });
     } catch (error) {

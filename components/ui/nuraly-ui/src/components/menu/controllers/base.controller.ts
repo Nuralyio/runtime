@@ -7,32 +7,14 @@
 import type { ReactiveControllerHost } from 'lit';
 import type { NrMenuElement } from '../menu.component.js';
 import type { MenuController } from '../interfaces/index.js';
+import { BaseComponentController } from '@nuralyui/common/controllers';
 
 /**
  * Base controller class providing common functionality for all menu controllers
  * Handles controller lifecycle, error handling, and event dispatching
  */
-export class BaseMenuController implements MenuController {
-  host: NrMenuElement;
-
-  constructor(host: NrMenuElement & ReactiveControllerHost) {
-    this.host = host;
-    host.addController(this);
-  }
-
-  /**
-   * Called when the controller's host element is connected to the DOM
-   */
-  hostConnected(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Called when the controller's host element is disconnected from the DOM
-   */
-  hostDisconnected(): void {
-    // Override in subclasses if needed
-  }
+export class BaseMenuController extends BaseComponentController<NrMenuElement & ReactiveControllerHost>
+  implements MenuController {
 
   /**
    * Dispatch a custom event from the host element
@@ -40,7 +22,7 @@ export class BaseMenuController implements MenuController {
    * @param detail - Event detail object
    * @param options - Additional event options
    */
-  protected dispatchEvent(
+  protected dispatchMenuEvent(
     eventName: string,
     detail?: any,
     options: Partial<CustomEventInit> = {}
@@ -53,35 +35,11 @@ export class BaseMenuController implements MenuController {
         cancelable: true,
         ...options,
       });
-      return this.host.dispatchEvent(event);
+      return this._host.dispatchEvent(event);
     } catch (error) {
       this.handleError(error as Error, 'dispatchEvent');
       return false;
     }
-  }
-
-  /**
-   * Handle errors consistently across controllers
-   * @param error - The error object
-   * @param context - Context where the error occurred
-   */
-  protected handleError(error: Error, context: string): void {
-    console.error(`[MenuController:${context}]`, error);
-    
-    // Dispatch error event for monitoring
-    this.dispatchEvent('menu-controller-error', {
-      context,
-      error: error.message,
-      stack: error.stack,
-      timestamp: Date.now(),
-    });
-  }
-
-  /**
-   * Request an update of the host element
-   */
-  protected requestUpdate(): void {
-    this.host.requestUpdate();
   }
 
   /**
@@ -96,7 +54,7 @@ export class BaseMenuController implements MenuController {
    * @param pathKey - The path key to search for
    */
   protected getElementByPath(pathKey: string): HTMLElement | null {
-    return this.host.shadowRoot?.querySelector(`[data-path="${pathKey}"]`) || null;
+    return this._host.shadowRoot?.querySelector(`[data-path="${pathKey}"]`) || null;
   }
 
   /**
@@ -104,7 +62,7 @@ export class BaseMenuController implements MenuController {
    */
   protected getAllMenuLinks(): HTMLElement[] {
     return Array.from(
-      this.host.shadowRoot?.querySelectorAll('.menu-link, .sub-menu') || []
+      this._host.shadowRoot?.querySelectorAll('.menu-link, .sub-menu') || []
     );
   }
 
@@ -114,10 +72,10 @@ export class BaseMenuController implements MenuController {
    */
   protected isElementInteractive(element: HTMLElement | null): boolean {
     if (!element) return false;
-    
+
     const isDisabled = element.classList.contains('disabled');
     const isVisible = element.offsetParent !== null;
-    
+
     return !isDisabled && isVisible;
   }
 }
