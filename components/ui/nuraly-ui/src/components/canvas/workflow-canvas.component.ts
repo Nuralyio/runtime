@@ -16,7 +16,6 @@ import {
   WorkflowNodeType,
   NodeConfiguration,
   TriggerConnectionState,
-  isFrameNode,
   isPersistentTriggerNode,
 } from './workflow-canvas.types.js';
 import type { DatabaseProvider } from './data-node/data-node.types.js';

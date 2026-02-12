@@ -394,7 +394,7 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
     this.viewportController.updateTransform();
 
     if (this.collaborative && this.canvasId) {
-      this.collaborationController.connect(this.canvasId, this.getCanvasType());
+      this.collaborationController.connect(this.canvasId, this.getCanvasType() as 'WORKFLOW' | 'WHITEBOARD');
     }
 
     this.onConnected();
