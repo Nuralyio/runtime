@@ -6,8 +6,6 @@
 
 import { expect } from '@open-wc/testing';
 import { FrameController } from '../frame.controller.js';
-import type { CanvasHost } from '../../interfaces/canvas-host.interface.js';
-import type { ReactiveControllerHost, ReactiveController } from 'lit';
 import {
   WorkflowNodeType,
   CanvasMode,
@@ -89,10 +87,14 @@ function makeWorkflow(
   };
 }
 
-interface MockHost extends CanvasHost, ReactiveControllerHost {
+interface MockHost {
+  workflow: Workflow;
+  selectedNodeIds: Set<string>;
+  selectedEdgeIds: Set<string>;
   setWorkflowCalls: Workflow[];
   dispatchWorkflowChangedCount: number;
   requestUpdateCount: number;
+  [key: string]: unknown;
 }
 
 function createMockHost(workflow: Workflow): MockHost {
@@ -142,8 +144,8 @@ function createMockHost(workflow: Workflow): MockHost {
     dispatchNodeMoved() {},
 
     // ReactiveControllerHost
-    addController(_c: ReactiveController) {},
-    removeController(_c: ReactiveController) {},
+    addController() {},
+    removeController() {},
     requestUpdate() {
       host.requestUpdateCount++;
     },
@@ -155,7 +157,7 @@ function createMockHost(workflow: Workflow): MockHost {
     dispatchEvent() {
       return true;
     },
-  } as unknown as MockHost;
+  };
   return host;
 }
 
@@ -167,7 +169,7 @@ suite('FrameController', () => {
 
   setup(() => {
     host = createMockHost(makeWorkflow());
-    ctrl = new FrameController(host as unknown as CanvasHost & ReactiveControllerHost);
+    ctrl = new FrameController(host as never);
   });
 
   // ──────────────────────────────────────────────────────────────────
@@ -465,7 +467,7 @@ suite('FrameController', () => {
       });
       frame.containedNodeIds = ['n1'];
       const n1 = makeNode('n1', 100, 100, WorkflowNodeType.FUNCTION, {
-        metadata: { _hiddenByFrame: true } as WorkflowNode['metadata'],
+        metadata: { _hiddenByFrame: true } as unknown as WorkflowNode['metadata'],
       });
       host.workflow = makeWorkflow([frame, n1]);
 
@@ -490,7 +492,7 @@ suite('FrameController', () => {
       });
       frame.containedNodeIds = ['n1'];
       const n1 = makeNode('n1', 100, 100, WorkflowNodeType.FUNCTION, {
-        metadata: { _hiddenByFrame: true } as WorkflowNode['metadata'],
+        metadata: { _hiddenByFrame: true } as unknown as WorkflowNode['metadata'],
       });
       host.workflow = makeWorkflow([frame, n1]);
 
