@@ -19,11 +19,6 @@ export interface CollapseAccordionHost extends CollapseControllerHost {
  * Handles accordion behavior (single section open at a time)
  */
 export class CollapseAccordionController extends BaseCollapseController {
-  declare protected host: CollapseAccordionHost;
-
-  constructor(host: CollapseAccordionHost) {
-    super(host);
-  }
 
   /**
    * Handle section toggle with accordion logic
