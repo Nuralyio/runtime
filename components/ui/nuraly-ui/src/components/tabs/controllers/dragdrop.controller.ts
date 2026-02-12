@@ -43,7 +43,7 @@ export class TabsDragDropController extends BaseTabsController implements DragDr
     this.dragOverHandler = (event: Event) => this.handleDragOver(event as DragEvent);
   }
 
-  override get host(): TabsDragDropHost {
+  override get host(): TabsDragDropHost & ReactiveControllerHost {
     return this._host;
   }
 

@@ -8,6 +8,7 @@ import { LitElement, html, nothing, type PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
+import { renderLabel as sharedRenderLabel } from '@nuralyui/common/utils';
 import { INPUT_STATE } from '../input/input.types.js';
 
 // Import child components
@@ -305,13 +306,7 @@ export class ColorPicker extends NuralyUIBaseMixin(LitElement) implements ColorP
    * Renders the label if provided
    */
   private renderLabel() {
-    if (!this.label) return nothing;
-    
-    return html`
-      <label class="color-picker-label">
-        ${this.label}
-      </label>
-    `;
+    return sharedRenderLabel(this.label, false, { cssClass: 'color-picker-label' });
   }
 
   /**
