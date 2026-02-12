@@ -516,15 +516,18 @@ export class FrameController extends BaseCanvasController {
       containedNodeIds: selectedNodes.map(n => n.id),
     };
 
-    // Update node parentFrameId
-    for (const node of selectedNodes) {
-      node.parentFrameId = frame.id;
-    }
+    // Add frame at beginning (renders behind) and update parentFrameId immutably
+    const selectedIds = new Set(selectedNodes.map(n => n.id));
+    this._host.setWorkflow({
+      ...this._host.workflow,
+      nodes: [
+        frame,
+        ...this._host.workflow.nodes.map(node =>
+          selectedIds.has(node.id) ? { ...node, parentFrameId: frame.id } : node
+        ),
+      ],
+    });
 
-    // Add frame to workflow (at beginning so it renders behind)
-    this._host.workflow.nodes.unshift(frame);
-
-    this._host.requestUpdate();
     this._host.dispatchWorkflowChanged();
 
     return frame;
@@ -540,22 +543,26 @@ export class FrameController extends BaseCanvasController {
     if (deleteContents) {
       // Delete all contained nodes and their edges
       const containedIds = new Set(frame.containedNodeIds || []);
-      this._host.workflow.edges = this._host.workflow.edges.filter(
-        e => !containedIds.has(e.sourceNodeId) && !containedIds.has(e.targetNodeId)
-      );
-      this._host.workflow.nodes = this._host.workflow.nodes.filter(
-        n => n.id !== frame.id && !containedIds.has(n.id)
-      );
+      this._host.setWorkflow({
+        ...this._host.workflow,
+        edges: this._host.workflow.edges.filter(
+          e => !containedIds.has(e.sourceNodeId) && !containedIds.has(e.targetNodeId)
+        ),
+        nodes: this._host.workflow.nodes.filter(
+          n => n.id !== frame.id && !containedIds.has(n.id)
+        ),
+      });
     } else {
       // Only delete frame, clear parentFrameId on contained nodes
-      for (const nodeId of frame.containedNodeIds || []) {
-        const node = this._host.workflow.nodes.find(n => n.id === nodeId);
-        if (node) node.parentFrameId = null;
-      }
-      this._host.workflow.nodes = this._host.workflow.nodes.filter(n => n.id !== frame.id);
+      const containedNodeIdSet = new Set(frame.containedNodeIds || []);
+      this._host.setWorkflow({
+        ...this._host.workflow,
+        nodes: this._host.workflow.nodes
+          .filter(n => n.id !== frame.id)
+          .map(n => containedNodeIdSet.has(n.id) ? { ...n, parentFrameId: null } : n),
+      });
     }
 
-    this._host.requestUpdate();
     this._host.dispatchWorkflowChanged();
   }
 
