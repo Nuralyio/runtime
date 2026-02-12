@@ -96,27 +96,7 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
   }
 
   set workflow(value: Workflow) {
-    const oldValue = this._workflow;
-
-    // Subclass-specific node normalization
-    let nodes = this.normalizeNodes([...value.nodes]);
-
-    // Shared frame containment computation
-    nodes = this.computeFrameContainment(nodes);
-
-    this._workflow = { ...value, nodes };
-    this.requestUpdate('workflow', oldValue);
-
-    // Restore viewport from workflow ONLY when loading a different workflow
-    if (value.viewport && (!oldValue || oldValue.id !== value.id)) {
-      this.viewport = value.viewport;
-      this.updateComplete.then(() => {
-        this.viewportController?.updateTransform();
-      });
-    }
-
-    // Subclass-specific post-load hook
-    this.onWorkflowLoaded(value, oldValue);
+    this.setWorkflow(value);
   }
 
   // ==================== Public Properties ====================
@@ -343,6 +323,19 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
 
   // ==================== Frame Containment ====================
 
+  private isNodeInsideFrame(
+    node: WorkflowNode,
+    frameLeft: number, frameTop: number, frameRight: number, frameBottom: number,
+  ): boolean {
+    const dims = this.getNodeDimensionsForContainment(node);
+    const nodeCenterX = node.position.x + dims.width / 2;
+    const nodeCenterY = node.position.y + dims.height / 2;
+    return (
+      nodeCenterX >= frameLeft && nodeCenterX <= frameRight &&
+      nodeCenterY >= frameTop && nodeCenterY <= frameBottom
+    );
+  }
+
   private computeFrameContainment(nodes: WorkflowNode[]): WorkflowNode[] {
     const frames = nodes.filter(n => isFrameNode(n.type));
     for (const frame of frames) {
@@ -358,18 +351,9 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
       const containedIds: string[] = [];
 
       for (const node of nodes) {
-        if (node.id === frame.id) continue;
-        if (isFrameNode(node.type)) continue;
-        if (this.shouldExcludeFromContainment(node)) continue;
+        if (node.id === frame.id || isFrameNode(node.type) || this.shouldExcludeFromContainment(node)) continue;
 
-        const dims = this.getNodeDimensionsForContainment(node);
-        const nodeCenterX = node.position.x + dims.width / 2;
-        const nodeCenterY = node.position.y + dims.height / 2;
-
-        if (
-          nodeCenterX >= frameLeft && nodeCenterX <= frameRight &&
-          nodeCenterY >= frameTop && nodeCenterY <= frameBottom
-        ) {
+        if (this.isNodeInsideFrame(node, frameLeft, frameTop, frameRight, frameBottom)) {
           containedIds.push(node.id);
           node.parentFrameId = frame.id;
           if (isCollapsed) {
@@ -388,8 +372,8 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
 
   override async connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('mouseup', this.handleGlobalMouseUp);
-    window.addEventListener('mousemove', this.handleGlobalMouseMove);
+    globalThis.addEventListener('mouseup', this.handleGlobalMouseUp);
+    globalThis.addEventListener('mousemove', this.handleGlobalMouseMove);
     await this.updateComplete;
     this.viewportController.updateTransform();
 
@@ -402,8 +386,8 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('mouseup', this.handleGlobalMouseUp);
-    window.removeEventListener('mousemove', this.handleGlobalMouseMove);
+    globalThis.removeEventListener('mouseup', this.handleGlobalMouseUp);
+    globalThis.removeEventListener('mousemove', this.handleGlobalMouseMove);
     this.onDisconnected();
   }
 
@@ -418,7 +402,27 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
   // ==================== CanvasHost Interface ====================
 
   setWorkflow(workflow: Workflow): void {
-    this.workflow = workflow;
+    const oldValue = this._workflow;
+
+    // Subclass-specific node normalization
+    let nodes = this.normalizeNodes([...workflow.nodes]);
+
+    // Shared frame containment computation
+    nodes = this.computeFrameContainment(nodes);
+
+    this._workflow = { ...workflow, nodes };
+    this.requestUpdate('workflow', oldValue);
+
+    // Restore viewport from workflow ONLY when loading a different workflow
+    if (workflow.viewport && oldValue?.id !== workflow.id) {
+      this.viewport = workflow.viewport;
+      this.updateComplete.then(() => {
+        this.viewportController?.updateTransform();
+      });
+    }
+
+    // Subclass-specific post-load hook
+    this.onWorkflowLoaded(workflow, oldValue);
   }
 
   dispatchWorkflowChanged() {
@@ -963,9 +967,9 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
       onConfigure: () => this.selectionController.openConfigForSelected(),
       onDuplicate: () => this.selectionController.duplicateSelected(),
       onDelete: () => this.selectionController.deleteSelected(),
-      onCopy: () => this.clipboardController.copySelected(),
-      onCut: () => this.clipboardController.cutSelected(),
-      onPaste: () => this.clipboardController.pasteFromClipboard(),
+      onCopy: () => { void this.clipboardController.copySelected(); },
+      onCut: () => { void this.clipboardController.cutSelected(); },
+      onPaste: () => { void this.clipboardController.pasteFromClipboard(); },
     });
   }
 
