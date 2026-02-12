@@ -6,7 +6,6 @@ import { INPUT_STATE } from '../input/input.types.js';
 
 // Import base mixin and types
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
-import { renderLabel as sharedRenderLabel } from '@nuralyui/common/utils';
 import { SharedDropdownController } from '@nuralyui/common/controllers';
 import { DropdownHost } from '@nuralyui/common/controllers';
 import {
@@ -221,12 +220,14 @@ export class NrTimePickerElement extends NuralyUIBaseMixin(LitElement) implement
 
   // Private methods
   private renderLabel(): TemplateResult | typeof nothing {
-    return sharedRenderLabel(this.label, this.required, {
-      cssClass: 'time-picker__label',
-      part: 'label',
-      forId: 'time-input',
-      requiredClass: 'time-picker__required',
-    });
+    if (!this.label) return nothing;
+
+    return html`
+      <label class="time-picker__label" part="label" for="time-input">
+        ${this.label}
+        ${this.required ? html`<span class="time-picker__required">*</span>` : nothing}
+      </label>
+    `;
   }
 
   private renderInput(): TemplateResult {

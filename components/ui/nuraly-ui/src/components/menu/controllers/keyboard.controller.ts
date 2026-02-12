@@ -109,7 +109,7 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
           break;
       }
 
-      this.dispatchMenuEvent('keyboard-navigation', {
+      this.dispatchEvent('keyboard-navigation', {
         key: event.key,
         currentIndex,
         timestamp: Date.now(),
@@ -227,7 +227,7 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
       // Simulate click on the active element
       activeElement.click();
 
-      this.dispatchMenuEvent('keyboard-activation', {
+      this.dispatchEvent('keyboard-activation', {
         key: event.key,
         element: activeElement,
         timestamp: Date.now(),
@@ -247,7 +247,7 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
       
       this.stateController.closeAllSubMenus();
 
-      this.dispatchMenuEvent('keyboard-escape', {
+      this.dispatchEvent('keyboard-escape', {
         timestamp: Date.now(),
       });
     } catch (error) {
@@ -277,7 +277,7 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
         this.currentFocusIndex = menuItems.indexOf(lastItem);
       }
 
-      this.dispatchMenuEvent('keyboard-home-end', {
+      this.dispatchEvent('keyboard-home-end', {
         key: event.key,
         timestamp: Date.now(),
       });
@@ -330,7 +330,7 @@ export class KeyboardController extends BaseMenuController implements MenuKeyboa
         }
       }
 
-      this.dispatchMenuEvent('keyboard-typeahead', {
+      this.dispatchEvent('keyboard-typeahead', {
         buffer: this.typeAheadBuffer,
         timestamp: Date.now(),
       });

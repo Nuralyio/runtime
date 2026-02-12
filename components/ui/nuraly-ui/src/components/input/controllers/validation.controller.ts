@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: MIT
  */
 
+import { BaseInputController, InputHost } from './base.controller.js';
 import { ReactiveControllerHost } from 'lit';
 import { html, TemplateResult } from 'lit';
-import { InputHost } from './base.controller.js';
-import { BaseValidationController } from '@nuralyui/common/controllers';
 import { ValidationRule, InputValidationResult, VALIDATION_PATTERNS, VALIDATION_RULES } from '../input.types.js';
 import { ValidationStateController, ValidationState } from './state.controller.js';
 
@@ -50,31 +49,35 @@ export interface InputValidationHost extends InputHost {
  * - Error and warning messages
  * - Integration with form validation
  */
-export class InputValidationController extends BaseValidationController<InputValidationHost & ReactiveControllerHost> {
+export class InputValidationController extends BaseInputController {
   private stateController = new ValidationStateController(this._host);
 
   private get validationHost(): InputValidationHost {
     return this._host as unknown as InputValidationHost;
   }
 
+  constructor(host: InputValidationHost & ReactiveControllerHost) {
+    super(host);
+  }
+
   /**
    * Get validation state
    */
-  override get isValid(): boolean {
+  get isValid(): boolean {
     return this.stateController.isValid;
   }
 
   /**
    * Get validation message
    */
-  override get validationMessage(): string {
+  get validationMessage(): string {
     return this.stateController.validationMessage;
   }
 
   /**
    * Get current validation state
    */
-  override get validationState(): string {
+  get validationState(): ValidationState {
     return this.stateController.validationState;
   }
 
@@ -146,7 +149,7 @@ export class InputValidationController extends BaseValidationController<InputVal
 
     // Merge auto rules with manual rules (manual rules take precedence)
     const existingRules = host.rules || [];
-    const mergedRules = [...autoRules.filter(rule =>
+    const mergedRules = [...autoRules.filter(rule => 
       !existingRules.some(manualRule => this.isSameRuleType(rule, manualRule))
     ), ...existingRules];
 
@@ -163,20 +166,20 @@ export class InputValidationController extends BaseValidationController<InputVal
     try {
       this.stateController.setValidationState(ValidationState.Pending);
       this.stateController.setValidating(true);
-
+      
       // Dispatch event to show loading state
-      this.dispatchInputValidationEvent();
-
+      this.dispatchValidationEvent();
+      
       // Perform async validation if any async validators exist
       const hasAsync = this.hasAsyncValidators();
       if (hasAsync) {
         this.performAsyncValidation(this.validationHost.value);
         return true; // Return true for now, will be updated when async completes
       }
-
+      
       const result = this.performDetailedValidation(this.validationHost.value);
       this.stateController.setValidationResult(result);
-
+      
       if (result.hasError) {
         this.setValidationResult(false, this.stateController.validationMessage, ValidationState.Invalid);
       } else if (result.hasWarning && this.validationHost.allowWarnings) {
@@ -187,7 +190,7 @@ export class InputValidationController extends BaseValidationController<InputVal
 
       this.stateController.setValidating(false);
       this.updateHostValidationState();
-
+      
       return result.isValid;
     } catch (error) {
       this.handleError(error as Error, 'validate');
@@ -203,7 +206,7 @@ export class InputValidationController extends BaseValidationController<InputVal
    */
   validateOnChange(): void {
     if (!this.stateController.shouldValidateOnChange()) return;
-
+    
     this.stateController.debounceValidation(() => {
       this.validate();
     });
@@ -214,16 +217,16 @@ export class InputValidationController extends BaseValidationController<InputVal
    */
   validateOnBlur(): void {
     if (!this.stateController.shouldValidateOnBlur()) return;
-
+    
     // Clear any pending debounced validation on blur and validate immediately
     this.stateController.clearDebounceTimer();
     this.validate();
   }
 
   /**
-   * Add validation rule dynamically (input-specific rules)
+   * Add validation rule dynamically
    */
-  addInputRule(rule: ValidationRule): void {
+  addRule(rule: ValidationRule): void {
     const currentRules = this.validationHost.rules || [];
     this.validationHost.rules = [...currentRules, rule];
     this.requestUpdate();
@@ -232,7 +235,7 @@ export class InputValidationController extends BaseValidationController<InputVal
   /**
    * Remove validation rule
    */
-  removeInputRule(predicate: (rule: ValidationRule) => boolean): void {
+  removeRule(predicate: (rule: ValidationRule) => boolean): void {
     const currentRules = this.validationHost.rules || [];
     this.validationHost.rules = currentRules.filter(rule => !predicate(rule));
     this.requestUpdate();
@@ -241,7 +244,7 @@ export class InputValidationController extends BaseValidationController<InputVal
   /**
    * Clear all validation rules
    */
-  clearInputRules(): void {
+  clearRules(): void {
     this.validationHost.rules = [];
     this.reset();
   }
@@ -251,8 +254,8 @@ export class InputValidationController extends BaseValidationController<InputVal
    */
   private hasAsyncValidators(): boolean {
     const rules = this.validationHost.rules || [];
-    const hasAsync = rules.some(rule =>
-      rule.asyncValidator ||
+    const hasAsync = rules.some(rule => 
+      rule.asyncValidator || 
       (rule.validator && this.isValidatorAsync(rule.validator))
     );
     return hasAsync;
@@ -264,7 +267,7 @@ export class InputValidationController extends BaseValidationController<InputVal
   private isValidatorAsync(validator: Function): boolean {
     // For now, assume any validator that mentions Promise or async keywords is async
     const funcString = validator.toString();
-    return funcString.includes('Promise') ||
+    return funcString.includes('Promise') || 
            funcString.includes('async') ||
            funcString.includes('setTimeout') ||
            funcString.includes('new Promise');
@@ -368,7 +371,7 @@ export class InputValidationController extends BaseValidationController<InputVal
       await rule.asyncValidator(rule, value);
     } else if (rule.validator) {
       const result = rule.validator(rule, value);
-
+      
       if (result && typeof result === 'object' && 'then' in result) {
         await result;
       }
@@ -388,9 +391,9 @@ export class InputValidationController extends BaseValidationController<InputVal
     });
     this.stateController.setValidationState(ValidationState.Pristine);
     this.stateController.setValidating(false);
-
+    
     this.updateHostValidationState();
-    this.dispatchInputValidationEvent();
+    this.dispatchValidationEvent();
   }
 
   /**
@@ -417,7 +420,7 @@ export class InputValidationController extends BaseValidationController<InputVal
    */
   setValidationStatus(result: InputValidationResult): void {
     this.stateController.setValidationResult(result);
-
+    
     if (result.hasError) {
       this.setValidationResult(false, this.stateController.validationMessage, ValidationState.Invalid);
     } else if (result.hasWarning) {
@@ -427,7 +430,7 @@ export class InputValidationController extends BaseValidationController<InputVal
     } else {
       this.setValidationResult(true, '', ValidationState.Pristine);
     }
-
+    
     this.updateHostValidationState();
   }
 
@@ -445,7 +448,7 @@ export class InputValidationController extends BaseValidationController<InputVal
 
     for (const rule of rules) {
       const ruleResult = this.validateRule(rule, value);
-
+      
       if (!ruleResult.isValid) {
         if (rule.warningOnly && this.validationHost.allowWarnings) {
           warnings.push(ruleResult.message);
@@ -483,9 +486,9 @@ export class InputValidationController extends BaseValidationController<InputVal
 
     // Required validation
     if (rule.required && this.isValueEmpty(value)) {
-      return {
-        isValid: false,
-        message: rule.message || `${this.validationHost.label || 'This field'} is required`
+      return { 
+        isValid: false, 
+        message: rule.message || `${this.validationHost.label || 'This field'} is required` 
       };
     }
 
@@ -498,60 +501,60 @@ export class InputValidationController extends BaseValidationController<InputVal
     if (rule.type) {
       const typeResult = this.validateType(rule.type, transformedValue);
       if (!typeResult.isValid) {
-        return {
-          isValid: false,
-          message: rule.message || typeResult.message
+        return { 
+          isValid: false, 
+          message: rule.message || typeResult.message 
         };
       }
     }
 
     // Pattern validation
     if (rule.pattern && !rule.pattern.test(transformedValue)) {
-      return {
-        isValid: false,
-        message: rule.message || 'Invalid format'
+      return { 
+        isValid: false, 
+        message: rule.message || 'Invalid format' 
       };
     }
 
     // Length validation
     if (rule.minLength !== undefined && transformedValue.length < rule.minLength) {
-      return {
-        isValid: false,
-        message: rule.message || `Minimum length is ${rule.minLength} characters`
+      return { 
+        isValid: false, 
+        message: rule.message || `Minimum length is ${rule.minLength} characters` 
       };
     }
 
     if (rule.maxLength !== undefined && transformedValue.length > rule.maxLength) {
-      return {
-        isValid: false,
-        message: rule.message || `Maximum length is ${rule.maxLength} characters`
+      return { 
+        isValid: false, 
+        message: rule.message || `Maximum length is ${rule.maxLength} characters` 
       };
     }
 
     // Number range validation
     if (rule.type === 'number' || this.validationHost.type === 'number') {
       const numValue = Number(transformedValue);
-
+      
       if (rule.min !== undefined && numValue < rule.min) {
-        return {
-          isValid: false,
-          message: rule.message || `Minimum value is ${rule.min}`
+        return { 
+          isValid: false, 
+          message: rule.message || `Minimum value is ${rule.min}` 
         };
       }
 
       if (rule.max !== undefined && numValue > rule.max) {
-        return {
-          isValid: false,
-          message: rule.message || `Maximum value is ${rule.max}`
+        return { 
+          isValid: false, 
+          message: rule.message || `Maximum value is ${rule.max}` 
         };
       }
     }
 
     // Enum validation
     if (rule.enum && !rule.enum.includes(transformedValue)) {
-      return {
-        isValid: false,
-        message: rule.message || `Value must be one of: ${rule.enum.join(', ')}`
+      return { 
+        isValid: false, 
+        message: rule.message || `Value must be one of: ${rule.enum.join(', ')}` 
       };
     }
 
@@ -559,27 +562,25 @@ export class InputValidationController extends BaseValidationController<InputVal
     if (rule.validator) {
       try {
         const result = rule.validator(rule, transformedValue);
-
+        
         if (result && typeof result === 'object' && 'isValid' in result) {
           return {
             isValid: result.isValid,
             message: result.isValid ? '' : (result.message || rule.message || 'Validation failed')
           };
         }
-
+        
         return { isValid: true, message: '' };
       } catch (error) {
-        return {
-          isValid: false,
-          message: rule.message || (error as Error).message || 'Validation failed'
+        return { 
+          isValid: false, 
+          message: rule.message || (error as Error).message || 'Validation failed' 
         };
       }
     }
 
     return { isValid: true, message: '' };
-  }
-
-  /**
+  }  /**
    * Validate value type
    */
   private validateType(type: string, value: string): { isValid: boolean; message: string } {
@@ -621,7 +622,7 @@ export class InputValidationController extends BaseValidationController<InputVal
    * Check if two rules are the same type
    */
   private isSameRuleType(rule1: ValidationRule, rule2: ValidationRule): boolean {
-    return rule1.type === rule2.type &&
+    return rule1.type === rule2.type && 
            rule1.required === rule2.required &&
            !!rule1.pattern === !!rule2.pattern;
   }
@@ -630,9 +631,9 @@ export class InputValidationController extends BaseValidationController<InputVal
    * Set validation result and dispatch event
    */
   private setValidationResult(isValid: boolean, message: string, state: ValidationState): void {
-    const hasChanged =
-      this.stateController.isValid !== isValid ||
-      this.stateController.validationMessage !== message ||
+    const hasChanged = 
+      this.stateController.isValid !== isValid || 
+      this.stateController.validationMessage !== message || 
       this.stateController.validationState !== state;
 
     // Update state controller
@@ -647,13 +648,8 @@ export class InputValidationController extends BaseValidationController<InputVal
       warningMessage: ''
     });
 
-    // Sync shared base state
-    this._isValid = isValid;
-    this._validationMessage = message;
-    this._validationState = state;
-
     if (hasChanged) {
-      this.dispatchInputValidationEvent();
+      this.dispatchValidationEvent();
     }
   }
 
@@ -664,13 +660,13 @@ export class InputValidationController extends BaseValidationController<InputVal
     // Don't directly modify host properties to avoid infinite update loops
     // Instead, rely on the host component to listen to validation events
     // and update its own state accordingly
-    this.dispatchInputValidationEvent();
+    this.dispatchValidationEvent();
   }
 
   /**
    * Dispatch validation event
    */
-  private dispatchInputValidationEvent(): void {
+  private dispatchValidationEvent(): void {
     const detail: InputValidationEventDetail = {
       isValid: this.stateController.isValid,
       validationMessage: this.stateController.validationMessage,
@@ -694,7 +690,7 @@ export class InputValidationController extends BaseValidationController<InputVal
    */
   getValidationClasses(): Record<string, boolean> {
     const host = this.host as any;
-    const validationHost = this.host as unknown as InputValidationHost;
+    const validationHost = this.host as InputValidationHost;
     return {
       'valid': this.stateController.validationResult.isValid && !this.stateController.validationResult.hasWarning,
       'invalid': this.stateController.validationResult.hasError,
@@ -714,10 +710,10 @@ export class InputValidationController extends BaseValidationController<InputVal
     const host = this.host as any; // Cast to any to handle potential type issues
     const hasFeedback = host.hasFeedback;
     return !!hasFeedback && (
-      this.stateController.isValidating ||
-      this.stateController.validationResult.hasError ||
+      this.stateController.isValidating || 
+      this.stateController.validationResult.hasError || 
       this.stateController.validationResult.hasWarning ||
-      (this.stateController.validationResult.isValid && host.value && host.value.trim() !== '' &&
+      (this.stateController.validationResult.isValid && host.value && host.value.trim() !== '' && 
        this.stateController.validationState !== ValidationState.Pristine)
     );
   }
@@ -728,33 +724,33 @@ export class InputValidationController extends BaseValidationController<InputVal
   renderValidationIcon(): TemplateResult | string {
     const host = this.host as any; // Cast to any to handle potential type issues
     if (!host.hasFeedback) return '';
-
+    
     let iconName = '';
     let iconClass = '';
-
+    
     if (this.stateController.isValidating) {
       iconName = 'hourglass-half';
       iconClass = 'validation-loading';
-    }
+    } 
     else if (this.stateController.validationResult.hasError) {
       iconName = 'exclamation-circle';
       iconClass = 'validation-error';
-    }
+    } 
     else if (this.stateController.validationResult.hasWarning) {
       iconName = 'exclamation-triangle';
       iconClass = 'validation-warning';
-    }
-    else if (this.stateController.validationResult.isValid && host.value && host.value.trim() !== '' &&
+    } 
+    else if (this.stateController.validationResult.isValid && host.value && host.value.trim() !== '' && 
              this.stateController.validationState !== ValidationState.Pristine) {
       iconName = 'check-circle';
       iconClass = 'validation-success';
     }
-
+    
     if (!iconName) return '';
-
+    
     return html`
-      <nr-icon
-        name="${iconName}"
+      <nr-icon 
+        name="${iconName}" 
         class="validation-icon ${iconClass}"
         part="validation-icon">
       </nr-icon>
@@ -767,13 +763,13 @@ export class InputValidationController extends BaseValidationController<InputVal
   renderValidationMessage(): TemplateResult | string {
     const hasError = this.stateController.validationResult.hasError;
     const hasWarning = this.stateController.validationResult.hasWarning && !hasError;
-    const message = hasError ? this.stateController.validationResult.errorMessage :
+    const message = hasError ? this.stateController.validationResult.errorMessage : 
                    hasWarning ? this.stateController.validationResult.warningMessage : '';
-
+    
     if (!message) return '';
-
+    
     return html`
-      <div class="validation-message ${hasError ? 'error' : 'warning'}"
+      <div class="validation-message ${hasError ? 'error' : 'warning'}" 
            part="validation-message"
            role="alert"
            aria-live="polite">

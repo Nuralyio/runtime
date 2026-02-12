@@ -39,7 +39,7 @@ export class TabsKeyboardController extends BaseTabsController implements Keyboa
     this.keyboardHandler = (event: Event) => this.handleKeyDown(event as KeyboardEvent);
   }
 
-  override get host(): TabsKeyboardHost & ReactiveControllerHost {
+  override get host(): TabsKeyboardHost {
     return this._host;
   }
 

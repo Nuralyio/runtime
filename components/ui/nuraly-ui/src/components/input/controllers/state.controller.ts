@@ -67,7 +67,7 @@ export class ValidationStateController extends BaseInputController implements St
   private _debounceTimer: number | null = null;
 
   protected get stateHost(): ValidationStateHost {
-    return this.host as unknown as ValidationStateHost;
+    return this.host as ValidationStateHost;
   }
 
   /**

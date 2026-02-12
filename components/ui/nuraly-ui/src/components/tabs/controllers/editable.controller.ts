@@ -40,7 +40,7 @@ export class TabsEditableController extends BaseTabsController implements Editab
     this._host = host;
   }
 
-  override get host(): TabsEditableHost & ReactiveControllerHost {
+  override get host(): TabsEditableHost {
     return this._host;
   }
 
