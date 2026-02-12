@@ -4,86 +4,16 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { ReactiveController, ReactiveControllerHost } from 'lit';
+import { ReactiveControllerHost } from 'lit';
 import { CanvasHost, CanvasBaseController, ErrorHandler } from '../interfaces/index.js';
+import { BaseComponentController } from '@nuralyui/common/controllers';
 
 /**
  * Abstract base controller class that implements common functionality
  * for all canvas component controllers
  */
-export abstract class BaseCanvasController implements CanvasBaseController, ReactiveController, ErrorHandler {
-  protected _host: CanvasHost & ReactiveControllerHost;
-
-  constructor(host: CanvasHost & ReactiveControllerHost) {
-    this._host = host;
-    this._host.addController(this);
-  }
-
-  /**
-   * Get the host element
-   */
-  get host(): CanvasHost {
-    return this._host;
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host connects
-   */
-  hostConnected(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host disconnects
-   */
-  hostDisconnected(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host updates
-   */
-  hostUpdate(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Reactive controller lifecycle - called when host has updated
-   */
-  hostUpdated(): void {
-    // Override in subclasses if needed
-  }
-
-  /**
-   * Handle errors with consistent logging and optional user feedback
-   */
-  handleError(error: Error, context: string): void {
-    console.error(`[CanvasController] Error in ${context}:`, error);
-
-    this.dispatchEvent(
-      new CustomEvent('canvas-error', {
-        detail: {
-          error,
-          context,
-          timestamp: Date.now(),
-          controller: this.constructor.name,
-        },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  /**
-   * Helper method to dispatch events consistently
-   */
-  protected dispatchEvent(event: CustomEvent): void {
-    try {
-      this._host.dispatchEvent(event);
-    } catch (error) {
-      console.error('[CanvasController] Failed to dispatch event:', error);
-    }
-  }
+export abstract class BaseCanvasController extends BaseComponentController<CanvasHost & ReactiveControllerHost>
+  implements CanvasBaseController, ErrorHandler {
 
   /**
    * Helper to get canvas wrapper element

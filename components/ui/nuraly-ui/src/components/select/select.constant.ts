@@ -25,7 +25,7 @@ export const SELECT_EVENTS = {
   /** Fired when validation state changes */
   VALIDATION: 'nr-validation',
   /** Fired when validation error occurs */
-  ERROR: 'nr-select-error',
+  ERROR: 'nr-controller-error',
 } as const;
 
 /**

@@ -61,7 +61,7 @@ export class InputEventController extends BaseInputController implements EventCo
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected get eventHost(): InputEventHost {
-    return this.host as InputEventHost;
+    return this.host as unknown as InputEventHost;
   }
 
   private get inputElement(): HTMLInputElement | null {
