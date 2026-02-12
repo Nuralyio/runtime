@@ -32,8 +32,14 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       - name: Compile TypeScript
         run: npm run common:compile && tsc
+
+      - name: Run tests
+        run: npm test
 
       - name: Verify @nuralyui/common build outputs
         run: |
