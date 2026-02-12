@@ -30,26 +30,20 @@ export interface MarqueeHost extends CanvasHost {
  * Controller for marquee (box) selection on canvas
  * Allows users to click and drag to select multiple nodes
  */
-export class MarqueeController extends BaseCanvasController {
-  private _marqueeHost: MarqueeHost & ReactiveControllerHost;
-
-  constructor(host: MarqueeHost & ReactiveControllerHost) {
-    super(host);
-    this._marqueeHost = host;
-  }
+export class MarqueeController extends BaseCanvasController<MarqueeHost & ReactiveControllerHost> {
 
   /**
    * Check if marquee selection is currently active
    */
   get isSelecting(): boolean {
-    return this._marqueeHost.marqueeState !== null;
+    return this._host.marqueeState !== null;
   }
 
   /**
    * Get the current marquee state
    */
   get marqueeState(): MarqueeState | null {
-    return this._marqueeHost.marqueeState;
+    return this._host.marqueeState;
   }
 
   /**
@@ -61,7 +55,7 @@ export class MarqueeController extends BaseCanvasController {
 
     const canvasPos = this.clientToCanvas(e.clientX, e.clientY);
 
-    this._marqueeHost.marqueeState = {
+    this._host.marqueeState = {
       startX: canvasPos.x,
       startY: canvasPos.y,
       currentX: canvasPos.x,
@@ -82,12 +76,12 @@ export class MarqueeController extends BaseCanvasController {
    * Call this on mousemove while marquee is active
    */
   updateSelection(e: MouseEvent): void {
-    if (!this._marqueeHost.marqueeState) return;
+    if (!this._host.marqueeState) return;
 
     const canvasPos = this.clientToCanvas(e.clientX, e.clientY);
 
-    this._marqueeHost.marqueeState = {
-      ...this._marqueeHost.marqueeState,
+    this._host.marqueeState = {
+      ...this._host.marqueeState,
       currentX: canvasPos.x,
       currentY: canvasPos.y,
     };
@@ -100,7 +94,7 @@ export class MarqueeController extends BaseCanvasController {
    * Call this on mouseup
    */
   endSelection(addToSelection: boolean = false): void {
-    if (!this._marqueeHost.marqueeState) return;
+    if (!this._host.marqueeState) return;
 
     const rect = this.getSelectionRect();
     const selectedNodeIds = new Set(addToSelection ? this._host.selectedNodeIds : []);
@@ -125,7 +119,7 @@ export class MarqueeController extends BaseCanvasController {
     this._host.selectedEdgeIds = selectedEdgeIds;
 
     // Clear marquee state
-    this._marqueeHost.marqueeState = null;
+    this._host.marqueeState = null;
 
     this._host.requestUpdate();
   }
@@ -134,7 +128,7 @@ export class MarqueeController extends BaseCanvasController {
    * Cancel marquee selection without applying selection
    */
   cancelSelection(): void {
-    this._marqueeHost.marqueeState = null;
+    this._host.marqueeState = null;
     this._host.requestUpdate();
   }
 
@@ -142,7 +136,7 @@ export class MarqueeController extends BaseCanvasController {
    * Get the normalized selection rectangle (always positive width/height)
    */
   getSelectionRect(): { x: number; y: number; width: number; height: number } {
-    const state = this._marqueeHost.marqueeState;
+    const state = this._host.marqueeState;
     if (!state) {
       return { x: 0, y: 0, width: 0, height: 0 };
     }

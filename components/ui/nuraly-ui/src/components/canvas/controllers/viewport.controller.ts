@@ -18,9 +18,11 @@ export interface ViewportHost extends CanvasHost {
 /**
  * Controller for managing canvas viewport (pan, zoom, transform)
  */
-export class ViewportController extends BaseCanvasController {
-  private boundHandleWheel: (e: WheelEvent) => void;
-  private panDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+export class ViewportController extends BaseCanvasController<ViewportHost & ReactiveControllerHost> {
+  private readonly boundHandleWheel: (e: WheelEvent) => void;
+  private readonly debouncedDispatchViewportChanged = this.debounce(() => {
+    this._host.dispatchViewportChanged();
+  }, 300);
   private animationFrameId: number | null = null;
 
   constructor(host: ViewportHost & ReactiveControllerHost) {
@@ -34,10 +36,7 @@ export class ViewportController extends BaseCanvasController {
 
   override hostDisconnected(): void {
     window.removeEventListener('wheel', this.boundHandleWheel, { capture: true });
-    if (this.panDebounceTimer) {
-      clearTimeout(this.panDebounceTimer);
-      this.panDebounceTimer = null;
-    }
+    this.debouncedDispatchViewportChanged.cancel();
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -129,13 +128,7 @@ export class ViewportController extends BaseCanvasController {
     this.updateTransform();
 
     // Debounce viewport changed event to avoid excessive saves during scroll
-    if (this.panDebounceTimer) {
-      clearTimeout(this.panDebounceTimer);
-    }
-    this.panDebounceTimer = setTimeout(() => {
-      this._host.dispatchViewportChanged();
-      this.panDebounceTimer = null;
-    }, 300);
+    this.debouncedDispatchViewportChanged();
   }
 
   /**

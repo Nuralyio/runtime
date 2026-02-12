@@ -168,7 +168,7 @@ export class SelectionController extends BaseCanvasController {
 
     // Duplicate nodes
     for (const node of nodesToDuplicate) {
-      const newId = `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const newId = this.generateNodeId();
       idMap.set(node.id, newId);
 
       newNodes.push({
@@ -200,7 +200,7 @@ export class SelectionController extends BaseCanvasController {
       if (newSourceId && newTargetId) {
         newEdges.push({
           ...edge,
-          id: `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          id: this.generateEdgeId(),
           sourceNodeId: newSourceId,
           targetNodeId: newTargetId,
         });
@@ -232,31 +232,6 @@ export class SelectionController extends BaseCanvasController {
       this._host.selectedEdgeIds = newEdgeIds;
       this._host.requestUpdate();
     });
-  }
-
-  /**
-   * Generate a unique name for a duplicated node
-   */
-  private generateUniqueName(originalName: string): string {
-    // Remove any existing " (copy)" or " (copy N)" suffix
-    let baseName = originalName.replace(/ \(copy(?: \d+)?\)$/, '');
-
-    const existingNames = new Set(
-      this._host.workflow.nodes.map(n => n.name)
-    );
-
-    // Try "Name (copy)" first
-    let newName = `${baseName} (copy)`;
-    if (!existingNames.has(newName)) {
-      return newName;
-    }
-
-    // Then try "Name (copy 2)", "Name (copy 3)", etc.
-    let counter = 2;
-    while (existingNames.has(`${baseName} (copy ${counter})`)) {
-      counter++;
-    }
-    return `${baseName} (copy ${counter})`;
   }
 
   /**

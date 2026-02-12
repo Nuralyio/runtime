@@ -49,44 +49,56 @@ export class CollaborationController extends BaseCanvasController {
     this.disconnect();
     this.state.canvasId = canvasId;
 
-    const origin = window.location.origin;
-    this.socket = io(origin, {
-      path: '/socket.io/presence',
-      transports: ['websocket', 'polling'],
-      reconnection: true,
-      reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-    });
+    try {
+      const origin = globalThis.location.origin;
+      this.socket = io(origin, {
+        path: '/socket.io/presence',
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+      });
 
-    this.socket.on('connect', () => {
-      this.state.connected = true;
-      this.socket!.emit('canvas:join', { canvasId, canvasType });
-      this._host.requestUpdate();
-    });
+      this.socket.on('connect', () => {
+        this.state.connected = true;
+        this.safeExecute(
+          () => this.socket!.emit('canvas:join', { canvasId, canvasType }),
+          'connect: canvas:join'
+        );
+        this._host.requestUpdate();
+      });
 
-    this.socket.on('disconnect', () => {
-      this.state.connected = false;
-      this._host.requestUpdate();
-    });
+      this.socket.on('disconnect', () => {
+        this.state.connected = false;
+        this._host.requestUpdate();
+      });
 
-    this.socket.on('reconnect', () => {
-      this.socket!.emit('canvas:join', { canvasId, canvasType });
-    });
+      this.socket.on('reconnect', () => {
+        this.safeExecute(
+          () => this.socket!.emit('canvas:join', { canvasId, canvasType }),
+          'reconnect: canvas:join'
+        );
+      });
 
-    // Register inbound event handlers
-    this.registerEventHandlers();
+      // Register inbound event handlers
+      this.registerEventHandlers();
 
-    // Start stale cursor cleanup
-    this.staleCursorInterval = setInterval(() => this.cleanStaleCursors(), STALE_CURSOR_CHECK_MS);
+      // Start stale cursor cleanup
+      this.staleCursorInterval = setInterval(() => this.cleanStaleCursors(), STALE_CURSOR_CHECK_MS);
+    } catch (error) {
+      this.handleError(error as Error, 'connect');
+    }
   }
 
   disconnect(): void {
     if (this.socket) {
-      if (this.state.canvasId) {
-        this.socket.emit('canvas:leave', { canvasId: this.state.canvasId });
-      }
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
+      this.safeExecute(() => {
+        if (this.state.canvasId) {
+          this.socket!.emit('canvas:leave', { canvasId: this.state.canvasId });
+        }
+        this.socket!.removeAllListeners();
+        this.socket!.disconnect();
+      }, 'disconnect');
       this.socket = null;
     }
 
@@ -122,45 +134,45 @@ export class CollaborationController extends BaseCanvasController {
     if (!this.socket) return;
 
     this.socket.on('canvas:users:sync', (data: { canvasId: string; users: CollaborationUser[] }) => {
-      this.handleUsersSync(data);
+      this.safeExecute(() => this.handleUsersSync(data), 'handleUsersSync');
     });
 
     this.socket.on('canvas:user:joined', (data: { canvasId: string; user: CollaborationUser }) => {
-      this.handleUserJoined(data);
+      this.safeExecute(() => this.handleUserJoined(data), 'handleUserJoined');
     });
 
     this.socket.on('canvas:user:left', (data: { canvasId: string; userId: string }) => {
-      this.handleUserLeft(data);
+      this.safeExecute(() => this.handleUserLeft(data), 'handleUserLeft');
     });
 
     this.socket.on('cursor:update', (data: {
       canvasId: string; userId: string; username: string; color: string; x: number; y: number;
     }) => {
-      this.handleCursorUpdate(data);
+      this.safeExecute(() => this.handleCursorUpdate(data), 'handleCursorUpdate');
     });
 
     this.socket.on('selection:update', (data: {
       canvasId: string; userId: string; elementIds: string[];
     }) => {
-      this.handleSelectionUpdate(data);
+      this.safeExecute(() => this.handleSelectionUpdate(data), 'handleSelectionUpdate');
     });
 
     this.socket.on('typing:indicator', (data: {
       canvasId: string; userId: string; elementId: string; isTyping: boolean;
     }) => {
-      this.handleTypingIndicator(data);
+      this.safeExecute(() => this.handleTypingIndicator(data), 'handleTypingIndicator');
     });
 
     this.socket.on('operation:received', (data: {
       canvasId: string; operation: CanvasOperation;
     }) => {
-      this.handleOperationReceived(data);
+      this.safeExecute(() => this.handleOperationReceived(data), 'handleOperationReceived');
     });
 
     this.socket.on('operation:ack', (data: {
       operationId: string; serverVersion: number;
     }) => {
-      this.handleOperationAck(data);
+      this.safeExecute(() => this.handleOperationAck(data), 'handleOperationAck');
     });
   }
 
@@ -187,22 +199,34 @@ export class CollaborationController extends BaseCanvasController {
   private emitCursorMove(x: number, y: number): void {
     if (!this.socket?.connected || !this.state.canvasId) return;
     this.lastCursorBroadcast = Date.now();
-    this.socket.emit('cursor:move', { canvasId: this.state.canvasId, x, y });
+    this.safeExecute(
+      () => this.socket!.emit('cursor:move', { canvasId: this.state.canvasId, x, y }),
+      'emitCursorMove'
+    );
   }
 
   broadcastSelectionChange(elementIds: string[]): void {
     if (!this.socket?.connected || !this.state.canvasId) return;
-    this.socket.emit('selection:change', { canvasId: this.state.canvasId, elementIds });
+    this.safeExecute(
+      () => this.socket!.emit('selection:change', { canvasId: this.state.canvasId, elementIds }),
+      'broadcastSelectionChange'
+    );
   }
 
   broadcastTypingStart(elementId: string): void {
     if (!this.socket?.connected || !this.state.canvasId) return;
-    this.socket.emit('typing:start', { canvasId: this.state.canvasId, elementId });
+    this.safeExecute(
+      () => this.socket!.emit('typing:start', { canvasId: this.state.canvasId, elementId }),
+      'broadcastTypingStart'
+    );
   }
 
   broadcastTypingStop(elementId: string): void {
     if (!this.socket?.connected || !this.state.canvasId) return;
-    this.socket.emit('typing:stop', { canvasId: this.state.canvasId, elementId });
+    this.safeExecute(
+      () => this.socket!.emit('typing:stop', { canvasId: this.state.canvasId, elementId }),
+      'broadcastTypingStop'
+    );
   }
 
   broadcastOperation(type: CanvasOperationType, elementId: string, data: Record<string, unknown>): void {
@@ -221,13 +245,16 @@ export class CollaborationController extends BaseCanvasController {
 
     this.state.pendingOps.set(opId, operation);
 
-    this.socket.emit('operation:apply', {
-      canvasId: this.state.canvasId,
-      operationType: type,
-      elementId,
-      data,
-      baseVersion: this.state.serverVersion,
-    });
+    this.safeExecute(
+      () => this.socket!.emit('operation:apply', {
+        canvasId: this.state.canvasId,
+        operationType: type,
+        elementId,
+        data,
+        baseVersion: this.state.serverVersion,
+      }),
+      'broadcastOperation'
+    );
   }
 
   // ==================== Inbound Handlers ====================
