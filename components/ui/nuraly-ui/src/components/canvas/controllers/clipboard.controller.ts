@@ -33,17 +33,11 @@ export interface ClipboardHost extends CanvasHost {
  * Controller for clipboard operations (copy, cut, paste)
  * Supports both internal clipboard and system clipboard with JSON serialization
  */
-export class ClipboardController extends BaseCanvasController {
-  private _clipboardHost: ClipboardHost & ReactiveControllerHost;
+export class ClipboardController extends BaseCanvasController<ClipboardHost & ReactiveControllerHost> {
   private undoController: UndoController | null = null;
 
   /** Internal clipboard for fallback when system clipboard is unavailable */
   private internalClipboard: ClipboardData | null = null;
-
-  constructor(host: ClipboardHost & ReactiveControllerHost) {
-    super(host);
-    this._clipboardHost = host;
-  }
 
   /**
    * Set the undo controller (called after initialization)
@@ -70,7 +64,7 @@ export class ClipboardController extends BaseCanvasController {
       const jsonString = JSON.stringify(clipboardData, null, 2);
       await navigator.clipboard.writeText(jsonString);
     } catch (error) {
-      console.warn('[ClipboardController] System clipboard unavailable, using internal clipboard');
+      this.handleError(error as Error, 'copySelected: system clipboard unavailable, using internal clipboard');
     }
 
     // Always store in internal clipboard as fallback
@@ -123,7 +117,7 @@ export class ClipboardController extends BaseCanvasController {
       const text = await navigator.clipboard.readText();
       clipboardData = this.parseClipboardData(text);
     } catch (error) {
-      console.warn('[ClipboardController] Cannot read system clipboard, using internal clipboard');
+      this.handleError(error as Error, 'pasteFromClipboard: system clipboard unavailable, using internal clipboard');
     }
 
     // Fall back to internal clipboard
@@ -344,8 +338,8 @@ export class ClipboardController extends BaseCanvasController {
    */
   private getPastePosition(copyOrigin: Position): Position {
     // If we have a last mouse position, use it
-    if (this._clipboardHost.lastMousePosition) {
-      return this._clipboardHost.lastMousePosition;
+    if (this._host.lastMousePosition) {
+      return this._host.lastMousePosition;
     }
 
     // Otherwise, offset from the copy origin
@@ -376,44 +370,5 @@ export class ClipboardController extends BaseCanvasController {
     this._host.selectedNodeIds = new Set();
     this._host.selectedEdgeIds = new Set();
     this._host.dispatchWorkflowChanged();
-  }
-
-  /**
-   * Generate a unique name for a pasted node
-   */
-  private generateUniqueName(originalName: string): string {
-    // Remove any existing " (copy)" or " (copy N)" suffix
-    let baseName = originalName.replace(/ \(copy(?: \d+)?\)$/, '');
-
-    const existingNames = new Set(
-      this._host.workflow.nodes.map(n => n.name)
-    );
-
-    // Try "Name (copy)" first
-    let newName = `${baseName} (copy)`;
-    if (!existingNames.has(newName)) {
-      return newName;
-    }
-
-    // Then try "Name (copy 2)", "Name (copy 3)", etc.
-    let counter = 2;
-    while (existingNames.has(`${baseName} (copy ${counter})`)) {
-      counter++;
-    }
-    return `${baseName} (copy ${counter})`;
-  }
-
-  /**
-   * Generate a unique node ID
-   */
-  private generateNodeId(): string {
-    return `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  }
-
-  /**
-   * Generate a unique edge ID
-   */
-  private generateEdgeId(): string {
-    return `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }

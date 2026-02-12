@@ -133,16 +133,27 @@ export abstract class BaseComponentController<THost extends BaseHost & ReactiveC
   }
 
   /**
-   * Debounce utility for controllers
+   * Debounce utility for controllers.
+   * Returns a debounced function with a cancel() method for cleanup.
    */
   protected debounce<T extends (...args: any[]) => any>(
     fn: T,
     wait: number
-  ): (...args: Parameters<T>) => void {
-    let timeout: ReturnType<typeof setTimeout>;
-    return (...args: Parameters<T>) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn.apply(this, args), wait);
+  ): ((...args: Parameters<T>) => void) & { cancel: () => void } {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const debounced = (...args: Parameters<T>) => {
+      if (timeout !== undefined) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        timeout = undefined;
+        fn.apply(this, args);
+      }, wait);
     };
+    debounced.cancel = () => {
+      if (timeout !== undefined) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
+    };
+    return debounced;
   }
 }

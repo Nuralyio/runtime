@@ -10,9 +10,13 @@ import { BaseComponentController } from '@nuralyui/common/controllers';
 
 /**
  * Abstract base controller class that implements common functionality
- * for all canvas component controllers
+ * for all canvas component controllers.
+ *
+ * @typeParam THost - The canvas host type. Defaults to CanvasHost & ReactiveControllerHost.
+ *   Subclasses with extended host interfaces can specify a narrower type.
  */
-export abstract class BaseCanvasController extends BaseComponentController<CanvasHost & ReactiveControllerHost>
+export abstract class BaseCanvasController<THost extends CanvasHost & ReactiveControllerHost = CanvasHost & ReactiveControllerHost>
+  extends BaseComponentController<THost>
   implements CanvasBaseController, ErrorHandler {
 
   /**
@@ -53,5 +57,41 @@ export abstract class BaseCanvasController extends BaseComponentController<Canva
       x: Math.round(x / gridSize) * gridSize,
       y: Math.round(y / gridSize) * gridSize,
     };
+  }
+
+  /**
+   * Generate a unique name by appending " (copy)" or " (copy N)" suffix.
+   * Checks against existing node names in the workflow.
+   */
+  protected generateUniqueName(originalName: string): string {
+    const baseName = originalName.replace(/ \(copy(?: \d+)?\)$/, '');
+    const existingNames = new Set(
+      this._host.workflow.nodes.map(n => n.name)
+    );
+
+    const newName = `${baseName} (copy)`;
+    if (!existingNames.has(newName)) {
+      return newName;
+    }
+
+    let counter = 2;
+    while (existingNames.has(`${baseName} (copy ${counter})`)) {
+      counter++;
+    }
+    return `${baseName} (copy ${counter})`;
+  }
+
+  /**
+   * Generate a unique node ID
+   */
+  protected generateNodeId(): string {
+    return `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  /**
+   * Generate a unique edge ID
+   */
+  protected generateEdgeId(): string {
+    return `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
