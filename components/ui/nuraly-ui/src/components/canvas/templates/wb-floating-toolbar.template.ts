@@ -19,6 +19,37 @@ import {
 
 // ==================== Utility Functions ====================
 
+interface ColorPickerConfig {
+  currentColor: string;
+  presets: readonly string[];
+  configKey: string;
+}
+
+function getColorPickerConfig(
+  activeColorPicker: 'fill' | 'text' | 'border' | null,
+  config: Record<string, unknown>,
+): ColorPickerConfig {
+  if (activeColorPicker === 'fill') {
+    return {
+      currentColor: (config.backgroundColor || config.fillColor || '#fef08a') as string,
+      presets: FILL_COLOR_PRESETS,
+      configKey: 'backgroundColor',
+    };
+  }
+  if (activeColorPicker === 'border') {
+    return {
+      currentColor: (config.borderColor || '#8b5cf6') as string,
+      presets: BORDER_COLOR_PRESETS,
+      configKey: 'borderColor',
+    };
+  }
+  return {
+    currentColor: (config.textColor || '#1a1a1a') as string,
+    presets: TEXT_COLOR_PRESETS,
+    configKey: 'textColor',
+  };
+}
+
 export function wbHasText(node: WorkflowNode): boolean {
   return node.type === WhiteboardNodeType.STICKY_NOTE ||
          node.type === WhiteboardNodeType.TEXT_BLOCK ||
@@ -86,19 +117,7 @@ export function renderWbFloatingToolbarTemplate(data: WbFloatingToolbarData): Te
       top: `${rect.bottom - hostBoundingRect.top + 6}px`,
     };
 
-    const isFill = activeColorPicker === 'fill';
-    const isBorder = activeColorPicker === 'border';
-    const currentColor = isFill
-      ? (config.backgroundColor || config.fillColor || '#fef08a')
-      : isBorder
-      ? (config.borderColor || '#8b5cf6')
-      : (config.textColor || '#1a1a1a');
-    const presets = isFill
-      ? FILL_COLOR_PRESETS
-      : isBorder
-      ? BORDER_COLOR_PRESETS
-      : TEXT_COLOR_PRESETS;
-    const configKey = isFill ? 'backgroundColor' : isBorder ? 'borderColor' : 'textColor';
+    const { currentColor, presets, configKey } = getColorPickerConfig(activeColorPicker, config);
 
     return html`
       <div class="wb-color-picker-panel" style=${styleMap(pickerStyles)} @mousedown=${(e: MouseEvent) => e.stopPropagation()}>
@@ -115,7 +134,7 @@ export function renderWbFloatingToolbarTemplate(data: WbFloatingToolbarData): Te
           <input
             type="color"
             class="wb-picker-native"
-            .value=${currentColor as string}
+            .value=${currentColor}
             @input=${(e: Event) => callbacks.onToolbarAction(node.id, configKey, (e.target as HTMLInputElement).value)}
           />
           <nr-input
@@ -182,14 +201,14 @@ export function renderWbFloatingToolbarTemplate(data: WbFloatingToolbarData): Te
             type="number"
             size="small"
             variant="outlined"
-            .value=${String(config.fontSize || 14)}
+            .value=${String((config.fontSize as number) || 14)}
             min="8"
             max="120"
             step="1"
             style="width: 80px;"
             @nr-input=${(e: CustomEvent) => {
-              const val = parseInt((e.target as any).value, 10);
-              if (!isNaN(val) && val > 0) {
+              const val = Number.parseInt((e.target as any).value, 10);
+              if (!Number.isNaN(val) && val > 0) {
                 callbacks.onToolbarAction(node.id, 'fontSize', val);
               }
             }}

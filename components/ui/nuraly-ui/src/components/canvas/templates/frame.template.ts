@@ -35,6 +35,35 @@ export interface FrameTemplateData {
   callbacks: FrameTemplateCallbacks;
 }
 
+function renderFrameLabel(
+  frame: WorkflowNode, label: string, editingFrameLabelId: string | null,
+  labelPosition: string, labelPlacement: string, callbacks: FrameTemplateCallbacks,
+): TemplateResult {
+  const isEditing = editingFrameLabelId === frame.id;
+  const labelContent = isEditing ? html`
+    <input
+      type="text"
+      class="frame-label-input"
+      .value=${label}
+      @blur=${(e: FocusEvent) => callbacks.onLabelBlur(e, frame)}
+      @keydown=${(e: KeyboardEvent) => callbacks.onLabelKeydown(e, frame)}
+      @click=${(e: MouseEvent) => e.stopPropagation()}
+      @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+    />
+  ` : html`
+    <span class="frame-label-text">
+      ${label}
+      <nr-icon
+        name="edit-2"
+        size="small"
+        class="frame-label-edit-icon"
+        @click=${(e: MouseEvent) => callbacks.onStartEditingLabel(e, frame)}
+      ></nr-icon>
+    </span>
+  `;
+  return html`<div class="frame-label ${labelPosition} ${labelPlacement}">${labelContent}</div>`;
+}
+
 export function renderExpandedFrameTemplate(data: FrameTemplateData): TemplateResult | null {
   const { frame, isSelected, editingFrameLabelId, callbacks } = data;
   const config = frame.configuration || {};
@@ -67,31 +96,7 @@ export function renderExpandedFrameTemplate(data: FrameTemplateData): TemplateRe
       @mousedown=${(e: MouseEvent) => callbacks.onFrameMouseDown(e, frame)}
       @dblclick=${(e: MouseEvent) => callbacks.onFrameDblClick(e, frame)}
     >
-      ${showLabel ? html`
-        <div class="frame-label ${labelPosition} ${labelPlacement}">
-          ${editingFrameLabelId === frame.id ? html`
-            <input
-              type="text"
-              class="frame-label-input"
-              .value=${label}
-              @blur=${(e: FocusEvent) => callbacks.onLabelBlur(e, frame)}
-              @keydown=${(e: KeyboardEvent) => callbacks.onLabelKeydown(e, frame)}
-              @click=${(e: MouseEvent) => e.stopPropagation()}
-              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
-            />
-          ` : html`
-            <span class="frame-label-text">
-              ${label}
-              <nr-icon
-                name="edit-2"
-                size="small"
-                class="frame-label-edit-icon"
-                @click=${(e: MouseEvent) => callbacks.onStartEditingLabel(e, frame)}
-              ></nr-icon>
-            </span>
-          `}
-        </div>
-      ` : null}
+      ${showLabel ? renderFrameLabel(frame, label, editingFrameLabelId, labelPosition, labelPlacement, callbacks) : null}
       ${isSelected ? html`
         <div class="resize-handle resize-se" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'se')}></div>
         <div class="resize-handle resize-sw" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'sw')}></div>
