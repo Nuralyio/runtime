@@ -4,73 +4,53 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, nothing } from 'lit';
-import { customElement, property, state, query } from 'lit/decorators.js';
+import { html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
   Workflow,
   WorkflowNode,
-  WorkflowEdge,
   NodeType,
-  Position,
-  CanvasMode,
   CanvasType,
   ExecutionStatus,
   WorkflowNodeType,
   NodeConfiguration,
   TriggerConnectionState,
-  createNodeFromTemplate,
   isFrameNode,
   isPersistentTriggerNode,
-  type UndoProvider,
 } from './workflow-canvas.types.js';
 import type { DatabaseProvider } from './data-node/data-node.types.js';
 import { styles } from './workflow-canvas.style.js';
-import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import './workflow-node.component.js';
-import '../icon/icon.component.js';
-import '../input/input.component.js';
-import '../chatbot/chatbot.component.js';
 import { ChatbotCoreController } from '../chatbot/core/chatbot-core.controller.js';
 import { ChatbotSender } from '../chatbot/chatbot.types.js';
 import { WorkflowSocketProvider } from '../chatbot/providers/workflow-socket-provider.js';
 
-// Controllers
-import {
-  ViewportController,
-  SelectionController,
-  ConnectionController,
-  KeyboardController,
-  DragController,
-  ConfigController,
-  MarqueeController,
-  ClipboardController,
-  UndoController,
-  FrameController,
-  CollaborationController,
-  TouchController,
-  type MarqueeState,
-} from './controllers/index.js';
-
 // Templates
 import {
-  renderToolbarTemplate,
-  renderZoomControlsTemplate,
   renderPaletteTemplate,
-  renderContextMenuTemplate,
-  renderEmptyStateTemplate,
   renderConfigPanelTemplate,
-  renderEdgesTemplate,
-  renderRemoteCursorsTemplate,
-  renderPresenceBarTemplate,
-  renderChatbotPanelTemplate,
 } from './templates/index.js';
 
-// Interfaces
-import type { ConnectionState, DragState, CanvasHost, CanvasViewport } from './interfaces/index.js';
+// Base class
+import { BaseCanvasElement } from './base-canvas.component.js';
 
 // Utils
 import { getAllAvailableVariablesWithDynamic } from './utils/variable-resolver.js';
+
+// Constants
+import {
+  WORKFLOW_NODE_WIDTH,
+  WORKFLOW_NODE_HEIGHT,
+  WORKFLOW_NOTE_DEFAULT_WIDTH,
+  WORKFLOW_NOTE_DEFAULT_HEIGHT,
+  TABLE_DEFAULT_WIDTH,
+  TABLE_DEFAULT_HEIGHT,
+  TABLE_MIN_WIDTH,
+  TABLE_MIN_HEIGHT,
+  TRIGGER_POLL_INTERVAL_MS,
+  FRAME_DEFAULT_LABEL,
+} from './canvas.constants.js';
 
 /**
  * Workflow canvas component for visual workflow editing
@@ -81,154 +61,23 @@ import { getAllAvailableVariablesWithDynamic } from './utils/variable-resolver.j
  * @fires node-configured - When a node configuration is requested
  */
 @customElement('workflow-canvas')
-export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
+export class WorkflowCanvasElement extends BaseCanvasElement {
   static override styles = styles;
 
-  private _workflow: Workflow = {
-    id: '',
-    name: 'New Workflow',
-    nodes: [],
-    edges: [],
-  };
-
-  @property({ type: Object })
-  get workflow(): Workflow {
-    return this._workflow;
-  }
-
-  set workflow(value: Workflow) {
-    const oldValue = this._workflow;
-    // Normalize node status values to uppercase
-    let nodes = value.nodes.map(node => ({
-      ...node,
-      status: node.status
-        ? (node.status.toUpperCase() as ExecutionStatus)
-        : undefined,
-    }));
-
-    // Compute frame containment synchronously to avoid flash of "Empty"
-    const frames = nodes.filter(n => isFrameNode(n.type));
-    for (const frame of frames) {
-      const config = frame.configuration || {};
-      const frameWidth = (config.frameWidth as number) || 400;
-      const frameHeight = (config.frameHeight as number) || 300;
-      const frameLeft = frame.position.x;
-      const frameTop = frame.position.y;
-      const frameRight = frameLeft + frameWidth;
-      const frameBottom = frameTop + frameHeight;
-      const isCollapsed = config.frameCollapsed as boolean;
-
-      const containedIds: string[] = [];
-      const nodeWidth = 180;
-      const nodeHeight = 80;
-
-      for (const node of nodes) {
-        if (node.id === frame.id) continue;
-        if (isFrameNode(node.type) || node.type === WorkflowNodeType.NOTE) continue;
-
-        // Check if node center is inside frame
-        const nodeCenterX = node.position.x + nodeWidth / 2;
-        const nodeCenterY = node.position.y + nodeHeight / 2;
-
-        if (nodeCenterX >= frameLeft && nodeCenterX <= frameRight &&
-            nodeCenterY >= frameTop && nodeCenterY <= frameBottom) {
-          containedIds.push(node.id);
-          node.parentFrameId = frame.id;
-          // If frame is collapsed, hide the contained node
-          if (isCollapsed) {
-            node.metadata = node.metadata || {};
-            (node.metadata as Record<string, unknown>)._hiddenByFrame = true;
-          }
-        }
-      }
-
-      frame.containedNodeIds = containedIds;
-    }
-
-    this._workflow = {
-      ...value,
-      nodes,
-    };
-    this.requestUpdate('workflow', oldValue);
-
-    // Restore viewport from workflow ONLY when loading a different workflow
-    // Don't reset viewport on same-workflow updates (e.g., node moves)
-    if (value.viewport && (!oldValue || oldValue.id !== value.id)) {
-      this.viewport = value.viewport;
-      this.updateComplete.then(() => {
-        this.viewportController?.updateTransform();
-      });
-    }
-
-    // Auto-open chat preview for CHAT_START nodes with alwaysOpenPlan enabled on load
-    if (!oldValue || oldValue.id !== value.id) {
-      const chatStartNode = value.nodes.find(
-        node => node.type === WorkflowNodeType.CHAT_START && node.configuration?.alwaysOpenPlan === true
-      );
-      if (chatStartNode && this.previewNodeId !== chatStartNode.id) {
-        this.updateComplete.then(() => {
-          this.handleNodePreview({ detail: { node: chatStartNode } } as CustomEvent);
-        });
-      }
-    }
-
-  }
-
-  @property({ type: Boolean })
-  readonly = false;
-
-  /**
-   * When true, disables all mouse interactions and shows an overlay
-   * prompting user to double-click to enter preview mode
-   */
-  @property({ type: Boolean })
-  disabled = false;
-
-  @property({ type: Boolean })
-  showMinimap = true;
-
-  @property({ type: Boolean })
-  showToolbar = true;
-
-  @property({ type: Boolean })
-  showPalette = false;
+  // ==================== Workflow-specific Properties ====================
 
   @property({ type: String })
   canvasType: CanvasType = CanvasType.WORKFLOW;
 
-  /**
-   * Map of node IDs to their current execution status
-   * Used to show real-time execution progress on nodes
-   */
   @property({ type: Object })
   nodeStatuses: Record<string, 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED'> = {};
 
-  /**
-   * Map of node IDs to their current agent activity (LLM calls, tool calls)
-   * Used to show visual feedback during agent execution
-   */
   @property({ type: Object })
   agentActivity: Record<string, { type: 'llm' | 'tool'; name?: string; active: boolean }> = {};
 
-  /**
-   * When true, automatically subscribes to execution events for the current workflow.
-   * This allows the canvas to show real-time execution state when the workflow
-   * is triggered from external sources (e.g., a chatbot component).
-   */
   @property({ type: Boolean })
   listenToExecutionEvents = false;
 
-  @property({ type: String, attribute: 'canvas-id' })
-  canvasId: string = '';
-
-  @property({ type: Boolean, attribute: 'collaborative' })
-  collaborative: boolean = false;
-
-  /**
-   * Current execution ID to display in config panel.
-   * Set this from the parent component when an execution is active.
-   * When set, the canvas will fetch node execution data for this execution.
-   */
   @property({ type: String })
   get executionId(): string | null {
     return this.currentExecutionId;
@@ -239,7 +88,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.currentExecutionId = value;
     this.requestUpdate('executionId', oldValue);
 
-    // Fetch execution data when execution ID is set
     if (value && value !== oldValue) {
       this.fetchExecutionData(value);
     } else if (!value) {
@@ -247,103 +95,29 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  /** Undo/redo provider injected by the host */
-  @property({ attribute: false })
-  get undoProvider(): UndoProvider | null {
-    return this.undoController?.undoProvider ?? null;
-  }
-
-  set undoProvider(provider: UndoProvider | null) {
-    if (this.undoController) {
-      this.undoController.undoProvider = provider;
-    }
-  }
-
-  /** Database introspection provider injected by the host */
   @property({ attribute: false })
   databaseProvider?: DatabaseProvider;
 
-  /** Application ID for database operations (host-provided) */
   @property({ type: String })
   applicationId: string = '';
 
-  /** KV entries for secret/connection selects (host-provided) */
   @property({ attribute: false })
   kvEntries: { keyPath: string; value?: any; isSecret: boolean }[] = [];
 
-  /** Callback when a KV entry needs to be created */
   @property({ attribute: false })
   onCreateKvEntry?: (detail: { keyPath: string; value: any; scope: string; isSecret: boolean }) => void;
 
-  @state()
-  private viewport: CanvasViewport = { zoom: 1, panX: 0, panY: 0 };
-
-  @state()
-  private mode: CanvasMode = CanvasMode.SELECT;
-
-  @state()
-  private selectedNodeIds: Set<string> = new Set();
-
-  @state()
-  private selectedEdgeIds: Set<string> = new Set();
-
-  @state()
-  private connectionState: ConnectionState | null = null;
-
-  @state()
-  private dragState: DragState | null = null;
-
-  @state()
-  private contextMenu: { x: number; y: number; type: 'canvas' | 'node' | 'edge'; target?: string } | null = null;
-
-  @state()
-  private isPanning = false;
-
-  @state()
-  // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
-  private panStart: Position = { x: 0, y: 0 };
-
-  @state()
-  private isHoveringDisabledOverlay = false;
-
-  @state()
-  private expandedCategories: Set<string> = new Set([
-    'trigger', 'control', 'action', 'data', 'agent',
-    'db-tables-views', 'db-relations-constraints', 'db-indexes-queries'
-  ]);
+  // ==================== Workflow-specific State ====================
 
   @state()
   private paletteSearchTerm: string = '';
 
   @state()
-  private configuredNode: WorkflowNode | null = null;
-
-  @state()
-  private hoveredEdgeId: string | null = null;
-
-  @state()
   private previewNodeId: string | null = null;
 
   @state()
-  private marqueeState: MarqueeState | null = null;
+  private isHoveringDisabledOverlay = false;
 
-  @state()
-  // @ts-ignore TS6133 — accessed by controllers via CanvasHost interface
-  private lastMousePosition: Position | null = null;
-
-  // Chatbot preview controller and provider for CHAT_START nodes
-  private chatPreviewController: ChatbotCoreController | null = null;
-  private chatPreviewProvider: WorkflowSocketProvider | null = null;
-
-  // Canvas chatbot panel (AI Assistant)
-  @state()
-  private showChatbotPanel = false;
-  @state()
-  private chatbotUnreadCount = 0;
-  private canvasChatbotController: ChatbotCoreController | null = null;
-
-
-  // HTTP preview state
   @state()
   private httpPreviewBody: string = '{\n  \n}';
 
@@ -356,28 +130,21 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
   @state()
   private httpPreviewError: string = '';
 
-  // Dynamic variables from last execution
   @state()
   private dynamicVariables: import('./templates/config-panel/types.js').DynamicVariable[] = [];
 
   @state()
   private loadingVariables: boolean = false;
 
-  // Node execution data for display in config panel
   @state()
   private nodeExecutionData: Map<string, import('./templates/config-panel/types.js').NodeExecutionData> = new Map();
 
-  // Current execution ID for retry functionality
   @state()
   private currentExecutionId: string | null = null;
 
-  // Frame label being edited (null if not editing)
-  @state()
-  private editingFrameLabelId: string | null = null;
-
-  // Note node being edited (null if not editing)
-  @state()
-  private editingNoteId: string | null = null;
+  // Chatbot preview
+  private chatPreviewController: ChatbotCoreController | null = null;
+  private chatPreviewProvider: WorkflowSocketProvider | null = null;
 
   // Trigger status polling
   private triggerStatuses: Map<string, {
@@ -391,120 +158,113 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private triggerPollingInterval: ReturnType<typeof setInterval> | null = null;
 
-  @query('.canvas-wrapper')
-  canvasWrapper!: HTMLElement;
+  // ==================== Abstract Method Implementations ====================
 
-  @query('.canvas-viewport')
-  canvasViewport!: HTMLElement;
-
-  @query('.config-panel')
-  configPanel!: HTMLElement;
-
-  // Controllers - initialized in constructor
-  private viewportController!: ViewportController;
-  private selectionController!: SelectionController;
-  private connectionController!: ConnectionController;
-  private dragController!: DragController;
-  private configController!: ConfigController;
-  private marqueeController!: MarqueeController;
-  private clipboardController!: ClipboardController;
-  private keyboardController!: KeyboardController;
-  private undoController!: UndoController;
-  private frameController!: FrameController;
-  private collaborationController!: CollaborationController;
-
-  constructor() {
-    super();
-    // Initialize controllers - they will add themselves via addController
-    this.viewportController = new ViewportController(this as unknown as CanvasHost & LitElement);
-    this.selectionController = new SelectionController(this as unknown as CanvasHost & LitElement);
-    this.connectionController = new ConnectionController(this as unknown as CanvasHost & LitElement);
-    this.configController = new ConfigController(this as unknown as CanvasHost & LitElement);
-    this.marqueeController = new MarqueeController(this as unknown as any);
-    this.clipboardController = new ClipboardController(this as unknown as any);
-    this.undoController = new UndoController(this as unknown as CanvasHost & LitElement);
-    this.frameController = new FrameController(this as unknown as CanvasHost & LitElement);
-
-    // KeyboardController needs reference to clipboard and undo controllers
-    this.keyboardController = new KeyboardController(
-      this as unknown as CanvasHost & LitElement,
-      this.selectionController
-    );
-    this.keyboardController.setClipboardController(this.clipboardController);
-    this.keyboardController.setUndoController(this.undoController);
-
-    this.dragController = new DragController(
-      this as unknown as CanvasHost & LitElement,
-      this.viewportController
-    );
-
-    new TouchController( // NOSONAR — side-effect: self-registers as reactive controller via addController
-      this as unknown as CanvasHost & LitElement,
-      this.viewportController,
-      this.dragController,
-      this.selectionController
-    );
-
-    // Set undo controller on all controllers that need it
-    this.selectionController.setUndoController(this.undoController);
-    this.dragController.setUndoController(this.undoController);
-    this.connectionController.setUndoController(this.undoController);
-    this.configController.setUndoController(this.undoController);
-    this.clipboardController.setUndoController(this.undoController);
-
-    // Set frame controller on drag controller for frame-aware movement
-    this.dragController.setFrameController(this.frameController);
-
-    this.collaborationController = new CollaborationController(this as unknown as CanvasHost & LitElement);
+  protected override normalizeNodes(nodes: WorkflowNode[]): WorkflowNode[] {
+    return nodes.map(node => ({
+      ...node,
+      status: node.status
+        ? (node.status.toUpperCase() as ExecutionStatus)
+        : undefined,
+    }));
   }
 
-  // CanvasHost interface methods for controllers
-  setWorkflow(workflow: Workflow): void {
-    this.workflow = workflow;
+  protected override getNodeDimensionsForContainment(_node: WorkflowNode): { width: number; height: number } {
+    return { width: WORKFLOW_NODE_WIDTH, height: WORKFLOW_NODE_HEIGHT };
   }
 
-  override async connectedCallback() {
-    super.connectedCallback();
-    // Note: Keyboard and wheel events are now handled by controllers
-    window.addEventListener('mouseup', this.handleGlobalMouseUp);
-    window.addEventListener('mousemove', this.handleGlobalMouseMove);
-    this.addEventListener('test-workflow-request', this.handleTestWorkflowRequest);
-    await this.updateComplete;
-    this.viewportController.updateTransform();
+  protected override shouldExcludeFromContainment(node: WorkflowNode): boolean {
+    return node.type === WorkflowNodeType.NOTE;
+  }
 
-    if (this.collaborative && this.canvasId) {
-      this.collaborationController.connect(this.canvasId, 'WORKFLOW');
+  protected override onWorkflowLoaded(value: Workflow, oldValue: Workflow): void {
+    // Auto-open chat preview for CHAT_START nodes with alwaysOpenPlan enabled on load
+    if (!oldValue || oldValue.id !== value.id) {
+      const chatStartNode = value.nodes.find(
+        node => node.type === WorkflowNodeType.CHAT_START && node.configuration?.alwaysOpenPlan === true
+      );
+      if (chatStartNode && this.previewNodeId !== chatStartNode.id) {
+        this.updateComplete.then(() => {
+          this.handleNodePreview({ detail: { node: chatStartNode } } as CustomEvent);
+        });
+      }
     }
+  }
 
-    // Start trigger status polling if workflow has persistent trigger nodes
+  protected override getNoteContentKey(_node: WorkflowNode): string {
+    return 'noteContent';
+  }
+
+  protected override getNoteSizeKeys(): { widthKey: string; heightKey: string } {
+    return { widthKey: 'noteWidth', heightKey: 'noteHeight' };
+  }
+
+  protected override getDefaultNoteSize(): { width: number; height: number } {
+    return { width: WORKFLOW_NOTE_DEFAULT_WIDTH, height: WORKFLOW_NOTE_DEFAULT_HEIGHT };
+  }
+
+  protected override getCanvasType(): CanvasType {
+    return this.canvasType;
+  }
+
+  // ==================== Hook Overrides ====================
+
+  protected override onNodeMouseDownExtra(node: WorkflowNode): void {
+    if (
+      node.type === WorkflowNodeType.CHAT_START &&
+      node.configuration?.alwaysOpenPlan === true &&
+      this.previewNodeId !== node.id
+    ) {
+      this.handleNodePreview({ detail: { node } } as CustomEvent);
+    }
+  }
+
+  protected override onConnected(): void {
+    this.addEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     this.startTriggerPollingIfNeeded();
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener('mouseup', this.handleGlobalMouseUp);
-    window.removeEventListener('mousemove', this.handleGlobalMouseMove);
+  protected override onDisconnected(): void {
     this.removeEventListener('test-workflow-request', this.handleTestWorkflowRequest);
-    // Clean up chat preview resources
     this.cleanupChatPreview();
-    // Clean up trigger polling
     this.stopTriggerPolling();
   }
 
   override willUpdate(changedProperties: Map<string | number | symbol, unknown>) {
     super.willUpdate(changedProperties);
 
-    if (this.collaborative && changedProperties.has('selectedNodeIds')) {
-      this.collaborationController.broadcastSelectionChange(Array.from(this.selectedNodeIds));
-    }
-
-    // Restart trigger polling when workflow changes (new triggers may be added/removed)
     if (changedProperties.has('workflow')) {
       this.startTriggerPollingIfNeeded();
     }
   }
 
-  // ---- Trigger Status Polling ----
+  // ==================== Nodes with Statuses ====================
+
+  protected override getNodesForRendering(): WorkflowNode[] {
+    return this.getNodesWithStatuses();
+  }
+
+  private getNodesWithStatuses(): WorkflowNode[] {
+    const hasActiveExecution = Object.keys(this.nodeStatuses).length > 0;
+
+    return this.workflow.nodes.map(node => {
+      const activity = this.agentActivity[node.id];
+      const baseNode = {
+        ...node,
+        agentActivity: activity?.active ? activity : undefined,
+      };
+
+      if (this.nodeStatuses[node.id]) {
+        return { ...baseNode, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus };
+      } else if (hasActiveExecution) {
+        return { ...baseNode, status: undefined };
+      } else {
+        return baseNode;
+      }
+    });
+  }
+
+  // ==================== Trigger Status Polling ====================
 
   private hasPersistentTriggerNodes(): boolean {
     return this.workflow.nodes.some(n => isPersistentTriggerNode(n.type));
@@ -512,9 +272,8 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
   private startTriggerPollingIfNeeded() {
     if (this.hasPersistentTriggerNodes() && !this.triggerPollingInterval) {
-      // Fetch immediately, then poll every 10s
       this.fetchTriggerStatuses();
-      this.triggerPollingInterval = setInterval(() => this.fetchTriggerStatuses(), 10_000);
+      this.triggerPollingInterval = setInterval(() => this.fetchTriggerStatuses(), TRIGGER_POLL_INTERVAL_MS);
     } else if (!this.hasPersistentTriggerNodes() && this.triggerPollingInterval) {
       this.stopTriggerPolling();
     }
@@ -531,12 +290,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     if (!this.workflow.id) return;
 
     try {
-      // Step 1: Get all triggers for this workflow
       const triggersRes = await fetch(`/api/v1/workflows/${this.workflow.id}/triggers`);
       if (!triggersRes.ok) return;
       const triggers: Array<{ id: string; type: string; name: string }> = await triggersRes.json();
 
-      // Step 2: For each persistent trigger, fetch its status
       const persistentTypes = new Set([
         'TELEGRAM_BOT', 'SLACK_SOCKET', 'DISCORD_BOT', 'WHATSAPP_WEBHOOK', 'CUSTOM_WEBSOCKET',
       ]);
@@ -555,14 +312,11 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
 
       const results = await Promise.all(statusPromises);
 
-      // Step 3: Map trigger statuses to node types
-      // Match triggers to nodes by type (e.g., TELEGRAM_BOT trigger -> TELEGRAM_BOT node)
       const newStatuses = new Map<string, typeof this.triggerStatuses extends Map<string, infer V> ? V : never>();
 
       for (const result of results) {
         if (!result) continue;
         const { trigger, status } = result;
-        // Find the node in the workflow that matches this trigger type
         const matchingNode = this.workflow.nodes.find(n => n.type === trigger.type);
         if (matchingNode) {
           newStatuses.set(matchingNode.id, {
@@ -583,14 +337,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  /**
-   * Activate a persistent trigger (start its connection)
-   */
   async activateTrigger(triggerId: string) {
     try {
       const res = await fetch(`/api/v1/triggers/${triggerId}/activate`, { method: 'POST' });
       if (res.ok) {
-        // Refresh statuses after activation
         await this.fetchTriggerStatuses();
       }
     } catch {
@@ -598,14 +348,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  /**
-   * Deactivate a persistent trigger (stop its connection)
-   */
   async deactivateTrigger(triggerId: string) {
     try {
       const res = await fetch(`/api/v1/triggers/${triggerId}/deactivate`, { method: 'POST' });
       if (res.ok) {
-        // Refresh statuses after deactivation
         await this.fetchTriggerStatuses();
       }
     } catch {
@@ -613,24 +359,235 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
-  /**
-   * Handle test workflow request from config panel
-   */
+  // ==================== Chat Preview ====================
+
+  private async handleNodePreview(e: CustomEvent) {
+    const { node } = e.detail;
+    if (this.previewNodeId === node.id) {
+      this.closePreviewPanel();
+    } else {
+      await this.cleanupChatPreview();
+      this.previewNodeId = node.id;
+
+      if (node.type === WorkflowNodeType.CHAT_START && this.workflow?.id) {
+        await this.initializeChatPreview(this.workflow.id, node.configuration);
+      }
+    }
+  }
+
+  private async initializeChatPreview(workflowId: string, nodeConfig?: NodeConfiguration): Promise<void> {
+    try {
+      this.chatPreviewProvider = new WorkflowSocketProvider();
+      await this.connectChatPreviewSocket(workflowId);
+      this.setupExecutionSocketListeners();
+      this.createChatPreviewController(nodeConfig);
+      console.log('[Canvas] Chat preview initialized for workflow:', workflowId);
+    } catch (error) {
+      console.error('[Canvas] Failed to initialize chat preview:', error);
+      this.chatPreviewController = null;
+      this.chatPreviewProvider = null;
+    }
+  }
+
+  private async connectChatPreviewSocket(workflowId: string): Promise<void> {
+    const socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
+
+    await this.chatPreviewProvider!.connect({
+      workflowId,
+      socketUrl,
+      socketPath: '/socket.io/workflow',
+      triggerEndpoint: '/api/v1/workflows/{workflowId}/trigger/chat',
+      responseTimeout: 60000,
+      onMessage: (message: string) => {
+        if (this.chatPreviewController) {
+          this.chatPreviewController.addMessage({
+            id: `bot-${Date.now()}`,
+            sender: ChatbotSender.Bot,
+            text: message,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      },
+    });
+  }
+
+  private setupExecutionSocketListeners(): void {
+    const socket = this.chatPreviewProvider!.getSocket();
+    if (!socket) return;
+
+    socket.on('execution:started', (event: any) => {
+      const executionId = event.data?.executionId || event.executionId;
+      if (executionId) {
+        this.currentExecutionId = executionId;
+        this.nodeExecutionData.clear();
+      }
+      this.nodeStatuses = {};
+    });
+
+    socket.on('execution:node-started', (event: any) => {
+      const nodeId = event.data?.nodeId || event.nodeId;
+      const data = event.data || event;
+      if (nodeId) {
+        this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'RUNNING' };
+        this.nodeExecutionData.set(nodeId, {
+          id: data.nodeExecutionId || nodeId,
+          nodeId,
+          status: 'running',
+          inputData: data.inputData,
+          startedAt: data.startedAt || new Date().toISOString(),
+        });
+        this.requestUpdate();
+      }
+    });
+
+    socket.on('execution:node-completed', (event: any) => {
+      const nodeId = event.data?.nodeId || event.nodeId;
+      const data = event.data || event;
+      if (nodeId) {
+        this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'COMPLETED' };
+        const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'completed' };
+        this.nodeExecutionData.set(nodeId, {
+          ...existing,
+          status: 'completed',
+          outputData: data.outputData,
+          completedAt: data.completedAt || new Date().toISOString(),
+          durationMs: data.durationMs,
+        });
+        this.requestUpdate();
+      }
+    });
+
+    socket.on('execution:node-failed', (event: any) => {
+      const nodeId = event.data?.nodeId || event.nodeId;
+      const data = event.data || event;
+      if (nodeId) {
+        this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'FAILED' };
+        const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'failed' };
+        this.nodeExecutionData.set(nodeId, {
+          ...existing,
+          status: 'failed',
+          errorMessage: data.errorMessage || data.error,
+          completedAt: data.completedAt || new Date().toISOString(),
+          durationMs: data.durationMs,
+        });
+        this.requestUpdate();
+      }
+    });
+  }
+
+  private createChatPreviewController(nodeConfig?: NodeConfiguration): void {
+    const enableFileUpload = nodeConfig?.enableFileUpload === true;
+    console.log('[Canvas] Creating chat controller with config:', { enableFileUpload, nodeConfig });
+
+    this.chatPreviewController = new ChatbotCoreController({
+      provider: this.chatPreviewProvider!,
+      enableFileUpload,
+      ui: {
+        onStateChange: () => {
+          this.requestUpdate();
+        },
+      },
+    });
+  }
+
+  private async cleanupChatPreview(): Promise<void> {
+    if (this.chatPreviewProvider) {
+      try {
+        await this.chatPreviewProvider.disconnect();
+      } catch (error) {
+        console.error('[Canvas] Error disconnecting chat preview:', error);
+      }
+      this.chatPreviewProvider = null;
+    }
+    this.chatPreviewController = null;
+  }
+
+  // ==================== HTTP Preview ====================
+
+  private async sendHttpPreviewRequest(): Promise<void> {
+    const previewNode = this.getPreviewNode();
+    if (!previewNode || !this.workflow?.id) return;
+
+    this.httpPreviewLoading = true;
+    this.httpPreviewError = '';
+    this.httpPreviewResponse = '';
+    this.nodeStatuses = {};
+
+    try {
+      let body: any;
+      try {
+        body = JSON.parse(this.httpPreviewBody);
+      } catch {
+        throw new Error('Invalid JSON in request body');
+      }
+
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
+      const triggerUrl = `${baseUrl}/api/v1/workflows/${this.workflow.id}/trigger/http`;
+
+      console.log('[Canvas] Sending HTTP preview request:', triggerUrl, body);
+
+      const response = await fetch(triggerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const executionIdHeader = response.headers.get('X-Execution-Id');
+      let responseData: any;
+      try {
+        responseData = await response.json();
+      } catch {
+        responseData = await response.text();
+      }
+
+      if (!response.ok) {
+        throw new Error(responseData.message || responseData || `HTTP ${response.status}`);
+      }
+
+      this.httpPreviewResponse = JSON.stringify({
+        status: response.status,
+        executionId: executionIdHeader,
+        data: responseData,
+      }, null, 2);
+
+      if (executionIdHeader) {
+        this.currentExecutionId = executionIdHeader;
+        this.fetchExecutionData(executionIdHeader);
+      }
+    } catch (error) {
+      console.error('[Canvas] HTTP preview error:', error);
+      this.httpPreviewError = error instanceof Error ? error.message : String(error);
+    } finally {
+      this.httpPreviewLoading = false;
+    }
+  }
+
+  private resetHttpPreview(): void {
+    this.httpPreviewBody = '{\n  \n}';
+    this.httpPreviewResponse = '';
+    this.httpPreviewError = '';
+    this.httpPreviewLoading = false;
+  }
+
+  private closePreviewPanel() {
+    this.previewNodeId = null;
+    this.cleanupChatPreview();
+    this.resetHttpPreview();
+  }
+
+  // ==================== Workflow Event Handlers ====================
+
   private handleTestWorkflowRequest = () => {
     if (this.configuredNode) {
       const config = this.configuredNode.configuration || {};
-
-      // Extract test data from the node configuration
       const testData = config.testFile || config.testDocument || null;
 
-      // Dispatch workflow-trigger event to run the workflow with test data
-      // The startFromNode flag indicates this node should be treated as the entry point
       this.dispatchEvent(new CustomEvent('workflow-trigger', {
         detail: {
           node: this.configuredNode,
-          startFromNode: true,  // Treat this node as the start point
-          testData: testData,   // Include the test file/document data
-          workflow: this.workflow,  // Include full workflow for execution
+          startFromNode: true,
+          testData: testData,
+          workflow: this.workflow,
         },
         bubbles: true,
         composed: true,
@@ -638,162 +595,47 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }
   };
 
-  // Note: Keyboard handling is now in KeyboardController
+  private handleNodeTrigger(e: CustomEvent) {
+    const { node } = e.detail as { node: WorkflowNode };
 
-  private handleGlobalMouseUp = (e: MouseEvent) => {
-    if (this.disabled) return;
-
-    // Capture drag state before stopping to broadcast MOVE operations
-    const wasDragging = this.dragState;
-    const draggedNodeIds = wasDragging ? new Set(this.selectedNodeIds) : null;
-
-    this.dragController.stopDrag();
-    this.viewportController.stopPan();
-    this.connectionController.cancelConnection();
-
-    // End marquee selection
-    if (this.marqueeState) {
-      this.marqueeController.endSelection(e.shiftKey);
-    }
-
-    // Broadcast MOVE for all dragged nodes
-    if (this.collaborative && wasDragging && draggedNodeIds) {
-      for (const nodeId of draggedNodeIds) {
-        const node = this.workflow.nodes.find(n => n.id === nodeId);
-        if (node) {
-          this.collaborationController.broadcastOperation('MOVE', nodeId, {
-            x: node.position.x,
-            y: node.position.y,
-          });
+    if (isPersistentTriggerNode(node.type)) {
+      const status = this.triggerStatuses.get(node.id);
+      if (status) {
+        const isActive = status.connectionState === TriggerConnectionState.CONNECTED
+          || status.connectionState === TriggerConnectionState.CONNECTING;
+        if (isActive) {
+          this.deactivateTrigger(status.triggerId);
+        } else {
+          this.activateTrigger(status.triggerId);
         }
       }
-    }
-  };
-
-  private handleGlobalMouseMove = (e: MouseEvent) => {
-    if (this.disabled) return;
-
-    // Track mouse position for paste operations
-    if (this.canvasWrapper) {
-      const rect = this.canvasWrapper.getBoundingClientRect();
-      this.lastMousePosition = {
-        x: (e.clientX - rect.left - this.viewport.panX) / this.viewport.zoom,
-        y: (e.clientY - rect.top - this.viewport.panY) / this.viewport.zoom,
-      };
+      this.dispatchEvent(new CustomEvent('trigger-toggle', {
+        detail: { node, triggerStatus: status },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
     }
 
-    if (this.collaborative && this.lastMousePosition) {
-      this.collaborationController.broadcastCursorMove(this.lastMousePosition.x, this.lastMousePosition.y);
-    }
-
-    if (this.dragState) {
-      this.dragController.handleDrag(e);
-    }
-    if (this.isPanning) {
-      this.viewportController.handlePanDrag(e);
-    }
-    if (this.connectionState) {
-      this.connectionController.updateConnectionPosition(e);
-    }
-    // Update marquee selection
-    if (this.marqueeState) {
-      this.marqueeController.updateSelection(e);
-    }
-  };
-
-  private handleCanvasMouseDown = (e: MouseEvent) => {
-    if (this.disabled) return;
-    const target = e.target as HTMLElement;
-    const isCanvasBackground = target.classList.contains('canvas-grid') || target.classList.contains('canvas-wrapper');
-
-    if (e.button === 1) {
-      // Middle click for panning
-      e.preventDefault();
-      this.viewportController.startPan(e);
-    } else if (e.button === 0 && isCanvasBackground) {
-      e.preventDefault();
-
-      // Check if Ctrl/Cmd is held or in PAN mode - if so, start panning
-      if (e.ctrlKey || e.metaKey || this.mode === CanvasMode.PAN) {
-        this.viewportController.startPan(e);
-        if (!e.shiftKey) {
-          this.selectionController.clearSelection();
-        }
-      } else {
-        // Start marquee selection for box select
-        this.marqueeController.startSelection(e, e.shiftKey);
-      }
-    }
-  };
-
-  private handleCanvasContextMenu = (e: MouseEvent) => {
-    e.preventDefault();
-    if (this.disabled) return;
-
-    // Check if a node is selected - if so, show node context menu
-    const menuType = this.selectedNodeIds.size > 0 ? 'node' : 'canvas';
-
-    this.contextMenu = {
-      x: e.clientX,
-      y: e.clientY,
-      type: menuType,
-    };
-  };
-
-  // Note: Wheel/pan/zoom handling is now in ViewportController
-
-  private handleNodeMouseDown(e: CustomEvent) {
-    if (this.disabled) return;
-    const { node, event } = e.detail;
-
-    const isAlreadySelected = this.selectedNodeIds.has(node.id);
-
-    if (event.shiftKey) {
-      // Shift+click: toggle selection (add or remove from selection)
-      this.selectionController.selectNode(node.id, true);
-    } else if (!isAlreadySelected) {
-      // Click on unselected node: clear selection and select this node
-      this.selectionController.clearSelection();
-      this.selectionController.selectNode(node.id, false);
-    }
-    // If already selected without shift: keep current selection for multi-drag
-
-    // Update config panel if it's open
-    if (this.configuredNode) {
-      this.configuredNode = node;
-    }
-
-    // Start dragging (only if not readonly)
-    if (!this.readonly) {
-      this.dragController.startDrag(node, event);
-    }
-
-    this.dispatchNodeSelected(node);
-
-    // Auto-open chat preview if alwaysOpenPlan is enabled for CHAT_START nodes
-    if (
-      node.type === WorkflowNodeType.CHAT_START &&
-      node.configuration?.alwaysOpenPlan === true &&
-      this.previewNodeId !== node.id
-    ) {
-      this.handleNodePreview({ detail: { node } } as CustomEvent);
-    }
+    console.log('[Canvas] Node trigger clicked:', node.name, node.type);
+    this.dispatchEvent(new CustomEvent('workflow-trigger', {
+      detail: { node },
+      bubbles: true,
+      composed: true,
+    }));
   }
-
-  // Note: Node drag handling is now in DragController
 
   private async handleNodeDblClick(e: CustomEvent) {
     if (this.disabled) return;
     const { node } = e.detail;
 
-    // For NOTE nodes, enter inline edit mode instead of opening config panel
+    // For NOTE nodes, enter inline edit mode
     if (node.type === WorkflowNodeType.NOTE) {
       if (this.readonly) return;
       this.editingNoteId = node.id;
       if (this.collaborative) {
         this.collaborationController.broadcastTypingStart(node.id);
       }
-      // Focus the textarea after render
       this.updateComplete.then(() => {
         const nodeEl = this.shadowRoot?.querySelector(`workflow-node[data-node-id="${node.id}"]`);
         const textarea = nodeEl?.shadowRoot?.querySelector('.note-textarea') as HTMLTextAreaElement;
@@ -808,7 +650,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     // Open configuration panel
     this.configuredNode = node;
 
-    // Fetch dynamic variables from last execution (for variable suggestions only)
+    // Fetch dynamic variables
     this.loadingVariables = true;
     this.dynamicVariables = [];
 
@@ -817,15 +659,13 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         const vars = await getAllAvailableVariablesWithDynamic(
           this.workflow,
           node.id,
-          '' // Uses relative URL
+          '',
         );
         this.dynamicVariables = vars;
       } catch (error) {
         console.warn('[WorkflowCanvas] Failed to fetch dynamic variables:', error);
       }
 
-      // If nodes have status but we don't have execution data, fetch latest execution
-      // This handles the case where execution happened before socket listeners were set up
       const hasNodeStatus = Object.keys(this.nodeStatuses).length > 0;
       const hasExecutionData = this.nodeExecutionData.size > 0;
       if (hasNodeStatus && !hasExecutionData && !this.currentExecutionId) {
@@ -835,7 +675,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
             const execution = await response.json();
             if (execution?.id) {
               this.currentExecutionId = execution.id;
-              // Fetch node executions
               await this.fetchExecutionData(execution.id);
             }
           }
@@ -853,283 +692,11 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     }));
   }
 
-  private async handleNodePreview(e: CustomEvent) {
+  private handleNoteSettings(e: CustomEvent) {
     const { node } = e.detail;
-    // Toggle preview panel - close if same node, open if different
-    if (this.previewNodeId === node.id) {
-      this.closePreviewPanel();
-    } else {
-      // Clean up previous preview if any
-      await this.cleanupChatPreview();
-
-      this.previewNodeId = node.id;
-
-      // If it's a CHAT_START node, initialize the workflow socket provider
-      if (node.type === WorkflowNodeType.CHAT_START && this.workflow?.id) {
-        await this.initializeChatPreview(this.workflow.id, node.configuration);
-      }
-    }
+    this.configuredNode = node;
   }
 
-  /**
-   * Initialize chat preview with WorkflowSocketProvider
-   */
-  private async initializeChatPreview(workflowId: string, nodeConfig?: NodeConfiguration): Promise<void> {
-    try {
-      // Create provider with workflow ID
-      this.chatPreviewProvider = new WorkflowSocketProvider();
-
-      // Get socket URL from current location or use default
-      const socketUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
-
-      await this.chatPreviewProvider.connect({
-        workflowId,
-        socketUrl,
-        socketPath: '/socket.io/workflow',
-        triggerEndpoint: '/api/v1/workflows/{workflowId}/trigger/chat',
-        responseTimeout: 60000,
-        // Handle messages from CHAT_OUTPUT nodes (including retries)
-        onMessage: (message: string) => {
-          if (this.chatPreviewController) {
-            // Add bot message to the chat
-            this.chatPreviewController.addMessage({
-              id: `bot-${Date.now()}`,
-              sender: ChatbotSender.Bot,
-              text: message,
-              timestamp: new Date().toISOString(),
-            });
-          }
-        },
-      });
-
-      // Listen for execution events to update node statuses on canvas
-      const socket = this.chatPreviewProvider.getSocket();
-      if (socket) {
-        socket.on('execution:started', (event: any) => {
-          // Capture execution ID and reset states
-          const executionId = event.data?.executionId || event.executionId;
-          if (executionId) {
-            this.currentExecutionId = executionId;
-            this.nodeExecutionData.clear();
-          }
-          this.nodeStatuses = {};
-        });
-
-        socket.on('execution:node-started', (event: any) => {
-          const nodeId = event.data?.nodeId || event.nodeId;
-          const data = event.data || event;
-          if (nodeId) {
-            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'RUNNING' };
-            // Store node execution data
-            this.nodeExecutionData.set(nodeId, {
-              id: data.nodeExecutionId || nodeId,
-              nodeId,
-              status: 'running',
-              inputData: data.inputData,
-              startedAt: data.startedAt || new Date().toISOString(),
-            });
-            this.requestUpdate();
-          }
-        });
-
-        socket.on('execution:node-completed', (event: any) => {
-          const nodeId = event.data?.nodeId || event.nodeId;
-          const data = event.data || event;
-          if (nodeId) {
-            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'COMPLETED' };
-            // Update node execution data with output
-            const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'completed' };
-            this.nodeExecutionData.set(nodeId, {
-              ...existing,
-              status: 'completed',
-              outputData: data.outputData,
-              completedAt: data.completedAt || new Date().toISOString(),
-              durationMs: data.durationMs,
-            });
-            this.requestUpdate();
-          }
-        });
-
-        socket.on('execution:node-failed', (event: any) => {
-          const nodeId = event.data?.nodeId || event.nodeId;
-          const data = event.data || event;
-          if (nodeId) {
-            this.nodeStatuses = { ...this.nodeStatuses, [nodeId]: 'FAILED' };
-            // Update node execution data with error
-            const existing = this.nodeExecutionData.get(nodeId) || { id: nodeId, nodeId, status: 'failed' };
-            this.nodeExecutionData.set(nodeId, {
-              ...existing,
-              status: 'failed',
-              errorMessage: data.errorMessage || data.error,
-              completedAt: data.completedAt || new Date().toISOString(),
-              durationMs: data.durationMs,
-            });
-            this.requestUpdate();
-          }
-        });
-      }
-
-      // Create controller with the provider
-      const enableFileUpload = nodeConfig?.enableFileUpload === true;
-      console.log('[Canvas] Creating chat controller with config:', { enableFileUpload, nodeConfig });
-
-      this.chatPreviewController = new ChatbotCoreController({
-        provider: this.chatPreviewProvider,
-        enableFileUpload,
-        ui: {
-          onStateChange: () => {
-            // Force re-render when state changes
-            this.requestUpdate();
-          },
-        },
-      });
-
-      console.log('[Canvas] Chat preview initialized for workflow:', workflowId);
-    } catch (error) {
-      console.error('[Canvas] Failed to initialize chat preview:', error);
-      this.chatPreviewController = null;
-      this.chatPreviewProvider = null;
-    }
-  }
-
-  /**
-   * Cleanup chat preview controller and provider
-   */
-  private async cleanupChatPreview(): Promise<void> {
-    if (this.chatPreviewProvider) {
-      try {
-        await this.chatPreviewProvider.disconnect();
-      } catch (error) {
-        console.error('[Canvas] Error disconnecting chat preview:', error);
-      }
-      this.chatPreviewProvider = null;
-    }
-    this.chatPreviewController = null;
-  }
-
-  /**
-   * Send HTTP request to trigger workflow
-   */
-  private async sendHttpPreviewRequest(): Promise<void> {
-    const previewNode = this.getPreviewNode();
-    if (!previewNode || !this.workflow?.id) return;
-
-    this.httpPreviewLoading = true;
-    this.httpPreviewError = '';
-    this.httpPreviewResponse = '';
-    // Reset node statuses when starting a new execution
-    this.nodeStatuses = {};
-
-    try {
-      // Parse the request body
-      let body: any;
-      try {
-        body = JSON.parse(this.httpPreviewBody);
-      } catch {
-        throw new Error('Invalid JSON in request body');
-      }
-
-      // Build the trigger URL
-      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
-      const triggerUrl = `${baseUrl}/api/v1/workflows/${this.workflow.id}/trigger/http`;
-
-      console.log('[Canvas] Sending HTTP preview request:', triggerUrl, body);
-
-      const response = await fetch(triggerUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-
-      const executionId = response.headers.get('X-Execution-Id');
-      let responseData: any;
-
-      try {
-        responseData = await response.json();
-      } catch {
-        responseData = await response.text();
-      }
-
-      if (!response.ok) {
-        throw new Error(responseData.message || responseData || `HTTP ${response.status}`);
-      }
-
-      // Format the response nicely
-      this.httpPreviewResponse = JSON.stringify({
-        status: response.status,
-        executionId,
-        data: responseData,
-      }, null, 2);
-
-      // Store execution ID for config panel display
-      if (executionId) {
-        this.currentExecutionId = executionId;
-        // Fetch node execution data
-        this.fetchExecutionData(executionId);
-      }
-
-    } catch (error) {
-      console.error('[Canvas] HTTP preview error:', error);
-      this.httpPreviewError = error instanceof Error ? error.message : String(error);
-    } finally {
-      this.httpPreviewLoading = false;
-    }
-  }
-
-  /**
-   * Reset HTTP preview state
-   */
-  private resetHttpPreview(): void {
-    this.httpPreviewBody = '{\n  \n}';
-    this.httpPreviewResponse = '';
-    this.httpPreviewError = '';
-    this.httpPreviewLoading = false;
-  }
-
-  private handleNodeTrigger(e: CustomEvent) {
-    const { node } = e.detail as { node: WorkflowNode };
-
-    // For persistent trigger nodes, activate/deactivate instead of running workflow
-    if (isPersistentTriggerNode(node.type)) {
-      const status = this.triggerStatuses.get(node.id);
-      if (status) {
-        const isActive = status.connectionState === TriggerConnectionState.CONNECTED
-          || status.connectionState === TriggerConnectionState.CONNECTING;
-        if (isActive) {
-          this.deactivateTrigger(status.triggerId);
-        } else {
-          this.activateTrigger(status.triggerId);
-        }
-      }
-      // Also bubble up for the host to handle if needed
-      this.dispatchEvent(new CustomEvent('trigger-toggle', {
-        detail: { node, triggerStatus: status },
-        bubbles: true,
-        composed: true,
-      }));
-      return;
-    }
-
-    console.log('[Canvas] Node trigger clicked:', node.name, node.type);
-    // Bubble up the trigger event for workflow execution
-    this.dispatchEvent(new CustomEvent('workflow-trigger', {
-      detail: { node },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private closePreviewPanel() {
-    this.previewNodeId = null;
-    this.cleanupChatPreview();
-    this.resetHttpPreview();
-  }
-
-  /**
-   * Handle double-click on disabled overlay to enable canvas interaction
-   */
   private handleDisabledOverlayDblClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1149,17 +716,192 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     this.isHoveringDisabledOverlay = false;
   };
 
-  /**
-   * Get the current preview node from workflow (live position)
-   */
+  // ==================== Execution Data ====================
+
+  setExecutionId(executionId: string | null): void {
+    this.currentExecutionId = executionId;
+    if (!executionId) {
+      this.nodeExecutionData.clear();
+      this.requestUpdate();
+    }
+  }
+
+  updateNodeExecution(nodeExecution: import('./templates/config-panel/types.js').NodeExecutionData): void {
+    this.nodeExecutionData.set(nodeExecution.nodeId, nodeExecution);
+    this.requestUpdate();
+  }
+
+  clearExecutionData(): void {
+    this.currentExecutionId = null;
+    this.nodeExecutionData.clear();
+    this.requestUpdate();
+  }
+
+  private async fetchExecutionData(executionId: string): Promise<void> {
+    if (!executionId) return;
+
+    try {
+      const response = await fetch(`/api/v1/workflows/${this.workflow?.id}/executions/${executionId}/nodes`);
+      if (!response.ok) {
+        const altResponse = await fetch(`/api/v1/executions/${executionId}/nodes`);
+        if (!altResponse.ok) {
+          console.warn('[WorkflowCanvas] Failed to fetch node executions');
+          return;
+        }
+        const nodeExecutions = await altResponse.json();
+        this.processNodeExecutions(nodeExecutions);
+        return;
+      }
+      const nodeExecutions = await response.json();
+      this.processNodeExecutions(nodeExecutions);
+    } catch (error) {
+      console.warn('[WorkflowCanvas] Failed to fetch execution data:', error);
+    }
+  }
+
+  private processNodeExecutions(nodeExecutions: Array<{
+    id: string;
+    nodeId: string;
+    status: string;
+    inputData?: string;
+    outputData?: string;
+    errorMessage?: string;
+    startedAt?: string;
+    completedAt?: string;
+    durationMs?: number;
+  }>): void {
+    this.nodeExecutionData.clear();
+    for (const nodeExec of nodeExecutions) {
+      let inputData = nodeExec.inputData;
+      let outputData = nodeExec.outputData;
+      try {
+        if (typeof inputData === 'string') inputData = JSON.parse(inputData);
+      } catch { /* keep as string */ }
+      try {
+        if (typeof outputData === 'string') outputData = JSON.parse(outputData);
+      } catch { /* keep as string */ }
+
+      this.nodeExecutionData.set(nodeExec.nodeId, {
+        id: nodeExec.id,
+        nodeId: nodeExec.nodeId,
+        status: nodeExec.status?.toLowerCase() as 'pending' | 'running' | 'completed' | 'failed',
+        inputData,
+        outputData,
+        errorMessage: nodeExec.errorMessage,
+        startedAt: nodeExec.startedAt,
+        completedAt: nodeExec.completedAt,
+        durationMs: nodeExec.durationMs,
+      });
+    }
+    this.requestUpdate();
+  }
+
+  private async handleRetryNode(nodeId: string): Promise<void> {
+    if (!this.currentExecutionId || !this.workflow?.id) return;
+
+    try {
+      const response = await fetch(`/api/v1/workflows/${this.workflow.id}/executions/${this.currentExecutionId}/nodes/${nodeId}/retry`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Retry failed: ${response.statusText}`);
+      }
+
+      this.dispatchEvent(new CustomEvent('node-retry', {
+        detail: { executionId: this.currentExecutionId, nodeId },
+        bubbles: true,
+        composed: true,
+      }));
+    } catch (error) {
+      console.error('[WorkflowCanvas] Failed to retry node:', error);
+    }
+  }
+
+  // ==================== Table Resize ====================
+
+  private tableResizeState: {
+    nodeId: string;
+    startX: number;
+    startY: number;
+    startWidth: number;
+    startHeight: number;
+  } | null = null;
+
+  private handleTableResizeStart(e: CustomEvent) {
+    const { node, event } = e.detail;
+    this.startTableResize(node, event);
+  }
+
+  private startTableResize(node: WorkflowNode, event: MouseEvent) {
+    const config = node.configuration || {};
+    this.tableResizeState = {
+      nodeId: node.id,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: (config.tableWidth as number) || TABLE_DEFAULT_WIDTH,
+      startHeight: (config.tableHeight as number) || TABLE_DEFAULT_HEIGHT,
+    };
+
+    document.addEventListener('mousemove', this.handleTableResizeDrag);
+    document.addEventListener('mouseup', this.stopTableResize);
+  }
+
+  private handleTableResizeDrag = (event: MouseEvent) => {
+    if (!this.tableResizeState) return;
+
+    const { nodeId, startX, startY, startWidth, startHeight } = this.tableResizeState;
+    const node = this.workflow.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const deltaX = (event.clientX - startX) / this.viewport.zoom;
+    const deltaY = (event.clientY - startY) / this.viewport.zoom;
+
+    const newWidth = Math.max(TABLE_MIN_WIDTH, startWidth + deltaX);
+    const newHeight = Math.max(TABLE_MIN_HEIGHT, startHeight + deltaY);
+
+    node.configuration = {
+      ...node.configuration,
+      tableWidth: newWidth,
+      tableHeight: newHeight,
+    };
+
+    this.requestUpdate();
+  };
+
+  private stopTableResize = () => {
+    if (!this.tableResizeState) return;
+
+    this.tableResizeState = null;
+    document.removeEventListener('mousemove', this.handleTableResizeDrag);
+    document.removeEventListener('mouseup', this.stopTableResize);
+
+    this.dispatchWorkflowChanged();
+  };
+
+  // ==================== Palette ====================
+
+  private handlePaletteItemDrag(e: DragEvent, type: NodeType) {
+    e.dataTransfer?.setData('application/workflow-node-type', type);
+  }
+
+  private toggleCategory(categoryId: string) {
+    if (this.expandedCategories.has(categoryId)) {
+      this.expandedCategories.delete(categoryId);
+    } else {
+      this.expandedCategories.add(categoryId);
+    }
+    this.expandedCategories = new Set(this.expandedCategories);
+  }
+
+  // ==================== Render Helpers ====================
+
   private getPreviewNode(): WorkflowNode | null {
     if (!this.previewNodeId) return null;
     return this.workflow.nodes.find(n => n.id === this.previewNodeId) || null;
   }
 
-  /**
-   * Calculate preview panel position to the LEFT of the preview node
-   */
   private getPreviewPanelPosition(): { x: number; y: number } | null {
     const previewNode = this.getPreviewNode();
     if (!previewNode) return null;
@@ -1173,276 +915,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     };
   }
 
-  private handlePortMouseDown(e: CustomEvent) {
-    if (this.disabled || this.readonly) return;
-    const { node, port, isInput, event } = e.detail;
-    this.connectionController.startConnection(node, port, isInput, event);
-  }
-
-  private handlePortMouseUp(e: CustomEvent) {
-    if (this.disabled) return;
-    const { node, port, isInput } = e.detail;
-    const edgesBefore = this.workflow.edges.length;
-    this.connectionController.completeConnection(node, port, isInput);
-
-    // Broadcast new edge if one was created
-    if (this.collaborative && this.workflow.edges.length > edgesBefore) {
-      const newEdge = this.workflow.edges[this.workflow.edges.length - 1];
-      if (newEdge) {
-        this.collaborationController.broadcastOperation('ADD_CONNECTOR', newEdge.id, { edge: newEdge });
-      }
-    }
-  }
-
-  // Note: Connection line update is now in ConnectionController
-
-  private handleEdgeClick(e: MouseEvent, edge: WorkflowEdge) {
-    if (this.disabled) return;
-    e.stopPropagation();
-    this.selectionController.selectEdge(edge.id, e.shiftKey);
-  }
-
-  // Note: Selection methods are now in SelectionController
-
-  private addNode(type: NodeType, position?: Position) {
-    if (this.readonly) return;
-
-    const pos = position || {
-      x: (-this.viewport.panX + 400) / this.viewport.zoom,
-      y: (-this.viewport.panY + 200) / this.viewport.zoom,
-    };
-
-    const newNode = createNodeFromTemplate(type, pos);
-    if (newNode) {
-      // Record for undo before making changes
-      this.undoController.recordNodeAdded(newNode);
-
-      // For FRAME nodes, add at the beginning so they render behind other nodes
-      if (isFrameNode(type)) {
-        this.workflow = {
-          ...this.workflow,
-          nodes: [newNode, ...this.workflow.nodes],
-        };
-        // Update containment to detect any nodes already inside the new frame
-        this.frameController.updateFrameContainment(newNode);
-      } else {
-        this.workflow = {
-          ...this.workflow,
-          nodes: [...this.workflow.nodes, newNode],
-        };
-        // Update all frames to check if this new node is inside any of them
-        this.frameController.updateAllFrameContainments();
-      }
-      this.dispatchWorkflowChanged();
-      if (this.collaborative) {
-        this.collaborationController.broadcastOperation('ADD', newNode.id, { node: newNode });
-      }
-    }
-  }
-
-  private handlePaletteItemDrag(e: DragEvent, type: NodeType) {
-    e.dataTransfer?.setData('application/workflow-node-type', type);
-  }
-
-  private handleCanvasDrop = (e: DragEvent) => {
-    e.preventDefault();
-    if (this.disabled) return;
-    const type = e.dataTransfer?.getData('application/workflow-node-type') as NodeType;
-    if (!type) return;
-
-    const rect = this.canvasWrapper.getBoundingClientRect();
-    const x = (e.clientX - rect.left - this.viewport.panX) / this.viewport.zoom;
-    const y = (e.clientY - rect.top - this.viewport.panY) / this.viewport.zoom;
-
-    this.addNode(type, { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 });
-  };
-
-  private handleCanvasDragOver = (e: DragEvent) => {
-    if (this.disabled) return;
-    e.preventDefault();
-    e.dataTransfer!.dropEffect = 'copy';
-  };
-
-  // Note: Zoom methods are now in ViewportController
-
-  private togglePalette() {
-    this.showPalette = !this.showPalette;
-  }
-
-  private toggleCategory(categoryId: string) {
-    if (this.expandedCategories.has(categoryId)) {
-      this.expandedCategories.delete(categoryId);
-    } else {
-      this.expandedCategories.add(categoryId);
-    }
-    this.expandedCategories = new Set(this.expandedCategories);
-  }
-
-  private dispatchWorkflowChanged() {
-    this.dispatchEvent(new CustomEvent('workflow-changed', {
-      detail: { workflow: this.workflow },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  // Required by CanvasHost interface - called by ViewportController
-  dispatchViewportChanged() {
-    this.dispatchEvent(new CustomEvent('viewport-changed', {
-      detail: { viewport: this.viewport },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private dispatchNodeSelected(node: WorkflowNode) {
-    this.dispatchEvent(new CustomEvent('node-selected', {
-      detail: { node },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  dispatchNodeMoved(node: WorkflowNode, position: Position) {
-    this.dispatchEvent(new CustomEvent('node-moved', {
-      detail: { node, position },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  // Note: Port position calculation is now in ConnectionController
-  private getPortPosition(node: WorkflowNode, portId: string, isInput: boolean): Position {
-    return this.connectionController.getPortPosition(node, portId, isInput);
-  }
-
-  /**
-   * Get nodes with execution statuses applied from nodeStatuses map
-   * This ensures edges can derive their status from connected nodes
-   *
-   * When nodeStatuses has any entries (active real-time execution), only those
-   * nodes get status - this prevents edges from non-executed triggers from
-   * being colored based on saved workflow statuses.
-   */
-  private getNodesWithStatuses(): WorkflowNode[] {
-    const hasActiveExecution = Object.keys(this.nodeStatuses).length > 0;
-
-    return this.workflow.nodes.map(node => {
-      const activity = this.agentActivity[node.id];
-      const baseNode = {
-        ...node,
-        // Add agent activity if present
-        agentActivity: activity?.active ? activity : undefined,
-      };
-
-      if (this.nodeStatuses[node.id]) {
-        // Node has real-time status from current execution
-        return { ...baseNode, status: this.nodeStatuses[node.id].toUpperCase() as ExecutionStatus };
-      } else if (hasActiveExecution) {
-        // During active execution, nodes not in nodeStatuses have no status
-        // This prevents edges from other triggers from being colored
-        return { ...baseNode, status: undefined };
-      } else {
-        // No active execution - use saved workflow status (for history view)
-        return baseNode;
-      }
-    });
-  }
-
-  /**
-   * Get frame nodes (for rendering behind other nodes)
-   */
-  private getFrameNodes(): WorkflowNode[] {
-    return this.getNodesWithStatuses().filter(node => isFrameNode(node.type));
-  }
-
-  /**
-   * Get non-frame nodes that are visible (not hidden by collapsed frame)
-   */
-  private getVisibleNonFrameNodes(): WorkflowNode[] {
-    return this.getNodesWithStatuses().filter(node => {
-      // Filter out frame nodes (they render separately)
-      if (isFrameNode(node.type)) return false;
-      // Filter out nodes hidden by collapsed frames
-      if ((node.metadata as Record<string, unknown>)?._hiddenByFrame) return false;
-      return true;
-    });
-  }
-
-  /**
-   * Render expanded frame nodes
-   */
-  private renderExpandedFrame(frame: WorkflowNode) {
-    const config = frame.configuration || {};
-    const collapsed = config.frameCollapsed as boolean;
-    if (collapsed) return null;
-
-    const width = (config.frameWidth as number) || 400;
-    const height = (config.frameHeight as number) || 300;
-    const bgColor = (config.frameBackgroundColor as string) || 'rgba(99, 102, 241, 0.05)';
-    const borderColor = (config.frameBorderColor as string) || 'rgba(99, 102, 241, 0.3)';
-    const label = (config.frameLabel as string) || 'Group';
-    const labelPosition = (config.frameLabelPosition as string) || 'top-left';
-    const labelPlacement = (config.frameLabelPlacement as string) || 'outside';
-    const showLabel = config.frameShowLabel !== false;
-    const isSelected = this.selectedNodeIds.has(frame.id);
-
-    const frameStyles = {
-      left: `${frame.position.x}px`,
-      top: `${frame.position.y}px`,
-      width: `${width}px`,
-      height: `${height}px`,
-      backgroundColor: bgColor,
-      borderColor: borderColor,
-    };
-
-    return html`
-      <div
-        class="frame-node ${isSelected ? 'selected' : ''}"
-        style=${styleMap(frameStyles)}
-        data-frame-id=${frame.id}
-        @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
-        @dblclick=${(e: MouseEvent) => this.handleFrameDblClick(e, frame)}
-      >
-        ${showLabel ? html`
-          <div class="frame-label ${labelPosition} ${labelPlacement}">
-            ${this.editingFrameLabelId === frame.id ? html`
-              <input
-                type="text"
-                class="frame-label-input"
-                .value=${label}
-                @blur=${(e: FocusEvent) => this.handleFrameLabelBlur(e, frame)}
-                @keydown=${(e: KeyboardEvent) => this.handleFrameLabelKeydown(e, frame)}
-                @click=${(e: MouseEvent) => e.stopPropagation()}
-                @mousedown=${(e: MouseEvent) => e.stopPropagation()}
-              />
-            ` : html`
-              <span class="frame-label-text">
-                ${label}
-                <nr-icon
-                  name="edit-2"
-                  size="small"
-                  class="frame-label-edit-icon"
-                  @click=${(e: MouseEvent) => this.startEditingFrameLabel(e, frame)}
-                ></nr-icon>
-              </span>
-            `}
-          </div>
-        ` : null}
-        ${isSelected ? html`
-          <div class="resize-handle resize-se" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'se')}></div>
-          <div class="resize-handle resize-sw" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'sw')}></div>
-          <div class="resize-handle resize-ne" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'ne')}></div>
-          <div class="resize-handle resize-nw" @mousedown=${(e: MouseEvent) => this.handleFrameResize(e, frame, 'nw')}></div>
-        ` : null}
-      </div>
-    `;
-  }
-
-  /**
-   * Get aggregated execution status for a collapsed frame
-   * Priority: RUNNING > FAILED > PENDING/WAITING > COMPLETED > IDLE
-   */
   private getAggregatedFrameStatus(containedNodes: WorkflowNode[]): ExecutionStatus {
     if (containedNodes.length === 0) return ExecutionStatus.IDLE;
 
@@ -1470,7 +942,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       }
     }
 
-    // Priority order
     if (hasRunning) return ExecutionStatus.RUNNING;
     if (hasFailed) return ExecutionStatus.FAILED;
     if (hasPending) return ExecutionStatus.PENDING;
@@ -1478,23 +949,18 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     return ExecutionStatus.IDLE;
   }
 
-  /**
-   * Render collapsed frame as group node
-   */
   private renderCollapsedFrame(frame: WorkflowNode) {
     const config = frame.configuration || {};
     const collapsed = config.frameCollapsed as boolean;
     if (!collapsed) return null;
 
-    const label = (config.frameLabel as string) || 'Group';
+    const label = (config.frameLabel as string) || FRAME_DEFAULT_LABEL;
     const borderColor = (config.frameBorderColor as string) || 'rgba(99, 102, 241, 0.3)';
     const isSelected = this.selectedNodeIds.has(frame.id);
     const containedNodes = this.frameController.getContainedNodes(frame);
     const previews = this.frameController.getContainedNodePreviews(frame, 5);
     const overflowCount = containedNodes.length - 5;
     const aggregatedPorts = this.frameController.getAggregatedPorts(frame);
-
-    // Get aggregated execution status for contained nodes
     const aggregatedStatus = this.getAggregatedFrameStatus(containedNodes);
 
     const nodeStyles = {
@@ -1503,12 +969,10 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
       '--node-color': borderColor.replace('0.3)', '1)').replace('rgba', 'rgb').split(',').slice(0, 3).join(',') + ')',
     };
 
-    // Generate tooltip
     const tooltipContent = containedNodes.length === 0
       ? 'Empty group'
       : `Contains:\n${containedNodes.map(n => `• ${n.name}`).join('\n')}\n\nDouble-click to expand`;
 
-    // Map status to CSS class
     const statusClass = aggregatedStatus !== ExecutionStatus.IDLE
       ? `status-${aggregatedStatus.toLowerCase()}`
       : '';
@@ -1523,469 +987,105 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         @mousedown=${(e: MouseEvent) => this.handleFrameMouseDown(e, frame)}
         @dblclick=${(e: MouseEvent) => this.handleFrameDblClick(e, frame)}
       >
-        <!-- Status indicator -->
-        ${aggregatedStatus !== ExecutionStatus.IDLE ? html`
-          <div class="frame-status-indicator status-${aggregatedStatus.toLowerCase()}">
-            ${aggregatedStatus === ExecutionStatus.RUNNING ? html`
-              <nr-icon name="loader" size="small" class="spinning"></nr-icon>
-            ` : aggregatedStatus === ExecutionStatus.FAILED ? html`
-              <nr-icon name="alert-circle" size="small"></nr-icon>
-            ` : aggregatedStatus === ExecutionStatus.COMPLETED ? html`
-              <nr-icon name="check-circle" size="small"></nr-icon>
-            ` : aggregatedStatus === ExecutionStatus.PENDING ? html`
-              <nr-icon name="clock" size="small"></nr-icon>
-            ` : null}
-          </div>
-        ` : null}
-
-        <!-- Aggregated input ports -->
-        ${aggregatedPorts.inputs.length > 0 ? html`
-          <div class="ports ports-left">
-            ${aggregatedPorts.inputs.map(port => html`
-              <div
-                class="port port-input"
-                data-port-id=${port.id}
-                title=${port.label || 'Input'}
-              ></div>
-            `)}
-          </div>
-        ` : null}
-
-        <!-- Node body -->
-        <div class="collapsed-frame-body">
-          <div class="collapsed-frame-header">
-            <nr-icon name="layers" size="small"></nr-icon>
-            ${this.editingFrameLabelId === frame.id ? html`
-              <input
-                type="text"
-                class="collapsed-frame-title-input"
-                .value=${label}
-                @blur=${(e: FocusEvent) => this.handleFrameLabelBlur(e, frame)}
-                @keydown=${(e: KeyboardEvent) => this.handleFrameLabelKeydown(e, frame)}
-                @click=${(e: MouseEvent) => e.stopPropagation()}
-                @mousedown=${(e: MouseEvent) => e.stopPropagation()}
-                @dblclick=${(e: MouseEvent) => e.stopPropagation()}
-              />
-            ` : html`
-              <span class="collapsed-frame-title">
-                ${label}
-                <nr-icon
-                  name="edit-2"
-                  size="small"
-                  class="frame-label-edit-icon"
-                  @click=${(e: MouseEvent) => this.startEditingFrameLabel(e, frame)}
-                ></nr-icon>
-              </span>
-            `}
-          </div>
-
-          <!-- Node icons preview row -->
-          ${previews.length > 0 ? html`
-            <div class="node-icons-preview">
-              ${previews.map(preview => html`
-                <div
-                  class="preview-icon"
-                  style="background-color: ${preview.color}20"
-                  title=${preview.name}
-                >
-                  <nr-icon
-                    name=${preview.icon}
-                    size="small"
-                    style="color: ${preview.color}"
-                  ></nr-icon>
-                </div>
-              `)}
-              ${overflowCount > 0 ? html`
-                <span class="overflow-count">+${overflowCount}</span>
-              ` : null}
-            </div>
-          ` : html`
-            <div class="node-icons-preview empty">
-              <span class="empty-text">Empty</span>
-            </div>
-          `}
-        </div>
-
-        <!-- Aggregated output ports -->
-        ${aggregatedPorts.outputs.length > 0 ? html`
-          <div class="ports ports-right">
-            ${aggregatedPorts.outputs.map(port => html`
-              <div
-                class="port port-output"
-                data-port-id=${port.id}
-                title=${port.label || 'Output'}
-              ></div>
-            `)}
-          </div>
-        ` : null}
-
+        ${this.renderFrameStatusIndicator(aggregatedStatus)}
+        ${this.renderCollapsedFramePorts(aggregatedPorts.inputs, 'left')}
+        ${this.renderCollapsedFrameBody(frame, label, previews, overflowCount)}
+        ${this.renderCollapsedFramePorts(aggregatedPorts.outputs, 'right')}
       </div>
     `;
   }
 
-  /**
-   * Handle frame mousedown (for selection and dragging)
-   */
-  private handleFrameMouseDown(e: MouseEvent, frame: WorkflowNode) {
-    e.stopPropagation();
+  private renderFrameStatusIndicator(status: ExecutionStatus) {
+    if (status === ExecutionStatus.IDLE) return null;
 
-    // Select frame
-    if (!e.shiftKey) {
-      this.selectedNodeIds.clear();
-      this.selectedEdgeIds.clear();
-    }
-    this.selectedNodeIds.add(frame.id);
-
-    // Start drag via existing drag controller
-    this.handleNodeMouseDown({
-      detail: { node: frame, event: e },
-    } as CustomEvent);
-
-    this.requestUpdate();
-  }
-
-  /**
-   * Handle frame double-click (toggle collapse or open config)
-   */
-  private handleFrameDblClick(e: MouseEvent, frame: WorkflowNode) {
-    e.stopPropagation();
-    this.frameController.toggleCollapsed(frame);
-  }
-
-  /**
-   * Handle frame resize
-   */
-  private handleFrameResize(e: MouseEvent, frame: WorkflowNode, handle: string) {
-    e.stopPropagation();
-    this.frameController.startResize(e, frame, handle as any);
-  }
-
-  /**
-   * Start editing frame label
-   */
-  private startEditingFrameLabel(e: MouseEvent, frame: WorkflowNode) {
-    e.stopPropagation();
-    e.preventDefault();
-    if (this.readonly) return;
-
-    this.editingFrameLabelId = frame.id;
-
-    // Focus the input after render
-    this.updateComplete.then(() => {
-      const input = this.shadowRoot?.querySelector('.frame-label-input, .collapsed-frame-title-input') as HTMLInputElement;
-      if (input) {
-        input.focus();
-        input.select();
-      }
-    });
-  }
-
-  /**
-   * Handle frame label input blur (save)
-   */
-  private handleFrameLabelBlur(e: FocusEvent, frame: WorkflowNode) {
-    const input = e.target as HTMLInputElement;
-    const newLabel = input.value.trim() || 'Group';
-
-    this.saveFrameLabel(frame, newLabel);
-    this.editingFrameLabelId = null;
-  }
-
-  /**
-   * Handle frame label input keydown
-   */
-  private handleFrameLabelKeydown(e: KeyboardEvent, frame: WorkflowNode) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      const input = e.target as HTMLInputElement;
-      const newLabel = input.value.trim() || 'Group';
-      this.saveFrameLabel(frame, newLabel);
-      this.editingFrameLabelId = null;
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      this.editingFrameLabelId = null;
-    }
-  }
-
-  /**
-   * Save the frame label
-   */
-  private saveFrameLabel(frame: WorkflowNode, newLabel: string) {
-    const updatedNodes = this.workflow.nodes.map(node => {
-      if (node.id === frame.id) {
-        return {
-          ...node,
-          name: newLabel,
-          configuration: {
-            ...node.configuration,
-            frameLabel: newLabel,
-          },
-        };
-      }
-      return node;
-    });
-
-    this.setWorkflow({
-      ...this.workflow,
-      nodes: updatedNodes,
-    });
-
-    this.dispatchWorkflowChanged();
-    if (this.collaborative) {
-      this.collaborationController.broadcastOperation('UPDATE', frame.id, { frameLabel: newLabel });
-    }
-  }
-
-  // ===== NOTE NODE EDITING =====
-
-  /**
-   * Handle note content change
-   */
-  private handleNoteContentChange(e: CustomEvent) {
-    const { node, content } = e.detail;
-    const updatedNodes = this.workflow.nodes.map(n => {
-      if (n.id === node.id) {
-        return {
-          ...n,
-          configuration: {
-            ...n.configuration,
-            noteContent: content,
-          },
-        };
-      }
-      return n;
-    });
-
-    this.setWorkflow({
-      ...this.workflow,
-      nodes: updatedNodes,
-    });
-
-    this.dispatchWorkflowChanged();
-    if (this.collaborative) {
-      this.collaborationController.broadcastOperation('UPDATE_TEXT', node.id, { noteContent: content });
-    }
-  }
-
-  /**
-   * Handle note edit end
-   */
-  private handleNoteEditEnd(_e: CustomEvent) {
-    if (this.collaborative && this.editingNoteId) {
-      this.collaborationController.broadcastTypingStop(this.editingNoteId);
-    }
-    this.editingNoteId = null;
-  }
-
-  /**
-   * Handle note settings click - open config panel
-   */
-  private handleNoteSettings(e: CustomEvent) {
-    const { node } = e.detail;
-    this.configuredNode = node;
-  }
-
-  /**
-   * Handle note resize start
-   */
-  private handleNoteResizeStart(e: CustomEvent) {
-    const { node, event } = e.detail;
-    this.startNoteResize(node, event);
-  }
-
-  private noteResizeState: {
-    nodeId: string;
-    startX: number;
-    startY: number;
-    startWidth: number;
-    startHeight: number;
-  } | null = null;
-
-  private startNoteResize(node: WorkflowNode, event: MouseEvent) {
-    const config = node.configuration || {};
-    this.noteResizeState = {
-      nodeId: node.id,
-      startX: event.clientX,
-      startY: event.clientY,
-      startWidth: (config.noteWidth as number) || 200,
-      startHeight: (config.noteHeight as number) || 100,
+    const iconMap: Record<string, string> = {
+      [ExecutionStatus.RUNNING]: 'loader',
+      [ExecutionStatus.FAILED]: 'alert-circle',
+      [ExecutionStatus.COMPLETED]: 'check-circle',
+      [ExecutionStatus.PENDING]: 'clock',
     };
 
-    document.addEventListener('mousemove', this.handleNoteResizeDrag);
-    document.addEventListener('mouseup', this.stopNoteResize);
+    const iconName = iconMap[status];
+    if (!iconName) return null;
+
+    return html`
+      <div class="frame-status-indicator status-${status.toLowerCase()}">
+        <nr-icon name=${iconName} size="small" class=${status === ExecutionStatus.RUNNING ? 'spinning' : ''}></nr-icon>
+      </div>
+    `;
   }
 
-  private handleNoteResizeDrag = (event: MouseEvent) => {
-    if (!this.noteResizeState) return;
+  private renderCollapsedFramePorts(ports: Array<{ id: string; label?: string }>, side: string) {
+    if (ports.length === 0) return null;
 
-    const { nodeId, startX, startY, startWidth, startHeight } = this.noteResizeState;
-    const node = this.workflow.nodes.find(n => n.id === nodeId);
-    if (!node) return;
-
-    const deltaX = (event.clientX - startX) / this.viewport.zoom;
-    const deltaY = (event.clientY - startY) / this.viewport.zoom;
-
-    const newWidth = Math.max(100, startWidth + deltaX);
-    const newHeight = Math.max(50, startHeight + deltaY);
-
-    // Update node configuration directly for smooth resizing
-    node.configuration = {
-      ...node.configuration,
-      noteWidth: newWidth,
-      noteHeight: newHeight,
-    };
-
-    this.requestUpdate();
-  };
-
-  private stopNoteResize = () => {
-    if (!this.noteResizeState) return;
-
-    this.noteResizeState = null;
-    document.removeEventListener('mousemove', this.handleNoteResizeDrag);
-    document.removeEventListener('mouseup', this.stopNoteResize);
-
-    this.dispatchWorkflowChanged();
-  };
-
-  // --- UI Table resize ---
-
-  private handleTableResizeStart(e: CustomEvent) {
-    const { node, event } = e.detail;
-    this.startTableResize(node, event);
+    return html`
+      <div class="ports ports-${side}">
+        ${ports.map(port => html`
+          <div
+            class="port port-${side === 'left' ? 'input' : 'output'}"
+            data-port-id=${port.id}
+            title=${port.label || (side === 'left' ? 'Input' : 'Output')}
+          ></div>
+        `)}
+      </div>
+    `;
   }
 
-  private tableResizeState: {
-    nodeId: string;
-    startX: number;
-    startY: number;
-    startWidth: number;
-    startHeight: number;
-  } | null = null;
+  private renderCollapsedFrameBody(frame: WorkflowNode, label: string, previews: Array<{ name: string; icon: string; color: string }>, overflowCount: number) {
+    return html`
+      <div class="collapsed-frame-body">
+        <div class="collapsed-frame-header">
+          <nr-icon name="layers" size="small"></nr-icon>
+          ${this.editingFrameLabelId === frame.id ? html`
+            <input
+              type="text"
+              class="collapsed-frame-title-input"
+              .value=${label}
+              @blur=${(e: FocusEvent) => this.handleFrameLabelBlur(e, frame)}
+              @keydown=${(e: KeyboardEvent) => this.handleFrameLabelKeydown(e, frame)}
+              @click=${(e: MouseEvent) => e.stopPropagation()}
+              @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+              @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+            />
+          ` : html`
+            <span class="collapsed-frame-title">
+              ${label}
+              <nr-icon
+                name="edit-2"
+                size="small"
+                class="frame-label-edit-icon"
+                @click=${(e: MouseEvent) => this.startEditingFrameLabel(e, frame)}
+              ></nr-icon>
+            </span>
+          `}
+        </div>
 
-  private startTableResize(node: WorkflowNode, event: MouseEvent) {
-    const config = node.configuration || {};
-    this.tableResizeState = {
-      nodeId: node.id,
-      startX: event.clientX,
-      startY: event.clientY,
-      startWidth: (config.tableWidth as number) || 320,
-      startHeight: (config.tableHeight as number) || 200,
-    };
-
-    document.addEventListener('mousemove', this.handleTableResizeDrag);
-    document.addEventListener('mouseup', this.stopTableResize);
-  }
-
-  private handleTableResizeDrag = (event: MouseEvent) => {
-    if (!this.tableResizeState) return;
-
-    const { nodeId, startX, startY, startWidth, startHeight } = this.tableResizeState;
-    const node = this.workflow.nodes.find(n => n.id === nodeId);
-    if (!node) return;
-
-    const deltaX = (event.clientX - startX) / this.viewport.zoom;
-    const deltaY = (event.clientY - startY) / this.viewport.zoom;
-
-    const newWidth = Math.max(200, startWidth + deltaX);
-    const newHeight = Math.max(120, startHeight + deltaY);
-
-    node.configuration = {
-      ...node.configuration,
-      tableWidth: newWidth,
-      tableHeight: newHeight,
-    };
-
-    this.requestUpdate();
-  };
-
-  private stopTableResize = () => {
-    if (!this.tableResizeState) return;
-
-    this.tableResizeState = null;
-    document.removeEventListener('mousemove', this.handleTableResizeDrag);
-    document.removeEventListener('mouseup', this.stopTableResize);
-
-    this.dispatchWorkflowChanged();
-  };
-
-  // Note: Edge rendering is now in edges.template.ts
-  private renderEdges() {
-    return renderEdgesTemplate({
-      edges: this.workflow.edges,
-      nodes: this.getNodesWithStatuses(),
-      selectedEdgeIds: this.selectedEdgeIds,
-      hoveredEdgeId: this.hoveredEdgeId,
-      connectionState: this.connectionState,
-      currentTheme: this.currentTheme,
-      callbacks: {
-        onEdgeClick: (e, edge) => this.handleEdgeClick(e, edge),
-        onEdgeHover: (edgeId) => this.connectionController.setHoveredEdge(edgeId),
-        getPortPosition: (node, portId, isInput) => this.getPortPosition(node, portId, isInput),
-      },
-    });
-  }
-
-  private initCanvasChatbotController(): void {
-    this.canvasChatbotController ??= new ChatbotCoreController();
-  }
-
-  toggleChatbotPanel(): void {
-    this.showChatbotPanel = !this.showChatbotPanel;
-    if (this.showChatbotPanel) {
-      this.initCanvasChatbotController();
-      this.chatbotUnreadCount = 0;
-    }
-  }
-
-  private renderChatbotPanel() {
-    return renderChatbotPanelTemplate(
-      {
-        isOpen: this.showChatbotPanel,
-        controller: this.canvasChatbotController,
-        unreadCount: this.chatbotUnreadCount,
-        currentTheme: this.currentTheme,
-      },
-      {
-        onClose: () => this.toggleChatbotPanel(),
-      }
-    );
-  }
-
-  private renderToolbar() {
-    return renderToolbarTemplate({
-      showToolbar: this.showToolbar,
-      mode: this.mode,
-      showPalette: this.showPalette,
-      canvasType: this.canvasType,
-      hasSelection: this.selectedNodeIds.size > 0 || this.selectedEdgeIds.size > 0,
-      hasSingleSelection: this.selectedNodeIds.size === 1,
-      readonly: this.readonly,
-      canUndo: this.undoController.canUndo(),
-      canRedo: this.undoController.canRedo(),
-      undoTooltip: this.undoController.getUndoTooltip(),
-      redoTooltip: this.undoController.getRedoTooltip(),
-      showChatbot: this.showChatbotPanel,
-      onToggleChatbot: () => this.toggleChatbotPanel(),
-      chatbotUnreadCount: this.chatbotUnreadCount,
-      onModeChange: (mode) => { this.mode = mode; },
-      onTogglePalette: () => this.togglePalette(),
-      onZoomIn: () => this.viewportController.zoomIn(),
-      onZoomOut: () => this.viewportController.zoomOut(),
-      onResetView: () => this.viewportController.resetView(),
-      onOpenConfig: () => this.selectionController.openConfigForSelected(),
-      onDelete: () => this.selectionController.deleteSelected(),
-      onUndo: () => this.undoController.performUndo(),
-      onRedo: () => this.undoController.performRedo(),
-    });
-  }
-
-  private renderZoomControls() {
-    return renderZoomControlsTemplate({
-      zoomPercentage: this.viewportController.getZoomPercentage(),
-      onZoomIn: () => this.viewportController.zoomIn(),
-      onZoomOut: () => this.viewportController.zoomOut(),
-    });
+        ${previews.length > 0 ? html`
+          <div class="node-icons-preview">
+            ${previews.map(preview => html`
+              <div
+                class="preview-icon"
+                style="background-color: ${preview.color}20"
+                title=${preview.name}
+              >
+                <nr-icon
+                  name=${preview.icon}
+                  size="small"
+                  style="color: ${preview.color}"
+                ></nr-icon>
+              </div>
+            `)}
+            ${overflowCount > 0 ? html`
+              <span class="overflow-count">+${overflowCount}</span>
+            ` : null}
+          </div>
+        ` : html`
+          <div class="node-icons-preview empty">
+            <span class="empty-text">Empty</span>
+          </div>
+        `}
+      </div>
+    `;
   }
 
   private renderPalette() {
@@ -2005,68 +1105,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
-  private renderContextMenu() {
-    return renderContextMenuTemplate({
-      contextMenu: this.contextMenu,
-      readonly: this.readonly,
-      hasSelection: this.selectedNodeIds.size > 0,
-      onClose: () => { this.contextMenu = null; },
-      onAddNode: () => this.togglePalette(),
-      onSelectAll: () => this.selectionController.selectAll(),
-      onResetView: () => this.viewportController.resetView(),
-      onConfigure: () => this.selectionController.openConfigForSelected(),
-      onDuplicate: () => this.selectionController.duplicateSelected(),
-      onDelete: () => this.selectionController.deleteSelected(),
-      onCopy: () => this.clipboardController.copySelected(),
-      onCut: () => this.clipboardController.cutSelected(),
-      onPaste: () => this.clipboardController.pasteFromClipboard(),
-    });
-  }
-
-  private renderEmptyState() {
-    return renderEmptyStateTemplate({
-      hasNodes: this.workflow.nodes.length > 0,
-    });
-  }
-
-  private renderDisabledOverlay() {
-    if (!this.disabled) return html``;
-
-    return html`
-      <div
-        class="disabled-overlay ${this.isHoveringDisabledOverlay ? 'hovering' : ''}"
-        @dblclick=${this.handleDisabledOverlayDblClick}
-        @mouseenter=${this.handleDisabledOverlayMouseEnter}
-        @mouseleave=${this.handleDisabledOverlayMouseLeave}
-      >
-        <div class="disabled-overlay-message">
-          <nr-icon name="mouse-pointer-click" size="medium"></nr-icon>
-          <span>Double click to enter preview mode</span>
-        </div>
-      </div>
-    `;
-  }
-
-  private renderMarqueeBox() {
-    if (!this.marqueeState) return html``;
-
-    const rect = this.marqueeController.getSelectionRect();
-
-    // Convert canvas coordinates to viewport coordinates
-    const style = {
-      left: `${rect.x * this.viewport.zoom + this.viewport.panX}px`,
-      top: `${rect.y * this.viewport.zoom + this.viewport.panY}px`,
-      width: `${rect.width * this.viewport.zoom}px`,
-      height: `${rect.height * this.viewport.zoom}px`,
-    };
-
-    return html`
-      <div class="selection-box" style=${styleMap(style)}></div>
-    `;
-  }
-
-  // Note: Config panel methods are now in ConfigController and config-panel.template.ts
-  private renderConfigPanel() {
+  protected override renderConfigPanel() {
     const nodeId = this.configuredNode?.id;
     const nodeExecution = nodeId ? this.nodeExecutionData.get(nodeId) : undefined;
 
@@ -2079,7 +1118,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
         onUpdateDescription: (desc) => this.configController.updateDescription(desc),
         onUpdateConfig: (key, value) => {
           this.configController.updateConfig(key, value);
-          // Update chatPreviewController config if it's the same node being previewed
           if (this.chatPreviewController &&
               this.configuredNode?.id === this.previewNodeId &&
               this.configuredNode?.type === WorkflowNodeType.CHAT_START) {
@@ -2103,205 +1141,88 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     });
   }
 
-  /**
-   * Handle retry node request from config panel
-   */
-  private async handleRetryNode(nodeId: string): Promise<void> {
-    if (!this.currentExecutionId || !this.workflow?.id) return;
+  private renderDisabledOverlay() {
+    if (!this.disabled) return html``;
 
-    try {
-      const response = await fetch(`/api/v1/workflows/${this.workflow.id}/executions/${this.currentExecutionId}/nodes/${nodeId}/retry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Retry failed: ${response.statusText}`);
-      }
-
-      // Dispatch event to notify parent
-      this.dispatchEvent(new CustomEvent('node-retry', {
-        detail: { executionId: this.currentExecutionId, nodeId },
-        bubbles: true,
-        composed: true,
-      }));
-    } catch (error) {
-      console.error('[WorkflowCanvas] Failed to retry node:', error);
-    }
+    return html`
+      <div
+        class="disabled-overlay ${this.isHoveringDisabledOverlay ? 'hovering' : ''}"
+        @dblclick=${this.handleDisabledOverlayDblClick}
+        @mouseenter=${this.handleDisabledOverlayMouseEnter}
+        @mouseleave=${this.handleDisabledOverlayMouseLeave}
+      >
+        <div class="disabled-overlay-message">
+          <nr-icon name="mouse-pointer-click" size="medium"></nr-icon>
+          <span>Double click to enter preview mode</span>
+        </div>
+      </div>
+    `;
   }
 
-  /**
-   * Set the current execution ID (for retry functionality)
-   */
-  setExecutionId(executionId: string | null): void {
-    this.currentExecutionId = executionId;
-    if (!executionId) {
-      // Clear node execution data when execution is cleared
-      this.nodeExecutionData.clear();
-      this.requestUpdate();
-    }
-  }
-
-  /**
-   * Update node execution data (called from socket events or API responses)
-   */
-  updateNodeExecution(nodeExecution: import('./templates/config-panel/types.js').NodeExecutionData): void {
-    this.nodeExecutionData.set(nodeExecution.nodeId, nodeExecution);
-    this.requestUpdate();
-  }
-
-  /**
-   * Clear all node execution data
-   */
-  clearExecutionData(): void {
-    this.currentExecutionId = null;
-    this.nodeExecutionData.clear();
-    this.requestUpdate();
-  }
-
-  /**
-   * Fetch execution data for a specific execution ID
-   */
-  private async fetchExecutionData(executionId: string): Promise<void> {
-    if (!executionId) return;
-
-    try {
-      // Fetch node executions for this execution
-      const response = await fetch(`/api/v1/workflows/${this.workflow?.id}/executions/${executionId}/nodes`);
-      if (!response.ok) {
-        // Try alternative endpoint
-        const altResponse = await fetch(`/api/v1/executions/${executionId}/nodes`);
-        if (!altResponse.ok) {
-          console.warn('[WorkflowCanvas] Failed to fetch node executions');
-          return;
-        }
-        const nodeExecutions = await altResponse.json();
-        this.processNodeExecutions(nodeExecutions);
-        return;
-      }
-      const nodeExecutions = await response.json();
-      this.processNodeExecutions(nodeExecutions);
-    } catch (error) {
-      console.warn('[WorkflowCanvas] Failed to fetch execution data:', error);
-    }
-  }
-
-  /**
-   * Process and store node execution data
-   */
-  private processNodeExecutions(nodeExecutions: Array<{
-    id: string;
-    nodeId: string;
-    status: string;
-    inputData?: string;
-    outputData?: string;
-    errorMessage?: string;
-    startedAt?: string;
-    completedAt?: string;
-    durationMs?: number;
-  }>): void {
-    this.nodeExecutionData.clear();
-    for (const nodeExec of nodeExecutions) {
-      // Parse JSON strings if needed
-      let inputData = nodeExec.inputData;
-      let outputData = nodeExec.outputData;
-      try {
-        if (typeof inputData === 'string') inputData = JSON.parse(inputData);
-      } catch { /* keep as string */ }
-      try {
-        if (typeof outputData === 'string') outputData = JSON.parse(outputData);
-      } catch { /* keep as string */ }
-
-      this.nodeExecutionData.set(nodeExec.nodeId, {
-        id: nodeExec.id,
-        nodeId: nodeExec.nodeId,
-        status: nodeExec.status?.toLowerCase() as 'pending' | 'running' | 'completed' | 'failed',
-        inputData,
-        outputData,
-        errorMessage: nodeExec.errorMessage,
-        startedAt: nodeExec.startedAt,
-        completedAt: nodeExec.completedAt,
-        durationMs: nodeExec.durationMs,
-      });
-    }
-    this.requestUpdate();
-  }
-
-  private renderPreviewPanel() {
-    const previewNode = this.getPreviewNode();
-    const position = this.getPreviewPanelPosition();
-    if (!previewNode || !position) return html``;
-
+  private renderHttpPreviewPanel(previewNode: WorkflowNode, panelStyle: Record<string, string>) {
     const config = previewNode.configuration || {};
-    const panelStyle = {
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-    };
+    const httpPath = (config.httpPath as string) || '/webhook';
 
-    // HTTP_START preview
-    if (previewNode.type === WorkflowNodeType.HTTP_START) {
-      const httpPath = (config.httpPath as string) || '/webhook';
-      return html`
-        <div class="chatbot-preview-panel http-preview-panel" style=${styleMap(panelStyle)} data-theme=${this.currentTheme}>
-          <div class="chatbot-preview-header">
-            <div class="chatbot-preview-title">
-              <nr-icon name="globe" size="small"></nr-icon>
-              <span>HTTP Test</span>
-            </div>
-            <button class="chatbot-preview-close" @click=${this.closePreviewPanel}>
-              <nr-icon name="x" size="small"></nr-icon>
+    return html`
+      <div class="chatbot-preview-panel http-preview-panel" style=${styleMap(panelStyle)} data-theme=${this.currentTheme}>
+        <div class="chatbot-preview-header">
+          <div class="chatbot-preview-title">
+            <nr-icon name="globe" size="small"></nr-icon>
+            <span>HTTP Test</span>
+          </div>
+          <button class="chatbot-preview-close" @click=${() => this.closePreviewPanel()}>
+            <nr-icon name="x" size="small"></nr-icon>
+          </button>
+        </div>
+        <div class="http-preview-content">
+          <div class="http-preview-url">
+            <span class="http-method">POST</span>
+            <span class="http-path">${httpPath}</span>
+          </div>
+          <div class="http-preview-section">
+            <label>Request Body (JSON)</label>
+            <textarea
+              class="http-request-body"
+              .value=${this.httpPreviewBody}
+              @input=${(e: Event) => this.httpPreviewBody = (e.target as HTMLTextAreaElement).value}
+              placeholder='{ "key": "value" }'
+              ?disabled=${this.httpPreviewLoading}
+            ></textarea>
+          </div>
+          <div class="http-preview-actions">
+            <button
+              class="http-send-btn"
+              @click=${() => this.sendHttpPreviewRequest()}
+              ?disabled=${this.httpPreviewLoading}
+            >
+              ${this.httpPreviewLoading ? html`
+                <nr-icon name="loader" size="small"></nr-icon>
+                <span>Sending...</span>
+              ` : html`
+                <nr-icon name="send" size="small"></nr-icon>
+                <span>Send Request</span>
+              `}
             </button>
           </div>
-          <div class="http-preview-content">
-            <div class="http-preview-url">
-              <span class="http-method">POST</span>
-              <span class="http-path">${httpPath}</span>
+          ${this.httpPreviewError ? html`
+            <div class="http-preview-error">
+              <nr-icon name="alert-circle" size="small"></nr-icon>
+              <span>${this.httpPreviewError}</span>
             </div>
+          ` : ''}
+          ${this.httpPreviewResponse ? html`
             <div class="http-preview-section">
-              <label>Request Body (JSON)</label>
-              <textarea
-                class="http-request-body"
-                .value=${this.httpPreviewBody}
-                @input=${(e: Event) => this.httpPreviewBody = (e.target as HTMLTextAreaElement).value}
-                placeholder='{ "key": "value" }'
-                ?disabled=${this.httpPreviewLoading}
-              ></textarea>
+              <label>Response</label>
+              <pre class="http-response-body">${this.httpPreviewResponse}</pre>
             </div>
-            <div class="http-preview-actions">
-              <button
-                class="http-send-btn"
-                @click=${this.sendHttpPreviewRequest}
-                ?disabled=${this.httpPreviewLoading}
-              >
-                ${this.httpPreviewLoading ? html`
-                  <nr-icon name="loader" size="small"></nr-icon>
-                  <span>Sending...</span>
-                ` : html`
-                  <nr-icon name="send" size="small"></nr-icon>
-                  <span>Send Request</span>
-                `}
-              </button>
-            </div>
-            ${this.httpPreviewError ? html`
-              <div class="http-preview-error">
-                <nr-icon name="alert-circle" size="small"></nr-icon>
-                <span>${this.httpPreviewError}</span>
-              </div>
-            ` : ''}
-            ${this.httpPreviewResponse ? html`
-              <div class="http-preview-section">
-                <label>Response</label>
-                <pre class="http-response-body">${this.httpPreviewResponse}</pre>
-              </div>
-            ` : ''}
-          </div>
+          ` : ''}
         </div>
-      `;
-    }
+      </div>
+    `;
+  }
 
-    // Chat preview (CHAT_START or CHATBOT)
+  private renderChatPreviewPanel(previewNode: WorkflowNode, panelStyle: Record<string, string>) {
+    const config = previewNode.configuration || {};
     const rawSuggestions = (config.suggestions as Array<{id?: string; text?: string}>) || [];
     const suggestions = rawSuggestions.map((s, i) => ({
       id: s.id || String(i),
@@ -2325,7 +1246,7 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
               </span>
             ` : ''}
           </div>
-          <button class="chatbot-preview-close" @click=${this.closePreviewPanel}>
+          <button class="chatbot-preview-close" @click=${() => this.closePreviewPanel()}>
             <nr-icon name="x" size="small"></nr-icon>
           </button>
         </div>
@@ -2366,32 +1287,34 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
-  // ==================== Collaboration Renders ====================
+  private renderPreviewPanel() {
+    const previewNode = this.getPreviewNode();
+    const position = this.getPreviewPanelPosition();
+    if (!previewNode || !position) return html``;
 
-  private handlePanToUser(userId: string): void {
-    const cursors = this.collaborationController.getCursors();
-    const cursor = cursors.find(c => c.userId === userId);
-    if (cursor) {
-      this.viewportController.panToPosition(cursor.x, cursor.y);
+    const panelStyle = {
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+    };
+
+    if (previewNode.type === WorkflowNodeType.HTTP_START) {
+      return this.renderHttpPreviewPanel(previewNode, panelStyle);
     }
+
+    return this.renderChatPreviewPanel(previewNode, panelStyle);
   }
 
-  private renderRemoteCursors() {
-    if (!this.collaborative) return nothing;
-    return renderRemoteCursorsTemplate({
-      cursors: this.collaborationController.getCursors(),
-      viewport: this.viewport,
-    });
+  // ==================== Constructor Override ====================
+
+  constructor() {
+    super();
+    this.expandedCategories = new Set([
+      'trigger', 'control', 'action', 'data', 'agent',
+      'db-tables-views', 'db-relations-constraints', 'db-indexes-queries',
+    ]);
   }
 
-  private renderPresenceBar() {
-    if (!this.collaborative) return nothing;
-    return renderPresenceBarTemplate({
-      users: this.collaborationController.getUsers(),
-      connected: this.collaborationController.isConnected(),
-      onUserClick: (userId: string) => this.handlePanToUser(userId),
-    });
-  }
+  // ==================== Main Render ====================
 
   override render() {
     return html`
@@ -2425,7 +1348,6 @@ export class WorkflowCanvasElement extends NuralyUIBaseMixin(LitElement) {
           <!-- Nodes layer -->
           <div class="nodes-layer">
             ${this.getVisibleNonFrameNodes().map(node => {
-              // Enrich node with trigger status if available
               const enrichedNode = this.triggerStatuses.has(node.id)
                 ? { ...node, triggerStatus: this.triggerStatuses.get(node.id) }
                 : node;

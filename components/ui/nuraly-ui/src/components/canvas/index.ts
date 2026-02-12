@@ -1,6 +1,12 @@
 // Legacy canvas component
 export * from './canvas.component.js';
 
+// Base canvas class
+export * from './base-canvas.component.js';
+
+// Canvas constants
+export * from './canvas.constants.js';
+
 // Workflow canvas components
 export * from './workflow-canvas.types.js';
 export * from './workflow-node.component.js';

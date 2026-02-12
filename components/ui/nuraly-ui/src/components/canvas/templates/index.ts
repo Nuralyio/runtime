@@ -61,3 +61,20 @@ export {
   type ChatbotPanelTemplateData,
   type ChatbotPanelCallbacks,
 } from './chatbot-panel.template.js';
+
+// Frame template
+export {
+  renderExpandedFrameTemplate,
+  type FrameTemplateData,
+  type FrameTemplateCallbacks,
+} from './frame.template.js';
+
+// Whiteboard floating toolbar template
+export {
+  renderWbFloatingToolbarTemplate,
+  wbHasText,
+  wbHasFill,
+  wbHasBorder,
+  type WbFloatingToolbarData,
+  type WbFloatingToolbarCallbacks,
+} from './wb-floating-toolbar.template.js';
