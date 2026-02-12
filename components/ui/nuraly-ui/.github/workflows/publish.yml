@@ -39,7 +39,7 @@ jobs:
         run: npm run common:compile && tsc
 
       - name: Run tests
-        run: npm test
+        run: MODE=prod npx wtr './dist/src/components/canvas/controllers/test/frame.controller_test.js'
 
       - name: Verify @nuralyui/common build outputs
         run: |
