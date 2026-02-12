@@ -20,6 +20,11 @@ declare module 'nanostores' {
   };
 }
 
+// Mocha TDD interface globals (used by @web/test-runner with ui:'tdd')
+// `test` is already provided by @types/jest; only `suite` and `setup` are missing.
+declare function suite(title: string, fn: () => void): void;
+declare function setup(fn: () => void): void;
+
 declare module '@nanostores/persistent' {
   export function persistentAtom<T>(
     key: string,
