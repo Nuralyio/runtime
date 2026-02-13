@@ -51,6 +51,7 @@ import { menuDefinition } from '../../params/data/menu/properties';
 // Display
 import { badgeDefinition } from '../../params/display/badge/properties';
 import { tagDefinition } from '../../params/display/tag/properties';
+import { dividerDefinition } from '../../params/display/divider/properties';
 
 // Content
 import { codeDefinition } from '../../params/content/code/properties';
@@ -264,6 +265,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   // Display
   badgeDefinition,
   tagDefinition,
+  dividerDefinition,
   // Content
   codeDefinition,
   documentDefinition,
