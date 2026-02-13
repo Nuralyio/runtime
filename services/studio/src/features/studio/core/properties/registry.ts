@@ -20,6 +20,7 @@ import { selectDefinition } from '../../params/inputs/select/properties';
 import { textareaDefinition } from '../../params/inputs/textarea/properties';
 import { datepickerDefinition } from '../../params/inputs/datepicker/properties';
 import { formDefinition } from '../../params/inputs/form/properties';
+import { colorpickerDefinition } from '../../params/inputs/colorpicker/properties';
 
 // Layout
 import { containerDefinition } from '../../params/layout/container/properties';
@@ -233,6 +234,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   textareaDefinition,
   datepickerDefinition,
   formDefinition,
+  colorpickerDefinition,
   // Layout
   containerDefinition,
   gridRowDefinition,
