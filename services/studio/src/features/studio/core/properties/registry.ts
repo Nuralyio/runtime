@@ -21,6 +21,7 @@ import { textareaDefinition } from '../../params/inputs/textarea/properties';
 import { datepickerDefinition } from '../../params/inputs/datepicker/properties';
 import { formDefinition } from '../../params/inputs/form/properties';
 import { colorpickerDefinition } from '../../params/inputs/colorpicker/properties';
+import { iconButtonDefinition } from '../../params/inputs/icon-button/properties';
 
 // Layout
 import { containerDefinition } from '../../params/layout/container/properties';
@@ -235,6 +236,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   datepickerDefinition,
   formDefinition,
   colorpickerDefinition,
+  iconButtonDefinition,
   // Layout
   containerDefinition,
   gridRowDefinition,

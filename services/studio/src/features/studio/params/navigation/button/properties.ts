@@ -23,6 +23,7 @@ import {
   createDisabledAwareRadioHandler,
   sizeRadioOptions,
   buttonShapeOptions,
+  iconPositionOptions,
 } from '../../../core/handlers';
 import {
   InputStateHandler,
@@ -42,11 +43,6 @@ const buttonTypeOptions = [
   { value: 'ghost', label: 'Ghost' },
   { value: 'text', label: 'Text' },
   { value: 'link', label: 'Link' },
-];
-
-const iconPositionOptions = [
-  { value: 'left', label: 'Left' },
-  { value: 'right', label: 'Right' },
 ];
 
 const linkTargetOptions = [

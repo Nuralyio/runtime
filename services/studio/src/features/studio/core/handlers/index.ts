@@ -196,6 +196,7 @@ export {
   resizeRadioOptions,
   buttonTypeOptions,
   buttonShapeOptions,
+  iconPositionOptions,
 } from './custom-handlers';
 
 // ============================================================================

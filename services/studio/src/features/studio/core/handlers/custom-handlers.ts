@@ -156,3 +156,11 @@ export const buttonShapeOptions = [
   { value: 'round', label: 'Round' },
   { value: 'circle', label: 'Circle' },
 ];
+
+/**
+ * Icon position options.
+ */
+export const iconPositionOptions = [
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+];
