@@ -301,7 +301,7 @@ services:
       - KV_URL=http://kv:7003
       - CONDUIT_URL=http://conduit:7004
       - REDIS_URL=redis://redis:6379
-      - KC_HOSTNAME=192.168.1.154
+      - KC_HOSTNAME=gateway-vm
       - KEYCLOAK_REALM=nuraly
       - KEYCLOAK_CLIENT_ID=nuraly-web
       - KEYCLOAK_CLIENT_SECRET=dev-client-secret
@@ -447,11 +447,11 @@ services:
       KC_DB_PASSWORD: password
       KC_DB_SCHEMA: public
       KC_HOSTNAME_STRICT_HTTPS: 'false'
-      KC_HOSTNAME_ADMIN_URL: http://192.168.1.154:8090/auth
+      KC_HOSTNAME_ADMIN_URL: http://gateway-vm:8090/auth
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_RELATIVE_PATH: "/auth"
-      KC_HOSTNAME: 192.168.1.154
+      KC_HOSTNAME: gateway-vm
     ports:
       - "8090:8080"
     depends_on:
