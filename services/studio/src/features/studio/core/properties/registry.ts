@@ -22,6 +22,7 @@ import { datepickerDefinition } from '../../params/inputs/datepicker/properties'
 import { formDefinition } from '../../params/inputs/form/properties';
 import { colorpickerDefinition } from '../../params/inputs/colorpicker/properties';
 import { iconButtonDefinition } from '../../params/inputs/icon-button/properties';
+import { numberInputDefinition } from '../../params/inputs/number-input/properties';
 
 // Layout
 import { containerDefinition } from '../../params/layout/container/properties';
@@ -237,6 +238,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   formDefinition,
   colorpickerDefinition,
   iconButtonDefinition,
+  numberInputDefinition,
   // Layout
   containerDefinition,
   gridRowDefinition,
