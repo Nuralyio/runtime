@@ -385,6 +385,7 @@ export class StudioTopBar extends LitElement {
               .items=${getInsertOptions()}
               trigger="click"
               size="small"
+              auto-close
               @nr-dropdown-item-click=${this.handleInsertComponent}
             >
               <nr-button slot="trigger" size="small" type="default" style="--nuraly-button-min-width:47px;width:auto;" iconposition="left" .iconLeft=${"plus"}></nr-button>
