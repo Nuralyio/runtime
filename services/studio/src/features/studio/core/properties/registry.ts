@@ -24,6 +24,7 @@ import { colorpickerDefinition } from '../../params/inputs/colorpicker/propertie
 import { iconButtonDefinition } from '../../params/inputs/icon-button/properties';
 import { numberInputDefinition } from '../../params/inputs/number-input/properties';
 import { radioButtonDefinition } from '../../params/inputs/radio-button/properties';
+import { sliderDefinition } from '../../params/inputs/slider/properties';
 
 // Layout
 import { containerDefinition } from '../../params/layout/container/properties';
@@ -241,6 +242,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   iconButtonDefinition,
   numberInputDefinition,
   radioButtonDefinition,
+  sliderDefinition,
   // Layout
   containerDefinition,
   gridRowDefinition,
