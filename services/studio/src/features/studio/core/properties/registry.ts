@@ -198,6 +198,9 @@ const EVENT_METADATA: Record<string, { label: string; description: string }> = {
   progress: { label: 'On Progress', description: 'Triggered on progress update' },
   checkedChange: { label: 'On Checked Change', description: 'Triggered when checked state changes' },
   checkboxChanged: { label: 'On Checkbox Changed', description: 'Triggered when checkbox state changes' },
+  clear: { label: 'On Clear', description: 'Triggered when cleared' },
+  fieldChange: { label: 'On Field Change', description: 'Triggered when a form field changes' },
+  iconClick: { label: 'On Icon Click', description: 'Triggered when icon is clicked' },
 };
 
 /**

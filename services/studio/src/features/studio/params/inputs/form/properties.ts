@@ -86,7 +86,7 @@ export const formDefinition: ComponentDefinition = {
     collapseTitle: 'Form Settings',
   },
   properties: formProperties,
-  events: ['submit', 'reset', 'validate'],
+  events: ['submit', 'reset', 'validate', 'fieldChange'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

@@ -141,7 +141,7 @@ export const selectDefinition: ComponentDefinition = {
     collapseTitle: 'Select Properties',
   },
   properties: selectProperties,
-  events: ['change', 'search', 'focus', 'blur'],
+  events: ['change', 'search', 'focus', 'blur', 'open', 'close'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

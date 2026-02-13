@@ -33,7 +33,7 @@ export const fileUploadDefinition: ComponentDefinition = {
     collapseTitle: 'File Upload Properties',
   },
   properties: fileUploadProperties,
-  events: ['change', 'upload', 'remove'],
+  events: ['change', 'upload', 'remove', 'select'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

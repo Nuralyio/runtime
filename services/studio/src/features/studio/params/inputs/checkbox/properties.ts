@@ -95,7 +95,7 @@ export const checkboxDefinition: ComponentDefinition = {
     collapseTitle: 'Checkbox Properties',
   },
   properties: checkboxProperties,
-  events: ['change', 'checkboxChanged'],
+  events: ['change', 'checkboxChanged', 'focus', 'blur', 'mouseenter', 'mouseleave'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

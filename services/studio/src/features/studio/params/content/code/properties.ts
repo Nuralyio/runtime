@@ -100,7 +100,7 @@ export const codeDefinition: ComponentDefinition = {
     collapseTitle: 'Code Properties',
   },
   properties: codeProperties,
-  events: ['change'],
+  events: ['change', 'click', 'keydown', 'keyup'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',
