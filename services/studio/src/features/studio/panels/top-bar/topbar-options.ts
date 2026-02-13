@@ -127,6 +127,57 @@ export function getInsertOptions(): DropdownOption[] {
         additionalData: { action: 'add', style: { width: '400px' } }
       },
       icon: 'square-pen'
+    },
+    {
+      id: 'number_input',
+      label: 'Number Input',
+      value: {
+        value: 'number_input',
+        additionalData: { action: 'add', style: { width: '200px' } }
+      },
+      icon: 'hash'
+    },
+    {
+      id: 'radio_button',
+      label: 'Radio Button',
+      value: {
+        value: 'radio_button',
+        additionalData: {
+          action: 'add',
+          input: {
+            value: {
+              type: 'json',
+              value: {
+                options: [
+                  { label: 'Option 1', value: 'option1' },
+                  { label: 'Option 2', value: 'option2' }
+                ],
+                currentValue: 'option1'
+              }
+            }
+          },
+          style: { width: '200px' }
+        }
+      },
+      icon: 'circle-dot'
+    },
+    {
+      id: 'color_picker',
+      label: 'Color Picker',
+      value: {
+        value: 'color_picker',
+        additionalData: { action: 'add', style: { width: '200px' } }
+      },
+      icon: 'palette'
+    },
+    {
+      id: 'icon_button',
+      label: 'Icon Button',
+      value: {
+        value: 'icon_button',
+        additionalData: { action: 'add', style: { width: '50px' } }
+      },
+      icon: 'square-mouse-pointer'
     }
   ];
 
@@ -230,6 +281,15 @@ export function getInsertOptions(): DropdownOption[] {
         }
       },
       icon: 'link'
+    },
+    {
+      id: 'divider',
+      label: 'Divider',
+      value: {
+        value: 'divider',
+        additionalData: { action: 'add', style: { width: '100%' } }
+      },
+      icon: 'minus'
     }
   ];
 
@@ -348,6 +408,66 @@ export function getInsertOptions(): DropdownOption[] {
         additionalData: { action: 'add', style: { width: '300px' } }
       },
       icon: 'component'
+    },
+    {
+      id: 'tabs',
+      label: 'Tabs',
+      value: {
+        value: 'tabs',
+        additionalData: {
+          action: 'add',
+          input: {
+            tabs: {
+              type: 'json',
+              value: [
+                { label: { type: 'text', value: 'Tab 1' }, key: 'tab1' },
+                { label: { type: 'text', value: 'Tab 2' }, key: 'tab2' }
+              ]
+            },
+            size: { type: 'string', value: 'small' }
+          },
+          style: { width: '400px', height: '300px' }
+        }
+      },
+      icon: 'panel-top'
+    },
+    {
+      id: 'panel',
+      label: 'Panel',
+      value: {
+        value: 'panel',
+        additionalData: {
+          action: 'add',
+          input: {
+            title: { type: 'value', value: 'Panel' },
+            open: { type: 'static', value: true },
+            collapsible: { type: 'static', value: true }
+          },
+          style: { width: '300px', height: '200px' }
+        }
+      },
+      icon: 'panel-top-close'
+    },
+    {
+      id: 'collapse',
+      label: 'Collapse',
+      value: {
+        value: 'collapse',
+        additionalData: {
+          action: 'add',
+          input: {
+            components: {
+              type: 'array',
+              value: [
+                { label: 'Section 1', blockName: '', open: true },
+                { label: 'Section 2', blockName: '', open: false }
+              ]
+            }
+          },
+          style: { width: '300px' }
+        }
+      },
+      icon: 'chevrons-down-up'
     }
   ];
 
