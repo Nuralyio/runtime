@@ -23,6 +23,7 @@ import { formDefinition } from '../../params/inputs/form/properties';
 import { colorpickerDefinition } from '../../params/inputs/colorpicker/properties';
 import { iconButtonDefinition } from '../../params/inputs/icon-button/properties';
 import { numberInputDefinition } from '../../params/inputs/number-input/properties';
+import { radioButtonDefinition } from '../../params/inputs/radio-button/properties';
 
 // Layout
 import { containerDefinition } from '../../params/layout/container/properties';
@@ -239,6 +240,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   colorpickerDefinition,
   iconButtonDefinition,
   numberInputDefinition,
+  radioButtonDefinition,
   // Layout
   containerDefinition,
   gridRowDefinition,
