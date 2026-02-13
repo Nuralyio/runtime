@@ -45,6 +45,7 @@ import { fileUploadDefinition } from '../../params/media/file-upload/properties'
 import { buttonDefinition } from '../../params/navigation/button/properties';
 import { linkDefinition } from '../../params/navigation/link/properties';
 import { dropdownDefinition } from '../../params/navigation/dropdown/properties';
+import { embedUrlDefinition } from '../../params/navigation/embed-url/properties';
 
 // Data
 import { tableDefinition } from '../../params/data/table/properties';
@@ -264,6 +265,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   buttonDefinition,
   linkDefinition,
   dropdownDefinition,
+  embedUrlDefinition,
   // Data
   tableDefinition,
   collectionDefinition,
