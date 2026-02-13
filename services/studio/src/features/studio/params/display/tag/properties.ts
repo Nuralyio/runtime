@@ -9,6 +9,8 @@
 
 import {
   text,
+  radio,
+  color,
   icon,
   inputBoolean,
   type PropertyDefinition,
@@ -16,6 +18,7 @@ import {
 } from '../../../core/properties';
 import {
   ComponentInputHandler,
+  createDisabledAwareRadioHandler,
 } from '../../../core/handlers';
 import {
   InputStateHandler,
@@ -23,6 +26,13 @@ import {
 import {
   UpdateInputHandler,
 } from '../../../core/handlers/event-handlers';
+
+// === Custom Options ===
+
+const tagSizeOptions = [
+  { value: 'default', label: 'Default' },
+  { value: 'small', label: 'Small' },
+];
 
 // === Property Definitions ===
 
@@ -55,13 +65,45 @@ const borderedProperty = inputBoolean('tag_bordered', 'bordered', 'Bordered')
   .default(true)
   .build();
 
+const colorProperty = color('tag_color')
+  .label('Color')
+  .inputProperty('color')
+  .width('180px')
+  .placeholder('Preset or custom color')
+  .valueHandler(new ComponentInputHandler('color', ''))
+  .stateHandler(new InputStateHandler('color'))
+  .onChange(new UpdateInputHandler('color', 'string'))
+  .withInputHandler('color')
+  .build();
+
+const sizeProperty = radio('tag_size')
+  .label('Size')
+  .inputProperty('size')
+  .width('180px')
+  .default('default')
+  .valueHandler(createDisabledAwareRadioHandler('size', tagSizeOptions, 'default', 'default'))
+  .on('changed', new UpdateInputHandler('size', 'string'))
+  .withInputHandler('size')
+  .build();
+
+const checkableProperty = inputBoolean('tag_checkable', 'checkable', 'Checkable').build();
+
+const checkedProperty = inputBoolean('tag_checked', 'checked', 'Checked').build();
+
+const disabledProperty = inputBoolean('tag_disabled', 'disabled', 'Disabled').build();
+
 // === Export ===
 
 export const tagProperties: PropertyDefinition[] = [
   labelProperty,
-  closableProperty,
-  iconProperty,
+  colorProperty,
+  sizeProperty,
   borderedProperty,
+  closableProperty,
+  checkableProperty,
+  checkedProperty,
+  disabledProperty,
+  iconProperty,
 ];
 
 export const tagDefinition: ComponentDefinition = {
@@ -75,7 +117,7 @@ export const tagDefinition: ComponentDefinition = {
     collapseTitle: 'Tag Properties',
   },
   properties: tagProperties,
-  events: ['click', 'close'],
+  events: ['click', 'close', 'checkedChange'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

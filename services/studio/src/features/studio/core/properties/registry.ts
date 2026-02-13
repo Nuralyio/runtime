@@ -44,6 +44,7 @@ import { menuDefinition } from '../../params/data/menu/properties';
 
 // Display
 import { badgeDefinition } from '../../params/display/badge/properties';
+import { tagDefinition } from '../../params/display/tag/properties';
 
 // Content
 import { codeDefinition } from '../../params/content/code/properties';
@@ -184,6 +185,7 @@ const EVENT_METADATA: Record<string, { label: string; description: string }> = {
   start: { label: 'On Start', description: 'Triggered when started' },
   complete: { label: 'On Complete', description: 'Triggered when completed' },
   progress: { label: 'On Progress', description: 'Triggered on progress update' },
+  checkedChange: { label: 'On Checked Change', description: 'Triggered when checked state changes' },
   checkboxChanged: { label: 'On Checkbox Changed', description: 'Triggered when checkbox state changes' },
 };
 
@@ -249,6 +251,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   menuDefinition,
   // Display
   badgeDefinition,
+  tagDefinition,
   // Content
   codeDefinition,
   documentDefinition,
