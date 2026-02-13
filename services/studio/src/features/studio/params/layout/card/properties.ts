@@ -29,6 +29,7 @@ import {
 const cardSizeOptions = [
   { value: 'small', label: 'S' },
   { value: 'default', label: 'M' },
+  { value: 'large', label: 'L' },
 ];
 
 const borderedOptions = [
@@ -38,15 +39,15 @@ const borderedOptions = [
 
 // === Property Definitions ===
 
-const titleProperty = text('card_title')
-  .label('Title')
-  .inputProperty('title')
+const headerProperty = text('card_header')
+  .label('Header')
+  .inputProperty('header')
   .width('180px')
   .default('')
-  .placeholder('Card title')
-  .valueHandler(new ComponentInputHandler('title', ''))
-  .stateHandler(new InputStateHandler('title'))
-  .onChange(new UpdateInputHandler('title', 'string'))
+  .placeholder('Card header')
+  .valueHandler(new ComponentInputHandler('header', ''))
+  .stateHandler(new InputStateHandler('header'))
+  .onChange(new UpdateInputHandler('header', 'string'))
   .build();
 
 const sizeProperty = radio('card_size')
@@ -78,7 +79,7 @@ const loadingProperty = inputBoolean('card_loading', 'loading', 'Loading').build
 // === Export ===
 
 export const cardProperties: PropertyDefinition[] = [
-  titleProperty,
+  headerProperty,
   sizeProperty,
   borderedProperty,
   hoverableProperty,
