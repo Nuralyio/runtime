@@ -72,7 +72,7 @@ export const documentDefinition: ComponentDefinition = {
     collapseTitle: 'Document Properties',
   },
   properties: documentProperties,
-  events: ['load', 'error'],
+  events: ['load', 'error', 'click'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

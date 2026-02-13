@@ -154,7 +154,7 @@ export const datepickerDefinition: ComponentDefinition = {
     collapseTitle: 'Datepicker Properties',
   },
   properties: datepickerProperties,
-  events: ['change', 'open', 'close'],
+  events: ['change', 'open', 'close', 'focus', 'blur'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

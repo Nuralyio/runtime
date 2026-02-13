@@ -198,7 +198,7 @@ export const textareaDefinition: ComponentDefinition = {
     collapseTitle: 'Textarea Fields',
   },
   properties: textareaProperties,
-  events: ['valueChange', 'focus', 'blur', 'keypress'],
+  events: ['valueChange', 'focus', 'blur', 'keypress', 'clear'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

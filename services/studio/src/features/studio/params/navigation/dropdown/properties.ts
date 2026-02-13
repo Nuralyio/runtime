@@ -141,7 +141,7 @@ export const dropdownDefinition: ComponentDefinition = {
     collapseTitle: 'Dropdown Properties',
   },
   properties: dropdownProperties,
-  events: ['open', 'close', 'select'],
+  events: ['open', 'close', 'select', 'click'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

@@ -36,7 +36,7 @@ export const embedDefinition: ComponentDefinition = {
     collapseTitle: 'Embed Properties',
   },
   properties: embedProperties,
-  events: ['load', 'error'],
+  events: ['load', 'error', 'click', 'focus', 'blur'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

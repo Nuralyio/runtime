@@ -129,7 +129,7 @@ export const iconDefinition: ComponentDefinition = {
     collapseTitle: 'Icon Properties',
   },
   properties: iconProperties,
-  events: ['click'],
+  events: ['click', 'iconClick'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',

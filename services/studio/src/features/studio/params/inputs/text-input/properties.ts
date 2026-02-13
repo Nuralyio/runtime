@@ -296,7 +296,7 @@ export const textInputDefinition: ComponentDefinition = {
     collapseTitle: 'Input Fields',
   },
   properties: textInputProperties,
-  events: ['valueChange', 'focus', 'blur', 'keypress', 'keydown', 'keyup'],
+  events: ['valueChange', 'focus', 'blur', 'keypress', 'keydown', 'keyup', 'clear'],
   themeVariables: [
     '--input-bg',
     '--input-border',
