@@ -32,6 +32,7 @@ import { gridRowDefinition } from '../../params/layout/grid-row/properties';
 import { gridColDefinition } from '../../params/layout/grid-col/properties';
 import { cardDefinition } from '../../params/layout/card/properties';
 import { collapseDefinition } from '../../params/layout/collapse/properties';
+import { panelDefinition } from '../../params/layout/panel/properties';
 
 // Media
 import { imageDefinition } from '../../params/media/image/properties';
@@ -251,6 +252,7 @@ const ALL_DEFINITIONS: ComponentDefinition[] = [
   gridColDefinition,
   cardDefinition,
   collapseDefinition,
+  panelDefinition,
   // Media
   imageDefinition,
   iconDefinition,
