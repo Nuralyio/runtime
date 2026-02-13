@@ -80,6 +80,8 @@ const variantProperty = select('variant')
 
 const requiredProperty = inputBoolean('required', 'required', 'Required').build();
 
+const disabledProperty = inputBoolean('disabled', 'disabled', 'Disabled').build();
+
 const forProperty = inputText('for', 'for', 'For (Input ID)')
   .placeholder('Enter input ID')
   .build();
@@ -91,6 +93,7 @@ export const textLabelProperties: PropertyDefinition[] = [
   sizeProperty,
   variantProperty,
   requiredProperty,
+  disabledProperty,
   forProperty,
 ];
 
@@ -105,7 +108,7 @@ export const textLabelDefinition: ComponentDefinition = {
     collapseTitle: 'Label Properties',
   },
   properties: textLabelProperties,
-  events: ['click'],
+  events: ['click', 'mouseenter', 'mouseleave'],
   includeCommonProperties: [
     'component_value_text_block',
     'component_id_text_block',
