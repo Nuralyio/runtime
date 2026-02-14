@@ -47,3 +47,6 @@
 	path = services/parcour
 	url = https://github.com/Nuralyio/parcour.git
 	branch = main
+[submodule "services/document-generator"]
+	path = services/document-generator
+	url = https://github.com/Nuralyio/document-generator.git
