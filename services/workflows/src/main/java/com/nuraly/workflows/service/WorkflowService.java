@@ -288,6 +288,26 @@ public class WorkflowService {
         return workflowDTOMapper.toDTO(entity);
     }
 
+    public WorkflowDTO setVerified(UUID workflowId, boolean verified) throws WorkflowNotFoundException {
+        WorkflowEntity entity = WorkflowEntity.findById(workflowId);
+        if (entity == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+        entity.verified = verified;
+        entity.persist();
+        return workflowDTOMapper.toDTO(entity);
+    }
+
+    public WorkflowDTO setEditorChoice(UUID workflowId, boolean editorChoice) throws WorkflowNotFoundException {
+        WorkflowEntity entity = WorkflowEntity.findById(workflowId);
+        if (entity == null) {
+            throw new WorkflowNotFoundException("Workflow not found with id: " + workflowId);
+        }
+        entity.editorChoice = editorChoice;
+        entity.persist();
+        return workflowDTOMapper.toDTO(entity);
+    }
+
     public WorkflowDTO createFromTemplate(UUID templateId, CreateFromTemplateRequest request, String userUuid)
             throws WorkflowNotFoundException {
         WorkflowEntity template = WorkflowEntity.findById(templateId);

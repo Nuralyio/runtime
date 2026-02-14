@@ -252,6 +252,44 @@ public class WorkflowResource {
         }
     }
 
+    @PUT
+    @Path("/{id}/verify")
+    @Operation(summary = "Set or unset a workflow template as verified")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Verified flag updated successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<WorkflowDTO> setVerified(
+            @PathParam("id") UUID id,
+            Map<String, Boolean> body) {
+        try {
+            boolean verified = body != null && Boolean.TRUE.equals(body.get("verified"));
+            WorkflowDTO updated = workflowService.setVerified(id, verified);
+            return RestResponse.ok(updated);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
+    @PUT
+    @Path("/{id}/editor-choice")
+    @Operation(summary = "Set or unset a workflow template as editor's choice")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Editor's choice flag updated successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<WorkflowDTO> setEditorChoice(
+            @PathParam("id") UUID id,
+            Map<String, Boolean> body) {
+        try {
+            boolean editorChoice = body != null && Boolean.TRUE.equals(body.get("editorChoice"));
+            WorkflowDTO updated = workflowService.setEditorChoice(id, editorChoice);
+            return RestResponse.ok(updated);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
+
     @POST
     @Path("/create-from-template/{templateId}")
     @Operation(summary = "Create a new workflow from a template")
