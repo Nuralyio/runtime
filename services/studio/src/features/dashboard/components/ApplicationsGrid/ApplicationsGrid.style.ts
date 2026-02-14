@@ -510,6 +510,26 @@ export const applicationsGridStyles = css`
     flex: 1;
   }
 
+  .template-search {
+    margin-bottom: 16px;
+    width: 100%;
+    --nuraly-input-height: 32px;
+    --nuraly-input-font-size: 13px;
+  }
+
+  .template-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .template-pagination-info {
+    font-size: 12px;
+    color: var(--nuraly-color-text-secondary, #5c5c7a);
+  }
+
   .template-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
