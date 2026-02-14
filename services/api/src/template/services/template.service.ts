@@ -26,7 +26,8 @@ export class TemplateService {
     name: string,
     description: string,
     category: string,
-    userId: string
+    userId: string,
+    thumbnail?: string | null
   ): Promise<AppTemplate> {
     // Verify app exists
     await this.applicationService.findApplicationById(appId);
@@ -64,7 +65,7 @@ export class TemplateService {
       functions,
     };
 
-    const template = new AppTemplate(name, description, category, appId, userId, snapshot);
+    const template = new AppTemplate(name, description, category, appId, userId, snapshot, false, false, false, thumbnail);
     return await this.templateRepository.create(template);
   }
 

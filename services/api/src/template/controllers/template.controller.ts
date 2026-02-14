@@ -9,6 +9,7 @@ interface CreateTemplateRequest {
   name: string;
   description?: string;
   category?: string;
+  thumbnail?: string | null;
 }
 
 interface InstantiateTemplateRequest {
@@ -51,7 +52,8 @@ export class TemplateController extends Controller {
       body.name,
       body.description || '',
       body.category || '',
-      request.user.uuid
+      request.user.uuid,
+      body.thumbnail
     );
   }
 
