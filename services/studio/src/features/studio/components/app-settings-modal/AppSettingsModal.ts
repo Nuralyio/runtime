@@ -169,6 +169,43 @@ export class AppSettingsModal extends LitElement {
       margin-top: 4px;
     }
 
+    .thumbnail-upload {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .thumbnail-preview {
+      width: 80px;
+      height: 52px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--nuraly-color-border, #e0e0e0);
+    }
+
+    .thumbnail-placeholder {
+      width: 80px;
+      height: 52px;
+      border-radius: 6px;
+      border: 1px dashed var(--nuraly-color-border, #e0e0e0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--nuraly-color-text-secondary, #666);
+      background: var(--nuraly-color-background-secondary, #f5f5f5);
+    }
+
+    .thumbnail-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .thumbnail-upload input[type="file"] {
+      display: none;
+    }
+
     .access-row {
       display: flex;
       align-items: center;
@@ -203,6 +240,7 @@ export class AppSettingsModal extends LitElement {
   @state() private templateName = '';
   @state() private templateDescription = '';
   @state() private templateCategory = '';
+  @state() private templateThumbnail: string | null = null;
   @state() private isSavingTemplate = false;
 
   // i18n settings
@@ -365,6 +403,7 @@ export class AppSettingsModal extends LitElement {
     this.templateName = this.appName;
     this.templateDescription = this.appDescription;
     this.templateCategory = '';
+    this.templateThumbnail = null;
     this.showTemplateForm = true;
   }
 
@@ -384,6 +423,36 @@ export class AppSettingsModal extends LitElement {
     this.templateCategory = e.detail?.value || '';
   }
 
+  private handleThumbnailUploadClick(): void {
+    const input = this.shadowRoot?.querySelector('#thumbnail-file-input') as HTMLInputElement;
+    input?.click();
+  }
+
+  private handleThumbnailFileChange(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) return;
+
+    // Limit to 500KB
+    if (file.size > 512000) {
+      this.message = { type: 'error', text: 'Thumbnail must be under 500KB' };
+      setTimeout(() => this.message = null, 3000);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.templateThumbnail = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private handleRemoveThumbnail(): void {
+    this.templateThumbnail = null;
+  }
+
   private async handleSaveAsTemplate(): Promise<void> {
     const appId = this.getAppId();
     if (!appId || !this.templateName.trim() || this.isSavingTemplate) return;
@@ -399,6 +468,7 @@ export class AppSettingsModal extends LitElement {
           name: this.templateName.trim(),
           description: this.templateDescription.trim(),
           category: this.templateCategory.trim(),
+          thumbnail: this.templateThumbnail,
         }),
       });
 
@@ -643,6 +713,29 @@ export class AppSettingsModal extends LitElement {
                   placeholder="e.g. Marketing, Analytics, Data..."
                   @nr-input=${this.handleTemplateCategoryInput}
                 ></nr-input>
+              </div>
+              <div>
+                <label class="form-label">Thumbnail</label>
+                <div class="thumbnail-upload">
+                  ${this.templateThumbnail
+                    ? html`<img class="thumbnail-preview" src=${this.templateThumbnail} alt="Thumbnail" />`
+                    : html`<div class="thumbnail-placeholder">No image</div>`
+                  }
+                  <div class="thumbnail-actions">
+                    <nr-button type="default" size="small" @click=${this.handleThumbnailUploadClick}>
+                      ${this.templateThumbnail ? 'Change' : 'Upload'}
+                    </nr-button>
+                    ${this.templateThumbnail ? html`
+                      <nr-button type="default" size="small" @click=${this.handleRemoveThumbnail}>Remove</nr-button>
+                    ` : nothing}
+                  </div>
+                  <input
+                    type="file"
+                    id="thumbnail-file-input"
+                    accept="image/*"
+                    @change=${this.handleThumbnailFileChange}
+                  />
+                </div>
               </div>
               <div class="template-form-actions">
                 <nr-button

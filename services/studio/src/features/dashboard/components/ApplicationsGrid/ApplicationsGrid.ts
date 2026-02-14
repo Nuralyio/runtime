@@ -40,6 +40,7 @@ interface ApplicationTemplate {
   name: string;
   description: string;
   category: string;
+  thumbnail?: string | null;
   createdBy: string;
   verified: boolean;
   editorChoice: boolean;
@@ -171,6 +172,7 @@ export class ApplicationsGrid extends LitElement {
               name: t.name,
               description: t.description || '',
               category: t.category || '',
+              thumbnail: t.thumbnail || null,
               createdBy: t.createdBy || '',
               verified: t.verified || false,
               editorChoice: t.editorChoice || false,
@@ -180,6 +182,70 @@ export class ApplicationsGrid extends LitElement {
     } catch (error) {
       console.error('Failed to load templates:', error);
     } finally {
+      // TODO: Remove mock data after testing
+      const mockTemplates: ApplicationTemplate[] = [
+        {
+          id: 'mock-1',
+          name: 'CRM Dashboard',
+          description: 'A complete customer relationship management dashboard with contacts, deals, and analytics.',
+          category: 'Business',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: true,
+          editorChoice: true,
+        },
+        {
+          id: 'mock-2',
+          name: 'E-Commerce Store',
+          description: 'Full-featured online store with product catalog, cart, and checkout flow.',
+          category: 'E-Commerce',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: true,
+          editorChoice: true,
+        },
+        {
+          id: 'mock-3',
+          name: 'Project Tracker',
+          description: 'Kanban-style project management tool with tasks, sprints, and team collaboration.',
+          category: 'Productivity',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: true,
+          editorChoice: false,
+        },
+        {
+          id: 'mock-4',
+          name: 'Analytics Dashboard',
+          description: 'Real-time data visualization dashboard with charts, KPIs, and filters.',
+          category: 'Analytics',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: true,
+          editorChoice: false,
+        },
+        {
+          id: 'mock-5',
+          name: 'Blog Platform',
+          description: 'Content management system with rich text editor, categories, and comments.',
+          category: 'Content',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: true,
+          editorChoice: false,
+        },
+        {
+          id: 'mock-6',
+          name: 'Inventory Manager',
+          description: 'Track stock levels, orders, and suppliers with barcode scanning support.',
+          category: 'Business',
+          thumbnail: null,
+          createdBy: 'system',
+          verified: false,
+          editorChoice: false,
+        },
+      ];
+      this.availableTemplates = [...mockTemplates, ...this.availableTemplates];
       this.templatesLoading = false;
     }
   }
@@ -528,9 +594,14 @@ export class ApplicationsGrid extends LitElement {
         @click=${() => this.handleSelectTemplate(template)}
       >
         ${badge}
-        <div class="template-card-icon">
-          <nr-icon name="layout-template"></nr-icon>
-        </div>
+        ${template.thumbnail
+          ? html`<img class="template-card-thumbnail" src=${template.thumbnail} alt=${template.name} />`
+          : html`
+            <div class="template-card-icon">
+              <nr-icon name="layout-template"></nr-icon>
+            </div>
+          `
+        }
         <h3 class="template-card-name">${template.name}</h3>
         <p class="template-card-description">${template.description}</p>
         ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
