@@ -19,6 +19,7 @@ import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.messaging.RabbitMQConnectionManager;
 import com.nuraly.workflows.messaging.WorkflowExecutionMessage;
 import com.nuraly.workflows.messaging.WorkflowExecutionProducer;
+import com.nuraly.workflows.triggers.connectors.TelegramConnector;
 import com.nuraly.library.logging.LogClient;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -64,7 +65,8 @@ public class WorkflowTriggerService {
 
         // Set webhook URLs
         for (WorkflowTriggerDTO dto : dtos) {
-            if (dto.getType() == TriggerType.WEBHOOK && dto.getWebhookToken() != null) {
+            if ((dto.getType() == TriggerType.WEBHOOK || dto.getType() == TriggerType.TELEGRAM_BOT)
+                    && dto.getWebhookToken() != null) {
                 dto.setWebhookUrl(configuration.webhookBaseUrl + "/api/v1/webhooks/" + dto.getWebhookToken());
             }
         }
@@ -85,7 +87,7 @@ public class WorkflowTriggerService {
         trigger.persist();
 
         WorkflowTriggerDTO result = triggerDTOMapper.toDTO(trigger);
-        if (result.getType() == TriggerType.WEBHOOK) {
+        if (result.getType() == TriggerType.WEBHOOK || result.getType() == TriggerType.TELEGRAM_BOT) {
             result.setWebhookUrl(configuration.webhookBaseUrl + "/api/v1/webhooks/" + trigger.webhookToken);
         }
 
@@ -104,7 +106,7 @@ public class WorkflowTriggerService {
         trigger.persist();
 
         WorkflowTriggerDTO result = triggerDTOMapper.toDTO(trigger);
-        if (result.getType() == TriggerType.WEBHOOK) {
+        if (result.getType() == TriggerType.WEBHOOK || result.getType() == TriggerType.TELEGRAM_BOT) {
             result.setWebhookUrl(configuration.webhookBaseUrl + "/api/v1/webhooks/" + trigger.webhookToken);
         }
 
@@ -614,5 +616,46 @@ public class WorkflowTriggerService {
         eventService.logExecutionQueued(execution);
 
         return execution;
+    }
+
+    /**
+     * Validate the Telegram secret token for a webhook trigger.
+     */
+    public boolean validateTelegramSecret(String webhookToken, String secretToken,
+                                           TelegramConnector telegramConnector) {
+        WorkflowTriggerEntity trigger = WorkflowTriggerEntity.find("webhookToken", webhookToken).firstResult();
+        if (trigger == null || trigger.type != TriggerType.TELEGRAM_BOT) {
+            return false;
+        }
+
+        TelegramConnector.TelegramWebhookConnection conn =
+            telegramConnector.getWebhookConnection(trigger.id);
+        if (conn == null) {
+            return false;
+        }
+
+        return secretToken.equals(conn.getSecretToken());
+    }
+
+    /**
+     * Process a Telegram webhook update by routing it through the connector.
+     */
+    public void processTelegramWebhookUpdate(String webhookToken, JsonNode payload,
+                                              TelegramConnector telegramConnector) {
+        WorkflowTriggerEntity trigger = WorkflowTriggerEntity.find("webhookToken", webhookToken).firstResult();
+        if (trigger == null) {
+            throw new TriggerNotFoundException("Invalid webhook token");
+        }
+
+        if (!trigger.enabled) {
+            throw new IllegalStateException("Trigger is disabled");
+        }
+
+        // Update last triggered time
+        trigger.lastTriggeredAt = Instant.now();
+        trigger.persist();
+
+        // Route to the Telegram connector for processing
+        telegramConnector.processWebhookUpdate(trigger.id, payload);
     }
 }
