@@ -467,6 +467,43 @@ export const applicationsGridStyles = css`
     --nuraly-icon-color: var(--nuraly-color-text, #0f0f3c);
   }
 
+  .template-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--nuraly-color-border, #e8e8f0);
+    padding: 0 20px;
+    gap: 0;
+  }
+
+  .template-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 150ms ease;
+    white-space: nowrap;
+  }
+
+  .template-tab:hover {
+    color: var(--nuraly-color-text, #0f0f3c);
+  }
+
+  .template-tab.active {
+    color: var(--nuraly-color-primary, #14144b);
+    border-bottom-color: var(--nuraly-color-primary, #14144b);
+  }
+
+  .template-empty-state {
+    text-align: center;
+    padding: 32px;
+    color: var(--nuraly-color-text-secondary, #666);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
   .template-modal-body {
     padding: 20px;
     overflow-y: auto;
