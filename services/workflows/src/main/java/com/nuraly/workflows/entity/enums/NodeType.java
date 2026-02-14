@@ -54,6 +54,9 @@ public enum NodeType {
     CONTEXT_BUILDER,// Build context from retrieved documents - Phase 3
     RERANKER,       // Re-rank search results - Phase 4
 
+    // Document generation
+    DOCUMENT_GENERATOR, // Generate Word documents from templates via document-generator service
+
     // Storage nodes
     FILE_STORAGE,   // Store files to S3, MinIO, or local filesystem
 
