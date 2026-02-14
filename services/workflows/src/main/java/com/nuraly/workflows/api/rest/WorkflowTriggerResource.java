@@ -9,6 +9,7 @@ import com.nuraly.workflows.exception.TriggerNotFoundException;
 import com.nuraly.workflows.exception.WorkflowNotFoundException;
 import com.nuraly.workflows.service.TriggerManagerService;
 import com.nuraly.workflows.service.WorkflowTriggerService;
+import com.nuraly.workflows.triggers.connectors.TelegramConnector;
 import com.nuraly.library.permission.RequiresPermission;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -41,6 +42,9 @@ public class WorkflowTriggerResource {
 
     @Inject
     Configuration configuration;
+
+    @Inject
+    TelegramConnector telegramConnector;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -161,8 +165,21 @@ public class WorkflowTriggerResource {
     })
     public Response triggerWebhook(
             @PathParam("token") String token,
+            @HeaderParam("X-Telegram-Bot-Api-Secret-Token") String telegramSecretToken,
             JsonNode payload) {
         try {
+            // Validate Telegram secret token if present
+            if (telegramSecretToken != null && !telegramSecretToken.isEmpty()) {
+                if (!triggerService.validateTelegramSecret(token, telegramSecretToken, telegramConnector)) {
+                    return Response.status(Response.Status.FORBIDDEN)
+                            .entity("{\"error\": \"Invalid secret token\"}")
+                            .build();
+                }
+                // This is a Telegram webhook delivery — process via connector
+                triggerService.processTelegramWebhookUpdate(token, payload, telegramConnector);
+                return Response.ok("{\"status\": \"triggered\"}").build();
+            }
+
             // Check if workflow has HTTP_START node (sync mode)
             if (configuration.httpSyncEnabled && triggerService.hasHttpStartNode(token)) {
                 LOG.infof("Triggering sync webhook: token=%s", token);

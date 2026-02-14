@@ -143,6 +143,12 @@ public class Configuration {
     @ConfigProperty(name = "workflows.trigger.telegram.polling-timeout-s", defaultValue = "30")
     public int telegramPollingTimeoutSeconds;
 
+    @ConfigProperty(name = "workflows.trigger.telegram.webhook.max-connections", defaultValue = "40")
+    public int telegramWebhookMaxConnections;
+
+    @ConfigProperty(name = "workflows.trigger.telegram.webhook.drop-pending-updates", defaultValue = "false")
+    public boolean telegramWebhookDropPendingUpdates;
+
     // Slack connector settings
     @ConfigProperty(name = "workflows.trigger.slack.reconnect-delay-ms", defaultValue = "5000")
     public long slackReconnectDelayMs;
