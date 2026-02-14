@@ -6,7 +6,7 @@
  * Uses existing box-model-display component for margin/padding.
  */
 
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { updateComponentAttributes } from "../../../../runtime/redux/actions/component/updateComponentAttributes";
 import type { ComponentElement } from "../../../../runtime/redux/store/component/component.interface";
@@ -19,13 +19,13 @@ import { ExecuteInstance } from "../../../../runtime/state/runtime-context";
 import "../../../../runtime/components/ui/components/display/BoxModel/BoxModel";
 // Import the border editor component
 import "../../../../runtime/components/ui/components/display/BorderEditor/BorderEditor";
+import { COMPONENT_CSS_VARS } from "./style-configs";
 
 /**
  * CSS Variable mapping for component types
  * Maps standard CSS properties to component-specific CSS variables
  */
 const CSS_VAR_MAPPING: Record<string, Record<string, string>> = {
-  // Text components (use underscore to match component.type)
   "text_label": {
     "font-family": "--nuraly-label-font-family",
     "font-size": "--nuraly-font-size",
@@ -38,7 +38,7 @@ const CSS_VAR_MAPPING: Record<string, Record<string, string>> = {
     "font-weight": "--nuraly-font-weight",
     "color": "--nuraly-text-color",
   },
-  "nr_button": {
+  "button_input": {
     "font-family": "--nuraly-button-font-family",
     "font-size": "--nuraly-button-font-size",
     "background-color": "--nuraly-button-background-color",
@@ -57,14 +57,14 @@ export class NativeStylePanel extends LitElement {
       display: block;
       /* Override panel CSS variables to zero */
       --nuraly-panel-padding: 0;
-      
+
       --nuraly-panel-body-padding-small: 0;
       --nuraly-panel-body-padding-medium: 0;
       --nuraly-panel-body-padding-large: 0;
       --nuraly-panel-header-padding: 0;
       --nuraly-panel-header-padding-small: 0;
       --nuraly-panel-header-padding-medium: 0;
-      --nuraly-panel-header-font-weight: 400; 
+      --nuraly-panel-header-font-weight: 400;
       --nuraly-panel-header-padding-large: 0;
       --nuraly-panel-header-font-size: 11px;
     }
@@ -380,6 +380,50 @@ export class NativeStylePanel extends LitElement {
     `;
   }
 
+  // === Component CSS Variable Sections ===
+
+  private renderCssVarControl(
+    cssVar: string,
+    type: 'color' | 'text',
+    defaultValue: string,
+    placeholder?: string
+  ) {
+    if (type === 'color') {
+      return html`
+        <nr-color-picker
+          size="small"
+          .value=${this.getStyleValue(cssVar) || defaultValue}
+          @nr-color-change=${(e: CustomEvent) => this.updateStyle(cssVar, e.detail.value)}
+        ></nr-color-picker>
+      `;
+    }
+    return html`
+      <nr-input
+        size="small"
+        .value=${this.getStyleValue(cssVar) || defaultValue}
+        placeholder=${placeholder || defaultValue}
+        @nr-input=${(e: CustomEvent) => this.updateStyle(cssVar, e.detail.value)}
+      ></nr-input>
+    `;
+  }
+
+  private renderCssVarSection(title: string, variables: Array<{ label: string; cssVar: string; type: 'color' | 'text'; default: string; placeholder?: string }>) {
+    return html`
+      <div class="section-title">${title}</div>
+      <div class="section-content">
+        ${variables.map(v => this.renderPropertyRow(v.label,
+          this.renderCssVarControl(v.cssVar, v.type, v.default, v.placeholder)
+        ))}
+      </div>
+    `;
+  }
+
+  private renderComponentVariables() {
+    const config = COMPONENT_CSS_VARS[this.component?.type || ''];
+    if (!config) return nothing;
+    return this.renderCssVarSection(config.title, config.variables);
+  }
+
   override render() {
     if (!this.component) {
       if (this.page) {
@@ -506,6 +550,9 @@ export class NativeStylePanel extends LitElement {
           @onChange=${this.handleBorderChange}
         ></border-editor-display>
       </div>
+
+      <!-- Component-specific CSS Variables -->
+      ${this.renderComponentVariables()}
     `;
   }
 }

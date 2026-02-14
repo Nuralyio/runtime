@@ -27,6 +27,10 @@ export class RightPanel extends LitElement {
         flex-direction: column;
         height: 100%;
         width: 100%;
+      }
+      aside > :last-child {
+        flex: 1;
+        min-height: 0;
       }`];
 
   @state()

@@ -47,14 +47,13 @@ export class StudioControlPanel extends LitElement {
     }
 
     nr-panel::part(body) {
-      height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     .panel-content {
-      height: 100%;
+      flex: 1;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -93,12 +92,6 @@ export class StudioControlPanel extends LitElement {
     nr-tabs::part(tab-content) {
       flex: 1;
       min-height: 0;
-      overflow-y: auto;
-    }
-
-    .tab-content {
-      padding: 0;
-      height: 100%;
       overflow-y: auto;
     }
 
