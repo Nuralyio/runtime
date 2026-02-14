@@ -641,7 +641,8 @@ public class WorkflowTriggerService {
      * Process a Telegram webhook update by routing it through the connector.
      */
     public void processTelegramWebhookUpdate(String webhookToken, JsonNode payload,
-                                              TelegramConnector telegramConnector) {
+                                              TelegramConnector telegramConnector)
+            throws TriggerNotFoundException {
         WorkflowTriggerEntity trigger = WorkflowTriggerEntity.find("webhookToken", webhookToken).firstResult();
         if (trigger == null) {
             throw new TriggerNotFoundException("Invalid webhook token");
