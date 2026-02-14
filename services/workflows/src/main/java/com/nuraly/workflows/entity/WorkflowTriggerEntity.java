@@ -90,7 +90,7 @@ public class WorkflowTriggerEntity extends PanacheEntityBase {
     public void prePersist() {
         createdAt = Instant.now();
         updatedAt = Instant.now();
-        if (type == TriggerType.WEBHOOK && webhookToken == null) {
+        if ((type == TriggerType.WEBHOOK || type == TriggerType.TELEGRAM_BOT) && webhookToken == null) {
             webhookToken = UUID.randomUUID().toString();
         }
     }
