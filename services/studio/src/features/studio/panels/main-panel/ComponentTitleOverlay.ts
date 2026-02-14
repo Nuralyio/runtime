@@ -1,7 +1,8 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { type Ref } from "lit/directives/ref.js";
 import { type ComponentElement } from '@nuraly/runtime/redux/store';
+import { PositionTracker } from './position-tracker';
 
 @customElement("component-title-overlay")
 export class ComponentTitleOverlay extends LitElement {
@@ -9,38 +10,15 @@ export class ComponentTitleOverlay extends LitElement {
   @property({ type: Object }) componentRef: Ref<HTMLElement> | null = null;
   @property({ type: Boolean }) isSelected: boolean = false;
   @property({ type: Number }) opacity: number = 1;
-  
-  @state() position = { top: 0, left: 0 };
-  private animationFrameId: number;
 
-  connectedCallback() {
-    super.connectedCallback();
-    
-    // Start continuous position update loop
-    const updateLoop = () => {
-      this.updatePosition();
-      this.animationFrameId = requestAnimationFrame(updateLoop);
-    };
-    this.animationFrameId = requestAnimationFrame(updateLoop);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-  }
-
-  private updatePosition() {
-    if (this.componentRef?.value) {
-      const rect = this.componentRef.value.getBoundingClientRect();
-      this.position = {
-        top: rect.top - 22,
-        left: rect.left
-      };
-      this.requestUpdate();
-    }
-  }
+  private tracker = new PositionTracker(
+    this,
+    () => this.componentRef,
+    (rect) => ({
+      top: rect.top - 22,
+      left: rect.left,
+    }),
+  );
 
   protected render() {
     if (!this.component || !this.componentRef?.value) {
@@ -52,7 +30,7 @@ export class ComponentTitleOverlay extends LitElement {
     return html`
       <div
         draggable=${this.isSelected}
-        style="position: fixed; top: ${this.position.top}px; left: ${this.position.left}px; z-index: 1001; pointer-events: ${pointerEvents}; opacity: ${this.opacity}; cursor: ${this.isSelected ? 'move' : 'default'};"
+        style="position: fixed; top: ${this.tracker.position.top}px; left: ${this.tracker.position.left}px; z-index: 1001; pointer-events: ${pointerEvents}; opacity: ${this.opacity}; cursor: ${this.isSelected ? 'move' : 'default'};"
       >
         <component-title
           .component=${this.component}
