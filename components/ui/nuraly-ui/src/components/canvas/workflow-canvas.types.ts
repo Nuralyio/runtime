@@ -37,6 +37,8 @@ export enum WorkflowNodeType {
   // Web nodes
   WEB_SEARCH = 'WEB_SEARCH',
   WEB_CRAWL = 'WEB_CRAWL',
+  // Document generation
+  DOCUMENT_GENERATOR = 'DOCUMENT_GENERATOR',
   // Storage nodes
   FILE_STORAGE = 'FILE_STORAGE',
   // RAG nodes
@@ -602,6 +604,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   // Web nodes
   [WorkflowNodeType.WEB_SEARCH]: '#3b82f6',
   [WorkflowNodeType.WEB_CRAWL]: '#6366f1',
+  // Document generation
+  [WorkflowNodeType.DOCUMENT_GENERATOR]: '#0284c7',
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: '#f59e0b',
   // RAG nodes
@@ -700,6 +704,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   // Web nodes
   [WorkflowNodeType.WEB_SEARCH]: 'search',
   [WorkflowNodeType.WEB_CRAWL]: 'globe',
+  // Document generation
+  [WorkflowNodeType.DOCUMENT_GENERATOR]: 'file-text',
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: 'hard-drive',
   // RAG nodes
@@ -1226,6 +1232,27 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Pages' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Document generation
+  {
+    type: WorkflowNodeType.DOCUMENT_GENERATOR,
+    name: 'Document Generator',
+    description: 'Generate Word documents from templates with dynamic data',
+    icon: NODE_ICONS[WorkflowNodeType.DOCUMENT_GENERATOR],
+    color: NODE_COLORS[WorkflowNodeType.DOCUMENT_GENERATOR],
+    category: 'documents',
+    defaultConfig: {
+      templateId: '',
+      data: {},
+      outputVariable: 'documentResult',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
     },

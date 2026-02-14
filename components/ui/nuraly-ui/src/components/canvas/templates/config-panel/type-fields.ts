@@ -45,6 +45,8 @@ import {
   // Web nodes
   renderWebSearchFields,
   renderWebCrawlFields,
+  // Document generation
+  renderDocumentGeneratorFields,
   // Storage nodes
   renderFileStorageFields,
   // RAG nodes
@@ -139,6 +141,10 @@ export function renderTypeFields(
 
     case WorkflowNodeType.WEB_CRAWL:
       return renderWebCrawlFields(config, onUpdate);
+
+    // Document generation
+    case WorkflowNodeType.DOCUMENT_GENERATOR:
+      return renderDocumentGeneratorFields(config, onUpdate);
 
     // Storage nodes
     case WorkflowNodeType.FILE_STORAGE:

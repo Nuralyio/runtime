@@ -32,6 +32,8 @@ export { renderOcrFields } from './ocr-fields.js';
 // Web nodes
 export { renderWebSearchFields } from './web-search-fields.js';
 export { renderWebCrawlFields } from './web-crawl-fields.js';
+// Document generation
+export { renderDocumentGeneratorFields } from './document-generator-fields.js';
 // Storage nodes
 export { renderFileStorageFields } from './file-storage-fields.js';
 // RAG nodes
