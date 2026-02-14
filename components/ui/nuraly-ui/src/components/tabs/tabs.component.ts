@@ -202,7 +202,7 @@ export class NrTabsElement extends NuralyUIBaseMixin(LitElement) implements
           ${this.renderTabs()}
           <div></div>
         </div>
-        <div class="tab-content" role="tabpanel">
+        <div class="tab-content" part="tab-content" role="tabpanel">
           ${this.renderActiveTab()}
         </div>
       </div>

@@ -742,7 +742,7 @@ export class NrPanelElement extends NuralyUIBaseMixin(LitElement)
         
         ${this.renderHeader()}
         
-        <div class="panel-body">
+        <div class="panel-body" part="body">
           <slot></slot>
         </div>
         
