@@ -9,6 +9,7 @@ import { html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import styles from './ApplicationsGrid.style';
 import { formatDate, type ApplicationWithStatus } from '../../services/dashboard.service';
+import { getCurrentUser } from '../../../runtime/handlers/runtime-api/user';
 import {
   $pinnedApplications,
   $applicationsViewMode,
@@ -39,7 +40,10 @@ interface ApplicationTemplate {
   name: string;
   description: string;
   category: string;
+  createdBy: string;
 }
+
+type TemplateTab = 'community' | 'my-templates';
 type ViewMode = 'cards' | 'table';
 
 @customElement('applications-grid')
@@ -64,6 +68,7 @@ export class ApplicationsGrid extends LitElement {
   @state() private isCreating = false;
   @state() private availableTemplates: ApplicationTemplate[] = [];
   @state() private templatesLoading = false;
+  @state() private templateTab: TemplateTab = 'community';
 
   private unsubscribes: (() => void)[] = [];
 
@@ -164,6 +169,7 @@ export class ApplicationsGrid extends LitElement {
               name: t.name,
               description: t.description || '',
               category: t.category || '',
+              createdBy: t.createdBy || '',
             }))
           : [];
       }
@@ -179,6 +185,7 @@ export class ApplicationsGrid extends LitElement {
     this.showTemplateModal = true;
     this.selectedTemplate = null;
     this.templateAppName = '';
+    this.templateTab = 'community';
     // Refresh templates
     this.loadTemplates();
   }
@@ -484,6 +491,53 @@ export class ApplicationsGrid extends LitElement {
     `;
   }
 
+  private get communityTemplates(): ApplicationTemplate[] {
+    const userId = getCurrentUser()?.uuid;
+    return this.availableTemplates.filter(t => t.createdBy !== userId);
+  }
+
+  private get myTemplates(): ApplicationTemplate[] {
+    const userId = getCurrentUser()?.uuid;
+    if (!userId) return [];
+    return this.availableTemplates.filter(t => t.createdBy === userId);
+  }
+
+  private handleTemplateTabChange(tab: TemplateTab) {
+    this.templateTab = tab;
+    this.selectedTemplate = null;
+    this.templateAppName = '';
+  }
+
+  private renderTemplateGrid(templates: ApplicationTemplate[], emptyMessage: string) {
+    if (this.templatesLoading) {
+      return html`<div class="template-empty-state">Loading templates...</div>`;
+    }
+
+    if (templates.length === 0) {
+      return html`<div class="template-empty-state">${emptyMessage}</div>`;
+    }
+
+    return html`
+      <div class="template-grid">
+        ${templates.map(
+          template => html`
+            <div
+              class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
+              @click=${() => this.handleSelectTemplate(template)}
+            >
+              <div class="template-card-icon">
+                <nr-icon name="layout-template"></nr-icon>
+              </div>
+              <h3 class="template-card-name">${template.name}</h3>
+              <p class="template-card-description">${template.description}</p>
+              ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
+            </div>
+          `
+        )}
+      </div>
+    `;
+  }
+
   private renderTemplateModal() {
     if (!this.showTemplateModal) return nothing;
 
@@ -496,32 +550,24 @@ export class ApplicationsGrid extends LitElement {
               <nr-icon name="x"></nr-icon>
             </button>
           </div>
+          <div class="template-tabs">
+            <button
+              class="template-tab ${this.templateTab === 'community' ? 'active' : ''}"
+              @click=${() => this.handleTemplateTabChange('community')}
+            >
+              Community
+            </button>
+            <button
+              class="template-tab ${this.templateTab === 'my-templates' ? 'active' : ''}"
+              @click=${() => this.handleTemplateTabChange('my-templates')}
+            >
+              My Templates
+            </button>
+          </div>
           <div class="template-modal-body">
-            ${this.templatesLoading ? html`
-              <div style="text-align: center; padding: 32px; color: var(--nuraly-color-text-secondary, #666);">Loading templates...</div>
-            ` : this.availableTemplates.length === 0 ? html`
-              <div style="text-align: center; padding: 32px; color: var(--nuraly-color-text-secondary, #666);">
-                No templates available yet. Save an app as a template from App Settings.
-              </div>
-            ` : html`
-              <div class="template-grid">
-                ${this.availableTemplates.map(
-                  template => html`
-                    <div
-                      class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
-                      @click=${() => this.handleSelectTemplate(template)}
-                    >
-                      <div class="template-card-icon">
-                        <nr-icon name="layout-template"></nr-icon>
-                      </div>
-                      <h3 class="template-card-name">${template.name}</h3>
-                      <p class="template-card-description">${template.description}</p>
-                      ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
-                    </div>
-                  `
-                )}
-              </div>
-            `}
+            ${this.templateTab === 'community'
+              ? this.renderTemplateGrid(this.communityTemplates, 'No community templates available yet.')
+              : this.renderTemplateGrid(this.myTemplates, 'You haven\'t saved any templates yet. Save an app as a template from App Settings.')}
             ${this.selectedTemplate ? html`
               <div style="margin-top: 16px;">
                 <label style="font-size: 12px; font-weight: 500; color: var(--nuraly-color-text-secondary, #666); margin-bottom: 4px; display: block;">
