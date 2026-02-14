@@ -98,9 +98,9 @@ public class DocumentService {
 
     @Transactional
     public Path generate(GenerateRequest request) throws IOException {
-        TemplateEntity template = TemplateEntity.findById(request.getTemplateId());
+        TemplateEntity template = TemplateEntity.findById(request.templateId);
         if (template == null) {
-            throw new TemplateNotFoundException(request.getTemplateId());
+            throw new TemplateNotFoundException(request.templateId);
         }
 
         Path outputDir = Paths.get(config.uploadPath, "generated");
@@ -109,7 +109,7 @@ public class DocumentService {
         String outputFileName = UUID.randomUUID() + ".docx";
         Path outputPath = outputDir.resolve(outputFileName);
 
-        XWPFTemplate rendered = XWPFTemplate.compile(template.filePath).render(request.getData());
+        XWPFTemplate rendered = XWPFTemplate.compile(template.filePath).render(request.data);
         rendered.writeToFile(outputPath.toString());
         rendered.close();
 
@@ -152,8 +152,8 @@ public class DocumentService {
             Map<String, Object> data = objectMapper.readValue(job.inputData, new TypeReference<>() {});
 
             GenerateRequest request = new GenerateRequest();
-            request.setTemplateId(job.template.id);
-            request.setData(data);
+            request.templateId = job.template.id;
+            request.data = data;
 
             Path outputPath = generate(request);
             job.outputPath = outputPath.toString();
