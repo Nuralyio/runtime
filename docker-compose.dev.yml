@@ -203,6 +203,33 @@ services:
       - nuraly-network
     restart: unless-stopped
 
+  # Document Generator - Word Document Generation Service
+  document-generator:
+    build:
+      context: ./services/document-generator
+      dockerfile: Dockerfile.dev
+    ports:
+      - "7008:7008"
+    volumes:
+      - ./services/document-generator:/app
+      - docgen_maven_cache:/root/.m2
+    environment:
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://postgres:5432/docgen_dev
+      - QUARKUS_DATASOURCE_USERNAME=postgres
+      - QUARKUS_DATASOURCE_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    env_file:
+      - config/dev.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - nuraly-network
+    restart: unless-stopped
+
   # TextLens - OCR API Service
   textlens-api:
     build:
@@ -492,6 +519,7 @@ volumes:
   conduit_maven_cache:
   journal_maven_cache:
   parcour_maven_cache:
+  docgen_maven_cache:
 
 networks:
   nuraly-network:
