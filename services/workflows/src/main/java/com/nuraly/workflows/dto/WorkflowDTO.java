@@ -23,6 +23,8 @@ public class WorkflowDTO {
     private String variables;
     private String viewport; // JSON string: {"zoom": 1, "panX": 0, "panY": 0}
     private Boolean isTemplate;
+    private Boolean verified;
+    private Boolean editorChoice;
     private List<WorkflowNodeDTO> nodes;
     private List<WorkflowEdgeDTO> edges;
     private List<WorkflowTriggerDTO> triggers;

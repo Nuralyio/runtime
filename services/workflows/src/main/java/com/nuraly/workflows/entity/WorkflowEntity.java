@@ -53,6 +53,12 @@ public class WorkflowEntity extends PanacheEntityBase {
     @Column(name = "is_template")
     public Boolean isTemplate = false;
 
+    @Column(name = "verified")
+    public Boolean verified = false;
+
+    @Column(name = "editor_choice")
+    public Boolean editorChoice = false;
+
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     public List<WorkflowNodeEntity> nodes = new ArrayList<>();
 
