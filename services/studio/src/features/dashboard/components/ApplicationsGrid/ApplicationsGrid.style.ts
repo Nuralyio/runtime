@@ -537,6 +537,15 @@ export const applicationsGridStyles = css`
     background: var(--nuraly-color-primary-bg, #f0f0ff);
   }
 
+  .template-card-thumbnail {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: var(--nuraly-color-background-active, #e8e8f0);
+  }
+
   .template-card-icon {
     display: flex;
     align-items: center;
