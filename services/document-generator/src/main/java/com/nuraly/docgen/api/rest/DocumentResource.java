@@ -21,12 +21,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
-@Path("/api/v1/documents")
+@jakarta.ws.rs.Path("/api/v1/documents")
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Document Generator", description = "Operations for generating Word documents from templates")
 public class DocumentResource {
@@ -35,7 +34,7 @@ public class DocumentResource {
     DocumentService documentService;
 
     @POST
-    @Path("/templates")
+    @jakarta.ws.rs.Path("/templates")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Upload a document template")
     @APIResponses(value = {
@@ -62,7 +61,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/templates")
+    @jakarta.ws.rs.Path("/templates")
     @Operation(summary = "List templates")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Templates retrieved successfully")
@@ -74,7 +73,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/templates/{id}")
+    @jakarta.ws.rs.Path("/templates/{id}")
     @Operation(summary = "Get template details")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Template retrieved successfully"),
@@ -90,7 +89,7 @@ public class DocumentResource {
     }
 
     @DELETE
-    @Path("/templates/{id}")
+    @jakarta.ws.rs.Path("/templates/{id}")
     @Operation(summary = "Delete a template")
     @APIResponses(value = {
         @APIResponse(responseCode = "204", description = "Template deleted successfully"),
@@ -106,7 +105,7 @@ public class DocumentResource {
     }
 
     @POST
-    @Path("/generate")
+    @jakarta.ws.rs.Path("/generate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Operation(summary = "Generate a document synchronously")
@@ -117,7 +116,7 @@ public class DocumentResource {
     })
     public RestResponse<byte[]> generate(@Valid GenerateRequest request) {
         try {
-            Path outputPath = documentService.generate(request);
+            java.nio.file.Path outputPath = documentService.generate(request);
             byte[] fileBytes = Files.readAllBytes(outputPath);
 
             return RestResponse.ResponseBuilder.ok(fileBytes)
@@ -132,7 +131,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/jobs/{id}")
+    @jakarta.ws.rs.Path("/jobs/{id}")
     @Operation(summary = "Check job status")
     @APIResponses(value = {
         @APIResponse(responseCode = "200", description = "Job status retrieved"),
@@ -147,7 +146,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/files/{filename}")
+    @jakarta.ws.rs.Path("/files/{filename}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Operation(summary = "Download a generated file")
     @APIResponses(value = {
@@ -156,7 +155,7 @@ public class DocumentResource {
     })
     public RestResponse<byte[]> downloadFile(@PathParam("filename") String filename) {
         try {
-            Path filePath = Paths.get("/app/uploads/generated", filename);
+            java.nio.file.Path filePath = Paths.get("/app/uploads/generated", filename);
             if (!Files.exists(filePath)) {
                 return RestResponse.status(RestResponse.Status.NOT_FOUND);
             }

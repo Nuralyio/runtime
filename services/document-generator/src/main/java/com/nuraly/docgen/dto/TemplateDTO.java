@@ -1,16 +1,13 @@
 package com.nuraly.docgen.dto;
 
-import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
 
-@Data
 public class TemplateDTO {
 
-    private UUID id;
-    private String name;
-    private String description;
-    private String applicationId;
-    private Instant createdAt;
+    public UUID id;
+    public String name;
+    public String description;
+    public String applicationId;
+    public Instant createdAt;
 }

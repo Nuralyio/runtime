@@ -50,12 +50,6 @@
             <artifactId>quarkus-arc</artifactId>
         </dependency>
 
-        <!-- Multipart file upload -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest-multipart</artifactId>
-        </dependency>
-
         <!-- Database -->
         <dependency>
             <groupId>io.quarkus</groupId>
