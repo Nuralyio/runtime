@@ -302,6 +302,7 @@ model AppTemplate {
   category    String   @default("")
   thumbnail   String?
   public      Boolean  @default(false)
+  verified    Boolean  @default(false)
   sourceAppId String   @map("source_app_id")
   createdBy   String   @map("created_by")
   snapshot    Json
