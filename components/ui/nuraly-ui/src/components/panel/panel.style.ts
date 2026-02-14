@@ -165,7 +165,6 @@ export const styles = css`
     position: relative;
     width: 100% !important;  /* Override size-specific widths */
     height: 100% !important; /* Override size-specific heights */
-    display: block;
   }
 
   /* Special handling for tabs in embedded panels */
@@ -329,7 +328,7 @@ export const styles = css`
   .panel-body {
     padding: var(--nuraly-panel-padding);
     flex: 1;
-    height: 100%;
+    min-height: 0;
     overflow: auto;
   }
 
