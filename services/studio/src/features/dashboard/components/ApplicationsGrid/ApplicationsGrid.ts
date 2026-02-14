@@ -38,54 +38,8 @@ interface ApplicationTemplate {
   id: string;
   name: string;
   description: string;
-  icon: string;
   category: string;
 }
-
-const APPLICATION_TEMPLATES: ApplicationTemplate[] = [
-  {
-    id: 'form-builder',
-    name: 'Form Builder',
-    description: 'Build dynamic forms with validation and submission handling',
-    icon: 'file-text',
-    category: 'Input',
-  },
-  {
-    id: 'dashboard',
-    name: 'Dashboard',
-    description: 'Create an interactive dashboard with charts and metrics',
-    icon: 'layout-dashboard',
-    category: 'Analytics',
-  },
-  {
-    id: 'crud-app',
-    name: 'CRUD Application',
-    description: 'Full create, read, update, delete operations template',
-    icon: 'database',
-    category: 'Data',
-  },
-  {
-    id: 'landing-page',
-    name: 'Landing Page',
-    description: 'Marketing landing page with hero and feature sections',
-    icon: 'globe',
-    category: 'Marketing',
-  },
-  {
-    id: 'user-portal',
-    name: 'User Portal',
-    description: 'User account management with profile and settings',
-    icon: 'users',
-    category: 'Auth',
-  },
-  {
-    id: 'wizard-flow',
-    name: 'Multi-Step Wizard',
-    description: 'Guide users through a multi-step process or onboarding',
-    icon: 'git-branch',
-    category: 'Flow',
-  },
-];
 type ViewMode = 'cards' | 'table';
 
 @customElement('applications-grid')
@@ -106,7 +60,10 @@ export class ApplicationsGrid extends LitElement {
   @state() private showTemplateModal = false;
   @state() private selectedTemplate: ApplicationTemplate | null = null;
   @state() private appName = '';
+  @state() private templateAppName = '';
   @state() private isCreating = false;
+  @state() private availableTemplates: ApplicationTemplate[] = [];
+  @state() private templatesLoading = false;
 
   private unsubscribes: (() => void)[] = [];
 
@@ -115,6 +72,9 @@ export class ApplicationsGrid extends LitElement {
 
     // Initialize preferences
     initUserPreferences();
+
+    // Load templates from API
+    this.loadTemplates();
 
     // Subscribe to stores
     this.unsubscribes.push(
@@ -190,10 +150,37 @@ export class ApplicationsGrid extends LitElement {
     this.appName = '';
   }
 
+  private async loadTemplates(): Promise<void> {
+    this.templatesLoading = true;
+    try {
+      const response = await fetch('/api/templates', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const templates = await response.json();
+        this.availableTemplates = Array.isArray(templates)
+          ? templates.map((t: any) => ({
+              id: t.id,
+              name: t.name,
+              description: t.description || '',
+              category: t.category || '',
+            }))
+          : [];
+      }
+    } catch (error) {
+      console.error('Failed to load templates:', error);
+    } finally {
+      this.templatesLoading = false;
+    }
+  }
+
   private handleShowTemplateModal() {
     this.showCreateDropdown = false;
     this.showTemplateModal = true;
     this.selectedTemplate = null;
+    this.templateAppName = '';
+    // Refresh templates
+    this.loadTemplates();
   }
 
   private handleCloseTemplateModal() {
@@ -251,17 +238,32 @@ export class ApplicationsGrid extends LitElement {
     }
   }
 
+  private handleTemplateAppNameInput(e: CustomEvent) {
+    this.templateAppName = (e.target as HTMLInputElement).value || '';
+  }
+
   private async handleCreateFromTemplate() {
     if (!this.selectedTemplate || this.isCreating) return;
 
+    const name = this.templateAppName.trim() || this.selectedTemplate.name;
+
     this.isCreating = true;
     try {
-      // Create app with template name
-      const app = await this.createApplication(this.selectedTemplate.name);
-      if (app?.uuid) {
+      const response = await fetch(`/api/templates/${this.selectedTemplate.id}/instantiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to instantiate template: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      if (result?.uuid) {
         this.handleCloseTemplateModal();
-        // TODO: Apply template to the app
-        window.location.href = `/app/studio/${app.uuid}`;
+        window.location.href = `/app/studio/${result.uuid}`;
       } else {
         console.error('Failed to create application from template: No UUID returned');
       }
@@ -495,23 +497,45 @@ export class ApplicationsGrid extends LitElement {
             </button>
           </div>
           <div class="template-modal-body">
-            <div class="template-grid">
-              ${APPLICATION_TEMPLATES.map(
-                template => html`
-                  <div
-                    class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
-                    @click=${() => this.handleSelectTemplate(template)}
-                  >
-                    <div class="template-card-icon">
-                      <nr-icon name=${template.icon}></nr-icon>
+            ${this.templatesLoading ? html`
+              <div style="text-align: center; padding: 32px; color: var(--nuraly-color-text-secondary, #666);">Loading templates...</div>
+            ` : this.availableTemplates.length === 0 ? html`
+              <div style="text-align: center; padding: 32px; color: var(--nuraly-color-text-secondary, #666);">
+                No templates available yet. Save an app as a template from App Settings.
+              </div>
+            ` : html`
+              <div class="template-grid">
+                ${this.availableTemplates.map(
+                  template => html`
+                    <div
+                      class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
+                      @click=${() => this.handleSelectTemplate(template)}
+                    >
+                      <div class="template-card-icon">
+                        <nr-icon name="layout-template"></nr-icon>
+                      </div>
+                      <h3 class="template-card-name">${template.name}</h3>
+                      <p class="template-card-description">${template.description}</p>
+                      ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
                     </div>
-                    <h3 class="template-card-name">${template.name}</h3>
-                    <p class="template-card-description">${template.description}</p>
-                    <span class="template-card-category">${template.category}</span>
-                  </div>
-                `
-              )}
-            </div>
+                  `
+                )}
+              </div>
+            `}
+            ${this.selectedTemplate ? html`
+              <div style="margin-top: 16px;">
+                <label style="font-size: 12px; font-weight: 500; color: var(--nuraly-color-text-secondary, #666); margin-bottom: 4px; display: block;">
+                  Application Name
+                </label>
+                <nr-input
+                  type="text"
+                  placeholder=${this.selectedTemplate.name}
+                  size="small"
+                  .value=${this.templateAppName}
+                  @nr-input=${this.handleTemplateAppNameInput}
+                ></nr-input>
+              </div>
+            ` : nothing}
           </div>
           <div class="template-modal-footer">
             <nr-button type="default" size="small" @click=${this.handleCloseTemplateModal}>

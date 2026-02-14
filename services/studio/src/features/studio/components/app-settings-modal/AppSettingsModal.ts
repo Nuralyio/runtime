@@ -136,6 +136,39 @@ export class AppSettingsModal extends LitElement {
       width: 100%;
     }
 
+    .template-section {
+      border: 1px solid var(--nuraly-color-border, #e0e0e0);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--nuraly-color-background-secondary, #f5f5f5);
+    }
+
+    .template-section-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--nuraly-color-text-primary, #333);
+    }
+
+    .template-section-description {
+      font-size: 12px;
+      color: var(--nuraly-color-text-secondary, #666);
+      margin-bottom: 12px;
+    }
+
+    .template-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .template-form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     .access-row {
       display: flex;
       align-items: center;
@@ -164,6 +197,13 @@ export class AppSettingsModal extends LitElement {
   @state() private customDomain = '';
   @state() private requiresAuthOnly = false;
   @state() private message: { type: 'success' | 'error'; text: string } | null = null;
+
+  // Template states
+  @state() private showTemplateForm = false;
+  @state() private templateName = '';
+  @state() private templateDescription = '';
+  @state() private templateCategory = '';
+  @state() private isSavingTemplate = false;
 
   // i18n settings
   @state() private i18nEnabled = false;
@@ -318,6 +358,61 @@ export class AppSettingsModal extends LitElement {
     const app = getVarValue('global', 'currentEditingApplication') as any;
     if (app) {
       $currentApplication.set({ ...app, i18n });
+    }
+  }
+
+  private handleShowTemplateForm(): void {
+    this.templateName = this.appName;
+    this.templateDescription = this.appDescription;
+    this.templateCategory = '';
+    this.showTemplateForm = true;
+  }
+
+  private handleCancelTemplate(): void {
+    this.showTemplateForm = false;
+  }
+
+  private handleTemplateNameInput(e: CustomEvent): void {
+    this.templateName = e.detail?.value || '';
+  }
+
+  private handleTemplateDescriptionInput(e: CustomEvent): void {
+    this.templateDescription = e.detail?.value || '';
+  }
+
+  private handleTemplateCategoryInput(e: CustomEvent): void {
+    this.templateCategory = e.detail?.value || '';
+  }
+
+  private async handleSaveAsTemplate(): Promise<void> {
+    const appId = this.getAppId();
+    if (!appId || !this.templateName.trim() || this.isSavingTemplate) return;
+
+    this.isSavingTemplate = true;
+    try {
+      const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          sourceAppId: appId,
+          name: this.templateName.trim(),
+          description: this.templateDescription.trim(),
+          category: this.templateCategory.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save template');
+      }
+
+      this.message = { type: 'success', text: 'Template saved successfully' };
+      this.showTemplateForm = false;
+      setTimeout(() => this.message = null, 3000);
+    } catch (error: any) {
+      this.message = { type: 'error', text: error.message || 'Failed to save template' };
+    } finally {
+      this.isSavingTemplate = false;
     }
   }
 
@@ -509,6 +604,68 @@ export class AppSettingsModal extends LitElement {
               </div>
             </div>
           ` : nothing}
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Save as Template Section -->
+        <div class="template-section">
+          <div class="template-section-title">Save as Template</div>
+          <div class="template-section-description">
+            Save this application as a reusable template that can be used to create new apps.
+          </div>
+          ${this.showTemplateForm ? html`
+            <div class="template-form">
+              <div>
+                <label class="form-label">Template Name</label>
+                <nr-input
+                  size="small"
+                  .value=${this.templateName}
+                  placeholder="My Template"
+                  @nr-input=${this.handleTemplateNameInput}
+                ></nr-input>
+              </div>
+              <div>
+                <label class="form-label">Description</label>
+                <nr-textarea
+                  size="small"
+                  .value=${this.templateDescription}
+                  placeholder="Describe what this template includes..."
+                  rows="2"
+                  @nr-change=${this.handleTemplateDescriptionInput}
+                ></nr-textarea>
+              </div>
+              <div>
+                <label class="form-label">Category</label>
+                <nr-input
+                  size="small"
+                  .value=${this.templateCategory}
+                  placeholder="e.g. Marketing, Analytics, Data..."
+                  @nr-input=${this.handleTemplateCategoryInput}
+                ></nr-input>
+              </div>
+              <div class="template-form-actions">
+                <nr-button
+                  type="primary"
+                  size="small"
+                  ?disabled=${!this.templateName.trim() || this.isSavingTemplate}
+                  ?loading=${this.isSavingTemplate}
+                  @click=${this.handleSaveAsTemplate}
+                >Save Template</nr-button>
+                <nr-button
+                  type="default"
+                  size="small"
+                  @click=${this.handleCancelTemplate}
+                >Cancel</nr-button>
+              </div>
+            </div>
+          ` : html`
+            <nr-button
+              type="default"
+              size="small"
+              @click=${this.handleShowTemplateForm}
+            >Save as Template</nr-button>
+          `}
         </div>
 
         <div class="divider"></div>
