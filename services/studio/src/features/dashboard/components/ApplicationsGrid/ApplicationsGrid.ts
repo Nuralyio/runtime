@@ -42,6 +42,7 @@ interface ApplicationTemplate {
   category: string;
   createdBy: string;
   verified: boolean;
+  editorChoice: boolean;
 }
 
 type TemplateTab = 'community' | 'my-templates';
@@ -172,6 +173,7 @@ export class ApplicationsGrid extends LitElement {
               category: t.category || '',
               createdBy: t.createdBy || '',
               verified: t.verified || false,
+              editorChoice: t.editorChoice || false,
             }))
           : [];
       }
@@ -493,13 +495,12 @@ export class ApplicationsGrid extends LitElement {
     `;
   }
 
-  private get featuredTemplates(): ApplicationTemplate[] {
-    return this.availableTemplates.filter(t => t.verified);
+  private get editorChoiceTemplates(): ApplicationTemplate[] {
+    return this.availableTemplates.filter(t => t.editorChoice);
   }
 
-  private get communityTemplates(): ApplicationTemplate[] {
-    const userId = getCurrentUser()?.uuid;
-    return this.availableTemplates.filter(t => !t.verified && t.createdBy !== userId);
+  private get featuredTemplates(): ApplicationTemplate[] {
+    return this.availableTemplates.filter(t => t.verified && !t.editorChoice);
   }
 
   private get myTemplates(): ApplicationTemplate[] {
@@ -515,12 +516,18 @@ export class ApplicationsGrid extends LitElement {
   }
 
   private renderTemplateCard(template: ApplicationTemplate) {
+    const badge = template.editorChoice
+      ? html`<div class="template-editor-badge"><nr-icon name="award"></nr-icon> Editor's Choice</div>`
+      : template.verified
+        ? html`<div class="template-verified-badge"><nr-icon name="badge-check"></nr-icon> Featured</div>`
+        : nothing;
+
     return html`
       <div
         class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
         @click=${() => this.handleSelectTemplate(template)}
       >
-        ${template.verified ? html`<div class="template-verified-badge"><nr-icon name="badge-check"></nr-icon> Featured</div>` : nothing}
+        ${badge}
         <div class="template-card-icon">
           <nr-icon name="layout-template"></nr-icon>
         </div>
@@ -552,27 +559,30 @@ export class ApplicationsGrid extends LitElement {
       return html`<div class="template-empty-state">Loading templates...</div>`;
     }
 
+    const editorChoice = this.editorChoiceTemplates;
     const featured = this.featuredTemplates;
-    const community = this.communityTemplates;
 
-    if (featured.length === 0 && community.length === 0) {
-      return html`<div class="template-empty-state">No community templates available yet.</div>`;
+    if (editorChoice.length === 0 && featured.length === 0) {
+      return html`<div class="template-empty-state">No templates available yet.</div>`;
     }
 
     return html`
-      ${featured.length > 0 ? html`
+      ${editorChoice.length > 0 ? html`
         <div class="template-section-label">
-          <nr-icon name="badge-check"></nr-icon>
+          <nr-icon name="award"></nr-icon>
           Editor's Choice
         </div>
         <div class="template-grid">
-          ${featured.map(template => this.renderTemplateCard(template))}
+          ${editorChoice.map(template => this.renderTemplateCard(template))}
         </div>
       ` : nothing}
-      ${community.length > 0 ? html`
-        ${featured.length > 0 ? html`<div class="template-section-label" style="margin-top: 20px;">Community</div>` : nothing}
+      ${featured.length > 0 ? html`
+        <div class="template-section-label" style="${editorChoice.length > 0 ? 'margin-top: 20px;' : ''}">
+          <nr-icon name="badge-check"></nr-icon>
+          Featured
+        </div>
         <div class="template-grid">
-          ${community.map(template => this.renderTemplateCard(template))}
+          ${featured.map(template => this.renderTemplateCard(template))}
         </div>
       ` : nothing}
     `;

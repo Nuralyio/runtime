@@ -593,6 +593,21 @@ export const applicationsGridStyles = css`
     --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
   }
 
+  .template-editor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #b45309;
+    background: #fef3c7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    --nuraly-icon-size: 12px;
+    --nuraly-icon-color: #b45309;
+  }
+
   .template-section-label {
     display: flex;
     align-items: center;
