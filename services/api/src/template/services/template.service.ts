@@ -152,7 +152,7 @@ export class TemplateService {
 
   public async update(
     id: string,
-    data: Partial<Pick<AppTemplate, 'name' | 'description' | 'category' | 'thumbnail' | 'public'>>
+    data: Partial<Pick<AppTemplate, 'name' | 'description' | 'category' | 'thumbnail' | 'public' | 'verified'>>
   ): Promise<AppTemplate> {
     return await this.templateRepository.update(id, data);
   }

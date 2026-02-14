@@ -21,6 +21,7 @@ interface UpdateTemplateRequest {
   category?: string;
   thumbnail?: string | null;
   public?: boolean;
+  verified?: boolean;
 }
 
 @Route('/api/templates')
@@ -99,6 +100,7 @@ export class TemplateController extends Controller {
     if (body.category !== undefined) updateData.category = body.category;
     if (body.thumbnail !== undefined) updateData.thumbnail = body.thumbnail;
     if (body.public !== undefined) updateData.public = body.public;
+    if (body.verified !== undefined) updateData.verified = body.verified;
 
     return await this.templateService.update(id, updateData);
   }
