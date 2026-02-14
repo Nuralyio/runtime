@@ -34,6 +34,8 @@ services:
       - BACKEND_PORT=8000
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/nuraly_prod
       - REDIS_URL=redis://redis:6379
+      - WORKFLOWS_URL=http://workflows:7002
+      - FUNCTIONS_URL=http://functions:9000
     env_file:
       - config/prod.env
     depends_on:
