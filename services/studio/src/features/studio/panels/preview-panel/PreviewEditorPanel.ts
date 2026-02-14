@@ -9,6 +9,7 @@ import { eventDispatcher } from '@nuraly/runtime/utils';
 import { ExecuteInstance } from '@nuraly/runtime';
 import '../main-panel/ComponentResizeOverlay.ts';
 import '../main-panel/ComponentTitleOverlay.ts';
+import '../main-panel/ComponentContentTopbar.ts';
 
 /**
  * PreviewEditorPanel - Editor panel that runs INSIDE the iframe
@@ -166,6 +167,11 @@ export class PreviewEditorPanel extends LitElement {
         ` : nothing}
 
         ${this.selectedComponent && this.selectedComponentRef?.value ? keyed(this.selectedComponent.uuid, html`
+          <component-content-topbar
+            .component=${this.selectedComponent}
+            .componentRef=${this.selectedComponentRef}
+          ></component-content-topbar>
+
           <component-title-overlay
             .component=${this.selectedComponent}
             .componentRef=${this.selectedComponentRef}
