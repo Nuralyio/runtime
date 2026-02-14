@@ -58,6 +58,8 @@ import {
   renderContextBuilderFields,
   // Safety nodes
   renderGuardrailFields,
+  // Persistent trigger nodes
+  renderTelegramBotFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -172,6 +174,10 @@ export function renderTypeFields(
     // Safety nodes
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
+
+    // Persistent trigger nodes
+    case WorkflowNodeType.TELEGRAM_BOT:
+      return renderTelegramBotFields(config, onUpdate);
 
     // Display nodes
     case WorkflowNodeType.UI_TABLE:

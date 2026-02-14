@@ -45,3 +45,5 @@ export { renderVectorSearchFields } from './vector-search-fields.js';
 export { renderContextBuilderFields } from './context-builder-fields.js';
 // Safety nodes
 export { renderGuardrailFields } from './guardrail-fields.js';
+// Persistent trigger nodes
+export { renderTelegramBotFields } from './telegram-bot-fields.js';

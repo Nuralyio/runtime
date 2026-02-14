@@ -1557,11 +1557,18 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
   {
     type: WorkflowNodeType.TELEGRAM_BOT,
     name: 'Telegram Bot',
-    description: 'Receive messages from a Telegram bot (long-polling)',
+    description: 'Receive messages from a Telegram bot via polling or webhook',
     icon: NODE_ICONS[WorkflowNodeType.TELEGRAM_BOT],
     color: NODE_COLORS[WorkflowNodeType.TELEGRAM_BOT],
     category: 'trigger',
-    defaultConfig: { botToken: '' },
+    defaultConfig: {
+      botToken: '',
+      mode: 'polling',
+      pollingTimeout: 30,
+      allowedUpdates: [],
+      allowedChatIds: '',
+      allowedUserIds: '',
+    },
     defaultPorts: {
       inputs: [],
       outputs: [
