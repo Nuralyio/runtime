@@ -15,6 +15,7 @@ export class TemplateRepository {
         thumbnail: template.thumbnail,
         public: template.public,
         verified: template.verified,
+        editorChoice: template.editorChoice,
         sourceAppId: template.sourceAppId,
         createdBy: template.createdBy,
         snapshot: template.snapshot as any,
@@ -46,7 +47,7 @@ export class TemplateRepository {
     return this.mapToModel(template);
   }
 
-  public async update(id: string, data: Partial<Pick<AppTemplate, 'name' | 'description' | 'category' | 'thumbnail' | 'public' | 'verified'>>): Promise<AppTemplate> {
+  public async update(id: string, data: Partial<Pick<AppTemplate, 'name' | 'description' | 'category' | 'thumbnail' | 'public' | 'verified' | 'editorChoice'>>): Promise<AppTemplate> {
     const updated = await prisma.appTemplate.update({
       where: { id },
       data,
@@ -71,6 +72,7 @@ export class TemplateRepository {
       data.snapshot as TemplateSnapshot,
       data.public,
       data.verified,
+      data.editorChoice,
       data.thumbnail,
       data.id,
       data.createdAt,

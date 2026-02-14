@@ -22,6 +22,7 @@ interface UpdateTemplateRequest {
   thumbnail?: string | null;
   public?: boolean;
   verified?: boolean;
+  editorChoice?: boolean;
 }
 
 @Route('/api/templates')
@@ -101,6 +102,7 @@ export class TemplateController extends Controller {
     if (body.thumbnail !== undefined) updateData.thumbnail = body.thumbnail;
     if (body.public !== undefined) updateData.public = body.public;
     if (body.verified !== undefined) updateData.verified = body.verified;
+    if (body.editorChoice !== undefined) updateData.editorChoice = body.editorChoice;
 
     return await this.templateService.update(id, updateData);
   }

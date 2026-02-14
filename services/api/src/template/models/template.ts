@@ -47,6 +47,7 @@ export class AppTemplate {
   thumbnail?: string | null;
   public: boolean;
   verified: boolean;
+  editorChoice: boolean;
   sourceAppId: string;
   createdBy: string;
   snapshot: TemplateSnapshot;
@@ -62,6 +63,7 @@ export class AppTemplate {
     snapshot: TemplateSnapshot,
     isPublic: boolean = false,
     verified: boolean = false,
+    editorChoice: boolean = false,
     thumbnail?: string | null,
     id?: string,
     createdAt?: Date,
@@ -76,6 +78,7 @@ export class AppTemplate {
     this.snapshot = snapshot;
     this.public = isPublic;
     this.verified = verified;
+    this.editorChoice = editorChoice;
     this.thumbnail = thumbnail;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
