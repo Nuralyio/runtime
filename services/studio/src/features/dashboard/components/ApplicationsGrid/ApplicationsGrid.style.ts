@@ -578,6 +578,33 @@ export const applicationsGridStyles = css`
     margin-top: 12px;
   }
 
+  .template-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--nuraly-color-primary, #14144b);
+    background: var(--nuraly-color-primary-bg, #f0f0ff);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    --nuraly-icon-size: 12px;
+    --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
+  }
+
+  .template-section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--nuraly-color-text, #0f0f3c);
+    margin-bottom: 12px;
+    --nuraly-icon-size: 16px;
+    --nuraly-icon-color: var(--nuraly-color-primary, #14144b);
+  }
+
   .template-modal-footer {
     display: flex;
     align-items: center;

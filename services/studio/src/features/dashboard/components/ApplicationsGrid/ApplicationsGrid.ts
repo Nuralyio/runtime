@@ -41,6 +41,7 @@ interface ApplicationTemplate {
   description: string;
   category: string;
   createdBy: string;
+  verified: boolean;
 }
 
 type TemplateTab = 'community' | 'my-templates';
@@ -170,6 +171,7 @@ export class ApplicationsGrid extends LitElement {
               description: t.description || '',
               category: t.category || '',
               createdBy: t.createdBy || '',
+              verified: t.verified || false,
             }))
           : [];
       }
@@ -491,9 +493,13 @@ export class ApplicationsGrid extends LitElement {
     `;
   }
 
+  private get featuredTemplates(): ApplicationTemplate[] {
+    return this.availableTemplates.filter(t => t.verified);
+  }
+
   private get communityTemplates(): ApplicationTemplate[] {
     const userId = getCurrentUser()?.uuid;
-    return this.availableTemplates.filter(t => t.createdBy !== userId);
+    return this.availableTemplates.filter(t => !t.verified && t.createdBy !== userId);
   }
 
   private get myTemplates(): ApplicationTemplate[] {
@@ -508,6 +514,23 @@ export class ApplicationsGrid extends LitElement {
     this.templateAppName = '';
   }
 
+  private renderTemplateCard(template: ApplicationTemplate) {
+    return html`
+      <div
+        class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
+        @click=${() => this.handleSelectTemplate(template)}
+      >
+        ${template.verified ? html`<div class="template-verified-badge"><nr-icon name="badge-check"></nr-icon> Featured</div>` : nothing}
+        <div class="template-card-icon">
+          <nr-icon name="layout-template"></nr-icon>
+        </div>
+        <h3 class="template-card-name">${template.name}</h3>
+        <p class="template-card-description">${template.description}</p>
+        ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
+      </div>
+    `;
+  }
+
   private renderTemplateGrid(templates: ApplicationTemplate[], emptyMessage: string) {
     if (this.templatesLoading) {
       return html`<div class="template-empty-state">Loading templates...</div>`;
@@ -519,22 +542,39 @@ export class ApplicationsGrid extends LitElement {
 
     return html`
       <div class="template-grid">
-        ${templates.map(
-          template => html`
-            <div
-              class="template-card ${this.selectedTemplate?.id === template.id ? 'selected' : ''}"
-              @click=${() => this.handleSelectTemplate(template)}
-            >
-              <div class="template-card-icon">
-                <nr-icon name="layout-template"></nr-icon>
-              </div>
-              <h3 class="template-card-name">${template.name}</h3>
-              <p class="template-card-description">${template.description}</p>
-              ${template.category ? html`<span class="template-card-category">${template.category}</span>` : nothing}
-            </div>
-          `
-        )}
+        ${templates.map(template => this.renderTemplateCard(template))}
       </div>
+    `;
+  }
+
+  private renderCommunityTab() {
+    if (this.templatesLoading) {
+      return html`<div class="template-empty-state">Loading templates...</div>`;
+    }
+
+    const featured = this.featuredTemplates;
+    const community = this.communityTemplates;
+
+    if (featured.length === 0 && community.length === 0) {
+      return html`<div class="template-empty-state">No community templates available yet.</div>`;
+    }
+
+    return html`
+      ${featured.length > 0 ? html`
+        <div class="template-section-label">
+          <nr-icon name="badge-check"></nr-icon>
+          Editor's Choice
+        </div>
+        <div class="template-grid">
+          ${featured.map(template => this.renderTemplateCard(template))}
+        </div>
+      ` : nothing}
+      ${community.length > 0 ? html`
+        ${featured.length > 0 ? html`<div class="template-section-label" style="margin-top: 20px;">Community</div>` : nothing}
+        <div class="template-grid">
+          ${community.map(template => this.renderTemplateCard(template))}
+        </div>
+      ` : nothing}
     `;
   }
 
@@ -566,7 +606,7 @@ export class ApplicationsGrid extends LitElement {
           </div>
           <div class="template-modal-body">
             ${this.templateTab === 'community'
-              ? this.renderTemplateGrid(this.communityTemplates, 'No community templates available yet.')
+              ? this.renderCommunityTab()
               : this.renderTemplateGrid(this.myTemplates, 'You haven\'t saved any templates yet. Save an app as a template from App Settings.')}
             ${this.selectedTemplate ? html`
               <div style="margin-top: 16px;">
