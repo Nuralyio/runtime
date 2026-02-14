@@ -18,6 +18,7 @@ import './DashboardWhiteboardView';
 import './DashboardDatabaseView';
 import './DashboardKVView';
 import './DashboardProfileView';
+import './DashboardAdminView';
 import '../../standalone/StandaloneWhiteboardPage';
 
 // Import NuralyUI components
@@ -420,6 +421,13 @@ export class DashboardLayout extends LitElement {
           <dashboard-profile-view
             @navigate=${this.handleNavigate}
           ></dashboard-profile-view>
+        `;
+
+      case 'admin':
+        return html`
+          <dashboard-admin-view
+            @navigate=${this.handleNavigate}
+          ></dashboard-admin-view>
         `;
 
       default:

@@ -12,6 +12,7 @@ import './components/DashboardWhiteboardView';
 import './components/DashboardDatabaseView';
 import './components/DashboardKVView';
 import './components/DashboardProfileView';
+import './components/DashboardAdminView';
 
 // Register legacy dashboard component (for backwards compatibility)
 import './components/Dashboard';
@@ -38,3 +39,4 @@ export { DashboardWhiteboardView } from './components/DashboardWhiteboardView';
 export { DashboardDatabaseView } from './components/DashboardDatabaseView';
 export { DashboardKVView } from './components/DashboardKVView';
 export { DashboardProfileView } from './components/DashboardProfileView';
+export { DashboardAdminView } from './components/DashboardAdminView';

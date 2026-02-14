@@ -187,6 +187,15 @@ export const APIS_URL = {
   getJournalTrace: (correlationId: string) =>
     `${API_BASE}/api/v1/logs/trace/${correlationId}`,
 
+  // App Templates (Admin)
+  getAppTemplates: () => `${API_BASE}/api/templates`,
+  updateAppTemplate: (id: string) => `${API_BASE}/api/templates/${id}`,
+  deleteAppTemplate: (id: string) => `${API_BASE}/api/templates/${id}`,
+
+  // Workflow Templates (Admin)
+  setWorkflowVerified: (id: string) => `${API_BASE}/api/v1/workflows/${id}/verify`,
+  setWorkflowEditorChoice: (id: string) => `${API_BASE}/api/v1/workflows/${id}/editor-choice`,
+
   // Workflow Triggers
   getWorkflowTriggers: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/triggers`,
   getTriggerStatus: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/status`,

@@ -65,6 +65,11 @@ export function parseRoute(pathname: string, search: string = ''): ParsedRoute {
     return { type: 'overview', overviewView: 'services' };
   }
 
+  // /dashboard/admin (admin template management)
+  if (path === '/dashboard/admin') {
+    return { type: 'admin' };
+  }
+
   // /dashboard/profile
   if (path === '/dashboard/profile') {
     return { type: 'profile' };
@@ -195,6 +200,9 @@ export function buildRoutePath(route: ParsedRoute): string {
 
     case 'profile':
       return '/dashboard/profile';
+
+    case 'admin':
+      return '/dashboard/admin';
 
     default:
       return '/dashboard';

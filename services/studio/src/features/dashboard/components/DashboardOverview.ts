@@ -18,6 +18,7 @@ import {
   type DatabaseConnection
 } from '../services/dashboard.service';
 import type { KvEntry } from '../../../services/kv/kv.types';
+import { getCurrentUser } from '../../runtime/handlers/runtime-api/user';
 
 // Import NuralyUI components
 import '../../runtime/components/ui/nuraly-ui/src/components/menu';
@@ -33,7 +34,7 @@ import './DatabaseList/DatabaseList';
 import './JournalList/JournalList';
 import './ServicesStatus/ServicesStatus';
 
-type ActiveView = 'applications' | 'workflows' | 'whiteboards' | 'kv' | 'database' | 'journal' | 'services';
+type ActiveView = 'applications' | 'workflows' | 'whiteboards' | 'kv' | 'database' | 'journal' | 'services' | 'admin';
 
 interface MenuItem {
   text: string;
@@ -482,7 +483,8 @@ export class DashboardOverview extends LitElement {
       'Database': '/dashboard/database',
       'KV Store': '/dashboard/kv',
       'Journal': '/dashboard/journal',
-      'Services': '/dashboard/services'
+      'Services': '/dashboard/services',
+      'Admin': '/dashboard/admin'
     };
     const path = routes[value] || '/dashboard/applications';
 
@@ -536,7 +538,12 @@ export class DashboardOverview extends LitElement {
         text: 'Services',
         icon: 'Activity',
         selected: this.activeView === 'services'
-      }
+      },
+      ...(getCurrentUser()?.roles?.includes('admin') ? [{
+        text: 'Admin',
+        icon: 'Shield',
+        selected: this.activeView === 'admin'
+      }] : [])
     ];
   }
 
