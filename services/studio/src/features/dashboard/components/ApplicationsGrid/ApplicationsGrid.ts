@@ -72,6 +72,9 @@ export class ApplicationsGrid extends LitElement {
   @state() private availableTemplates: ApplicationTemplate[] = [];
   @state() private templatesLoading = false;
   @state() private templateTab: TemplateTab = 'community';
+  @state() private templateSearchQuery = '';
+  @state() private templatePage = 1;
+  private readonly templatesPerPage = 6;
 
   private unsubscribes: (() => void)[] = [];
 
@@ -182,70 +185,6 @@ export class ApplicationsGrid extends LitElement {
     } catch (error) {
       console.error('Failed to load templates:', error);
     } finally {
-      // TODO: Remove mock data after testing
-      const mockTemplates: ApplicationTemplate[] = [
-        {
-          id: 'mock-1',
-          name: 'CRM Dashboard',
-          description: 'A complete customer relationship management dashboard with contacts, deals, and analytics.',
-          category: 'Business',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: true,
-          editorChoice: true,
-        },
-        {
-          id: 'mock-2',
-          name: 'E-Commerce Store',
-          description: 'Full-featured online store with product catalog, cart, and checkout flow.',
-          category: 'E-Commerce',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: true,
-          editorChoice: true,
-        },
-        {
-          id: 'mock-3',
-          name: 'Project Tracker',
-          description: 'Kanban-style project management tool with tasks, sprints, and team collaboration.',
-          category: 'Productivity',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: true,
-          editorChoice: false,
-        },
-        {
-          id: 'mock-4',
-          name: 'Analytics Dashboard',
-          description: 'Real-time data visualization dashboard with charts, KPIs, and filters.',
-          category: 'Analytics',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: true,
-          editorChoice: false,
-        },
-        {
-          id: 'mock-5',
-          name: 'Blog Platform',
-          description: 'Content management system with rich text editor, categories, and comments.',
-          category: 'Content',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: true,
-          editorChoice: false,
-        },
-        {
-          id: 'mock-6',
-          name: 'Inventory Manager',
-          description: 'Track stock levels, orders, and suppliers with barcode scanning support.',
-          category: 'Business',
-          thumbnail: null,
-          createdBy: 'system',
-          verified: false,
-          editorChoice: false,
-        },
-      ];
-      this.availableTemplates = [...mockTemplates, ...this.availableTemplates];
       this.templatesLoading = false;
     }
   }
@@ -256,6 +195,8 @@ export class ApplicationsGrid extends LitElement {
     this.selectedTemplate = null;
     this.templateAppName = '';
     this.templateTab = 'community';
+    this.templateSearchQuery = '';
+    this.templatePage = 1;
     // Refresh templates
     this.loadTemplates();
   }
@@ -575,10 +516,60 @@ export class ApplicationsGrid extends LitElement {
     return this.availableTemplates.filter(t => t.createdBy === userId);
   }
 
+  private matchesTemplateSearch(template: ApplicationTemplate): boolean {
+    if (!this.templateSearchQuery) return true;
+    const q = this.templateSearchQuery.toLowerCase();
+    return (
+      template.name.toLowerCase().includes(q) ||
+      template.description.toLowerCase().includes(q)
+    );
+  }
+
+  private get filteredCommunityTemplates(): ApplicationTemplate[] {
+    return [
+      ...this.editorChoiceTemplates,
+      ...this.featuredTemplates,
+    ].filter(t => this.matchesTemplateSearch(t));
+  }
+
+  private get filteredMyTemplates(): ApplicationTemplate[] {
+    return this.myTemplates.filter(t => this.matchesTemplateSearch(t));
+  }
+
+  private get totalTemplatePages(): number {
+    const templates = this.templateTab === 'community'
+      ? this.filteredCommunityTemplates
+      : this.filteredMyTemplates;
+    return Math.max(1, Math.ceil(templates.length / this.templatesPerPage));
+  }
+
+  private paginateTemplates(templates: ApplicationTemplate[]): ApplicationTemplate[] {
+    const start = (this.templatePage - 1) * this.templatesPerPage;
+    return templates.slice(start, start + this.templatesPerPage);
+  }
+
+  private handleTemplateSearchInput(e: CustomEvent) {
+    this.templateSearchQuery = (e.target as HTMLInputElement).value || '';
+    this.templatePage = 1;
+  }
+
+  private handleTemplatePrevPage() {
+    if (this.templatePage > 1) {
+      this.templatePage--;
+    }
+  }
+
+  private handleTemplateNextPage() {
+    if (this.templatePage < this.totalTemplatePages) {
+      this.templatePage++;
+    }
+  }
+
   private handleTemplateTabChange(tab: TemplateTab) {
     this.templateTab = tab;
     this.selectedTemplate = null;
     this.templateAppName = '';
+    this.templatePage = 1;
   }
 
   private renderTemplateCard(template: ApplicationTemplate) {
@@ -614,13 +605,42 @@ export class ApplicationsGrid extends LitElement {
       return html`<div class="template-empty-state">Loading templates...</div>`;
     }
 
-    if (templates.length === 0) {
-      return html`<div class="template-empty-state">${emptyMessage}</div>`;
+    const filtered = templates.filter(t => this.matchesTemplateSearch(t));
+
+    if (filtered.length === 0) {
+      return html`<div class="template-empty-state">${this.templateSearchQuery ? 'No templates match your search.' : emptyMessage}</div>`;
     }
+
+    const paginated = this.paginateTemplates(filtered);
 
     return html`
       <div class="template-grid">
-        ${templates.map(template => this.renderTemplateCard(template))}
+        ${paginated.map(template => this.renderTemplateCard(template))}
+      </div>
+    `;
+  }
+
+  private renderTemplatePagination() {
+    const totalPages = this.totalTemplatePages;
+    if (totalPages <= 1) return nothing;
+
+    return html`
+      <div class="template-pagination">
+        <nr-button
+          type="default"
+          size="small"
+          iconLeft="chevron-left"
+          ?disabled=${this.templatePage <= 1}
+          @click=${this.handleTemplatePrevPage}
+        ></nr-button>
+        <span class="template-pagination-info">Page ${this.templatePage} of ${totalPages}</span>
+        <nr-button
+          type="default"
+          size="small"
+          iconLeft="chevron-right"
+          ?disabled=${this.templatePage >= totalPages}
+          @click=${this.handleTemplateNextPage}
+        ></nr-button>
       </div>
     `;
   }
@@ -630,30 +650,35 @@ export class ApplicationsGrid extends LitElement {
       return html`<div class="template-empty-state">Loading templates...</div>`;
     }
 
-    const editorChoice = this.editorChoiceTemplates;
-    const featured = this.featuredTemplates;
+    const filtered = this.filteredCommunityTemplates;
 
-    if (editorChoice.length === 0 && featured.length === 0) {
-      return html`<div class="template-empty-state">No templates available yet.</div>`;
+    if (filtered.length === 0) {
+      return html`<div class="template-empty-state">${this.templateSearchQuery ? 'No templates match your search.' : 'No templates available yet.'}</div>`;
     }
 
+    const paginated = this.paginateTemplates(filtered);
+
+    // Split paginated results back into editor's choice and featured
+    const paginatedEditorChoice = paginated.filter(t => t.editorChoice);
+    const paginatedFeatured = paginated.filter(t => !t.editorChoice);
+
     return html`
-      ${editorChoice.length > 0 ? html`
+      ${paginatedEditorChoice.length > 0 ? html`
         <div class="template-section-label">
           <nr-icon name="award"></nr-icon>
           Editor's Choice
         </div>
         <div class="template-grid">
-          ${editorChoice.map(template => this.renderTemplateCard(template))}
+          ${paginatedEditorChoice.map(template => this.renderTemplateCard(template))}
         </div>
       ` : nothing}
-      ${featured.length > 0 ? html`
-        <div class="template-section-label" style="${editorChoice.length > 0 ? 'margin-top: 20px;' : ''}">
+      ${paginatedFeatured.length > 0 ? html`
+        <div class="template-section-label" style="${paginatedEditorChoice.length > 0 ? 'margin-top: 20px;' : ''}">
           <nr-icon name="badge-check"></nr-icon>
           Featured
         </div>
         <div class="template-grid">
-          ${featured.map(template => this.renderTemplateCard(template))}
+          ${paginatedFeatured.map(template => this.renderTemplateCard(template))}
         </div>
       ` : nothing}
     `;
@@ -686,9 +711,20 @@ export class ApplicationsGrid extends LitElement {
             </button>
           </div>
           <div class="template-modal-body">
+            <nr-input
+              type="text"
+              placeholder="Search templates..."
+              size="small"
+              .value=${this.templateSearchQuery}
+              @nr-input=${this.handleTemplateSearchInput}
+              iconLeft="Search"
+              clearable
+              class="template-search"
+            ></nr-input>
             ${this.templateTab === 'community'
               ? this.renderCommunityTab()
               : this.renderTemplateGrid(this.myTemplates, 'You haven\'t saved any templates yet. Save an app as a template from App Settings.')}
+            ${this.renderTemplatePagination()}
             ${this.selectedTemplate ? html`
               <div style="margin-top: 16px;">
                 <label style="font-size: 12px; font-weight: 500; color: var(--nuraly-color-text-secondary, #666); margin-bottom: 4px; display: block;">
