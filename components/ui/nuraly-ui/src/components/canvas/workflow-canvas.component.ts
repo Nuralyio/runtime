@@ -17,6 +17,7 @@ import {
   NodeConfiguration,
   TriggerConnectionState,
   isPersistentTriggerNode,
+  NODE_TEMPLATES,
 } from './workflow-canvas.types.js';
 import type { DatabaseProvider } from './data-node/data-node.types.js';
 import { styles } from './workflow-canvas.style.js';
@@ -153,6 +154,8 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
     messagesReceived?: number;
     lastMessageAt?: string;
     stateReason?: string;
+    webhookUrl?: string;
+    inDevMode?: boolean;
   }> = new Map();
 
   private triggerPollingInterval: ReturnType<typeof setInterval> | null = null;
@@ -227,6 +230,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
     this.removeEventListener('test-workflow-request', this.handleTestWorkflowRequest);
     this.cleanupChatPreview();
     this.stopTriggerPolling();
+    this._cleanupPaletteTouchDrag();
   }
 
   override willUpdate(changedProperties: Map<string | number | symbol, unknown>) {
@@ -289,9 +293,9 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
     if (!this.workflow.id) return;
 
     try {
-      const triggersRes = await fetch(`/api/v1/workflows/${this.workflow.id}/triggers`);
+      const triggersRes = await fetch(`/api/v1/workflows/${this.workflow.id}/trigger-defs`);
       if (!triggersRes.ok) return;
-      const triggers: Array<{ id: string; type: string; name: string }> = await triggersRes.json();
+      const triggers: Array<{ id: string; type: string; name: string; webhookUrl?: string }> = await triggersRes.json();
 
       const persistentTypes = new Set([
         'TELEGRAM_BOT', 'SLACK_SOCKET', 'DISCORD_BOT', 'WHATSAPP_WEBHOOK', 'CUSTOM_WEBSOCKET',
@@ -301,11 +305,11 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
       const statusPromises = persistentTriggers.map(async (trigger) => {
         try {
           const statusRes = await fetch(`/api/v1/triggers/${trigger.id}/status`);
-          if (!statusRes.ok) return null;
+          if (!statusRes.ok) return { trigger, status: null };
           const status = await statusRes.json();
           return { trigger, status };
         } catch {
-          return null;
+          return { trigger, status: null };
         }
       });
 
@@ -314,17 +318,18 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
       const newStatuses = new Map<string, typeof this.triggerStatuses extends Map<string, infer V> ? V : never>();
 
       for (const result of results) {
-        if (!result) continue;
         const { trigger, status } = result;
         const matchingNode = this.workflow.nodes.find(n => n.type === trigger.type);
         if (matchingNode) {
           newStatuses.set(matchingNode.id, {
             triggerId: trigger.id,
-            connectionState: (status.connectionState || 'DISCONNECTED') as TriggerConnectionState,
-            health: status.health,
-            messagesReceived: status.messagesReceived,
-            lastMessageAt: status.lastMessageAt,
-            stateReason: status.stateReason,
+            connectionState: (status?.connectionState || 'DISCONNECTED') as TriggerConnectionState,
+            health: status?.health,
+            messagesReceived: status?.messagesReceived,
+            lastMessageAt: status?.lastMessageAt,
+            stateReason: status?.stateReason,
+            webhookUrl: trigger.webhookUrl,
+            inDevMode: status?.inDevMode,
           });
         }
       }
@@ -338,24 +343,62 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
 
   async activateTrigger(triggerId: string) {
     try {
-      const res = await fetch(`/api/v1/triggers/${triggerId}/activate`, { method: 'POST' });
-      if (res.ok) {
-        await this.fetchTriggerStatuses();
-      }
+      await fetch(`/api/v1/triggers/${triggerId}/activate`, { method: 'POST' });
     } catch {
       // Silently fail
     }
+    await this.fetchTriggerStatuses();
   }
 
   async deactivateTrigger(triggerId: string) {
     try {
-      const res = await fetch(`/api/v1/triggers/${triggerId}/deactivate`, { method: 'POST' });
-      if (res.ok) {
-        await this.fetchTriggerStatuses();
-      }
+      await fetch(`/api/v1/triggers/${triggerId}/deactivate`, { method: 'POST' });
     } catch {
       // Silently fail
     }
+    await this.fetchTriggerStatuses();
+  }
+
+  async createAndActivateTrigger(nodeType: string, config: NodeConfiguration): Promise<string | undefined> {
+    if (!this.workflow?.id) return undefined;
+    try {
+      const createRes = await fetch(`/api/v1/workflows/${this.workflow.id}/trigger-defs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${nodeType} trigger`,
+          type: nodeType,
+          configuration: JSON.stringify(config),
+        }),
+      });
+      if (!createRes.ok) return undefined;
+      const trigger = await createRes.json();
+
+      // Activate the trigger
+      try {
+        await fetch(`/api/v1/triggers/${trigger.id}/activate`, { method: 'POST' });
+      } catch {
+        // Activation may fail but trigger is created
+      }
+
+      // Always refresh statuses so UI updates
+      await this.fetchTriggerStatuses();
+      return trigger.id;
+    } catch {
+      await this.fetchTriggerStatuses();
+      return undefined;
+    }
+  }
+
+  async toggleDevMode(triggerId: string, enable: boolean) {
+    try {
+      await fetch(`/api/v1/triggers/${triggerId}/dev-mode`, {
+        method: enable ? 'POST' : 'DELETE',
+      });
+    } catch {
+      // Silently fail
+    }
+    await this.fetchTriggerStatuses();
   }
 
   // ==================== Chat Preview ====================
@@ -885,6 +928,96 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
     e.dataTransfer?.setData('application/workflow-node-type', type);
   }
 
+  // ===== Touch drag from palette (mobile) =====
+
+  private _touchDragType: NodeType | null = null;
+  private _touchDragGhost: HTMLElement | null = null;
+
+  private _cleanupPaletteTouchDrag() {
+    document.removeEventListener('touchmove', this._handlePaletteTouchMove);
+    document.removeEventListener('touchend', this._handlePaletteTouchEnd);
+    document.removeEventListener('touchcancel', this._handlePaletteTouchEnd);
+    if (this._touchDragGhost) {
+      this._touchDragGhost.remove();
+      this._touchDragGhost = null;
+    }
+    this._touchDragType = null;
+  }
+
+  private handlePaletteItemTouchStart(e: TouchEvent, type: NodeType) {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+
+    this._touchDragType = type;
+
+    // Create ghost element
+    const touch = e.touches[0];
+    const ghost = document.createElement('div');
+    const template = NODE_TEMPLATES.find(t => t.type === type);
+    ghost.textContent = template?.name || type;
+    Object.assign(ghost.style, {
+      position: 'fixed',
+      left: `${touch.clientX - 40}px`,
+      top: `${touch.clientY - 20}px`,
+      padding: '8px 16px',
+      background: template?.color || '#6366f1',
+      color: 'white',
+      borderRadius: '8px',
+      fontSize: '13px',
+      fontWeight: '500',
+      pointerEvents: 'none',
+      zIndex: '10000',
+      opacity: '0.9',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      whiteSpace: 'nowrap',
+    });
+    document.body.appendChild(ghost);
+    this._touchDragGhost = ghost;
+
+    // Bind move/end on document to track across the whole screen
+    document.addEventListener('touchmove', this._handlePaletteTouchMove, { passive: false });
+    document.addEventListener('touchend', this._handlePaletteTouchEnd);
+    document.addEventListener('touchcancel', this._handlePaletteTouchEnd);
+  }
+
+  private _handlePaletteTouchMove = (e: TouchEvent) => {
+    if (!this._touchDragGhost) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    this._touchDragGhost.style.left = `${touch.clientX - 40}px`;
+    this._touchDragGhost.style.top = `${touch.clientY - 20}px`;
+  };
+
+  private _handlePaletteTouchEnd = (e: TouchEvent) => {
+    document.removeEventListener('touchmove', this._handlePaletteTouchMove);
+    document.removeEventListener('touchend', this._handlePaletteTouchEnd);
+    document.removeEventListener('touchcancel', this._handlePaletteTouchEnd);
+
+    // Clean up ghost
+    if (this._touchDragGhost) {
+      this._touchDragGhost.remove();
+      this._touchDragGhost = null;
+    }
+
+    const type = this._touchDragType;
+    this._touchDragType = null;
+    if (!type || this.disabled) return;
+
+    // Check if touch ended over the canvas
+    const touch = e.changedTouches[0];
+    if (!touch || !this.canvasWrapper) return;
+
+    const rect = this.canvasWrapper.getBoundingClientRect();
+    if (
+      touch.clientX >= rect.left && touch.clientX <= rect.right &&
+      touch.clientY >= rect.top && touch.clientY <= rect.bottom
+    ) {
+      const x = (touch.clientX - rect.left - this.viewport.panX) / this.viewport.zoom;
+      const y = (touch.clientY - rect.top - this.viewport.panY) / this.viewport.zoom;
+      this.addNode(type, { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 });
+    }
+  };
+
   private toggleCategory(categoryId: string) {
     if (this.expandedCategories.has(categoryId)) {
       this.expandedCategories.delete(categoryId);
@@ -1099,6 +1232,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
       },
       onToggleCategory: (categoryId) => this.toggleCategory(categoryId),
       onNodeDragStart: (e, type) => this.handlePaletteItemDrag(e, type),
+      onNodeTouchStart: (e, type) => this.handlePaletteItemTouchStart(e, type),
       onNodeDoubleClick: (type) => this.addNode(type),
       onSearchChange: (term) => { this.paletteSearchTerm = term; },
     });
@@ -1107,6 +1241,30 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
   protected override renderConfigPanel() {
     const nodeId = this.configuredNode?.id;
     const nodeExecution = nodeId ? this.nodeExecutionData.get(nodeId) : undefined;
+
+    // Build trigger info/actions for persistent trigger nodes
+    let triggerInfo: import('./templates/config-panel/types.js').TriggerInfo | undefined;
+    let triggerActions: import('./templates/config-panel/types.js').TriggerActions | undefined;
+
+    if (nodeId && this.configuredNode && isPersistentTriggerNode(this.configuredNode.type)) {
+      const ts = this.triggerStatuses.get(nodeId);
+      triggerInfo = {
+        triggerId: ts?.triggerId,
+        status: ts?.connectionState,
+        health: ts?.health,
+        messagesReceived: ts?.messagesReceived,
+        lastMessageAt: ts?.lastMessageAt,
+        stateReason: ts?.stateReason,
+        webhookUrl: ts?.webhookUrl,
+        inDevMode: ts?.inDevMode,
+      };
+      triggerActions = {
+        onActivate: (triggerId) => this.activateTrigger(triggerId),
+        onDeactivate: (triggerId) => this.deactivateTrigger(triggerId),
+        onCreateAndActivate: (nodeType, config) => this.createAndActivateTrigger(nodeType, config),
+        onToggleDevMode: (triggerId, enable) => this.toggleDevMode(triggerId, enable),
+      };
+    }
 
     return renderConfigPanelTemplate({
       node: this.configuredNode,
@@ -1137,6 +1295,8 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
       onCreateKvEntry: this.onCreateKvEntry,
       applicationId: this.applicationId,
       databaseProvider: this.databaseProvider,
+      triggerInfo,
+      triggerActions,
     });
   }
 

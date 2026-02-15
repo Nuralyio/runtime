@@ -28,6 +28,7 @@ const UI_OVERLAY_CLASSES = [
   'config-panel',
   'config-panel-content',
   'wb-action-indicator',
+  'node-palette',
 ];
 
 type GestureType = 'none' | 'pending' | 'pan' | 'drag' | 'pinch';
