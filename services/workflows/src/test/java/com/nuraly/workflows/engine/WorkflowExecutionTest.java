@@ -10,6 +10,7 @@ import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
+import com.nuraly.workflows.llm.dto.LlmMessage;
 import com.nuraly.workflows.service.WorkflowEventService;
 import com.nuraly.workflows.test.WorkflowBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +20,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Pure unit tests for AgentNodeExecutor — no container, no DB.
@@ -372,6 +377,170 @@ class WorkflowExecutionTest {
         assertTrue(result.isSuccess());
         assertNotNull(result.getOutput().get("memoryNodeId"),
                 "Memory node connected via 'context' port should be resolved");
+    }
+
+    // ------------------------------------------------------------------
+    // Agent tool iteration, memory save, RAG context, config merging
+    // ------------------------------------------------------------------
+
+    @Test
+    void agentToolIterationLoop() throws Exception {
+        WorkflowBuilder.Result wf = WorkflowBuilder.create("tool-loop")
+                .node("agent", NodeType.AGENT, """
+                        {"maxIterations":5}""")
+                .node("llm", NodeType.AGENT_LLM, """
+                        {"provider":"openai","model":"gpt-4"}""")
+                .node("tool", NodeType.TOOL, """
+                        {"toolName":"calc","description":"Calculate"}""")
+                .edge("llm", "out", "agent", "llm")
+                .edge("tool", "out", "agent", "tools")
+                .build();
+
+        // ToolExecutor returns a tool definition
+        when(toolExecutor.execute(any(), any())).thenAnswer(inv -> {
+            WorkflowNodeEntity tn = inv.getArgument(1);
+            ObjectNode def = objectMapper.createObjectNode();
+            def.put("type", "function");
+            ObjectNode fn = objectMapper.createObjectNode();
+            fn.put("name", objectMapper.readTree(tn.configuration).get("toolName").asText());
+            def.set("function", fn);
+            def.put("nodeId", tn.id.toString());
+            return NodeExecutionResult.success(def);
+        });
+
+        // LLM executor: capture the merged config to verify tools present
+        when(llmExecutor.execute(any(), any())).thenAnswer(inv -> {
+            WorkflowNodeEntity tempNode = inv.getArgument(1);
+            JsonNode config = objectMapper.readTree(tempNode.configuration);
+            assertTrue(config.has("tools"), "merged config should have tools");
+            assertTrue(config.has("maxToolIterations"), "maxIterations should merge");
+            assertEquals(5, config.get("maxToolIterations").asInt());
+            return NodeExecutionResult.success(cannedLlmOutput);
+        });
+
+        NodeExecutionResult result = agentExecutor.execute(
+                contextWithInput("{\"query\":\"compute 2+2\"}"), wf.node("agent"));
+
+        assertTrue(result.isSuccess());
+        verify(llmExecutor).execute(any(), any());
+    }
+
+    @Test
+    void agentMaxIterationsMergedIntoConfig() throws Exception {
+        WorkflowBuilder.Result wf = WorkflowBuilder.create("max-iter")
+                .node("agent", NodeType.AGENT, """
+                        {"maxIterations":5}""")
+                .node("llm", NodeType.AGENT_LLM, """
+                        {"provider":"openai","model":"gpt-4"}""")
+                .edge("llm", "out", "agent", "llm")
+                .build();
+
+        when(llmExecutor.execute(any(), any())).thenAnswer(inv -> {
+            WorkflowNodeEntity tempNode = inv.getArgument(1);
+            JsonNode config = objectMapper.readTree(tempNode.configuration);
+            assertEquals(5, config.get("maxToolIterations").asInt(),
+                    "Agent maxIterations should map to maxToolIterations in merged config");
+            return NodeExecutionResult.success(cannedLlmOutput);
+        });
+
+        NodeExecutionResult result = agentExecutor.execute(
+                contextWithInput("{\"query\":\"hi\"}"), wf.node("agent"));
+
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    void agentMemorySavesMessages() throws Exception {
+        WorkflowBuilder.Result wf = WorkflowBuilder.create("mem-save")
+                .node("agent", NodeType.AGENT)
+                .node("llm", NodeType.AGENT_LLM, """
+                        {"provider":"openai","model":"gpt-4"}""")
+                .node("mem", NodeType.MEMORY, """
+                        {"cutoffMode":"message","maxMessages":10}""")
+                .edge("llm", "out", "agent", "llm")
+                .edge("mem", "out", "agent", "memory")
+                .build();
+
+        when(contextMemoryStore.getMessagesByCount(any(), anyInt()))
+                .thenReturn(new ArrayList<>());
+
+        ObjectNode llmOutput = objectMapper.createObjectNode();
+        llmOutput.put("content", "assistant reply");
+        llmOutput.put("response", "assistant reply");
+        when(llmExecutor.execute(any(), any()))
+                .thenReturn(NodeExecutionResult.success(llmOutput));
+
+        ExecutionContext ctx = contextWithInput(
+                "{\"query\":\"user msg\",\"threadId\":\"t-1\"}");
+        NodeExecutionResult result = agentExecutor.execute(ctx, wf.node("agent"));
+
+        assertTrue(result.isSuccess());
+        // Agent should save user message + assistant message
+        verify(contextMemoryStore).addMessage(eq("t-1"), argThat(msg ->
+                msg.getRole() == LlmMessage.Role.USER && "user msg".equals(msg.getContent())));
+        verify(contextMemoryStore).addMessage(eq("t-1"), argThat(msg ->
+                msg.getRole() == LlmMessage.Role.ASSISTANT && "assistant reply".equals(msg.getContent())));
+    }
+
+    @Test
+    void agentRagContextInjected() throws Exception {
+        WorkflowBuilder.Result wf = WorkflowBuilder.create("rag-inject")
+                .node("agent", NodeType.AGENT)
+                .node("llm", NodeType.AGENT_LLM, """
+                        {"provider":"openai","model":"gpt-4"}""")
+                .node("retriever", NodeType.RETRIEVER)
+                .edge("llm", "out", "agent", "llm")
+                .edge("retriever", "out", "agent", "retriever")
+                .build();
+
+        // Put retriever output into context
+        ObjectNode retrieverOutput = objectMapper.createObjectNode();
+        retrieverOutput.put("context", "Document about quantum computing.");
+        retrieverOutput.put("query", "what is quantum");
+
+        ExecutionContext ctx = contextWithInput("{}");
+        ctx.setNodeOutput(wf.node("retriever").id, retrieverOutput);
+
+        when(llmExecutor.execute(any(), any())).thenAnswer(inv -> {
+            WorkflowNodeEntity tempNode = inv.getArgument(1);
+            JsonNode config = objectMapper.readTree(tempNode.configuration);
+            String systemPrompt = config.get("systemPrompt").asText();
+            assertTrue(systemPrompt.contains("Retrieved Context"),
+                    "System prompt should contain RAG section");
+            assertTrue(systemPrompt.contains("Document about quantum computing"),
+                    "System prompt should contain actual context");
+            return NodeExecutionResult.success(cannedLlmOutput);
+        });
+
+        NodeExecutionResult result = agentExecutor.execute(ctx, wf.node("agent"));
+
+        assertTrue(result.isSuccess());
+    }
+
+    @Test
+    void agentMergesAllLlmConfigFields() throws Exception {
+        WorkflowBuilder.Result wf = WorkflowBuilder.create("merge-all")
+                .node("agent", NodeType.AGENT)
+                .node("llm", NodeType.AGENT_LLM, """
+                        {"provider":"anthropic","model":"claude-3","temperature":0.5,"maxTokens":2048,"apiKeyPath":"anthropic/key"}""")
+                .edge("llm", "out", "agent", "llm")
+                .build();
+
+        when(llmExecutor.execute(any(), any())).thenAnswer(inv -> {
+            WorkflowNodeEntity tempNode = inv.getArgument(1);
+            JsonNode config = objectMapper.readTree(tempNode.configuration);
+            assertEquals("anthropic", config.get("provider").asText());
+            assertEquals("claude-3", config.get("model").asText());
+            assertEquals(0.5, config.get("temperature").asDouble(), 0.001);
+            assertEquals(2048, config.get("maxTokens").asInt());
+            assertEquals("anthropic/key", config.get("apiKeyPath").asText());
+            return NodeExecutionResult.success(cannedLlmOutput);
+        });
+
+        NodeExecutionResult result = agentExecutor.execute(
+                contextWithInput("{\"query\":\"hello\"}"), wf.node("agent"));
+
+        assertTrue(result.isSuccess());
     }
 
     // ------------------------------------------------------------------
