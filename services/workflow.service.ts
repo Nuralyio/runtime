@@ -101,6 +101,21 @@ export interface ExecutionResult {
   durationMs?: number;
 }
 
+export interface NodeExecutionResult {
+  id: string;
+  executionId: string;
+  nodeId: string;
+  nodeName: string;
+  status: string;
+  inputData?: string;
+  outputData?: string;
+  errorMessage?: string;
+  attemptNumber?: number;
+  startedAt?: string;
+  completedAt?: string;
+  durationMs?: number;
+}
+
 // Convert from backend DTO to canvas Workflow format
 function dtoToWorkflow(dto: WorkflowDTO): Workflow {
   return {
@@ -504,6 +519,11 @@ export const workflowService = {
     return handleResponse<ExecutionResult>(response);
   },
 
+  async getNodeExecutions(workflowId: string, executionId: string): Promise<NodeExecutionResult[]> {
+    const response = await fetch(APIS_URL.getNodeExecutions(workflowId, executionId));
+    return handleResponse<NodeExecutionResult[]>(response);
+  },
+
   // Trigger operations
   async getTriggers(workflowId: string): Promise<TriggerDTO[]> {
     const response = await fetch(APIS_URL.getWorkflowTriggers(workflowId));
@@ -528,6 +548,56 @@ export const workflowService = {
     });
     if (!response.ok) {
       throw new Error('Failed to deactivate trigger');
+    }
+  },
+
+  async createTrigger(workflowId: string, triggerData: {
+    name: string;
+    type: string;
+    configuration: Record<string, unknown>;
+  }): Promise<TriggerDTO> {
+    const response = await fetch(APIS_URL.createTrigger(workflowId), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...triggerData,
+        configuration: JSON.stringify(triggerData.configuration),
+      }),
+    });
+    return handleResponse<TriggerDTO>(response);
+  },
+
+  async updateTrigger(triggerId: string, triggerData: {
+    name?: string;
+    configuration?: Record<string, unknown>;
+  }): Promise<TriggerDTO> {
+    const body: Record<string, unknown> = { ...triggerData };
+    if (triggerData.configuration) {
+      body.configuration = JSON.stringify(triggerData.configuration);
+    }
+    const response = await fetch(APIS_URL.updateTrigger(triggerId), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    return handleResponse<TriggerDTO>(response);
+  },
+
+  async enableDevMode(triggerId: string): Promise<void> {
+    const response = await fetch(APIS_URL.enableDevMode(triggerId), {
+      method: 'POST',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to enable dev mode');
+    }
+  },
+
+  async disableDevMode(triggerId: string): Promise<void> {
+    const response = await fetch(APIS_URL.disableDevMode(triggerId), {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to disable dev mode');
     }
   },
 };

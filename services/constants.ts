@@ -50,6 +50,8 @@ export const APIS_URL = {
   executeWorkflow: (id: string) => `${API_BASE}/api/v1/workflows/${id}/execute`,
   getWorkflowExecutions: (id: string) => `${API_BASE}/api/v1/workflows/${id}/executions`,
   getWorkflowExecution: (workflowId: string, execId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/executions/${execId}`,
+  getNodeExecutions: (workflowId: string, executionId: string) =>
+    `${API_BASE}/api/v1/workflows/${workflowId}/executions/${executionId}/nodes`,
   addWorkflowNode: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes`,
   updateWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
   deleteWorkflowNode: (workflowId: string, nodeId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/nodes/${nodeId}`,
@@ -186,8 +188,12 @@ export const APIS_URL = {
     `${API_BASE}/api/v1/logs/trace/${correlationId}`,
 
   // Workflow Triggers
-  getWorkflowTriggers: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/triggers`,
+  getWorkflowTriggers: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/trigger-defs`,
+  createTrigger: (workflowId: string) => `${API_BASE}/api/v1/workflows/${workflowId}/trigger-defs`,
+  updateTrigger: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}`,
   getTriggerStatus: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/status`,
   activateTrigger: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/activate`,
   deactivateTrigger: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/deactivate`,
+  enableDevMode: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/dev-mode`,
+  disableDevMode: (triggerId: string) => `${API_BASE}/api/v1/triggers/${triggerId}/dev-mode`,
 };
