@@ -559,6 +559,8 @@ public class WorkflowEngine {
                 targetType = NodeType.CHAT_START;
             } else if (normalizedTrigger.contains("http") || normalizedTrigger.contains("webhook")) {
                 targetType = NodeType.HTTP_START;
+            } else if (normalizedTrigger.contains("telegram")) {
+                targetType = NodeType.TELEGRAM_BOT;
             } else {
                 targetType = NodeType.START;
             }
@@ -573,11 +575,12 @@ public class WorkflowEngine {
             }
         }
 
-        // Fallback: look for any start node (START, HTTP_START, or CHAT_START)
+        // Fallback: look for any start node (START, HTTP_START, CHAT_START, or trigger nodes)
         return workflow.nodes.stream()
                 .filter(n -> n.type == NodeType.START ||
                             n.type == NodeType.HTTP_START ||
-                            n.type == NodeType.CHAT_START)
+                            n.type == NodeType.CHAT_START ||
+                            n.type == NodeType.TELEGRAM_BOT)
                 .findFirst()
                 .orElse(null);
     }

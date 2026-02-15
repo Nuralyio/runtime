@@ -84,6 +84,7 @@ public class WorkflowTriggerService {
 
         WorkflowTriggerEntity trigger = triggerDTOMapper.toEntity(triggerDTO);
         trigger.workflow = workflow;
+        trigger.enabled = true; // Ensure new triggers are always enabled
         trigger.persist();
 
         WorkflowTriggerDTO result = triggerDTOMapper.toDTO(trigger);

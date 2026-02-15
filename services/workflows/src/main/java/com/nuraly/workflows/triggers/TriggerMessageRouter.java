@@ -2,6 +2,7 @@ package com.nuraly.workflows.triggers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nuraly.workflows.entity.WorkflowExecutionEntity;
 import com.nuraly.workflows.entity.WorkflowTriggerEntity;
 import com.nuraly.workflows.entity.enums.ExecutionStatus;
@@ -42,7 +43,8 @@ public class TriggerMessageRouter implements TriggerMessageHandler {
     @Inject
     RabbitMQConnectionManager connectionManager;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
 
     @Override
     public CompletableFuture<Void> handleMessage(WorkflowTriggerEntity trigger,
@@ -78,8 +80,9 @@ public class TriggerMessageRouter implements TriggerMessageHandler {
             return;
         }
 
-        // Check if workflow is active
-        if (trigger.workflow.status != WorkflowStatus.ACTIVE) {
+        // Check if workflow is active or draft
+        if (trigger.workflow.status != WorkflowStatus.ACTIVE
+                && trigger.workflow.status != WorkflowStatus.DRAFT) {
             LOG.warnf("Workflow %s is not active (status=%s), buffering message",
                 trigger.workflow.id, trigger.workflow.status);
             bufferMessage(trigger, message, metadata);
@@ -105,8 +108,7 @@ public class TriggerMessageRouter implements TriggerMessageHandler {
         trigger.persist();
 
         // Update ownership stats
-        String source = (String) metadata.getOrDefault("source", "unknown");
-        ownershipService.recordMessage(source + ":" + getResourceKeyPart(trigger));
+        ownershipService.recordMessageByTriggerId(trigger.id);
 
         LOG.infof("Routed message from trigger %s to execution %s", trigger.id, executionId);
     }
@@ -152,14 +154,6 @@ public class TriggerMessageRouter implements TriggerMessageHandler {
         } catch (Exception e) {
             LOG.errorf(e, "Failed to buffer message for trigger %s", trigger.id);
         }
-    }
-
-    private String getResourceKeyPart(WorkflowTriggerEntity trigger) {
-        // Extract a hash/identifier from the credential key if available
-        if (trigger.credentialKey != null) {
-            return trigger.credentialKey.hashCode() + "";
-        }
-        return trigger.id.toString().substring(0, 8);
     }
 
     /**

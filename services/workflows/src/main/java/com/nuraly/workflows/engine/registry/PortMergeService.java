@@ -26,6 +26,9 @@ import java.util.Set;
  *   - Ports in DB that match a canonical port by ID: kept as-is (user config preserved)
  *   - Ports in canonical but missing from DB: added with defaults
  *   - Ports in DB but not in canonical: kept (backward compat for user-created ports)
+ *   - Canonical inputs that already exist as config ports: skipped (prevents duplication
+ *     for nodes like AGENT where llm/prompt/memory/tools are config ports on the frontend
+ *     but listed as inputs in the registry)
  */
 @ApplicationScoped
 public class PortMergeService {
@@ -54,17 +57,36 @@ public class PortMergeService {
             JsonNode stored = parseStoredPorts(storedPorts);
             ObjectNode merged = objectMapper.createObjectNode();
 
+            // Collect config port IDs so canonical inputs that already exist as configs
+            // are not duplicated into the inputs array (e.g. AGENT's llm, prompt, memory, tools)
+            Set<String> configPortIds = new HashSet<>();
+            if (stored != null && stored.has("configs") && stored.get("configs").isArray()) {
+                for (JsonNode configPort : stored.get("configs")) {
+                    if (configPort.has("id")) {
+                        configPortIds.add(configPort.get("id").asText());
+                    }
+                }
+            }
+
             ArrayNode mergedInputs = mergePortList(
                     stored != null && stored.has("inputs") ? stored.get("inputs") : null,
-                    definition.getInputs()
+                    definition.getInputs(),
+                    configPortIds
             );
             ArrayNode mergedOutputs = mergePortList(
                     stored != null && stored.has("outputs") ? stored.get("outputs") : null,
-                    definition.getOutputs()
+                    definition.getOutputs(),
+                    Set.of()
             );
 
             merged.set("inputs", mergedInputs);
             merged.set("outputs", mergedOutputs);
+
+            // Preserve config ports (bottom ports used by agent nodes like AGENT)
+            if (stored != null && stored.has("configs")) {
+                merged.set("configs", stored.get("configs").deepCopy());
+            }
+
             merged.put("_schemaVersion", definition.getSchemaVersion());
 
             return objectMapper.writeValueAsString(merged);
@@ -119,7 +141,7 @@ public class PortMergeService {
      * - Keep all existing stored ports (preserves user customization)
      * - Append any canonical ports that are missing from stored
      */
-    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts) {
+    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts, Set<String> excludeIds) {
         ArrayNode result = objectMapper.createArrayNode();
 
         // Collect IDs of stored ports
@@ -134,8 +156,9 @@ public class PortMergeService {
             }
         }
 
-        // Append missing canonical ports
+        // Append missing canonical ports (skip those already present as config ports)
         for (PortDefinition canonical : canonicalPorts) {
+            if (excludeIds.contains(canonical.getId())) continue;
             if (!storedIds.contains(canonical.getId())) {
                 ObjectNode newPort = objectMapper.createObjectNode();
                 newPort.put("id", canonical.getId());

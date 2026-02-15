@@ -33,7 +33,6 @@ public class WorkflowTriggerEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public TriggerType type;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String configuration; // JSON: trigger-specific config (cron, event type, etc.)
 

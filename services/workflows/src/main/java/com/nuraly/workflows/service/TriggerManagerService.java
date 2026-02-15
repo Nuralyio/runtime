@@ -93,18 +93,30 @@ public class TriggerManagerService {
     }
 
     /**
-     * Recover triggers that were owned by this instance before restart.
+     * Recover triggers that should be active after restart.
+     * Finds all enabled triggers with desiredState=ACTIVE and reactivates them.
      */
-    private void recoverOwnedTriggers() {
+    @Transactional
+    void recoverOwnedTriggers() {
+        // First, release any stale ownerships from our instance (from before restart)
         List<TriggerOwnershipEntity> ownedResources = ownershipService.getOwnedResources();
         for (TriggerOwnershipEntity ownership : ownedResources) {
-            if (ownership.activeTrigger != null) {
-                try {
-                    LOG.infof("Recovering trigger: %s", ownership.activeTrigger.id);
-                    activateTriggerInternal(ownership.activeTrigger);
-                } catch (Exception e) {
-                    LOG.errorf(e, "Failed to recover trigger: %s", ownership.activeTrigger.id);
-                }
+            LOG.infof("Releasing stale ownership: %s", ownership.resourceKey);
+            ownershipService.releaseOwnership(ownership.resourceKey);
+        }
+
+        // Find all triggers that should be running (user activated them before restart)
+        List<WorkflowTriggerEntity> triggersToRecover = WorkflowTriggerEntity
+                .list("enabled = true and desiredState = ?1", TriggerDesiredState.ACTIVE);
+
+        LOG.infof("Found %d triggers to recover after restart", triggersToRecover.size());
+
+        for (WorkflowTriggerEntity trigger : triggersToRecover) {
+            try {
+                LOG.infof("Recovering trigger: %s (%s)", trigger.id, trigger.name);
+                activateTriggerInternal(trigger);
+            } catch (Exception e) {
+                LOG.errorf(e, "Failed to recover trigger: %s", trigger.id);
             }
         }
     }
@@ -129,6 +141,20 @@ public class TriggerManagerService {
         WorkflowTriggerEntity trigger = WorkflowTriggerEntity.findById(triggerId);
         if (trigger == null) {
             return TriggerActivationResult.failure(triggerId, "Trigger not found");
+        }
+
+        // Ensure trigger is enabled and desired state is ACTIVE
+        boolean dirty = false;
+        if (!trigger.enabled) {
+            trigger.enabled = true;
+            dirty = true;
+        }
+        if (trigger.desiredState != TriggerDesiredState.ACTIVE) {
+            trigger.desiredState = TriggerDesiredState.ACTIVE;
+            dirty = true;
+        }
+        if (dirty) {
+            trigger.persist();
         }
 
         return activateTriggerInternal(trigger);
@@ -199,13 +225,36 @@ public class TriggerManagerService {
      */
     @Transactional
     public void deactivateTrigger(UUID triggerId, boolean graceful) {
+        // Mark desired state as DISABLED so it won't auto-restart
+        WorkflowTriggerEntity trigger = WorkflowTriggerEntity.findById(triggerId);
+        if (trigger != null) {
+            trigger.desiredState = TriggerDesiredState.DISABLED;
+            trigger.persist();
+        }
+
         ActiveTrigger activeTrigger = activeTriggers.get(triggerId);
-        if (activeTrigger == null) {
-            LOG.warnf("Trigger %s is not active on this instance", triggerId);
+        if (activeTrigger != null) {
+            deactivateTriggerInternal(activeTrigger, graceful);
             return;
         }
 
-        deactivateTriggerInternal(activeTrigger, graceful);
+        // Trigger not in local map (e.g., after hot-reload) — clean up ownership directly
+        LOG.warnf("Trigger %s is not in local activeTriggers map, cleaning up ownership", triggerId);
+        if (trigger != null) {
+            TriggerConnector connector = connectorMap.get(trigger.type);
+            if (connector != null) {
+                // Try to disconnect any lingering connection
+                try {
+                    connector.disconnect(trigger, null).join();
+                } catch (Exception e) {
+                    LOG.warnf(e, "Error disconnecting lingering trigger %s", triggerId);
+                }
+
+                String resourceKey = connector.getResourceKey(trigger);
+                ownershipService.releaseOwnership(resourceKey);
+                LOG.infof("Force-released ownership for trigger %s (resource: %s)", triggerId, resourceKey);
+            }
+        }
     }
 
     private void deactivateTriggerInternal(ActiveTrigger activeTrigger, boolean graceful) {
@@ -354,6 +403,7 @@ public class TriggerManagerService {
     /**
      * Get trigger status.
      */
+    @Transactional
     public TriggerStatusDTO getTriggerStatus(UUID triggerId) {
         WorkflowTriggerEntity trigger = WorkflowTriggerEntity.findById(triggerId);
         if (trigger == null) {
@@ -371,13 +421,30 @@ public class TriggerManagerService {
             status.setConnectionState(active.getState());
             status.setOwnerInstance(instanceId);
             status.setConnectedSince(active.getConnectedSince());
-            status.setMessagesReceived(active.getMessagesReceived());
-            status.setLastMessageAt(active.getLastMessageAt());
             status.setStateReason(active.getStateReason());
 
             HealthStatus health = active.getConnector().checkHealth(trigger);
             status.setHealth(health.getStatus());
             status.setHealthMessage(health.getMessage());
+
+            // Read message stats from ownership entity (database) since that's where
+            // TriggerMessageRouter records them
+            TriggerConnector connector = connectorMap.get(trigger.type);
+            if (connector != null) {
+                String resourceKey = connector.getResourceKey(trigger);
+                Optional<TriggerOwnershipEntity> ownership = ownershipService.getOwnership(resourceKey);
+                if (ownership.isPresent()) {
+                    TriggerOwnershipEntity own = ownership.get();
+                    status.setMessagesReceived(own.messagesReceived);
+                    status.setLastMessageAt(own.lastMessageAt);
+
+                    if (own.hasPriorityOverride()) {
+                        status.setInDevMode(true);
+                        status.setDevModeTriggerId(own.priorityTriggerId);
+                        status.setDevModeExpiresAt(own.priorityExpiresAt);
+                    }
+                }
+            }
         } else {
             // Check if owned by another instance
             TriggerConnector connector = connectorMap.get(trigger.type);

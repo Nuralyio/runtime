@@ -247,6 +247,20 @@ public class TriggerOwnershipService {
     }
 
     /**
+     * Record a message received, looked up by trigger ID.
+     *
+     * @param triggerId The trigger UUID
+     */
+    @Transactional
+    public void recordMessageByTriggerId(java.util.UUID triggerId) {
+        TriggerOwnershipEntity ownership = TriggerOwnershipEntity.findByTriggerId(triggerId);
+        if (ownership != null) {
+            ownership.messagesReceived = (ownership.messagesReceived != null ? ownership.messagesReceived : 0) + 1;
+            ownership.lastMessageAt = Instant.now();
+        }
+    }
+
+    /**
      * Get ownership info for a resource.
      *
      * @param resourceKey The resource key

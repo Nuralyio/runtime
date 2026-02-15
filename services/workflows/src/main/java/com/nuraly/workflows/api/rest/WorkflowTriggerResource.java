@@ -48,46 +48,6 @@ public class WorkflowTriggerResource {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @GET
-    @Path("/workflows/{workflowId}/triggers")
-    @RequiresPermission(
-            permissionType = "workflow:read",
-            resourceType = "workflow",
-            resourceId = "#{workflowId}"
-    )
-    @Operation(summary = "List workflow triggers")
-    @APIResponses(value = {
-            @APIResponse(responseCode = "200", description = "Triggers retrieved successfully")
-    })
-    public RestResponse<List<WorkflowTriggerDTO>> getTriggers(
-            @PathParam("workflowId") UUID workflowId) {
-        List<WorkflowTriggerDTO> triggers = triggerService.getTriggers(workflowId);
-        return RestResponse.ok(triggers);
-    }
-
-    @POST
-    @Path("/workflows/{workflowId}/triggers")
-    @RequiresPermission(
-            permissionType = "workflow:write",
-            resourceType = "workflow",
-            resourceId = "#{workflowId}"
-    )
-    @Operation(summary = "Create a trigger")
-    @APIResponses(value = {
-            @APIResponse(responseCode = "201", description = "Trigger created successfully"),
-            @APIResponse(responseCode = "404", description = "Workflow not found")
-    })
-    public RestResponse<WorkflowTriggerDTO> createTrigger(
-            @PathParam("workflowId") UUID workflowId,
-            @Valid WorkflowTriggerDTO triggerDTO) {
-        try {
-            WorkflowTriggerDTO created = triggerService.createTrigger(workflowId, triggerDTO);
-            return RestResponse.status(RestResponse.Status.CREATED, created);
-        } catch (WorkflowNotFoundException e) {
-            return RestResponse.status(RestResponse.Status.NOT_FOUND);
-        }
-    }
-
     @PUT
     @Path("/triggers/{triggerId}")
     @Operation(summary = "Update a trigger")
