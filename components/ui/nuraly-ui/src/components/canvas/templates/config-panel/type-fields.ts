@@ -13,7 +13,7 @@ import {
   WhiteboardNodeType,
 } from '../../workflow-canvas.types.js';
 import type { DatabaseProvider } from '../../data-node/data-node.types.js';
-import type { NodeExecutionData } from './types.js';
+import type { NodeExecutionData, TriggerInfo, TriggerActions } from './types.js';
 
 // Import field renderers
 import { renderDataNodeFields } from './data-node-fields.js';
@@ -58,6 +58,8 @@ import {
   renderContextBuilderFields,
   // Safety nodes
   renderGuardrailFields,
+  // Telegram integration nodes
+  renderTelegramSendFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
 } from './workflow-node-fields.js';
@@ -86,6 +88,8 @@ export function renderTypeFields(
   applicationId?: string,
   databaseProvider?: DatabaseProvider,
   nodeExecution?: NodeExecutionData,
+  triggerInfo?: TriggerInfo,
+  triggerActions?: TriggerActions,
 ): TemplateResult | typeof nothing {
   switch (type) {
     // Workflow nodes
@@ -175,9 +179,13 @@ export function renderTypeFields(
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
 
+    // Telegram integration nodes
+    case WorkflowNodeType.TELEGRAM_SEND:
+      return renderTelegramSendFields(config, onUpdate);
+
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:
-      return renderTelegramBotFields(config, onUpdate);
+      return renderTelegramBotFields(config, onUpdate, triggerInfo, triggerActions);
 
     // Display nodes
     case WorkflowNodeType.UI_TABLE:

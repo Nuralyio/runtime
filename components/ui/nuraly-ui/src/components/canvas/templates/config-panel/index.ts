@@ -199,7 +199,7 @@ function renderAvailableVariables(
 export function renderConfigPanelTemplate(
   data: ConfigPanelTemplateData
 ): TemplateResult | typeof nothing {
-  const { node, position, callbacks, workflowId, workflow, dynamicVariables, loadingVariables, nodeExecution, executionId, kvEntries, onCreateKvEntry, applicationId, databaseProvider } = data;
+  const { node, position, callbacks, workflowId, workflow, dynamicVariables, loadingVariables, nodeExecution, executionId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, triggerInfo, triggerActions } = data;
 
   if (!node || !position) return nothing;
 
@@ -228,7 +228,7 @@ export function renderConfigPanelTemplate(
       </div>
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
-        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, nodeExecution)}
+        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, nodeExecution, triggerInfo, triggerActions)}
         ${isWhiteboardNode(node.type) && node.type !== WhiteboardNodeType.ANCHOR
           ? renderOnClickActionFields(node.configuration, callbacks.onUpdateConfig, workflow?.nodes || [])
           : nothing}

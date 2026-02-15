@@ -58,6 +58,8 @@ export enum WorkflowNodeType {
   SLACK_UPLOAD_FILE = 'SLACK_UPLOAD_FILE',
   // RAG nodes (continued)
   RERANKER = 'RERANKER',
+  // Telegram integration nodes
+  TELEGRAM_SEND = 'TELEGRAM_SEND',
   // Persistent trigger nodes
   TELEGRAM_BOT = 'TELEGRAM_BOT',
   SLACK_SOCKET = 'SLACK_SOCKET',
@@ -625,6 +627,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.SLACK_UPLOAD_FILE]: '#4A154B',
   // RAG nodes (continued)
   [WorkflowNodeType.RERANKER]: '#d946ef',
+  // Telegram integration nodes
+  [WorkflowNodeType.TELEGRAM_SEND]: '#0088cc',
   // Persistent trigger nodes
   [WorkflowNodeType.TELEGRAM_BOT]: '#0088cc',
   [WorkflowNodeType.SLACK_SOCKET]: '#4A154B',
@@ -725,10 +729,12 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.SLACK_UPLOAD_FILE]: 'upload',
   // RAG nodes (continued)
   [WorkflowNodeType.RERANKER]: 'arrow-up-down',
+  // Telegram integration nodes
+  [WorkflowNodeType.TELEGRAM_SEND]: 'send',
   // Persistent trigger nodes
-  [WorkflowNodeType.TELEGRAM_BOT]: 'message-circle',
+  [WorkflowNodeType.TELEGRAM_BOT]: 'send',
   [WorkflowNodeType.SLACK_SOCKET]: 'message-square',
-  [WorkflowNodeType.DISCORD_BOT]: 'message-circle',
+  [WorkflowNodeType.DISCORD_BOT]: 'gamepad-2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
   // Display nodes
@@ -1553,6 +1559,32 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // Telegram integration nodes
+  {
+    type: WorkflowNodeType.TELEGRAM_SEND,
+    name: 'Telegram: Send Message',
+    description: 'Send a message to a Telegram chat with typing indicator and optional emoji reaction',
+    icon: NODE_ICONS[WorkflowNodeType.TELEGRAM_SEND],
+    color: NODE_COLORS[WorkflowNodeType.TELEGRAM_SEND],
+    category: 'telegram',
+    defaultConfig: {
+      botToken: '',
+      chatId: '',
+      text: '',
+      parseMode: '',
+      replyToMessageId: '',
+      showTyping: true,
+      reaction: '',
+      disableNotification: false,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   // Persistent trigger nodes
   {
     type: WorkflowNodeType.TELEGRAM_BOT,
@@ -2215,6 +2247,11 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.START,
       WorkflowNodeType.HTTP_START,
       WorkflowNodeType.CHAT_START,
+      WorkflowNodeType.TELEGRAM_BOT,
+      WorkflowNodeType.SLACK_SOCKET,
+      WorkflowNodeType.DISCORD_BOT,
+      WorkflowNodeType.WHATSAPP_WEBHOOK,
+      WorkflowNodeType.CUSTOM_WEBSOCKET,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
@@ -2245,6 +2282,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
       WorkflowNodeType.NOTIFICATION,
+      WorkflowNodeType.DOCUMENT_GENERATOR,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
@@ -2309,6 +2347,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'monitor',
     nodeTypes: [
       WorkflowNodeType.UI_TABLE,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'telegram',
+    name: 'Telegram',
+    icon: 'send',
+    nodeTypes: [
+      WorkflowNodeType.TELEGRAM_SEND,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

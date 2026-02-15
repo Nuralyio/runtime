@@ -4,8 +4,32 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { WorkflowNode, Workflow } from '../../workflow-canvas.types.js';
+import { WorkflowNode, Workflow, NodeConfiguration, TriggerConnectionState } from '../../workflow-canvas.types.js';
 import type { DatabaseProvider } from '../../data-node/data-node.types.js';
+
+/**
+ * Trigger info for persistent trigger nodes (Telegram, Slack, etc.)
+ */
+export interface TriggerInfo {
+  triggerId?: string;
+  status?: TriggerConnectionState;
+  health?: 'HEALTHY' | 'DEGRADED' | 'UNHEALTHY' | 'UNKNOWN';
+  messagesReceived?: number;
+  lastMessageAt?: string;
+  stateReason?: string;
+  webhookUrl?: string;
+  inDevMode?: boolean;
+}
+
+/**
+ * Trigger action callbacks for config panel controls
+ */
+export interface TriggerActions {
+  onActivate: (triggerId: string) => void;
+  onDeactivate: (triggerId: string) => void;
+  onCreateAndActivate: (nodeType: string, config: NodeConfiguration) => Promise<string | undefined>;
+  onToggleDevMode: (triggerId: string, enable: boolean) => void;
+}
 
 /**
  * Callbacks for config panel interactions
@@ -16,6 +40,10 @@ export interface ConfigPanelCallbacks {
   onUpdateDescription: (description: string) => void;
   onUpdateConfig: (key: string, value: unknown) => void;
   onRetryNode?: (nodeId: string) => void;
+  onActivateTrigger?: (triggerId: string) => void;
+  onDeactivateTrigger?: (triggerId: string) => void;
+  onCreateAndActivateTrigger?: (nodeType: string, config: NodeConfiguration) => Promise<string | undefined>;
+  onToggleDevMode?: (triggerId: string, enable: boolean) => void;
 }
 
 /**
@@ -71,4 +99,8 @@ export interface ConfigPanelTemplateData {
   applicationId?: string;
   /** Database introspection provider (host-provided) */
   databaseProvider?: DatabaseProvider;
+  /** Trigger info for persistent trigger nodes */
+  triggerInfo?: TriggerInfo;
+  /** Trigger action callbacks for persistent trigger nodes */
+  triggerActions?: TriggerActions;
 }
