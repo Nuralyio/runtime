@@ -5,7 +5,8 @@
  */
 
 import { html, nothing, TemplateResult } from 'lit';
-import { NodeConfiguration } from '../../../workflow-canvas.types.js';
+import { NodeConfiguration, TriggerConnectionState } from '../../../workflow-canvas.types.js';
+import type { TriggerInfo, TriggerActions } from '../types.js';
 
 const TELEGRAM_UPDATE_TYPES = [
   { value: 'message', label: 'Message' },
@@ -24,17 +25,175 @@ const TELEGRAM_UPDATE_TYPES = [
 ];
 
 /**
+ * Format a relative time string from an ISO timestamp
+ */
+function formatRelativeTime(isoString: string): string {
+  const now = Date.now();
+  const then = new Date(isoString).getTime();
+  const diffMs = now - then;
+
+  if (diffMs < 0) return 'just now';
+  if (diffMs < 60_000) return `${Math.floor(diffMs / 1000)}s ago`;
+  if (diffMs < 3_600_000) return `${Math.floor(diffMs / 60_000)} min ago`;
+  if (diffMs < 86_400_000) return `${Math.floor(diffMs / 3_600_000)}h ago`;
+  return `${Math.floor(diffMs / 86_400_000)}d ago`;
+}
+
+/**
+ * Get display label and CSS class for a trigger connection state
+ */
+function getStatusDisplay(state?: TriggerConnectionState): { label: string; cssClass: string } {
+  switch (state) {
+    case TriggerConnectionState.CONNECTED:
+      return { label: 'Connected', cssClass: 'trigger-status--connected' };
+    case TriggerConnectionState.CONNECTING:
+      return { label: 'Connecting...', cssClass: 'trigger-status--connecting' };
+    case TriggerConnectionState.ERROR:
+      return { label: 'Error', cssClass: 'trigger-status--error' };
+    case TriggerConnectionState.PAUSED:
+      return { label: 'Paused', cssClass: 'trigger-status--paused' };
+    case TriggerConnectionState.DISCONNECTED:
+    default:
+      return { label: 'Disconnected', cssClass: 'trigger-status--disconnected' };
+  }
+}
+
+/**
+ * Render the trigger status section at the top of the config panel
+ */
+function renderTriggerStatusSection(
+  triggerInfo: TriggerInfo | undefined,
+  triggerActions: TriggerActions | undefined,
+  nodeType: string,
+  config: NodeConfiguration,
+): TemplateResult {
+  const hasTrigger = !!triggerInfo?.triggerId;
+  const statusDisplay = getStatusDisplay(triggerInfo?.status);
+  const isActive = triggerInfo?.status === TriggerConnectionState.CONNECTED
+    || triggerInfo?.status === TriggerConnectionState.CONNECTING;
+
+  return html`
+    <div class="config-section">
+      <div class="config-section-header">
+        <span class="config-section-title">
+          <nr-icon name="radio" size="small"></nr-icon>
+          Trigger Status
+        </span>
+      </div>
+
+      <div class="trigger-status-panel">
+        <div class="trigger-status-row">
+          <span class="trigger-status-dot ${statusDisplay.cssClass}"></span>
+          <span class="trigger-status-label">${statusDisplay.label}</span>
+          ${triggerInfo?.health && isActive ? html`
+            <span class="trigger-health-badge trigger-health--${triggerInfo.health.toLowerCase()}">${triggerInfo.health}</span>
+          ` : nothing}
+        </div>
+
+        ${triggerInfo?.stateReason ? html`
+          <div class="trigger-status-reason">${triggerInfo.stateReason}</div>
+        ` : nothing}
+
+        ${isActive && triggerInfo?.messagesReceived != null ? html`
+          <div class="trigger-stats-row">
+            <span class="trigger-stat">
+              <nr-icon name="message-square" size="small"></nr-icon>
+              ${triggerInfo.messagesReceived} message${triggerInfo.messagesReceived !== 1 ? 's' : ''} received
+            </span>
+            ${triggerInfo.lastMessageAt ? html`
+              <span class="trigger-stat trigger-stat--secondary">
+                Last: ${formatRelativeTime(triggerInfo.lastMessageAt)}
+              </span>
+            ` : nothing}
+          </div>
+        ` : nothing}
+
+        ${triggerInfo?.inDevMode ? html`
+          <div class="trigger-dev-mode-badge">
+            <nr-icon name="code" size="small"></nr-icon>
+            Dev Mode Active
+          </div>
+        ` : nothing}
+
+        ${triggerInfo?.webhookUrl ? html`
+          <div class="trigger-webhook-url">
+            <code>${triggerInfo.webhookUrl}</code>
+            <button
+              class="copy-btn"
+              @click=${() => navigator.clipboard.writeText(triggerInfo.webhookUrl!)}
+              title="Copy webhook URL"
+            >
+              <nr-icon name="copy" size="small"></nr-icon>
+            </button>
+          </div>
+        ` : nothing}
+      </div>
+
+      ${triggerActions ? html`
+        <div class="trigger-actions">
+          ${!hasTrigger ? html`
+            <button
+              class="trigger-action-btn trigger-action-btn--primary"
+              @click=${() => triggerActions.onCreateAndActivate(nodeType, config)}
+            >
+              <nr-icon name="play" size="small"></nr-icon>
+              Activate Bot
+            </button>
+          ` : isActive ? html`
+            <button
+              class="trigger-action-btn trigger-action-btn--danger"
+              @click=${() => triggerActions.onDeactivate(triggerInfo!.triggerId!)}
+            >
+              <nr-icon name="square" size="small"></nr-icon>
+              Deactivate
+            </button>
+          ` : html`
+            <button
+              class="trigger-action-btn trigger-action-btn--primary"
+              @click=${() => triggerActions.onActivate(triggerInfo!.triggerId!)}
+            >
+              <nr-icon name="play" size="small"></nr-icon>
+              Activate
+            </button>
+          `}
+
+          ${hasTrigger ? html`
+            <label class="trigger-dev-toggle">
+              <input
+                type="checkbox"
+                .checked=${!!triggerInfo?.inDevMode}
+                @change=${(e: Event) => {
+                  const checked = (e.target as HTMLInputElement).checked;
+                  triggerActions.onToggleDevMode(triggerInfo!.triggerId!, checked);
+                }}
+              />
+              <span class="trigger-dev-toggle-label">
+                ${triggerInfo?.inDevMode ? 'Exit Dev Mode' : 'Dev Mode'}
+              </span>
+            </label>
+          ` : nothing}
+        </div>
+      ` : nothing}
+    </div>
+  `;
+}
+
+/**
  * Render Telegram Bot trigger config fields
  */
 export function renderTelegramBotFields(
   config: NodeConfiguration,
   onUpdate: (key: string, value: unknown) => void,
-  webhookUrl?: string
+  triggerInfo?: TriggerInfo,
+  triggerActions?: TriggerActions,
 ): TemplateResult {
   const mode = (config as any).mode || 'polling';
   const allowedUpdates: string[] = (config as any).allowedUpdates || [];
+  const webhookUrl = triggerInfo?.webhookUrl;
 
   return html`
+    ${renderTriggerStatusSection(triggerInfo, triggerActions, 'TELEGRAM_BOT', config)}
+
     <div class="config-section">
       <div class="config-section-header">
         <span class="config-section-title">Bot Configuration</span>
