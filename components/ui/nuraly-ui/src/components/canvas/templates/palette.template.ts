@@ -23,6 +23,7 @@ export interface PaletteTemplateData {
   onClose: () => void;
   onToggleCategory: (categoryId: string) => void;
   onNodeDragStart: (e: DragEvent, type: NodeType) => void;
+  onNodeTouchStart: (e: TouchEvent, type: NodeType) => void;
   onNodeDoubleClick: (type: NodeType) => void;
   onSearchChange: (term: string) => void;
 }
@@ -110,6 +111,7 @@ export function renderPaletteTemplate(data: PaletteTemplateData): TemplateResult
                       class="palette-item"
                       draggable="true"
                       @dragstart=${(e: DragEvent) => data.onNodeDragStart(e, nodeType)}
+                      @touchstart=${(e: TouchEvent) => data.onNodeTouchStart(e, nodeType)}
                       @dblclick=${() => data.onNodeDoubleClick(nodeType)}
                       title=${template.description}
                     >
