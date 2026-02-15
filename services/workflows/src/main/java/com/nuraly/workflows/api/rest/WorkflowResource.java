@@ -816,4 +816,37 @@ public class WorkflowResource {
                     .build();
         }
     }
+
+    // =====================================================
+    // Trigger Definition CRUD (list/create for a workflow)
+    // =====================================================
+
+    @GET
+    @Path("/{id}/trigger-defs")
+    @Operation(summary = "List workflow trigger definitions")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "200", description = "Triggers retrieved successfully")
+    })
+    public RestResponse<List<WorkflowTriggerDTO>> getTriggerDefs(@PathParam("id") UUID id) {
+        List<WorkflowTriggerDTO> triggers = triggerService.getTriggers(id);
+        return RestResponse.ok(triggers);
+    }
+
+    @POST
+    @Path("/{id}/trigger-defs")
+    @Operation(summary = "Create a trigger definition")
+    @APIResponses(value = {
+            @APIResponse(responseCode = "201", description = "Trigger created successfully"),
+            @APIResponse(responseCode = "404", description = "Workflow not found")
+    })
+    public RestResponse<WorkflowTriggerDTO> createTriggerDef(
+            @PathParam("id") UUID id,
+            @Valid WorkflowTriggerDTO triggerDTO) {
+        try {
+            WorkflowTriggerDTO created = triggerService.createTrigger(id, triggerDTO);
+            return RestResponse.status(RestResponse.Status.CREATED, created);
+        } catch (WorkflowNotFoundException e) {
+            return RestResponse.status(RestResponse.Status.NOT_FOUND);
+        }
+    }
 }

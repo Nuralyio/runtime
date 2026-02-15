@@ -21,25 +21,66 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Agent Node Executor - Executes AI agent logic using a connected LLM node.
+ * Agent Node Executor - Executes AI agent logic using connected config nodes.
  *
- * The agent gets its LLM configuration from a connected LLM node (via 'llm' input port),
- * and optionally uses a Memory node (via 'memory' or 'context' input port) for conversation history.
- * Tools can be connected via the 'tools' input port for function calling.
+ * <h2>Workflow Setup</h2>
+ * <pre>
+ *   TELEGRAM_BOT / START / CHAT_START
+ *           │
+ *           ▼ (in)
+ *       ┌─────────┐
+ *       │  AGENT   │◄── LLM node (llm config port, required, type AGENT_LLM)
+ *       │          │◄── Prompt node (prompt config port, optional)
+ *       │          │◄── Memory node (memory config port, optional)
+ *       │          │◄── Tool nodes (tools config port, optional, multiple)
+ *       └────┬─────┘
+ *            │ (out)
+ *            ▼
+ *   TELEGRAM_SEND / END / CHAT_OUTPUT
+ * </pre>
  *
- * Node Configuration:
+ * <h2>Port Types</h2>
+ * <b>Input ports</b> (left side - data flow):
+ * <ul>
+ *   <li>{@code in} - User prompt/message from trigger or previous node</li>
+ *   <li>{@code retriever} - RAG context (optional, from Context Builder / Vector Search)</li>
+ * </ul>
+ * <b>Config ports</b> (bottom - configuration nodes, not part of data flow):
+ * <ul>
+ *   <li>{@code llm} - Connected LLM node (required, type AGENT_LLM) - provides provider, model, API key</li>
+ *   <li>{@code prompt} - Connected Prompt node (optional) - system prompt template.
+ *       If no user message arrives on the 'in' port, the prompt template is used as the user message.</li>
+ *   <li>{@code memory} - Connected Memory node (optional) - conversation history</li>
+ *   <li>{@code tools} - Connected Tool nodes (optional, multiple) - function calling tools</li>
+ * </ul>
+ *
+ * <h2>User Message Resolution</h2>
+ * The agent extracts the user message in this order:
+ * <ol>
+ *   <li>Context input fields: {@code prompt}, {@code message}, {@code query}, {@code text}, {@code input}</li>
+ *   <li>Output from the node connected to the 'in' port (same fields)</li>
+ *   <li>Nested Telegram structure: {@code message.text}</li>
+ *   <li>Query from connected retriever node</li>
+ *   <li>Fallback: connected Prompt node template (used as user message when no input on 'in' port)</li>
+ * </ol>
+ *
+ * <h2>LLM Node (AGENT_LLM)</h2>
+ * The LLM config node (type {@code AGENT_LLM}) must have:
+ * <ul>
+ *   <li>{@code provider} - LLM provider (openai, anthropic, ollama, etc.)</li>
+ *   <li>{@code apiKeyPath} - KV store path for the API key (e.g. "openai/prod")</li>
+ *   <li>{@code model} - Model name (e.g. "gpt-4")</li>
+ * </ul>
+ * The KV store resolves the API key using the workflow's applicationId,
+ * falling back to {@code _standalone} for workflows without an application.
+ *
+ * <h2>Node Configuration</h2>
+ * <pre>
  * {
  *   "agentId": "my-agent",
  *   "maxIterations": 10
  * }
- *
- * Input Ports:
- * - 'in': User prompt/message
- * - 'llm': Connected LLM node (required) - provides model, API key, etc.
- * - 'prompt': Connected Prompt node (optional) - system prompt template
- * - 'memory': Connected Memory node (optional) - provides conversation history
- * - 'retriever': RAG context input (optional) - from Context Builder node, injected into prompt
- * - 'tools': Connected Tool nodes (optional) - tools for function calling
+ * </pre>
  */
 @ApplicationScoped
 public class AgentNodeExecutor implements NodeExecutor {
@@ -79,7 +120,7 @@ public class AgentNodeExecutor implements NodeExecutor {
             return NodeExecutionResult.failure("Agent requires a connected LLM node. Connect an LLM node to the 'llm' input port.");
         }
 
-        if (llmNode.type != NodeType.LLM) {
+        if (llmNode.type != NodeType.LLM && llmNode.type != NodeType.AGENT_LLM) {
             return NodeExecutionResult.failure("The node connected to 'llm' port must be an LLM node, got: " + llmNode.type);
         }
 
@@ -189,6 +230,13 @@ public class AgentNodeExecutor implements NodeExecutor {
             LOG.debugf("Using query from retriever as user message: %s", userMessage);
         }
 
+        // Fallback: use connected Prompt node template as user message
+        if ((userMessage == null || userMessage.isEmpty()) && systemPrompt != null && !systemPrompt.isEmpty()) {
+            userMessage = systemPrompt;
+            systemPrompt = null; // Avoid duplicating as both system and user message
+            LOG.debugf("Using Prompt node template as user message (no input on 'in' port)");
+        }
+
         // Ensure the input has the query so LLM executor can find it
         if (userMessage != null && !userMessage.isEmpty()) {
             JsonNode currentInput = context.getInput();
@@ -197,10 +245,8 @@ public class AgentNodeExecutor implements NodeExecutor {
                 newInput.put("query", userMessage);
                 context.setInput(newInput);
             } else if (currentInput.isObject()) {
-                // Only add if not already present
-                if (!currentInput.has("query") && !currentInput.has("message") && !currentInput.has("prompt")) {
-                    ((ObjectNode) currentInput).put("query", userMessage);
-                }
+                // Always set query to ensure LLM executor finds the user message
+                ((ObjectNode) currentInput).put("query", userMessage);
             }
         }
 
@@ -575,7 +621,15 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         for (String field : fields) {
             if (input.has(field) && !input.get(field).isNull()) {
-                return input.get(field).asText();
+                JsonNode val = input.get(field);
+                // Handle nested objects (e.g. Telegram's message.text)
+                if (val.isObject() && val.has("text")) {
+                    String text = val.get("text").asText();
+                    if (text != null && !text.isEmpty()) return text;
+                } else if (val.isTextual()) {
+                    String text = val.asText();
+                    if (text != null && !text.isEmpty()) return text;
+                }
             }
         }
 
@@ -584,7 +638,14 @@ public class AgentNodeExecutor implements NodeExecutor {
             JsonNode body = input.get("body");
             for (String field : fields) {
                 if (body.has(field) && !body.get(field).isNull()) {
-                    return body.get(field).asText();
+                    JsonNode val = body.get(field);
+                    if (val.isObject() && val.has("text")) {
+                        String text = val.get("text").asText();
+                        if (text != null && !text.isEmpty()) return text;
+                    } else if (val.isTextual()) {
+                        String text = val.asText();
+                        if (text != null && !text.isEmpty()) return text;
+                    }
                 }
             }
         }

@@ -34,6 +34,7 @@ public enum NodeType {
 
     // Agent nodes
     AGENT,          // Autonomous AI agent that can use tools
+    AGENT_LLM,      // LLM node - agent variant (config node for AGENT, distinct from workflow LLM)
     TOOL,           // A tool that can be used by an agent
     MEMORY,         // Conversation memory for agents
     CONTEXT_MEMORY, // RAG-enhanced conversation memory (buffer, semantic, hybrid)
@@ -74,6 +75,16 @@ public enum NodeType {
 
     // Display nodes
     UI_TABLE,       // Display data as an interactive table
+
+    // Telegram integration nodes
+    TELEGRAM_SEND,      // Send message to Telegram chat
+
+    // Persistent trigger start nodes (entry points for persistent triggers)
+    TELEGRAM_BOT,       // Telegram bot trigger - receive updates from Telegram
+    SLACK_SOCKET,       // Slack socket mode trigger - receive events from Slack
+    DISCORD_BOT,        // Discord bot trigger - receive events from Discord
+    WHATSAPP_WEBHOOK,   // WhatsApp webhook trigger - receive messages from WhatsApp
+    CUSTOM_WEBSOCKET,   // Custom WebSocket trigger - receive messages via WebSocket
 
     // Annotation nodes (visual only, no execution)
     NOTE,           // Text annotation for documenting workflows

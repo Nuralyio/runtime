@@ -122,17 +122,10 @@ public class LlmNodeExecutor implements NodeExecutor {
         if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
             apiKey = fetchFromKvStore(apiKeyPath, context);
             if (apiKey == null || apiKey.isEmpty()) {
-                if (!isOllama) {
-                    // API key is required for non-Ollama providers
-                    LOG.errorf("LLM node error: Failed to retrieve API key from KV store: %s", apiKeyPath);
-                    return NodeExecutionResult.failure("Failed to retrieve API key from KV store: " + apiKeyPath);
-                }
-                LOG.debugf("No API key found for Ollama provider (this is typically fine)");
+                LOG.warnf("Could not retrieve API key from KV store: %s (will try without it)", apiKeyPath);
             }
         } else if (!isOllama) {
-            // API key path is required for non-Ollama providers
-            LOG.error("LLM node error: API key path is required");
-            return NodeExecutionResult.failure("API key path is required");
+            LOG.warnf("No API key path configured for %s provider (will try without it)", providerName);
         }
 
         // Get API URL from KV store (required for Ollama and local providers)
@@ -385,34 +378,39 @@ public class LlmNodeExecutor implements NodeExecutor {
         // Check config for prompt field name
         String promptField = config.has("promptField") ? config.get("promptField").asText() : null;
         if (promptField != null && input.has(promptField)) {
-            return input.get(promptField).asText();
+            String val = input.get(promptField).asText();
+            if (val != null && !val.isEmpty()) return val;
         }
 
-        // Try common field names
-        if (input.has("prompt")) {
-            return input.get("prompt").asText();
-        }
-        if (input.has("message")) {
-            return input.get("message").asText();
-        }
-        if (input.has("query")) {
-            return input.get("query").asText();
-        }
-        if (input.has("text")) {
-            return input.get("text").asText();
-        }
-        if (input.has("input")) {
-            return input.get("input").asText();
+        // Try common field names (skip empty values, handle nested objects like Telegram's message.text)
+        String[] fields = {"prompt", "message", "query", "text", "input"};
+        for (String field : fields) {
+            if (input.has(field)) {
+                JsonNode node = input.get(field);
+                if (node.isObject() && node.has("text")) {
+                    String val = node.get("text").asText();
+                    if (val != null && !val.isEmpty()) return val;
+                } else {
+                    String val = node.asText();
+                    if (val != null && !val.isEmpty()) return val;
+                }
+            }
         }
 
         // Check for body.prompt (from HTTP requests)
         if (input.has("body")) {
             JsonNode body = input.get("body");
-            if (body.has("prompt")) {
-                return body.get("prompt").asText();
-            }
-            if (body.has("message")) {
-                return body.get("message").asText();
+            for (String field : new String[]{"prompt", "message", "query", "text"}) {
+                if (body.has(field)) {
+                    JsonNode node = body.get(field);
+                    if (node.isObject() && node.has("text")) {
+                        String val = node.get("text").asText();
+                        if (val != null && !val.isEmpty()) return val;
+                    } else {
+                        String val = node.asText();
+                        if (val != null && !val.isEmpty()) return val;
+                    }
+                }
             }
         }
 
@@ -431,14 +429,17 @@ public class LlmNodeExecutor implements NodeExecutor {
                         context.getExecution().workflow.applicationId.toString() : null;
             }
 
-            if (appId == null) {
-                return null;
+            // Fall back to _standalone for workflows without an application
+            if (appId == null || appId.isEmpty()) {
+                appId = "_standalone";
             }
 
             // Call KV service to get the value
             String kvServiceUrl = configuration.kvServiceUrl + "/api/v1/kv/entries/" +
                     java.net.URLEncoder.encode(keyPath, "UTF-8") +
-                    "?applicationId=" + appId;
+                    "?applicationId=" + java.net.URLEncoder.encode(appId, "UTF-8");
+
+            LOG.debugf("KV fetch: %s", kvServiceUrl);
 
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 HttpGet request = new HttpGet(kvServiceUrl);
@@ -453,6 +454,10 @@ public class LlmNodeExecutor implements NodeExecutor {
                     if (kvEntry.has("value")) {
                         return kvEntry.get("value").asText();
                     }
+                    LOG.warnf("KV entry '%s' has no 'value' field. Response: %s", keyPath, responseBody);
+                } else {
+                    String responseBody = EntityUtils.toString(response.getEntity());
+                    LOG.warnf("KV fetch failed for '%s': HTTP %d - %s", keyPath, statusCode, responseBody);
                 }
             }
 

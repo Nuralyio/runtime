@@ -153,6 +153,13 @@ public class TriggerOwnershipEntity extends PanacheEntityBase {
     }
 
     /**
+     * Find by active trigger ID.
+     */
+    public static TriggerOwnershipEntity findByTriggerId(java.util.UUID triggerId) {
+        return find("activeTrigger.id", triggerId).firstResult();
+    }
+
+    /**
      * Find orphaned resources (expired leases).
      */
     public static java.util.List<TriggerOwnershipEntity> findOrphaned() {

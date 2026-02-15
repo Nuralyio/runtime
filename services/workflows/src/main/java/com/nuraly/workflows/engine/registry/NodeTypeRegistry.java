@@ -48,7 +48,7 @@ public class NodeTypeRegistry {
         register(NodeType.START, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -62,7 +62,7 @@ public class NodeTypeRegistry {
         register(NodeType.HTTP_START, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -76,7 +76,7 @@ public class NodeTypeRegistry {
         register(NodeType.CHAT_START, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -95,7 +95,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -105,7 +105,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -126,7 +126,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -136,7 +136,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -146,7 +146,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -156,7 +156,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -166,7 +166,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -176,7 +176,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -186,7 +186,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -196,7 +196,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -206,7 +206,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -233,7 +233,7 @@ public class NodeTypeRegistry {
                         optionalPort("context_memory", "Context Memory", 2)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -251,7 +251,7 @@ public class NodeTypeRegistry {
                         optionalPort("retriever", "Retriever", 2)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -261,7 +261,7 @@ public class NodeTypeRegistry {
                         port("function", "Function", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -271,7 +271,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -281,7 +281,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -291,7 +291,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -301,7 +301,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -322,7 +322,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -334,7 +334,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -344,7 +344,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -354,7 +354,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -364,7 +364,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -374,7 +374,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -384,7 +384,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -394,7 +394,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -404,7 +404,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -416,7 +416,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -426,7 +426,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -436,7 +436,7 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -446,14 +446,14 @@ public class NodeTypeRegistry {
                         port("input", "Input", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
         register(NodeType.CHATBOT, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -474,7 +474,7 @@ public class NodeTypeRegistry {
                         port("input", "Data", true, 1)
                 ))
                 .outputs(List.of(
-                        port("output", "Output", true, 1)
+                        port("out", "Output", true, 1)
                 ))
                 .build());
 
@@ -487,13 +487,13 @@ public class NodeTypeRegistry {
         register(NodeType.CHAIN, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(port("input", "Input", true, 1)))
-                .outputs(List.of(port("output", "Output", true, 1)))
+                .outputs(List.of(port("out", "Output", true, 1)))
                 .build());
 
         register(NodeType.ROUTER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(port("input", "Input", true, 1)))
-                .outputs(List.of(port("output", "Output", true, 1)))
+                .outputs(List.of(port("out", "Output", true, 1)))
                 .build());
     }
 
