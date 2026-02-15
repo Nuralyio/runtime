@@ -343,14 +343,9 @@ export class DashboardWorkflowView extends LitElement {
   @state() private isSavingName = false;
   @state() private statusFilter = 'all';
 
-  async connectedCallback() {
-    super.connectedCallback();
-    await this.loadWorkflowData();
-  }
-
   async updated(changedProperties: Map<string, any>) {
     if (changedProperties.has('workflowId') && this.workflowId) {
-      await this.loadWorkflowData();
+      this.loadWorkflowData();
     }
   }
 

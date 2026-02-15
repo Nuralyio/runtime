@@ -305,14 +305,9 @@ export class DashboardWhiteboardView extends LitElement {
   @state() private editedName = '';
   @state() private isSavingName = false;
 
-  async connectedCallback() {
-    super.connectedCallback();
-    await this.loadWhiteboardData();
-  }
-
   async updated(changedProperties: Map<string, any>) {
     if (changedProperties.has('whiteboardId') && this.whiteboardId) {
-      await this.loadWhiteboardData();
+      this.loadWhiteboardData();
     }
   }
 

@@ -329,9 +329,17 @@ export class DashboardOverview extends LitElement {
     this.preloadOtherViews();
   }
 
+  private _preloadTimer: ReturnType<typeof setTimeout> | null = null;
+  private _preloadAborted = false;
+
   disconnectedCallback() {
     super.disconnectedCallback();
     document.body.style.overflow = '';
+    this._preloadAborted = true;
+    if (this._preloadTimer) {
+      clearTimeout(this._preloadTimer);
+      this._preloadTimer = null;
+    }
   }
 
   updated(changedProperties: Map<string, unknown>) {
@@ -345,13 +353,14 @@ export class DashboardOverview extends LitElement {
   }
 
   private preloadOtherViews() {
+    this._preloadAborted = false;
     // Preload other views in background (non-blocking)
     const allViews: ActiveView[] = ['applications', 'workflows', 'whiteboards', 'database', 'kv'];
     const otherViews = allViews.filter(v => v !== this.activeView);
 
     // Load each view sequentially in background to avoid overwhelming the server
     const loadNext = async (views: ActiveView[]) => {
-      if (views.length === 0) return;
+      if (this._preloadAborted || views.length === 0) return;
       const [next, ...rest] = views;
       try {
         await this.loadDataForView(next);
@@ -359,12 +368,13 @@ export class DashboardOverview extends LitElement {
         // Ignore errors during preload - they'll be shown when user navigates
         console.debug(`[Dashboard] Preload ${next} failed:`, e);
       }
+      if (this._preloadAborted) return;
       // Small delay between requests
-      setTimeout(() => loadNext(rest), 100);
+      this._preloadTimer = setTimeout(() => loadNext(rest), 100);
     };
 
     // Start preloading after a short delay to not compete with current view
-    setTimeout(() => loadNext(otherViews), 500);
+    this._preloadTimer = setTimeout(() => loadNext(otherViews), 500);
   }
 
   private isViewLoaded(view: ActiveView): boolean {

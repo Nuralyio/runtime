@@ -230,14 +230,9 @@ export class DashboardAppView extends LitElement {
     ];
   }
 
-  async connectedCallback() {
-    super.connectedCallback();
-    await this.loadAppData();
-  }
-
   async updated(changedProperties: Map<string, any>) {
     if (changedProperties.has('appId') && this.appId) {
-      await this.loadAppData();
+      this.loadAppData();
     }
   }
 
