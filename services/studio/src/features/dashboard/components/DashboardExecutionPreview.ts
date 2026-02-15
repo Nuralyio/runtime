@@ -143,20 +143,18 @@ export class DashboardExecutionPreview extends LitElement {
   @state() private loading = true;
   @state() private error: string | null = null;
 
-  async connectedCallback() {
-    super.connectedCallback();
-    await this.loadData();
-  }
+  private _loadVersion = 0;
 
   async updated(changedProperties: Map<string, any>) {
     if ((changedProperties.has('workflowId') || changedProperties.has('executionId')) && this.workflowId && this.executionId) {
-      await this.loadData();
+      this.loadData();
     }
   }
 
   private async loadData() {
     if (!this.workflowId || !this.executionId) return;
 
+    const version = ++this._loadVersion;
     this.loading = true;
     this.error = null;
 
@@ -168,10 +166,20 @@ export class DashboardExecutionPreview extends LitElement {
         workflowService.getNodeExecutions(this.workflowId, this.executionId),
       ]);
 
+      // Abort if a newer load was started while we were fetching
+      if (version !== this._loadVersion) return;
+
       this.execution = execution;
 
-      // Load the workflow snapshot from execution time
-      this.workflow = await workflowService.getExecutionSnapshot(this.workflowId, this.executionId);
+      // Try loading the workflow snapshot from execution time (preserves deleted nodes).
+      // Falls back to current workflow for older executions without a stored revision.
+      try {
+        this.workflow = await workflowService.getExecutionSnapshot(this.workflowId, this.executionId);
+      } catch {
+        this.workflow = await workflowService.getWorkflow(this.workflowId);
+      }
+
+      if (version !== this._loadVersion) return;
 
       // Build nodeStatuses map: nodeId → status
       const statuses: Record<string, string> = {};
@@ -180,10 +188,11 @@ export class DashboardExecutionPreview extends LitElement {
       }
       this.nodeStatuses = statuses;
     } catch (e) {
+      if (version !== this._loadVersion) return;
       console.error('[DashboardExecutionPreview] Failed to load data:', e);
       this.error = 'Failed to load execution data';
     } finally {
-      this.loading = false;
+      if (version === this._loadVersion) this.loading = false;
     }
   }
 
