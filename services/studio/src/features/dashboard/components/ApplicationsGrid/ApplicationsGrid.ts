@@ -337,6 +337,15 @@ export class ApplicationsGrid extends LitElement {
         (this.statusFilter === 'draft' && !app.isPublished);
 
       return matchesSearch && matchesStatus;
+    }).sort((a, b) => {
+      // Sort by updatedAt if available, otherwise by publishedAt, otherwise preserve reverse insertion order
+      const dateA = a.updatedAt ? new Date(a.updatedAt).getTime()
+        : a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.updatedAt ? new Date(b.updatedAt).getTime()
+        : b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      if (dateA !== 0 || dateB !== 0) return dateB - dateA;
+      // No dates — reverse array order (higher index = more recently created in API response)
+      return -1;
     });
   }
 
