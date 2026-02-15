@@ -528,7 +528,7 @@ export class DashboardLayout extends LitElement {
               <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <a href="/" class="logo">
+          <a href="/dashboard" class="logo">
             <img class="logo-icon" src="/favicon-32x32.png" alt="Nuraly" />
             <span class="logo-text">Nuraly</span>
           </a>

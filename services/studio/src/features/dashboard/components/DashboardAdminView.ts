@@ -31,7 +31,20 @@ interface WorkflowTemplate {
   createdAt?: string;
 }
 
-type AdminTab = 'app-templates' | 'workflow-templates';
+interface PlatformStats {
+  totalApps: number;
+  publishedApps: number;
+  draftApps: number;
+  totalUsers: number;
+  totalWorkflows: number;
+  activeWorkflows: number;
+  totalKvEntries: number;
+  secretKvEntries: number;
+  recentApps: { name: string; updatedAt?: string; isPublished: boolean }[];
+  recentWorkflows: { name: string; updatedAt?: string; status: string }[];
+}
+
+type AdminTab = 'overview' | 'app-templates' | 'workflow-templates';
 
 @customElement('dashboard-admin-view')
 export class DashboardAdminView extends LitElement {
@@ -458,10 +471,167 @@ export class DashboardAdminView extends LitElement {
         display: none;
       }
     }
+
+    /* Overview stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--nuraly-color-surface, #ffffff);
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: box-shadow 150ms ease;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .stat-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .stat-icon.apps { background: #ede9fe; color: #7c3aed; }
+    .stat-icon.users { background: #dbeafe; color: #2563eb; }
+    .stat-icon.workflows { background: #d1fae5; color: #059669; }
+    .stat-icon.kv { background: #fef3c7; color: #d97706; }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--nuraly-color-text-tertiary, #8c8ca8);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--nuraly-color-text, #0f0f3c);
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+    }
+
+    .overview-section {
+      margin-bottom: 24px;
+    }
+
+    .overview-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--nuraly-color-text, #0f0f3c);
+      margin: 0 0 12px;
+    }
+
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      background: var(--nuraly-color-surface, #ffffff);
+      border: 1px solid var(--nuraly-color-border, #e8e8f0);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
+    }
+
+    .recent-item:last-child {
+      border-bottom: none;
+    }
+
+    .recent-item-name {
+      font-weight: 500;
+      color: var(--nuraly-color-text, #0f0f3c);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 300px;
+    }
+
+    .recent-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .recent-item-date {
+      font-size: 12px;
+      color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .badge.published {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .badge.draft {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .badge.active {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .overview-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .overview-columns {
+        grid-template-columns: 1fr;
+      }
+    }
   `;
 
   @state() private isAdmin = false;
-  @state() private activeTab: AdminTab = 'app-templates';
+  @state() private activeTab: AdminTab = 'overview';
   @state() private appTemplates: AppTemplate[] = [];
   @state() private workflowTemplates: WorkflowTemplate[] = [];
   @state() private loadingApps = false;
@@ -470,14 +640,73 @@ export class DashboardAdminView extends LitElement {
   @state() private errorWorkflows: string | null = null;
   @state() private searchQuery = '';
   @state() private confirmDelete: { type: 'app' | 'workflow'; id: string; name: string } | null = null;
+  @state() private stats: PlatformStats | null = null;
+  @state() private loadingStats = false;
 
   connectedCallback() {
     super.connectedCallback();
     const user = getCurrentUser();
     this.isAdmin = user?.roles?.includes('admin') ?? false;
     if (this.isAdmin) {
+      this.fetchStats();
       this.fetchAppTemplates();
       this.fetchWorkflowTemplates();
+    }
+  }
+
+  private async fetchStats() {
+    this.loadingStats = true;
+    try {
+      const [appsRes, workflowsRes, usersRes, kvRes] = await Promise.allSettled([
+        fetch(APIS_URL.fetchAllApplications()),
+        fetch(APIS_URL.getAllWorkflows()),
+        fetch('/api/users'),
+        fetch(APIS_URL.getAllKvEntries()),
+      ]);
+
+      const apps = appsRes.status === 'fulfilled' && appsRes.value.ok
+        ? await appsRes.value.json() : [];
+      const workflows = workflowsRes.status === 'fulfilled' && workflowsRes.value.ok
+        ? await workflowsRes.value.json() : [];
+      const usersData = usersRes.status === 'fulfilled' && usersRes.value.ok
+        ? await usersRes.value.json() : { data: [] };
+      const kvEntries = kvRes.status === 'fulfilled' && kvRes.value.ok
+        ? await kvRes.value.json() : [];
+
+      const users = Array.isArray(usersData) ? usersData : (usersData.data || []);
+      const kvList = Array.isArray(kvEntries) ? kvEntries : [];
+
+      const sortedApps = [...apps].sort((a: any, b: any) =>
+        new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()
+      );
+      const sortedWorkflows = [...workflows].sort((a: any, b: any) =>
+        new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()
+      );
+
+      this.stats = {
+        totalApps: apps.length,
+        publishedApps: apps.filter((a: any) => a.isPublished || a.publishedAt).length,
+        draftApps: apps.filter((a: any) => !a.isPublished && !a.publishedAt).length,
+        totalUsers: users.length,
+        totalWorkflows: workflows.length,
+        activeWorkflows: workflows.filter((w: any) => w.status === 'ACTIVE').length,
+        totalKvEntries: kvList.length,
+        secretKvEntries: kvList.filter((e: any) => e.isSecret).length,
+        recentApps: sortedApps.slice(0, 5).map((a: any) => ({
+          name: a.name || 'Untitled',
+          updatedAt: a.updatedAt || a.createdAt,
+          isPublished: !!(a.isPublished || a.publishedAt),
+        })),
+        recentWorkflows: sortedWorkflows.slice(0, 5).map((w: any) => ({
+          name: w.name || 'Untitled',
+          updatedAt: w.updatedAt || w.createdAt,
+          status: w.status || 'DRAFT',
+        })),
+      };
+    } catch (err) {
+      console.error('Failed to fetch admin stats:', err);
+    } finally {
+      this.loadingStats = false;
     }
   }
 
@@ -639,6 +868,127 @@ export class DashboardAdminView extends LitElement {
     `;
   }
 
+  private renderOverview() {
+    if (this.loadingStats) {
+      return html`
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading platform stats...</p>
+        </div>
+      `;
+    }
+
+    const s = this.stats;
+    if (!s) {
+      return html`
+        <div class="error-container">
+          <p>Failed to load stats</p>
+          <button class="retry-btn" @click=${() => this.fetchStats()}>Retry</button>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon apps">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div>
+              <div class="stat-label">Applications</div>
+              <div class="stat-value">${s.totalApps}</div>
+            </div>
+          </div>
+          <div class="stat-sub">${s.publishedApps} published, ${s.draftApps} drafts</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon users">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <div class="stat-label">Users</div>
+              <div class="stat-value">${s.totalUsers}</div>
+            </div>
+          </div>
+          <div class="stat-sub">Registered accounts</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon workflows">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </div>
+            <div>
+              <div class="stat-label">Workflows</div>
+              <div class="stat-value">${s.totalWorkflows}</div>
+            </div>
+          </div>
+          <div class="stat-sub">${s.activeWorkflows} active</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-icon kv">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="stat-label">KV Entries</div>
+              <div class="stat-value">${s.totalKvEntries}</div>
+            </div>
+          </div>
+          <div class="stat-sub">${s.secretKvEntries} secrets</div>
+        </div>
+      </div>
+
+      <div class="overview-columns">
+        <div class="overview-section">
+          <h3 class="overview-section-title">Recent Applications</h3>
+          ${s.recentApps.length > 0 ? html`
+            <div class="recent-list">
+              ${s.recentApps.map(app => html`
+                <div class="recent-item">
+                  <span class="recent-item-name">${app.name}</span>
+                  <div class="recent-item-meta">
+                    <span class="badge ${app.isPublished ? 'published' : 'draft'}">${app.isPublished ? 'Published' : 'Draft'}</span>
+                    <span class="recent-item-date">${this.formatDate(app.updatedAt)}</span>
+                  </div>
+                </div>
+              `)}
+            </div>
+          ` : html`<div class="empty-state"><p>No applications yet</p></div>`}
+        </div>
+
+        <div class="overview-section">
+          <h3 class="overview-section-title">Recent Workflows</h3>
+          ${s.recentWorkflows.length > 0 ? html`
+            <div class="recent-list">
+              ${s.recentWorkflows.map(wf => html`
+                <div class="recent-item">
+                  <span class="recent-item-name">${wf.name}</span>
+                  <div class="recent-item-meta">
+                    <span class="badge ${wf.status === 'ACTIVE' ? 'active' : 'draft'}">${wf.status}</span>
+                    <span class="recent-item-date">${this.formatDate(wf.updatedAt)}</span>
+                  </div>
+                </div>
+              `)}
+            </div>
+          ` : html`<div class="empty-state"><p>No workflows yet</p></div>`}
+        </div>
+      </div>
+    `;
+  }
+
   private renderAppTemplatesTable() {
     if (this.loadingApps) {
       return html`
@@ -789,10 +1139,14 @@ export class DashboardAdminView extends LitElement {
     return html`
       <div class="admin-layout">
         <div class="admin-header">
-          <h1>Template Management</h1>
+          <h1>Admin</h1>
         </div>
 
         <div class="tabs">
+          <button
+            class="tab ${this.activeTab === 'overview' ? 'active' : ''}"
+            @click=${() => { this.activeTab = 'overview'; }}
+          >Overview</button>
           <button
             class="tab ${this.activeTab === 'app-templates' ? 'active' : ''}"
             @click=${() => { this.activeTab = 'app-templates'; }}
@@ -803,20 +1157,24 @@ export class DashboardAdminView extends LitElement {
           >Workflow Templates</button>
         </div>
 
-        <div class="toolbar">
-          <input
-            class="search-input"
-            type="text"
-            placeholder="Search by name..."
-            .value=${this.searchQuery}
-            @input=${this.handleSearchInput}
-          />
-        </div>
+        ${this.activeTab !== 'overview' ? html`
+          <div class="toolbar">
+            <input
+              class="search-input"
+              type="text"
+              placeholder="Search by name..."
+              .value=${this.searchQuery}
+              @input=${this.handleSearchInput}
+            />
+          </div>
+        ` : nothing}
 
         <div class="content">
-          ${this.activeTab === 'app-templates'
-            ? this.renderAppTemplatesTable()
-            : this.renderWorkflowTemplatesTable()
+          ${this.activeTab === 'overview'
+            ? this.renderOverview()
+            : this.activeTab === 'app-templates'
+              ? this.renderAppTemplatesTable()
+              : this.renderWorkflowTemplatesTable()
           }
         </div>
       </div>

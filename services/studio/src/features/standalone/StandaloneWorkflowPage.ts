@@ -503,11 +503,7 @@ export class StandaloneWorkflowPage extends LitElement {
    * Handle creation of new KV entry from config panel
    */
   private async handleCreateKvEntry(detail: { keyPath: string; value: any; scope: string; isSecret: boolean }): Promise<void> {
-    const appId = this.loadedApplicationId;
-    if (!appId) {
-      console.error('[StandaloneWorkflow] Cannot create KV entry: no application ID');
-      return;
-    }
+    const appId = this.loadedApplicationId || this.workflow?.applicationId || '_standalone';
 
     try {
       const result = await setKvEntry(detail.keyPath, {
@@ -555,11 +551,9 @@ export class StandaloneWorkflowPage extends LitElement {
       this.isTemplate = !!(workflow as any).isTemplate;
 
       // Load KV entries for this application (needed for API key selects etc.)
-      if (this.loadedApplicationId) {
-        await this.loadKvEntries(this.loadedApplicationId);
-      } else {
-        console.warn('[StandaloneWorkflow] No applicationId - KV entries will not be loaded');
-      }
+      // Load KV entries - use applicationId or '_standalone' fallback
+      const kvAppId = this.loadedApplicationId || '_standalone';
+      await this.loadKvEntries(kvAppId);
 
       // Load viewport from KV (pass applicationId since this.workflow isn't set yet)
       const viewport = await this.loadViewport(workflow.applicationId);
