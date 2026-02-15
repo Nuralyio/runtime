@@ -90,7 +90,8 @@
       ],
       "clientRoles": {
         "nuraly-web": [
-          "user"
+          "user",
+          "admin"
         ]
       }
     }
@@ -115,6 +116,12 @@
         {
           "name": "user",
           "description": "User access",
+          "composite": false,
+          "clientRole": true
+        },
+        {
+          "name": "admin",
+          "description": "Admin access",
           "composite": false,
           "clientRole": true
         }
