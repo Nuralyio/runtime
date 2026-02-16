@@ -89,15 +89,28 @@ export function workflowToSnapshot(workflow: Workflow): SchemaSnapshot {
   for (const edge of workflow.edges) {
     const sourceTable = nodeIdToTableName(edge.sourceNodeId);
     const targetTable = nodeIdToTableName(edge.targetNodeId);
-    const parsed = parseEdgeLabel(edge.label);
 
-    if (parsed && tables.has(sourceTable) && tables.has(targetTable)) {
+    if (!tables.has(sourceTable) || !tables.has(targetTable)) continue;
+
+    const parsed = parseEdgeLabel(edge.label);
+    if (parsed) {
       relationships.set(edge.id, {
         id: edge.id,
         sourceTable,
         sourceColumn: parsed.sourceColumn,
         targetTable,
         targetColumn: parsed.targetColumn,
+      });
+    } else {
+      // New edge drawn without a label — infer FK columns from table config
+      const targetPk = tables.get(targetTable)!.primaryKey || 'id';
+      const sourceColumn = `${targetTable}_${targetPk}`;
+      relationships.set(edge.id, {
+        id: edge.id,
+        sourceTable,
+        sourceColumn,
+        targetTable,
+        targetColumn: targetPk,
       });
     }
   }
