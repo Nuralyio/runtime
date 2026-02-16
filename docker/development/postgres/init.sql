@@ -23,6 +23,9 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'journal_dev')\gexec
 SELECT 'CREATE DATABASE docgen_dev'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'docgen_dev')\gexec
 
+SELECT 'CREATE DATABASE conduit_dev'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'conduit_dev')\gexec
+
 -- Grant privileges to postgres user on all databases
 GRANT ALL PRIVILEGES ON DATABASE nuraly_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE functions_dev TO postgres;
@@ -31,6 +34,7 @@ GRANT ALL PRIVILEGES ON DATABASE workflows_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE kv_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE journal_dev TO postgres;
 GRANT ALL PRIVILEGES ON DATABASE docgen_dev TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE conduit_dev TO postgres;
 
 -- Note: Schema creation is now handled by:
 -- - API: Prisma migrations (services/api/prisma/migrations/)
@@ -39,6 +43,7 @@ GRANT ALL PRIVILEGES ON DATABASE docgen_dev TO postgres;
 -- - Journal: Flyway migrations (services/journal/src/main/resources/db/migration/)
 -- - KV: Flyway migrations (services/kv/src/main/resources/db/migration/)
 -- - Document Generator: Flyway migrations (services/document-generator/src/main/resources/db/migration/)
+-- - Conduit: Flyway migrations (services/conduit/src/main/resources/db/migration/)
 --
 -- In dev mode, migrations run automatically at service startup.
 -- For manual migration: make db-migrate
