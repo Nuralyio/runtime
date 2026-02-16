@@ -51,4 +51,9 @@ public interface DatabaseConnector {
      * Execute a query request.
      */
     QueryResult execute(Connection conn, QueryRequest request) throws SQLException;
+
+    /**
+     * Execute DDL statements (CREATE, ALTER, DROP, etc.).
+     */
+    DdlResult executeDdl(Connection conn, DdlRequest request) throws SQLException;
 }

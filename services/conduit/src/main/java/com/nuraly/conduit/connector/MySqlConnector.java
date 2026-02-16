@@ -540,6 +540,95 @@ public class MySqlConnector implements DatabaseConnector {
         return node.asText();
     }
 
+    @Override
+    public DdlResult executeDdl(Connection conn, DdlRequest request) throws SQLException {
+        if (request.getStatements() == null || request.getStatements().isEmpty()) {
+            return DdlResult.failure("No DDL statements provided");
+        }
+
+        // Validate each statement is DDL
+        for (String stmt : request.getStatements()) {
+            if (!isAllowedDdl(stmt)) {
+                return DdlResult.failure("Statement not allowed (only CREATE/ALTER/DROP/SET/COMMENT): " + stmt.substring(0, Math.min(stmt.length(), 80)));
+            }
+        }
+
+        long start = System.currentTimeMillis();
+        boolean transactional = request.getTransactional() == null || request.getTransactional();
+
+        if (transactional) {
+            return executeDdlTransactional(conn, request, start);
+        } else {
+            return executeDdlIndividual(conn, request, start);
+        }
+    }
+
+    private DdlResult executeDdlTransactional(Connection conn, DdlRequest request, long start) throws SQLException {
+        boolean originalAutoCommit = conn.getAutoCommit();
+        conn.setAutoCommit(false);
+        int executed = 0;
+
+        try {
+            if (request.getSchema() != null && !request.getSchema().isEmpty()) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute("USE " + quoteIdentifier(request.getSchema()));
+                }
+            }
+
+            for (String ddl : request.getStatements()) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute(ddl);
+                    executed++;
+                }
+            }
+
+            conn.commit();
+            return DdlResult.success(executed, System.currentTimeMillis() - start);
+        } catch (SQLException e) {
+            conn.rollback();
+            LOG.errorf("DDL execution failed at statement %d: %s", executed + 1, e.getMessage());
+            return DdlResult.failure("Statement " + (executed + 1) + " failed: " + e.getMessage());
+        } finally {
+            conn.setAutoCommit(originalAutoCommit);
+        }
+    }
+
+    private DdlResult executeDdlIndividual(Connection conn, DdlRequest request, long start) throws SQLException {
+        int executed = 0;
+
+        if (request.getSchema() != null && !request.getSchema().isEmpty()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute("USE " + quoteIdentifier(request.getSchema()));
+            }
+        }
+
+        for (String ddl : request.getStatements()) {
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(ddl);
+                executed++;
+            } catch (SQLException e) {
+                LOG.errorf("DDL statement %d failed: %s", executed + 1, e.getMessage());
+                return DdlResult.builder()
+                        .success(false)
+                        .error("Statement " + (executed + 1) + " failed: " + e.getMessage())
+                        .statementsExecuted(executed)
+                        .executionTimeMs(System.currentTimeMillis() - start)
+                        .build();
+            }
+        }
+
+        return DdlResult.success(executed, System.currentTimeMillis() - start);
+    }
+
+    private boolean isAllowedDdl(String statement) {
+        String trimmed = statement.trim().toUpperCase();
+        return trimmed.startsWith("CREATE") ||
+               trimmed.startsWith("ALTER") ||
+               trimmed.startsWith("DROP") ||
+               trimmed.startsWith("SET") ||
+               trimmed.startsWith("COMMENT");
+    }
+
     private String quoteIdentifier(String identifier) {
         return "`" + identifier.replace("`", "``") + "`";
     }
