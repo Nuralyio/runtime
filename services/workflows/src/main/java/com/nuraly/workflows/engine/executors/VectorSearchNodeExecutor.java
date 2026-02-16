@@ -139,35 +139,40 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         if (input.has("embedding") && input.get("embedding").isArray()) {
             // Use pre-computed embedding
             queryEmbedding = jsonArrayToFloatArray(input.get("embedding"));
-        } else if (input.has(inputField) && input.get(inputField).isTextual()) {
-            // Compute embedding from query text (using configured input field)
-            queryText = input.get(inputField).asText();
-            if (queryText.isEmpty()) {
-                return NodeExecutionResult.failure("Query text is empty (field: " + inputField + ")");
-            }
-
-            try {
-                queryEmbedding = computeQueryEmbedding(queryText, config, context);
-            } catch (Exception e) {
-                LOG.errorf(e, "Failed to compute query embedding");
-                return NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
-            }
-        } else if (!inputField.equals("query") && input.has("query") && input.get("query").isTextual()) {
-            // Fallback to "query" field if custom inputField not found
-            queryText = input.get("query").asText();
-            if (queryText.isEmpty()) {
-                return NodeExecutionResult.failure("Query text is empty");
-            }
-
-            try {
-                queryEmbedding = computeQueryEmbedding(queryText, config, context);
-            } catch (Exception e) {
-                LOG.errorf(e, "Failed to compute query embedding");
-                return NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
-            }
         } else {
-            return NodeExecutionResult.failure(
-                    "Input must contain either '" + inputField + "' (text), 'query' (text), or 'embedding' (vector array)");
+            // Try to resolve query text from inputField
+            if (inputField.contains("${")) {
+                // Dynamic expression (e.g. "${input.message.text}") - resolve via context
+                String resolved = context.resolveExpression(inputField);
+                if (resolved != null && !resolved.isEmpty()) {
+                    queryText = resolved;
+                }
+            } else {
+                // Treat as a JSON path - supports both flat keys ("query") and dot-notation ("message.text")
+                JsonNode fieldValue = resolveJsonPath(input, inputField);
+                if (fieldValue != null && fieldValue.isTextual()) {
+                    queryText = fieldValue.asText();
+                }
+            }
+
+            // Fallback to "query" field if custom inputField didn't resolve
+            if ((queryText == null || queryText.isEmpty()) && !inputField.equals("query")) {
+                if (input.has("query") && input.get("query").isTextual()) {
+                    queryText = input.get("query").asText();
+                }
+            }
+
+            if (queryText == null || queryText.isEmpty()) {
+                return NodeExecutionResult.failure(
+                        "Input must contain either '" + inputField + "' (text), 'query' (text), or 'embedding' (vector array)");
+            }
+
+            try {
+                queryEmbedding = computeQueryEmbedding(queryText, config, context);
+            } catch (Exception e) {
+                LOG.errorf(e, "Failed to compute query embedding");
+                return NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
+            }
         }
 
         // Get metadata filter if provided
@@ -293,6 +298,25 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         }
 
         return result.getEmbedding();
+    }
+
+    /**
+     * Resolve a dot-notation path (e.g. "message.text") against a JSON node.
+     * Supports both flat keys ("query") and nested paths ("message.text").
+     */
+    private JsonNode resolveJsonPath(JsonNode root, String path) {
+        if (root == null || path == null) {
+            return null;
+        }
+        String[] parts = path.split("\\.");
+        JsonNode current = root;
+        for (String part : parts) {
+            if (current == null) {
+                return null;
+            }
+            current = current.get(part);
+        }
+        return current;
     }
 
     private float[] jsonArrayToFloatArray(JsonNode arrayNode) {

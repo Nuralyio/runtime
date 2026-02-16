@@ -42,7 +42,6 @@ public class WorkflowEdgeEntity extends PanacheEntityBase {
     public String targetPortId;
 
     // For conditional edges
-    @Lob
     @Column(columnDefinition = "TEXT", name = "condition_expression")
     public String condition; // JSON: condition expression
 

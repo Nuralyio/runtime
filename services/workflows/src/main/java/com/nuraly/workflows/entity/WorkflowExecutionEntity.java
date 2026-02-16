@@ -37,19 +37,15 @@ public class WorkflowExecutionEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public ExecutionStatus status = ExecutionStatus.PENDING;
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "input_data")
     public String inputData; // JSON: input payload
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "output_data")
     public String outputData; // JSON: final output
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String variables; // JSON: runtime variables state
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "error_message")
     public String errorMessage;
 

@@ -150,10 +150,13 @@ public class NodeTypeRegistry {
                 ))
                 .build());
 
+        // VERSION HISTORY:
+        //   v1: input + out
+        //   v2: changed input port ID to "in" to match UI template
         register(NodeType.DEBUG, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Input", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
@@ -238,6 +241,17 @@ public class NodeTypeRegistry {
                 .build());
 
         // VERSION HISTORY:
+        //   v1: in + output
+        //   v2: removed input port (config-only node, connects via output to Agent)
+        register(NodeType.AGENT_LLM, NodeTypeDefinition.builder()
+                .schemaVersion(2)
+                .inputs(List.of())
+                .outputs(List.of(
+                        port("out", "Output", true, 1)
+                ))
+                .build());
+
+        // VERSION HISTORY:
         //   v1: in + llm + tools + output
         //   v2: added memory, prompt, retriever input ports
         register(NodeType.AGENT, NodeTypeDefinition.builder()
@@ -265,11 +279,12 @@ public class NodeTypeRegistry {
                 ))
                 .build());
 
+        // VERSION HISTORY:
+        //   v1: input + output
+        //   v2: removed input port (config-only node, connects via output to Agent/LLM)
         register(NodeType.PROMPT, NodeTypeDefinition.builder()
-                .schemaVersion(1)
-                .inputs(List.of(
-                        port("input", "Input", true, 1)
-                ))
+                .schemaVersion(2)
+                .inputs(List.of())
                 .outputs(List.of(
                         port("out", "Output", true, 1)
                 ))
@@ -285,21 +300,23 @@ public class NodeTypeRegistry {
                 ))
                 .build());
 
+        // VERSION HISTORY:
+        //   v1: input + output
+        //   v2: removed input port (config-only node, connects via output to Agent/LLM)
         register(NodeType.MEMORY, NodeTypeDefinition.builder()
-                .schemaVersion(1)
-                .inputs(List.of(
-                        port("input", "Input", true, 1)
-                ))
+                .schemaVersion(2)
+                .inputs(List.of())
                 .outputs(List.of(
                         port("out", "Output", true, 1)
                 ))
                 .build());
 
+        // VERSION HISTORY:
+        //   v1: input + output
+        //   v2: removed input port (config-only node, connects via output to Agent/LLM)
         register(NodeType.CONTEXT_MEMORY, NodeTypeDefinition.builder()
-                .schemaVersion(1)
-                .inputs(List.of(
-                        port("input", "Input", true, 1)
-                ))
+                .schemaVersion(2)
+                .inputs(List.of())
                 .outputs(List.of(
                         port("out", "Output", true, 1)
                 ))
@@ -329,9 +346,9 @@ public class NodeTypeRegistry {
         // --- RAG nodes ---
 
         register(NodeType.EMBEDDING, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Input", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
@@ -339,9 +356,9 @@ public class NodeTypeRegistry {
                 .build());
 
         register(NodeType.DOCUMENT_LOADER, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Input", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
@@ -349,9 +366,9 @@ public class NodeTypeRegistry {
                 .build());
 
         register(NodeType.TEXT_SPLITTER, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Input", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
@@ -359,19 +376,22 @@ public class NodeTypeRegistry {
                 .build());
 
         register(NodeType.VECTOR_WRITE, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Input", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
                 ))
                 .build());
 
+        // VERSION HISTORY:
+        //   v1: input + output
+        //   v2: changed input port to "in" (Query) to match UI template
         register(NodeType.VECTOR_SEARCH, NodeTypeDefinition.builder()
-                .schemaVersion(1)
+                .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("in", "Query", true, 1)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
