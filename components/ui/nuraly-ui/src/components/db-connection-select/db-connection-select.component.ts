@@ -345,7 +345,7 @@ export class NrDbConnectionSelect extends LitElement {
     this.creating = true;
     this.error = '';
 
-    const keyPath = `${this.dbType}/${this.newConnectionName}`;
+    const keyPath = `database/${this.newConnectionName}`;
     const credentialValue = {
       type: this.dbType,
       host: this.newHost,
@@ -531,7 +531,7 @@ export class NrDbConnectionSelect extends LitElement {
   override render() {
     const secretEntries = this.entries.filter(e => e.isSecret);
     const options = secretEntries.map(entry => ({
-      label: entry.keyPath.replace(`${this.dbType}/`, ''),
+      label: entry.keyPath.replace('database/', ''),
       value: entry.keyPath,
       icon: 'database'
     }));

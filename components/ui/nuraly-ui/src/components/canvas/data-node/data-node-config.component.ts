@@ -287,7 +287,7 @@ export class NrDataNodeConfig extends LitElement {
       `;
     }
 
-    const dbEntries = this.kvEntries.filter(e => e.keyPath.startsWith(`${dbType}/`));
+    const dbEntries = this.kvEntries.filter(e => e.keyPath.startsWith('database/'));
 
     return html`
       <div class="config-field">
