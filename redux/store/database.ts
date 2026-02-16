@@ -536,3 +536,59 @@ export function clearAllDatabaseCaches(): void {
   $columnsCache.set({});
   $relationshipsCache.set({});
 }
+
+/**
+ * DDL execution request
+ */
+export interface DdlRequest {
+  statements: string[];
+  transactional?: boolean;
+  schema?: string;
+}
+
+/**
+ * DDL execution result
+ */
+export interface DdlResult {
+  success: boolean;
+  error?: string;
+  statementsExecuted: number;
+  executionTimeMs?: number;
+}
+
+/**
+ * Execute DDL statements against the database
+ */
+export async function executeDdl(
+  connectionPath: string,
+  applicationId: string,
+  request: DdlRequest
+): Promise<DdlResult> {
+  try {
+    const params = new URLSearchParams({
+      applicationId,
+      connectionPath,
+    });
+
+    const response = await fetch(`${getDbManagerUrl()}/execute-ddl?${params}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { success: false, error: text || `HTTP ${response.status}`, statementsExecuted: 0 };
+      }
+    }
+
+    return await response.json();
+  } catch (err: any) {
+    return { success: false, error: err.message || 'DDL execution failed', statementsExecuted: 0 };
+  }
+}
