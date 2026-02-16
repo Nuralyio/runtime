@@ -502,7 +502,24 @@ export class DatabasePage extends LitElement {
     const appId = $currentApplication.get()?.uuid;
     if (!appId || !this.currentConnection) return;
 
-    // Load saved snapshot first for immediate display
+    // Load viewport and positions first so buildSchemaWorkflow() uses them
+    const [savedViewport, savedPositions] = await Promise.all([
+      getDatabaseViewport(this.currentConnection.path, appId),
+      getDatabaseTablePositions(this.currentConnection.path, schemaName, appId),
+    ]);
+    this.currentViewport = savedViewport || getDefaultViewport();
+    this.savedTablePositions = savedPositions || {};
+
+    // Initialize viewport debouncer for this connection
+    const connectionPath = this.currentConnection.path;
+    this.viewportDebouncer = createViewportDebouncer((viewport) => {
+      const currentAppId = $currentApplication.get()?.uuid;
+      if (currentAppId) {
+        saveDatabaseViewport(connectionPath, currentAppId, viewport as DatabaseCanvasViewport);
+      }
+    });
+
+    // Load saved snapshot for immediate display
     const snapshot = await getSchemaSnapshot(this.currentConnection.path, appId, schemaName);
     if (snapshot) {
       this.tables = snapshot.tables;
@@ -553,23 +570,6 @@ export class DatabasePage extends LitElement {
         this.schemaWorkflow = null;
       }
     }
-
-    // Load saved viewport for this connection
-    const savedViewport = await getDatabaseViewport(this.currentConnection.path, appId);
-    this.currentViewport = savedViewport || getDefaultViewport();
-
-    // Load saved table positions for this connection and schema
-    const savedPositions = await getDatabaseTablePositions(this.currentConnection.path, schemaName, appId);
-    this.savedTablePositions = savedPositions || {};
-
-    // Initialize viewport debouncer for this connection
-    const connectionPath = this.currentConnection.path;
-    this.viewportDebouncer = createViewportDebouncer((viewport) => {
-      const currentAppId = $currentApplication.get()?.uuid;
-      if (currentAppId) {
-        saveDatabaseViewport(connectionPath, currentAppId, viewport as DatabaseCanvasViewport);
-      }
-    });
   }
 
   private buildSchemaWorkflow() {
