@@ -5,6 +5,7 @@ import "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-
 import "../../../runtime/components/ui/nuraly-ui/src/components/select/select.component";
 import "../../../runtime/components/ui/nuraly-ui/src/components/table/table.component";
 import "./SchemaCommitDialog";
+import "./InsertRowDialog";
 import type { SchemaCommitDialog } from "./SchemaCommitDialog";
 import type { SelectOption } from "../../../runtime/components/ui/nuraly-ui/src/components/select/select.types";
 import type { IHeader } from "../../../runtime/components/ui/nuraly-ui/src/components/table/table.types";
@@ -47,6 +48,7 @@ import {
   getColumns,
   getRelationships,
   executeDdl,
+  executeQuery,
   clearConnectionCache,
   getSchemaSnapshot,
   saveSchemaSnapshot,
@@ -864,6 +866,48 @@ export class DatabasePage extends LitElement {
     return this.queryResult.rows;
   }
 
+  // ==================== Insert Row ====================
+
+  private handleNodeInsertRow(e: CustomEvent) {
+    const { node } = e.detail;
+    const tableName = node.name || node.configuration?.tableName;
+    this.selectedTableName = tableName;
+  }
+
+  private getInsertColumns() {
+    if (!this.selectedTableName) return [];
+    return this.tableColumns.get(this.selectedTableName) || [];
+  }
+
+  private async handleInsertRow(e: CustomEvent) {
+    const { fields } = e.detail;
+    const appId = $currentApplication.get()?.uuid;
+    if (!appId || !this.currentConnection || !this.selectedTableName) return;
+
+    const canvas = this.shadowRoot?.querySelector('workflow-canvas') as any;
+    const panel = canvas?.getInsertPanelElement();
+
+    try {
+      const result = await executeQuery(
+        this.currentConnection.path,
+        appId,
+        {
+          operation: 'INSERT',
+          schema: this.currentSchema || undefined,
+          table: this.selectedTableName,
+          fields,
+        }
+      );
+      panel?.setResult({
+        success: result.success,
+        error: result.error,
+        affectedRows: result.affectedRows,
+      });
+    } catch (err: any) {
+      panel?.setResult({ success: false, error: err.message });
+    }
+  }
+
   override render() {
     if (this.loading) {
       return html`
@@ -966,10 +1010,14 @@ export class DatabasePage extends LitElement {
                 .canvasType=${'DATABASE'}
                 .showPalette=${false}
                 .showToolbar=${true}
+                .insertPanelColumns=${this.getInsertColumns()}
+                .insertPanelSchemaName=${this.currentSchema || ''}
                 @workflow-changed=${this.handleCanvasWorkflowChanged}
                 @node-selected=${this.handleNodeSelected}
                 @node-moved=${this.handleNodeMoved}
                 @viewport-changed=${this.handleViewportChanged}
+                @node-insert-row=${this.handleNodeInsertRow}
+                @insert-row=${this.handleInsertRow}
               ></workflow-canvas>
             ` : html`
               <div class="empty-state">
