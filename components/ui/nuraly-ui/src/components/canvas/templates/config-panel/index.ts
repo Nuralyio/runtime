@@ -228,7 +228,7 @@ export function renderConfigPanelTemplate(
       </div>
       <div class="config-panel-content">
         ${renderCommonFields(node, callbacks)}
-        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, nodeExecution, triggerInfo, triggerActions)}
+        ${renderTypeFields(node.type, node.configuration, callbacks.onUpdateConfig, workflowId, kvEntries, onCreateKvEntry, applicationId, databaseProvider, nodeExecution, triggerInfo, triggerActions, workflow, node.id)}
         ${isWhiteboardNode(node.type) && node.type !== WhiteboardNodeType.ANCHOR
           ? renderOnClickActionFields(node.configuration, callbacks.onUpdateConfig, workflow?.nodes || [])
           : nothing}

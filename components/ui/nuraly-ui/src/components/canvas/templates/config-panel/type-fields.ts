@@ -7,6 +7,7 @@
 import { nothing, TemplateResult } from 'lit';
 import {
   NodeConfiguration,
+  Workflow,
   WorkflowNodeType,
   AgentNodeType,
   DbDesignerNodeType,
@@ -90,6 +91,8 @@ export function renderTypeFields(
   nodeExecution?: NodeExecutionData,
   triggerInfo?: TriggerInfo,
   triggerActions?: TriggerActions,
+  workflow?: Workflow,
+  nodeId?: string,
 ): TemplateResult | typeof nothing {
   switch (type) {
     // Workflow nodes
@@ -225,7 +228,7 @@ export function renderTypeFields(
       return renderIndexNodeFields(config, onUpdate);
 
     case DbDesignerNodeType.RELATIONSHIP:
-      return renderRelationshipNodeFields(config, onUpdate);
+      return renderRelationshipNodeFields(config, onUpdate, workflow, nodeId);
 
     case DbDesignerNodeType.CONSTRAINT:
       return renderConstraintNodeFields(config, onUpdate);
