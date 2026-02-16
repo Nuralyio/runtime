@@ -21,6 +21,7 @@ import './components/ApplicationsGrid/ApplicationCard';
 import './components/WorkflowsList/WorkflowsList';
 import './components/WhiteboardsList/WhiteboardsList';
 import './components/KVEntriesList/KVEntriesList';
+import './components/DatabaseList/DatabaseConnectionDialog';
 
 // Export types and services
 export * from './services/dashboard.service';

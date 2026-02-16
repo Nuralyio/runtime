@@ -86,18 +86,73 @@ export function workflowToSnapshot(workflow: Workflow): SchemaSnapshot {
     });
   }
 
+  // Build a map of nodeId → tableName for TABLE nodes
+  const nodeToTable = new Map<string, string>();
+  for (const node of workflow.nodes) {
+    if (node.type === DbDesignerNodeType.TABLE) {
+      const tableName = (node.configuration.tableName as string) || node.name;
+      nodeToTable.set(node.id, tableName);
+    }
+  }
+
+  // Build edge lookup: targetNodeId+targetPortId → sourceNodeId
+  const edgesByTarget = new Map<string, string>();
+  for (const edge of workflow.edges) {
+    edgesByTarget.set(`${edge.targetNodeId}:${edge.targetPortId}`, edge.sourceNodeId);
+  }
+
+  // Process DB_RELATIONSHIP nodes — connected via edges to their source/target ports
+  for (const node of workflow.nodes) {
+    if (node.type !== DbDesignerNodeType.RELATIONSHIP) continue;
+
+    const config = node.configuration;
+    const sourceColumn = config.sourceColumn as string;
+    const targetColumn = config.targetColumn as string;
+    if (!sourceColumn || !targetColumn) continue;
+
+    const sourceNodeId = edgesByTarget.get(`${node.id}:source`);
+    const targetNodeId = edgesByTarget.get(`${node.id}:target`);
+    if (!sourceNodeId || !targetNodeId) continue;
+
+    const sourceTable = nodeToTable.get(sourceNodeId);
+    const targetTable = nodeToTable.get(targetNodeId);
+    if (!sourceTable || !targetTable) continue;
+
+    relationships.set(node.id, {
+      id: node.id,
+      sourceTable,
+      sourceColumn,
+      targetTable,
+      targetColumn,
+    });
+  }
+
+  // Also process direct table-to-table edges (from existing DB foreign keys)
   for (const edge of workflow.edges) {
     const sourceTable = nodeIdToTableName(edge.sourceNodeId);
     const targetTable = nodeIdToTableName(edge.targetNodeId);
-    const parsed = parseEdgeLabel(edge.label);
 
-    if (parsed && tables.has(sourceTable) && tables.has(targetTable)) {
+    if (!tables.has(sourceTable) || !tables.has(targetTable)) continue;
+
+    const parsed = parseEdgeLabel(edge.label);
+    if (parsed) {
       relationships.set(edge.id, {
         id: edge.id,
         sourceTable,
         sourceColumn: parsed.sourceColumn,
         targetTable,
         targetColumn: parsed.targetColumn,
+      });
+    } else {
+      // New edge drawn without a label — infer FK columns from table config
+      const targetPk = tables.get(targetTable)!.primaryKey || 'id';
+      const sourceColumn = `${targetTable}_${targetPk}`;
+      relationships.set(edge.id, {
+        id: edge.id,
+        sourceTable,
+        sourceColumn,
+        targetTable,
+        targetColumn: targetPk,
       });
     }
   }
