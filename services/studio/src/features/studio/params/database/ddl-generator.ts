@@ -139,6 +139,13 @@ export function generateDdl(changes: SchemaChange[], schema?: string, dbType: Db
         const d = change.details!;
         const constraintName = `fk_${change.table}_${d.sourceColumn}_${d.targetTable}_${d.targetColumn}`;
         const targetRef = tableRef(schema, d.targetTable, dbType);
+        // MySQL requires an index on the referenced column
+        if (mysql) {
+          const idxName = `idx_${d.targetTable}_${d.targetColumn}`;
+          statements.push(
+            `CREATE INDEX ${q(idxName, dbType)} ON ${targetRef} (${q(d.targetColumn, dbType)})`
+          );
+        }
         statements.push(
           `ALTER TABLE ${ref} ADD CONSTRAINT ${q(constraintName, dbType)} FOREIGN KEY (${q(d.sourceColumn, dbType)}) REFERENCES ${targetRef} (${q(d.targetColumn, dbType)})`
         );

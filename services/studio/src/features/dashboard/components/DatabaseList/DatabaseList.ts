@@ -3,11 +3,17 @@
  * Shows database connections from KV store (keys starting with database/)
  */
 
-import { html, LitElement, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { html, LitElement, css, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { DatabaseConnection } from '../../services/dashboard.service';
+import { testConnectionFromKv } from '../../../runtime/redux/store/database';
 
 import '../../../runtime/components/ui/nuraly-ui/src/components/button';
+
+interface ConnectionStatus {
+  status: 'idle' | 'testing' | 'success' | 'error';
+  message?: string;
+}
 
 @customElement('dashboard-database-list')
 export class DashboardDatabaseList extends LitElement {
@@ -56,6 +62,7 @@ export class DashboardDatabaseList extends LitElement {
       align-items: center;
       justify-content: center;
       color: var(--nuraly-color-primary, #14144b);
+      flex-shrink: 0;
     }
 
     .db-icon svg {
@@ -83,27 +90,63 @@ export class DashboardDatabaseList extends LitElement {
       color: var(--nuraly-color-text-tertiary, #8c8ca8);
     }
 
-    .card-stats {
+    .card-actions {
       display: flex;
-      gap: 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
+      gap: 4px;
+      flex-shrink: 0;
     }
 
-    .stat {
+    .action-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--nuraly-color-text-tertiary, #8c8ca8);
+      transition: all 0.15s ease;
     }
 
-    .stat-value {
-      font-size: 16px;
-      font-weight: 600;
+    .action-btn:hover {
+      background: var(--nuraly-color-background-hover, #f1f5f9);
       color: var(--nuraly-color-text, #0f0f3c);
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: var(--nuraly-color-text-tertiary, #8c8ca8);
+    .action-btn.test:hover {
+      color: var(--nuraly-color-primary, #14144b);
+    }
+
+    .action-btn.edit:hover {
+      color: #2563eb;
+    }
+
+    .action-btn.delete:hover {
+      color: #dc2626;
+    }
+
+    .action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .action-btn.testing {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--nuraly-color-border-subtle, #f1f3f5);
     }
 
     .key-path {
@@ -123,6 +166,41 @@ export class DashboardDatabaseList extends LitElement {
       font-size: 10px;
       color: var(--nuraly-color-text-tertiary, #8c8ca8);
       margin-top: 4px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-dot.idle {
+      background: #d1d5db;
+    }
+
+    .status-dot.testing {
+      background: #f59e0b;
+      animation: pulse 1s infinite;
+    }
+
+    .status-dot.success {
+      background: #22c55e;
+    }
+
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    .status-text {
+      color: var(--nuraly-color-text-tertiary, #8c8ca8);
     }
 
     .empty-state {
@@ -156,6 +234,7 @@ export class DashboardDatabaseList extends LitElement {
   `;
 
   @property({ type: Array }) databases: DatabaseConnection[] = [];
+  @state() private connectionStatuses = new Map<string, ConnectionStatus>();
 
   private getDatabaseIcon() {
     return html`
@@ -175,6 +254,59 @@ export class DashboardDatabaseList extends LitElement {
     }));
   }
 
+  private async handleTest(e: Event, db: DatabaseConnection) {
+    e.stopPropagation();
+    const key = db.keyPath;
+    this.connectionStatuses = new Map(this.connectionStatuses.set(key, { status: 'testing' }));
+
+    const result = await testConnectionFromKv(db.keyPath, db.applicationId);
+
+    this.connectionStatuses = new Map(this.connectionStatuses.set(key, {
+      status: result.success ? 'success' : 'error',
+      message: result.success ? 'Connected' : (result.error || 'Failed'),
+    }));
+  }
+
+  private handleEdit(e: Event, db: DatabaseConnection) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('database-edit', {
+      detail: { database: db },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private handleDelete(e: Event, db: DatabaseConnection) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('database-delete', {
+      detail: { database: db },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  private getStatus(keyPath: string): ConnectionStatus {
+    return this.connectionStatuses.get(keyPath) || { status: 'idle' };
+  }
+
+  private renderStatusIndicator(keyPath: string) {
+    const cs = this.getStatus(keyPath);
+    if (cs.status === 'idle') return nothing;
+
+    const labels: Record<string, string> = {
+      testing: 'Testing...',
+      success: 'Connected',
+      error: cs.message || 'Failed',
+    };
+
+    return html`
+      <div class="status-indicator">
+        <span class="status-dot ${cs.status}"></span>
+        <span class="status-text">${labels[cs.status]}</span>
+      </div>
+    `;
+  }
+
   render() {
     if (this.databases.length === 0) {
       return html`
@@ -185,7 +317,7 @@ export class DashboardDatabaseList extends LitElement {
             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
           </svg>
           <h3 class="empty-title">No database connections</h3>
-          <p class="empty-text">Add database connections in KV store with keys starting with database/</p>
+          <p class="empty-text">Create a connection to get started</p>
         </div>
       `;
     }
@@ -200,20 +332,44 @@ export class DashboardDatabaseList extends LitElement {
                 <h3>${db.name}</h3>
                 <span>${db.type}</span>
               </div>
+              <div class="card-actions">
+                <button
+                  class="action-btn test ${this.getStatus(db.keyPath).status === 'testing' ? 'testing' : ''}"
+                  title="Test Connection"
+                  @click=${(e: Event) => this.handleTest(e, db)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </button>
+                <button
+                  class="action-btn edit"
+                  title="Edit Connection"
+                  @click=${(e: Event) => this.handleEdit(e, db)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button
+                  class="action-btn delete"
+                  title="Delete Connection"
+                  @click=${(e: Event) => this.handleDelete(e, db)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <div class="key-path">${db.keyPath}</div>
             ${db.applicationName ? html`
               <div class="app-name">App: ${db.applicationName}</div>
             ` : ''}
-            <div class="card-stats">
-              <div class="stat">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Tables</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">--</span>
-                <span class="stat-label">Size</span>
-              </div>
+            <div class="card-footer">
+              ${this.renderStatusIndicator(db.keyPath)}
             </div>
           </div>
         `)}
