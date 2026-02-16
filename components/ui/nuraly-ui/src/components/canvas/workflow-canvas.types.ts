@@ -912,7 +912,10 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       userPrompt: '${variables.message}',
     },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      inputs: [
+        { id: 'in', type: PortType.INPUT, label: 'Input' },
+        { id: 'context_memory', type: PortType.INPUT, label: 'Context Memory' },
+      ],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Response' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
@@ -1789,7 +1792,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       conversationIdExpression: '${input.threadId}',
     },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      inputs: [],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Memory Config' }],
     },
   },
@@ -1802,7 +1805,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     category: 'agent',
     defaultConfig: { template: '', variables: [] },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Variables' }],
+      inputs: [],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Prompt' }],
     },
   },
@@ -1815,7 +1818,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     category: 'agent',
     defaultConfig: { provider: 'openai', modelName: 'gpt-4', temperature: 0.7, maxTokens: 2048 },
     defaultPorts: {
-      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Prompt' }],
+      inputs: [],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Response' }],
     },
   },

@@ -98,10 +98,10 @@ export function renderExpandedFrameTemplate(data: FrameTemplateData): TemplateRe
     >
       ${showLabel ? renderFrameLabel(frame, label, editingFrameLabelId, labelPosition, labelPlacement, callbacks) : null}
       ${isSelected ? html`
-        <div class="resize-handle resize-se" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'se')}></div>
-        <div class="resize-handle resize-sw" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'sw')}></div>
-        <div class="resize-handle resize-ne" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'ne')}></div>
-        <div class="resize-handle resize-nw" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'nw')}></div>
+        <div class="resize-handle corner se" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'se')}></div>
+        <div class="resize-handle corner sw" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'sw')}></div>
+        <div class="resize-handle corner ne" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'ne')}></div>
+        <div class="resize-handle corner nw" @mousedown=${(e: MouseEvent) => callbacks.onFrameResize(e, frame, 'nw')}></div>
       ` : null}
     </div>
   `;
