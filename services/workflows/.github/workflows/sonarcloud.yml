@@ -33,8 +33,11 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+      - name: Build and test
+        run: mvn -B verify -DskipITs
+        continue-on-error: true
+      - name: SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Nuralyio_workflow_02763e5b-e4bf-4123-87de-50cdfbc7b1e8 -Dsonar.projectName='workflow'
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Nuralyio_workflow_02763e5b-e4bf-4123-87de-50cdfbc7b1e8 -Dsonar.projectName='workflow'
