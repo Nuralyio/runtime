@@ -125,10 +125,12 @@ function createMockHost(workflow: Workflow): MockHost {
     marqueeState: null,
     lastMousePosition: null,
     configuredNode: null,
+    insertPanelNode: null,
     expandedCategories: new Set<string>(),
     canvasWrapper: null,
     canvasViewport: null,
     configPanel: null,
+    insertPanel: null,
     shadowRoot: null,
 
     // CanvasHost methods

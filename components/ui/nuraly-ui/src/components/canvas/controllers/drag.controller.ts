@@ -145,6 +145,20 @@ export class DragController extends BaseCanvasController {
         this.viewportController.updateConfigPanelPosition();
       }
     }
+
+    // Update insert panel position if the insert panel node is being dragged
+    if (
+      this._host.insertPanelNode &&
+      this._host.selectedNodeIds.has(this._host.insertPanelNode.id)
+    ) {
+      const updatedNode = this._host.workflow.nodes.find(
+        n => n.id === this._host.insertPanelNode!.id
+      );
+      if (updatedNode) {
+        this._host.insertPanelNode = updatedNode;
+        this.viewportController.updateInsertPanelPosition();
+      }
+    }
   }
 
   /**

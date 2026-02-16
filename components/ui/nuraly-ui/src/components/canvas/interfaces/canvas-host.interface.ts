@@ -84,10 +84,14 @@ export interface CanvasHost extends EventTarget {
   configuredNode: WorkflowNode | null;
   expandedCategories: Set<string>;
 
+  // Insert panel state
+  insertPanelNode: WorkflowNode | null;
+
   // DOM references
   canvasWrapper: HTMLElement | null;
   canvasViewport: HTMLElement | null;
   configPanel: HTMLElement | null;
+  insertPanel: HTMLElement | null;
   shadowRoot: ShadowRoot | null;
 
   // Chatbot panel

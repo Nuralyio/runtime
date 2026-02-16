@@ -64,6 +64,7 @@ export class ViewportController extends BaseCanvasController<ViewportHost & Reac
       if (el instanceof HTMLElement) {
         return el.classList?.contains('node-palette') ||
                el.classList?.contains('config-panel') ||
+               el.classList?.contains('insert-panel') ||
                el.classList?.contains('chatbot-preview-panel') ||
                el.classList?.contains('palette-content') ||
                el.classList?.contains('config-panel-content') ||
@@ -142,6 +143,7 @@ export class ViewportController extends BaseCanvasController<ViewportHost & Reac
     viewportEl.style.transform = `translate(${viewport.panX}px, ${viewport.panY}px) scale(${viewport.zoom})`;
 
     this.updateConfigPanelPosition();
+    this.updateInsertPanelPosition();
   }
 
   /**
@@ -158,6 +160,25 @@ export class ViewportController extends BaseCanvasController<ViewportHost & Reac
 
     configPanel.style.left = `${panelX}px`;
     configPanel.style.top = `${panelY}px`;
+  }
+
+  /**
+   * Update insert panel position to track LEFT of the target node
+   */
+  updateInsertPanelPosition(): void {
+    const host = this._host as any;
+    const { insertPanelNode, insertPanel, viewport } = host;
+    if (!insertPanel || !insertPanelNode) return;
+
+    const panelWidth = 320;
+    const panelOffset = 20;
+    const panelX = insertPanelNode.position.x * viewport.zoom + viewport.panX - (panelWidth + panelOffset) * viewport.zoom;
+    const panelY = insertPanelNode.position.y * viewport.zoom + viewport.panY;
+
+    insertPanel.style.left = `${panelX}px`;
+    insertPanel.style.top = `${panelY}px`;
+    insertPanel.style.transform = `scale(${viewport.zoom})`;
+    insertPanel.style.transformOrigin = 'top right';
   }
 
   /**

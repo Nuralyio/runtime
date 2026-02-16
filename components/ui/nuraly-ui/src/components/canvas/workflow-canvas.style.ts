@@ -486,6 +486,12 @@ export const workflowCanvasStyles = css`
     box-shadow: var(--nuraly-shadow-lg, 0 8px 24px rgba(0, 0, 0, 0.4));
   }
 
+  .insert-panel {
+    position: absolute;
+    z-index: 200;
+    pointer-events: auto;
+  }
+
   .config-panel-header {
     display: flex;
     align-items: center;

@@ -495,11 +495,40 @@ export const workflowNodeStyles = css`
   }
 
   .db-table-header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: var(--nuraly-spacing-2, 8px) var(--nuraly-spacing-3, 12px);
     border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  }
+
+  .db-table-insert-btn {
+    position: absolute;
+    left: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+  }
+
+  .db-table-node:hover .db-table-insert-btn,
+  .db-table-node.selected .db-table-insert-btn {
+    opacity: 1;
+  }
+
+  .db-table-insert-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
   }
 
   .db-table-name {
