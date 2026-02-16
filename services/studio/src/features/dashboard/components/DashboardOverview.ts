@@ -18,6 +18,7 @@ import {
   type DatabaseConnection
 } from '../services/dashboard.service';
 import type { KvEntry } from '../../../services/kv/kv.types';
+import { deleteEntry as deleteKvEntry } from '../../../services/kv/kv.service';
 import { getCurrentUser } from '../../runtime/handlers/runtime-api/user';
 
 // Import NuralyUI components
@@ -31,6 +32,7 @@ import './WorkflowsList/WorkflowsList';
 import './WhiteboardsList/WhiteboardsList';
 import './KVEntriesList/KVEntriesList';
 import './DatabaseList/DatabaseList';
+import './DatabaseList/DatabaseConnectionDialog';
 import './JournalList/JournalList';
 import './ServicesStatus/ServicesStatus';
 
@@ -310,6 +312,8 @@ export class DashboardOverview extends LitElement {
   @state() private databasesLoaded = false;
 
   @state() private error: string | null = null;
+  @state() private showConnectionDialog = false;
+  @state() private editingConnection: DatabaseConnection | null = null;
 
   // Computed loading state for current view
   private get loading(): boolean {
@@ -590,12 +594,48 @@ export class DashboardOverview extends LitElement {
   }
 
   private handleDatabaseSelect(db: DatabaseConnection) {
-    // Navigate to database view with the connection info
+    // Navigate to database view with the connection's own ID
     this.dispatchEvent(new CustomEvent('navigate', {
-      detail: { path: `/dashboard/database/${db.applicationId}`, database: db },
+      detail: { path: `/dashboard/database/${db.id}`, database: db },
       bubbles: true,
       composed: true
     }));
+  }
+
+  private handleNewConnection() {
+    this.editingConnection = null;
+    this.showConnectionDialog = true;
+  }
+
+  private handleEditConnection(db: DatabaseConnection) {
+    this.editingConnection = db;
+    this.showConnectionDialog = true;
+  }
+
+  private async handleDeleteConnection(db: DatabaseConnection) {
+    if (!confirm(`Delete connection "${db.name}"? This cannot be undone.`)) return;
+    const success = await deleteKvEntry(db.applicationId, db.keyPath);
+    if (success) {
+      this.databasesLoaded = false;
+      await this.loadDataForView('database');
+    }
+  }
+
+  private async handleConnectionSaved() {
+    this.showConnectionDialog = false;
+    this.editingConnection = null;
+    // Ensure apps are loaded for the dialog (they may already be)
+    if (!this.appsLoaded) {
+      this.applications = await fetchApplicationsWithStatus({});
+      this.appsLoaded = true;
+    }
+    this.databasesLoaded = false;
+    await this.loadDataForView('database');
+  }
+
+  private handleConnectionDialogClose() {
+    this.showConnectionDialog = false;
+    this.editingConnection = null;
   }
 
   private renderLoading() {
@@ -665,8 +705,17 @@ export class DashboardOverview extends LitElement {
           <dashboard-database-list
             .databases=${this.databases}
             @database-select=${(e: CustomEvent) => this.handleDatabaseSelect(e.detail.database)}
+            @database-edit=${(e: CustomEvent) => this.handleEditConnection(e.detail.database)}
+            @database-delete=${(e: CustomEvent) => this.handleDeleteConnection(e.detail.database)}
             @refresh=${() => this.refreshCurrentView()}
           ></dashboard-database-list>
+          <database-connection-dialog
+            .open=${this.showConnectionDialog}
+            .connection=${this.editingConnection}
+            .applications=${this.applications}
+            @connection-saved=${this.handleConnectionSaved}
+            @modal-close=${this.handleConnectionDialogClose}
+          ></database-connection-dialog>
         `;
       case 'journal':
         return html`
@@ -750,9 +799,16 @@ export class DashboardOverview extends LitElement {
                 <nr-badge status="default" text="${this.getViewCount()} items"></nr-badge>
               ` : nothing}
             </div>
-            <nr-button type="default" size="small" iconLeft="RefreshCw" @click=${this.handleRetry}>
-              Refresh
-            </nr-button>
+            <div style="display:flex;gap:8px;align-items:center">
+              ${this.activeView === 'database' ? html`
+                <nr-button type="primary" size="small" iconLeft="Plus" @click=${this.handleNewConnection}>
+                  New Connection
+                </nr-button>
+              ` : nothing}
+              <nr-button type="default" size="small" iconLeft="RefreshCw" @click=${this.handleRetry}>
+                Refresh
+              </nr-button>
+            </div>
           </header>
           <main class="overview-content">
             ${this.renderContent()}

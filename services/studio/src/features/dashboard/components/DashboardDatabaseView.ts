@@ -1,15 +1,23 @@
 /**
  * Dashboard Database View Component
- * Simplified view of a database connection
+ * Embeds the full <database-page> canvas, setting $currentApplication
+ * so the database page can resolve the appId it needs.
+ *
+ * The route param (databaseId) is the KV entry ID of a database connection.
+ * We fetch all connections, find the one matching that ID, derive its
+ * applicationId, and set $currentApplication before rendering <database-page>.
  */
 
 import { html, LitElement, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { getStudioUrl } from '../utils/route-sync';
+import { $currentApplication } from '../../runtime/redux/store/apps';
+import { fetchAllDatabaseConnections, type DatabaseConnection } from '../services/dashboard.service';
 
-// Import NuralyUI components
+// Import the full database-page component
+import '../../studio/params/database/Database';
+
+// Import NuralyUI components used in the header
 import '../../runtime/components/ui/nuraly-ui/src/components/button';
-import '../../runtime/components/ui/nuraly-ui/src/components/badge';
 import '../../runtime/components/ui/nuraly-ui/src/components/icon';
 
 @customElement('dashboard-database-view')
@@ -63,76 +71,121 @@ export class DashboardDatabaseView extends LitElement {
       color: var(--nuraly-color-text-secondary, #5c5c7a);
     }
 
-    .app-link {
-      color: var(--nuraly-color-primary, #14144b);
-      cursor: pointer;
-      text-decoration: none;
+    .database-canvas {
+      flex: 1;
+      overflow: hidden;
     }
 
-    .app-link:hover {
-      text-decoration: underline;
+    database-page {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
-    .database-content {
+    .loading-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--nuraly-color-border, #e8e8f0);
+      border-top-color: var(--nuraly-color-primary, #14144b);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-container {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 48px 24px;
-      text-align: center;
+      color: var(--nuraly-color-text-secondary, #5c5c7a);
+      gap: 12px;
     }
 
-    .placeholder-icon {
-      width: 64px;
-      height: 64px;
-      color: var(--nuraly-color-text-tertiary, #8c8ca8);
-      margin-bottom: 16px;
-    }
-
-    .placeholder-title {
-      font-size: 18px;
+    .error-title {
+      font-size: 16px;
       font-weight: 600;
       color: var(--nuraly-color-text, #0f0f3c);
-      margin: 0 0 8px 0;
-    }
-
-    .placeholder-text {
-      font-size: 14px;
-      color: var(--nuraly-color-text-secondary, #5c5c7a);
-      margin: 0 0 24px 0;
-      max-width: 400px;
     }
   `;
 
   @property({ type: String }) databaseId: string = '';
-  @property({ type: String }) appId: string | null = null;
-  @property({ type: String }) appName: string | null = null;
 
-  @state() private loading = false;
+  @state() private loading = true;
+  @state() private error: string = '';
+  @state() private connectionName: string = '';
+  @state() private appName: string = '';
 
-  private openInStudio() {
-    if (this.appId) {
-      const url = getStudioUrl('database', this.databaseId, this.appId);
-      if (url) {
-        window.location.href = url;
-      }
+  private previousApplication: any = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setupFromConnection();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    // Restore previous $currentApplication to avoid polluting global state
+    $currentApplication.set(this.previousApplication);
+  }
+
+  override updated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('databaseId') && changedProperties.get('databaseId') !== undefined) {
+      this.setupFromConnection();
     }
+  }
+
+  private async setupFromConnection() {
+    const connectionId = this.databaseId;
+    if (!connectionId) {
+      this.loading = false;
+      this.error = 'No connection ID provided';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    // Save previous value so we can restore on disconnect
+    this.previousApplication = $currentApplication.get();
+
+    try {
+      // Fetch all database connections and find ours by ID
+      const connections = await fetchAllDatabaseConnections({});
+      const connection = connections.find(c => c.id === connectionId);
+
+      if (!connection) {
+        this.error = 'Database connection not found';
+        this.loading = false;
+        return;
+      }
+
+      this.connectionName = connection.name;
+      this.appName = connection.applicationName || connection.applicationId;
+
+      // Set $currentApplication so <database-page> can read the appId
+      $currentApplication.set({ uuid: connection.applicationId, name: this.appName });
+    } catch (e) {
+      console.error('Failed to load database connection:', e);
+      this.error = 'Failed to load connection';
+    }
+
+    this.loading = false;
   }
 
   private goBack() {
     this.dispatchEvent(new CustomEvent('navigate', {
       detail: { path: '/dashboard' },
-      bubbles: true,
-      composed: true
-    }));
-  }
-
-  private navigateToApp() {
-    if (!this.appId) return;
-
-    this.dispatchEvent(new CustomEvent('navigate', {
-      detail: { path: `/dashboard/app/${this.appId}` },
       bubbles: true,
       composed: true
     }));
@@ -148,41 +201,30 @@ export class DashboardDatabaseView extends LitElement {
               Back
             </nr-button>
             <div class="database-info">
-              <h2 class="database-name">Database</h2>
+              <h2 class="database-name">Database — ${this.connectionName || 'Loading...'}</h2>
               <div class="database-meta">
-                ${this.appId ? html`
-                  <span class="app-link" @click=${this.navigateToApp}>
-                    App: ${this.appName || 'Unknown'}
-                  </span>
-                ` : html`
-                  <span>Standalone database</span>
-                `}
+                <span>App: ${this.appName || 'Loading...'}</span>
               </div>
             </div>
           </div>
-          ${this.appId ? html`
-            <nr-button type="primary" size="small" @click=${this.openInStudio}>
-              Open in Studio
-            </nr-button>
-          ` : ''}
         </div>
 
-        <div class="database-content">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <ellipse cx="12" cy="5" rx="9" ry="3"/>
-            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-          </svg>
-          <h3 class="placeholder-title">Database Viewer</h3>
-          <p class="placeholder-text">
-            The simplified database viewer is coming soon. For now, please use the full Studio editor to manage database connections, view schemas, and run queries.
-          </p>
-          ${this.appId ? html`
-            <nr-button type="primary" size="small" @click=${this.openInStudio}>
-              Open in Studio
+        ${this.loading ? html`
+          <div class="loading-container">
+            <div class="loading-spinner"></div>
+          </div>
+        ` : this.error ? html`
+          <div class="error-container">
+            <span class="error-title">${this.error}</span>
+            <nr-button size="small" variant="secondary" @click=${this.goBack}>
+              Return to Dashboard
             </nr-button>
-          ` : ''}
-        </div>
+          </div>
+        ` : html`
+          <div class="database-canvas">
+            <database-page></database-page>
+          </div>
+        `}
       </div>
     `;
   }

@@ -299,23 +299,23 @@ export async function fetchAllDatabaseConnections(
   // Parse each entry into a DatabaseConnection
   return allEntries.map(entry => {
     const keyPath = entry.keyPath;
-    const name = keyPath.replace('database/', '').split('/')[0] || keyPath;
+    const name = keyPath.replace('database/', '') || keyPath;
 
-    let type = 'PostgreSQL';
+    let type = 'postgresql';
     const value = entry.value;
 
-    if (typeof value === 'string') {
+    if (typeof value === 'object' && value !== null) {
+      type = value.type || value.driver || 'postgresql';
+    } else if (typeof value === 'string') {
       if (value.startsWith('postgres://') || value.startsWith('postgresql://')) {
-        type = 'PostgreSQL';
+        type = 'postgresql';
       } else if (value.startsWith('mysql://')) {
-        type = 'MySQL';
+        type = 'mysql';
       } else if (value.startsWith('mongodb://')) {
-        type = 'MongoDB';
+        type = 'mongodb';
       } else if (value.startsWith('redis://')) {
-        type = 'Redis';
+        type = 'redis';
       }
-    } else if (typeof value === 'object' && value !== null) {
-      type = value.type || value.driver || 'PostgreSQL';
     }
 
     return {
