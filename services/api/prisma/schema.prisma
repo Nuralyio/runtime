@@ -144,21 +144,6 @@ model pages {
   @@map("pages")
 }
 
-model databaseproviders {
-  provider_id   Int    @id @default(autoincrement())
-  username      String @default("")
-  host          String @default("")
-  password      String @default("")
-  port          Int    @default(0)
-  databasename  String @default("")
-  provider_type String @default("")
-  component_ids Json  @default("[]")
-  user_id       String
-  label         String
-
-  @@map("databaseproviders")
-}
-
 // ============================================
 // REVISION SYSTEM - Version History
 // ============================================
