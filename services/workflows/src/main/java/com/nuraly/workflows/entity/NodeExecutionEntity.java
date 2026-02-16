@@ -33,15 +33,12 @@ public class NodeExecutionEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public ExecutionStatus status = ExecutionStatus.PENDING;
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "input_data")
     public String inputData;
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "output_data")
     public String outputData;
 
-    @Lob
     @Column(columnDefinition = "TEXT", name = "error_message")
     public String errorMessage;
 

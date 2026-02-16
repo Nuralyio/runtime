@@ -46,7 +46,7 @@ public class WorkflowEdgeVersionEntity extends PanacheEntityBase {
     public String targetPortId;
 
     @JdbcTypeCode(SqlTypes.LONGVARCHAR)
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", name = "condition_expression")
     public String condition;
 
     public String label;

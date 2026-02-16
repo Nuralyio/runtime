@@ -26,7 +26,6 @@ public class WorkflowEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public String name;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String description;
 
@@ -42,11 +41,9 @@ public class WorkflowEntity extends PanacheEntityBase {
 
     public String version = "1.0.0";
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String variables; // JSON: workflow-level variables schema
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String viewport; // JSON: canvas viewport state {"zoom": 1, "panX": 0, "panY": 0}
 

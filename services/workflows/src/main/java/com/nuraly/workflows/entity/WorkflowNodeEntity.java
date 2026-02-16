@@ -34,11 +34,9 @@ public class WorkflowNodeEntity extends PanacheEntityBase {
     @Column(nullable = false)
     public NodeType type;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String configuration; // JSON: node-specific configuration
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     public String ports; // JSON: { inputs: NodePort[], outputs: NodePort[] }
 

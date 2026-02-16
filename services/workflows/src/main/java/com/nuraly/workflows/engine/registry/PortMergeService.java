@@ -57,6 +57,13 @@ public class PortMergeService {
             JsonNode stored = parseStoredPorts(storedPorts);
             ObjectNode merged = objectMapper.createObjectNode();
 
+            // Check if stored ports are outdated (schema version mismatch)
+            boolean outdated = false;
+            if (stored == null || !stored.has("_schemaVersion")
+                    || stored.get("_schemaVersion").asInt() < definition.getSchemaVersion()) {
+                outdated = true;
+            }
+
             // Collect config port IDs so canonical inputs that already exist as configs
             // are not duplicated into the inputs array (e.g. AGENT's llm, prompt, memory, tools)
             Set<String> configPortIds = new HashSet<>();
@@ -71,12 +78,14 @@ public class PortMergeService {
             ArrayNode mergedInputs = mergePortList(
                     stored != null && stored.has("inputs") ? stored.get("inputs") : null,
                     definition.getInputs(),
-                    configPortIds
+                    configPortIds,
+                    outdated
             );
             ArrayNode mergedOutputs = mergePortList(
                     stored != null && stored.has("outputs") ? stored.get("outputs") : null,
                     definition.getOutputs(),
-                    Set.of()
+                    Set.of(),
+                    outdated
             );
 
             merged.set("inputs", mergedInputs);
@@ -138,20 +147,30 @@ public class PortMergeService {
 
     /**
      * Merge a single port list (inputs or outputs).
-     * - Keep all existing stored ports (preserves user customization)
-     * - Append any canonical ports that are missing from stored
+     * - When schema is outdated: only keep canonical ports (removes stale ports)
+     * - When schema is current: keep stored ports + append missing canonical ports
      */
-    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts, Set<String> excludeIds) {
+    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts, Set<String> excludeIds, boolean isOutdated) {
         ArrayNode result = objectMapper.createArrayNode();
+
+        // Build set of canonical port IDs
+        Set<String> canonicalIds = new HashSet<>();
+        for (PortDefinition canonical : canonicalPorts) {
+            canonicalIds.add(canonical.getId());
+        }
 
         // Collect IDs of stored ports
         Set<String> storedIds = new HashSet<>();
         if (storedArray != null && storedArray.isArray()) {
             for (JsonNode portNode : storedArray) {
-                if (portNode.has("id")) {
-                    storedIds.add(portNode.get("id").asText());
+                String portId = portNode.has("id") ? portNode.get("id").asText() : null;
+                if (portId != null) {
+                    storedIds.add(portId);
                 }
-                // Keep existing port as-is
+                // When outdated, only keep ports that still exist in canonical definition
+                if (isOutdated && portId != null && !canonicalIds.contains(portId)) {
+                    continue; // drop stale port
+                }
                 result.add(portNode.deepCopy());
             }
         }
