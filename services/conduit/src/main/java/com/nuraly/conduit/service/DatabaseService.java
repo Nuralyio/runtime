@@ -34,6 +34,9 @@ public class DatabaseService {
     @Inject
     LogClient logClient;
 
+    @Inject
+    HostValidationService hostValidationService;
+
     /**
      * Test a database connection using credentials from KV.
      */
@@ -50,6 +53,12 @@ public class DatabaseService {
      * Test a database connection with provided credentials (for inline testing).
      */
     public TestConnectionResult testConnectionDirect(DatabaseCredential credential) {
+        try {
+            hostValidationService.validateHost(credential.getHost());
+        } catch (IllegalArgumentException e) {
+            return TestConnectionResult.failure(e.getMessage());
+        }
+
         if (!connectorFactory.isSupported(credential.getType())) {
             return TestConnectionResult.failure("Unsupported database type: " + credential.getType());
         }
@@ -158,6 +167,48 @@ public class DatabaseService {
     }
 
     /**
+     * Execute DDL statements against the database.
+     */
+    public DdlResult executeDdl(String connectionPath, String applicationId, DdlRequest request) {
+        long startTime = System.currentTimeMillis();
+        try {
+            DatabaseCredential credential = getCredentialOrThrow(connectionPath, applicationId);
+            DatabaseConnector connector = connectorFactory.getConnector(credential.getType());
+
+            try (Connection conn = poolManager.getConnection(connectionPath, applicationId, credential)) {
+                DdlResult result = connector.executeDdl(conn, request);
+                long durationMs = System.currentTimeMillis() - startTime;
+
+                logClient.info("query", null, Map.of(
+                        "action", "execute_ddl",
+                        "statements", String.valueOf(request.getStatements() != null ? request.getStatements().size() : 0),
+                        "schema", request.getSchema() != null ? request.getSchema() : "default",
+                        "db_type", credential.getType() != null ? credential.getType() : "unknown",
+                        "success", String.valueOf(result.isSuccess()),
+                        "duration_ms", durationMs
+                ));
+
+                return result;
+            }
+        } catch (IllegalArgumentException e) {
+            logClient.error("query", null, Map.of(
+                    "action", "execute_ddl",
+                    "error", "invalid_argument",
+                    "duration_ms", System.currentTimeMillis() - startTime
+            ));
+            return DdlResult.failure(e.getMessage());
+        } catch (SQLException e) {
+            LOG.errorf("DDL execution failed: %s", e.getMessage());
+            logClient.error("query", null, Map.of(
+                    "action", "execute_ddl",
+                    "error", "sql_error",
+                    "duration_ms", System.currentTimeMillis() - startTime
+            ));
+            return DdlResult.failure("Database error: " + e.getMessage());
+        }
+    }
+
+    /**
      * Get pool statistics for a connection.
      */
     public ConnectionPoolManager.PoolStats getPoolStats(String connectionPath, String applicationId) {
@@ -186,6 +237,7 @@ public class DatabaseService {
         if (!connectorFactory.isSupported(credential.getType())) {
             throw new IllegalArgumentException("Unsupported database type: " + credential.getType());
         }
+        hostValidationService.validateHost(credential.getHost());
         return credential;
     }
 }

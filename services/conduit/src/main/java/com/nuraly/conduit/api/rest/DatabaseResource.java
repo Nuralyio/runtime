@@ -259,6 +259,43 @@ public class DatabaseResource {
     }
 
     /**
+     * Execute DDL (schema modification) statements.
+     */
+    @POST
+    @Path("/execute-ddl")
+    @Operation(summary = "Execute DDL", description = "Execute DDL statements (CREATE, ALTER, DROP) against the database")
+    @APIResponse(responseCode = "200", description = "DDL execution result")
+    public Response executeDdl(
+            @Parameter(description = "Application ID", required = true)
+            @QueryParam("applicationId") String applicationId,
+            @Parameter(description = "KV connection path", required = true)
+            @QueryParam("connectionPath") String connectionPath,
+            DdlRequest request) {
+
+        if (applicationId == null || connectionPath == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(DdlResult.failure("applicationId and connectionPath are required"))
+                    .build();
+        }
+
+        if (request == null || request.getStatements() == null || request.getStatements().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(DdlResult.failure("At least one DDL statement is required"))
+                    .build();
+        }
+
+        LOG.infof("Executing %d DDL statements for app: %s", request.getStatements().size(), applicationId);
+
+        DdlResult result = databaseService.executeDdl(connectionPath, applicationId, request);
+
+        if (!result.isSuccess()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(result).build();
+        }
+
+        return Response.ok(result).build();
+    }
+
+    /**
      * Get connection pool statistics for a specific pool.
      */
     @GET
