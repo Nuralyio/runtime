@@ -48,6 +48,7 @@ export class ApplicationRepository implements IApplicationRepository {
       FROM applications a
       LEFT JOIN published_versions pv ON a.uuid = pv.application_id
       WHERE a.uuid IN (${Prisma.join(applicationIds)})
+      ORDER BY a.id DESC
     `;
 
     return applications.map((application) => new Application(
