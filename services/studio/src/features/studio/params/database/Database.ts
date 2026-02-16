@@ -4,6 +4,8 @@ import { $currentApplication } from "../../../runtime/redux/store/apps";
 import "../../../runtime/components/ui/nuraly-ui/src/components/canvas/workflow-canvas.component";
 import "../../../runtime/components/ui/nuraly-ui/src/components/select/select.component";
 import "../../../runtime/components/ui/nuraly-ui/src/components/table/table.component";
+import "./SchemaCommitDialog";
+import type { SchemaCommitDialog } from "./SchemaCommitDialog";
 import type { SelectOption } from "../../../runtime/components/ui/nuraly-ui/src/components/select/select.types";
 import type { IHeader } from "../../../runtime/components/ui/nuraly-ui/src/components/table/table.types";
 import type {
@@ -44,12 +46,16 @@ import {
   getTables,
   getColumns,
   getRelationships,
+  executeDdl,
+  clearConnectionCache,
 } from "../../../runtime/redux/store/database";
 import { getKvEntries } from "../../../runtime/redux/store/kv";
 import {
   createViewportDebouncer,
   type ViewportDebouncer,
 } from "../../../../utils/workflow-utils";
+import { workflowToSnapshot, computeSchemaDiff, type SchemaSnapshot, type SchemaChange } from "./schema-diff";
+import { generateDdl, formatDdlScript } from "./ddl-generator";
 
 @customElement("database-page")
 export class DatabasePage extends LitElement {
@@ -348,6 +354,21 @@ export class DatabasePage extends LitElement {
   @state()
   private queryLimit = 20;
 
+  @state()
+  private originalSnapshot: SchemaSnapshot | null = null;
+
+  @state()
+  private isDirty = false;
+
+  @state()
+  private showCommitDialog = false;
+
+  @state()
+  private pendingChanges: SchemaChange[] = [];
+
+  @state()
+  private pendingDdl = '';
+
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
   private viewportDebouncer: ViewportDebouncer | null = null;
@@ -581,12 +602,70 @@ export class DatabasePage extends LitElement {
       edges,
       viewport: this.currentViewport,
     };
+
+    this.originalSnapshot = workflowToSnapshot(this.schemaWorkflow);
+    this.isDirty = false;
   }
 
   private handleCanvasWorkflowChanged(event: CustomEvent<{ workflow: Workflow }>) {
     const { workflow } = event.detail;
     this.schemaWorkflow = workflow;
-    // TODO: Implement schema editing - sync changes back to database
+
+    if (this.originalSnapshot) {
+      const current = workflowToSnapshot(this.schemaWorkflow);
+      this.isDirty = computeSchemaDiff(this.originalSnapshot, current).length > 0;
+    }
+  }
+
+  private handleCommitClick() {
+    if (!this.originalSnapshot || !this.schemaWorkflow) return;
+
+    const current = workflowToSnapshot(this.schemaWorkflow);
+    const changes = computeSchemaDiff(this.originalSnapshot, current);
+    if (changes.length === 0) return;
+
+    const dbType = this.currentConnection?.type || 'postgresql';
+    const statements = generateDdl(changes, this.currentSchema || undefined, dbType);
+    this.pendingChanges = changes;
+    this.pendingDdl = formatDdlScript(statements);
+    this.showCommitDialog = true;
+
+    // Reset the dialog state
+    const dialog = this.shadowRoot?.querySelector('schema-commit-dialog') as SchemaCommitDialog | null;
+    dialog?.resetState();
+  }
+
+  private async handleApplyDdl() {
+    const appId = $currentApplication.get()?.uuid;
+    if (!appId || !this.currentConnection || !this.schemaWorkflow || !this.originalSnapshot) return;
+
+    const current = workflowToSnapshot(this.schemaWorkflow);
+    const changes = computeSchemaDiff(this.originalSnapshot, current);
+    const dbType = this.currentConnection?.type || 'postgresql';
+    const statements = generateDdl(changes, this.currentSchema || undefined, dbType);
+
+    const dialog = this.shadowRoot?.querySelector('schema-commit-dialog') as SchemaCommitDialog | null;
+
+    const result = await executeDdl(this.currentConnection.path, appId, {
+      statements,
+      transactional: true,
+      schema: this.currentSchema || undefined,
+    });
+
+    dialog?.setResult(result);
+
+    if (result.success) {
+      // Clear caches and reload schema from database
+      clearConnectionCache(this.currentConnection.path, appId);
+      if (this.currentSchema) {
+        await this.loadSchemaData(this.currentSchema);
+      }
+      this.showCommitDialog = false;
+    }
+  }
+
+  private handleCancelDdl() {
+    this.showCommitDialog = false;
   }
 
   private handleNodeSelected(event: CustomEvent<{ node: WorkflowNode }>) {
@@ -793,6 +872,13 @@ export class DatabasePage extends LitElement {
             </button>
             <button
               class="toolbar-button primary"
+              @click=${this.handleCommitClick}
+              ?disabled=${!this.isDirty}
+            >
+              Commit Changes
+            </button>
+            <button
+              class="toolbar-button primary"
               @click=${() => this.handleRunQuery()}
               ?disabled=${!this.selectedTableName || this.isExecutingQuery}
             >
@@ -878,6 +964,14 @@ export class DatabasePage extends LitElement {
           `}
         </div>
       </div>
+
+      <schema-commit-dialog
+        .open=${this.showCommitDialog}
+        .changes=${this.pendingChanges}
+        .ddlScript=${this.pendingDdl}
+        @apply-ddl=${this.handleApplyDdl}
+        @cancel-ddl=${this.handleCancelDdl}
+      ></schema-commit-dialog>
     `;
   }
 }
