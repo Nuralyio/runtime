@@ -48,7 +48,10 @@ import {
   getRelationships,
   executeDdl,
   clearConnectionCache,
+  getSchemaSnapshot,
+  saveSchemaSnapshot,
 } from "../../../runtime/redux/store/database";
+import type { SchemaSnapshotDTO } from "../../../runtime/redux/store/database";
 import { getKvEntries } from "../../../runtime/redux/store/kv";
 import {
   createViewportDebouncer,
@@ -304,6 +307,32 @@ export class DatabasePage extends LitElement {
     .toggle-icon.collapsed {
       transform: rotate(-90deg);
     }
+
+    .offline-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--n-color-warning-bg, #fffbeb);
+      border-bottom: 1px solid var(--n-color-warning, #f59e0b);
+      color: var(--n-color-warning-dark, #92400e);
+      font-size: 13px;
+    }
+
+    .offline-banner-dismiss {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--n-color-warning-dark, #92400e);
+      font-size: 16px;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .offline-banner-dismiss:hover {
+      opacity: 0.7;
+    }
   `;
 
   @state()
@@ -368,6 +397,9 @@ export class DatabasePage extends LitElement {
 
   @state()
   private pendingDdl = '';
+
+  @state()
+  private offlineBanner: string | null = null;
 
   private unsubscribeState: (() => void) | null = null;
   private unsubscribeConnections: (() => void) | null = null;
@@ -470,25 +502,57 @@ export class DatabasePage extends LitElement {
     const appId = $currentApplication.get()?.uuid;
     if (!appId || !this.currentConnection) return;
 
-    // Load tables
-    const tables = await getTables(this.currentConnection.path, appId, schemaName);
-    this.tables = tables;
+    // Load saved snapshot first for immediate display
+    const snapshot = await getSchemaSnapshot(this.currentConnection.path, appId, schemaName);
+    if (snapshot) {
+      this.tables = snapshot.tables;
+      this.tableColumns = new Map(Object.entries(snapshot.columns));
+      this.tableRelationships = new Map(Object.entries(snapshot.relationships));
+      this.buildSchemaWorkflow();
+    }
 
-    // Load columns and relationships for each table
-    const columnsMap = new Map<string, ColumnDTO[]>();
-    const relationshipsMap = new Map<string, RelationshipDTO[]>();
+    // Attempt live fetch from the database server
+    try {
+      const tables = await getTables(this.currentConnection.path, appId, schemaName);
+      const columnsMap = new Map<string, ColumnDTO[]>();
+      const relationshipsMap = new Map<string, RelationshipDTO[]>();
 
-    await Promise.all(tables.map(async (table) => {
-      const [columns, relationships] = await Promise.all([
-        getColumns(this.currentConnection!.path, appId, table.name, schemaName),
-        getRelationships(this.currentConnection!.path, appId, table.name, schemaName),
-      ]);
-      columnsMap.set(table.name, columns);
-      relationshipsMap.set(table.name, relationships);
-    }));
+      await Promise.all(tables.map(async (table) => {
+        const [columns, relationships] = await Promise.all([
+          getColumns(this.currentConnection!.path, appId, table.name, schemaName),
+          getRelationships(this.currentConnection!.path, appId, table.name, schemaName),
+        ]);
+        columnsMap.set(table.name, columns);
+        relationshipsMap.set(table.name, relationships);
+      }));
 
-    this.tableColumns = columnsMap;
-    this.tableRelationships = relationshipsMap;
+      this.tables = tables;
+      this.tableColumns = columnsMap;
+      this.tableRelationships = relationshipsMap;
+      this.offlineBanner = null;
+      this.buildSchemaWorkflow();
+
+      // Fire-and-forget save snapshot
+      saveSchemaSnapshot({
+        applicationId: appId,
+        connectionPath: this.currentConnection.path,
+        schemaName,
+        tables,
+        columns: Object.fromEntries(columnsMap),
+        relationships: Object.fromEntries(relationshipsMap),
+      });
+    } catch (error) {
+      console.warn('Live schema fetch failed, using saved snapshot', error);
+      if (snapshot) {
+        this.offlineBanner = 'Database server is unreachable. Showing the last saved schema snapshot.';
+      } else {
+        this.offlineBanner = 'Database server is unreachable and no saved snapshot is available.';
+        this.tables = [];
+        this.tableColumns = new Map();
+        this.tableRelationships = new Map();
+        this.schemaWorkflow = null;
+      }
+    }
 
     // Load saved viewport for this connection
     const savedViewport = await getDatabaseViewport(this.currentConnection.path, appId);
@@ -506,9 +570,6 @@ export class DatabasePage extends LitElement {
         saveDatabaseViewport(connectionPath, currentAppId, viewport as DatabaseCanvasViewport);
       }
     });
-
-    // Build the canvas workflow
-    this.buildSchemaWorkflow();
   }
 
   private buildSchemaWorkflow() {
@@ -888,6 +949,12 @@ export class DatabasePage extends LitElement {
         </div>
 
         <div class="main-content">
+          ${this.offlineBanner ? html`
+            <div class="offline-banner">
+              <span>${this.offlineBanner}</span>
+              <button class="offline-banner-dismiss" @click=${() => this.offlineBanner = null}>&times;</button>
+            </div>
+          ` : ''}
           <div class="canvas-container">
             ${this.loadingSchema ? html`
               <div class="loading-overlay">
