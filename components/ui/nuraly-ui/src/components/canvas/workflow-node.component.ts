@@ -103,6 +103,15 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
     }));
   }
 
+  private handleInsertClick(e: MouseEvent) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('node-insert-row', {
+      detail: { node: this.node },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   private handlePreviewClick(e: MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
@@ -377,6 +386,12 @@ export class WorkflowNodeElement extends NuralyUIBaseMixin(LitElement) {
       >
         <div class="db-table-header" style="background: ${nodeColor}">
           <span class="db-table-name">${this.node.name || config.tableName || 'Table'}</span>
+          <button
+            class="db-table-insert-btn"
+            title="Insert row"
+            @click=${this.handleInsertClick}
+            @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+          >+</button>
         </div>
 
         <div class="db-table-columns">

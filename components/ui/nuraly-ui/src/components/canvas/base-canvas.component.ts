@@ -181,6 +181,9 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
   configuredNode: WorkflowNode | null = null;
 
   @state()
+  insertPanelNode: WorkflowNode | null = null;
+
+  @state()
   expandedCategories: Set<string> = new Set();
 
   // Canvas chatbot panel (AI Assistant)
@@ -212,6 +215,12 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
 
   @query('.config-panel')
   configPanel!: HTMLElement;
+
+  @query('.insert-panel')
+  insertPanel!: HTMLElement;
+
+  @property({ attribute: false }) insertPanelColumns: any[] = [];
+  @property({ type: String }) insertPanelSchemaName = '';
 
   // ==================== Controllers ====================
 

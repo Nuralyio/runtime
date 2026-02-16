@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
@@ -1463,6 +1463,39 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
     return this.renderChatPreviewPanel(previewNode, panelStyle);
   }
 
+  // ==================== Insert Panel ====================
+
+  private handleNodeInsertRow(e: CustomEvent) {
+    const { node } = e.detail;
+    this.insertPanelNode = node;
+    this.updateComplete.then(() => {
+      this.viewportController.updateInsertPanelPosition();
+    });
+  }
+
+  protected renderInsertPanel() {
+    if (!this.insertPanelNode) return nothing;
+
+    return html`
+      <div class="insert-panel">
+        <insert-row-panel
+          .tableName=${this.insertPanelNode.name || this.insertPanelNode.configuration?.tableName || ''}
+          .schemaName=${this.insertPanelSchemaName}
+          .columns=${this.insertPanelColumns}
+          @close-insert-panel=${this.handleCloseInsertPanel}
+        ></insert-row-panel>
+      </div>
+    `;
+  }
+
+  private handleCloseInsertPanel() {
+    this.insertPanelNode = null;
+  }
+
+  public getInsertPanelElement(): any {
+    return this.insertPanel?.querySelector('insert-row-panel') ?? null;
+  }
+
   // ==================== Constructor Override ====================
 
   constructor() {
@@ -1535,6 +1568,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
                 @note-resize-start=${this.handleNoteResizeStart}
                 @table-resize-start=${this.handleTableResizeStart}
                 @note-settings=${this.handleNoteSettings}
+                @node-insert-row=${this.handleNodeInsertRow}
               ></workflow-node>
             `; })}
           </div>
@@ -1548,6 +1582,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
         ${this.renderToolbar()}
         ${this.renderPalette()}
         ${this.renderConfigPanel()}
+        ${this.renderInsertPanel()}
         ${this.renderPreviewPanel()}
         ${this.renderZoomControls()}
         ${this.renderContextMenu()}
