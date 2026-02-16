@@ -538,6 +538,54 @@ export function clearAllDatabaseCaches(): void {
 }
 
 /**
+ * Schema snapshot for offline display
+ */
+export interface SchemaSnapshotDTO {
+  applicationId: string;
+  connectionPath: string;
+  schemaName: string;
+  fetchedAt?: string;
+  tables: TableDTO[];
+  columns: Record<string, ColumnDTO[]>;
+  relationships: Record<string, RelationshipDTO[]>;
+}
+
+/**
+ * Get a saved schema snapshot from the backend
+ */
+export async function getSchemaSnapshot(
+  connectionPath: string,
+  applicationId: string,
+  schema?: string
+): Promise<SchemaSnapshotDTO | null> {
+  try {
+    const params = new URLSearchParams({ applicationId, connectionPath });
+    if (schema) params.set('schema', schema);
+    const response = await fetch(`${getDbManagerUrl()}/schema-snapshot?${params}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save a schema snapshot to the backend
+ */
+export async function saveSchemaSnapshot(snapshot: SchemaSnapshotDTO): Promise<boolean> {
+  try {
+    const response = await fetch(`${getDbManagerUrl()}/schema-snapshot`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(snapshot),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * DDL execution request
  */
 export interface DdlRequest {
