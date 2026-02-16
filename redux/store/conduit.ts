@@ -286,7 +286,7 @@ export async function runQuery(
 
     // Add to history
     const historyItem: QueryHistoryItem = {
-      id: crypto.randomUUID(),
+      id: (crypto.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`),
       connectionPath: state.currentConnection.path,
       request: query,
       result,
@@ -372,26 +372,14 @@ export function clearConduitState(): void {
  * Parse KV entries into database connections
  */
 export function parseKvEntriesToConnections(kvEntries: any[]): DatabaseConnection[] {
-  const dbTypes = ['postgresql', 'mysql', 'mongodb', 'sqlite', 'mssql', 'oracle'];
-
   return kvEntries
-    .filter(entry => {
-      // Connection paths are like "postgresql/my-connection"
-      const parts = entry.keyPath?.split('/') || [];
-      return parts.length >= 2 && dbTypes.includes(parts[0]) && entry.isSecret;
-    })
-    .map(entry => {
-      const parts = entry.keyPath.split('/');
-      const dbType = parts[0];
-      const name = parts.slice(1).join('/');
-
-      return {
-        path: entry.keyPath,
-        type: dbType,
-        name: name,
-        status: 'unknown' as const,
-      };
-    });
+    .filter(entry => entry.keyPath?.startsWith('database/') && entry.isSecret)
+    .map(entry => ({
+      path: entry.keyPath,
+      type: entry.value?.type || 'postgresql',
+      name: entry.keyPath.replace('database/', ''),
+      status: 'unknown' as const,
+    }));
 }
 
 // ============================================================================
