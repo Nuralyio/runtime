@@ -33,6 +33,7 @@ public class GeminiProvider implements LlmProvider {
     );
 
     private static final String JSON_SCHEMA = "json_schema";
+    private static final String PARTS = PARTS;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -121,7 +122,7 @@ public class GeminiProvider implements LlmProvider {
         ObjectNode textPart = objectMapper.createObjectNode();
         textPart.put("text", text);
         parts.add(textPart);
-        systemNode.set("parts", parts);
+        systemNode.set(PARTS, parts);
         return systemNode;
     }
 
@@ -226,7 +227,7 @@ public class GeminiProvider implements LlmProvider {
             }
         }
 
-        node.set("parts", parts);
+        node.set(PARTS, parts);
         return node;
     }
 
@@ -269,7 +270,7 @@ public class GeminiProvider implements LlmProvider {
 
             JsonNode candidate = json.get("candidates").get(0);
             JsonNode content = candidate.get("content");
-            JsonNode parts = content.get("parts");
+            JsonNode parts = content.get(PARTS);
 
             LlmResponse.LlmResponseBuilder builder = LlmResponse.builder();
 

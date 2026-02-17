@@ -73,6 +73,9 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     private static final Logger LOG = Logger.getLogger(LlmNodeExecutor.class);
     private static final int DEFAULT_MAX_TOOL_ITERATIONS = 10;
+    private static final String MODEL = "model";
+    private static final String MAX_TOKENS = "maxTokens";
+    private static final String MEMORY_CONFIG = "memoryConfig";
 
     @Inject
     LlmProviderFactory providerFactory;
@@ -135,7 +138,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         // Step 5: Execute the LLM loop (call LLM, handle tool calls)
         LlmLoopResult loopResult = executeLlmLoop(
-                messagesResult.messages, tools, toolContextMap, providerConfig, params, config, context, node);
+                messagesResult.messages, tools, toolContextMap, providerConfig, params, context, node);
         if (loopResult.error != null) {
             return NodeExecutionResult.failure(loopResult.error, true);
         }
@@ -186,11 +189,10 @@ public class LlmNodeExecutor implements NodeExecutor {
         }
 
         // Ollama and local providers require an API URL
-        if (result.isOllama || "local".equalsIgnoreCase(result.providerName)) {
-            if (result.baseUrl == null || result.baseUrl.isEmpty()) {
-                LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", result.providerName);
-                result.error = "API URL is required for " + result.providerName + " provider. Please configure a server URL in the node settings.";
-            }
+        boolean requiresUrl = result.isOllama || "local".equalsIgnoreCase(result.providerName);
+        if (requiresUrl && (result.baseUrl == null || result.baseUrl.isEmpty())) {
+            LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", result.providerName);
+            result.error = "API URL is required for " + result.providerName + " provider. Please configure a server URL in the node settings.";
         }
 
         return result;
@@ -202,13 +204,13 @@ public class LlmNodeExecutor implements NodeExecutor {
     private LlmParameters extractLlmParameters(JsonNode config, ExecutionContext context, ProviderConfig providerConfig) {
         LlmParameters params = new LlmParameters();
 
-        params.model = config.has("model") && !config.get("model").asText().isEmpty()
-                ? config.get("model").asText()
+        params.model = config.has(MODEL) && !config.get(MODEL).asText().isEmpty()
+                ? config.get(MODEL).asText()
                 : providerConfig.provider.getDefaultModel();
         params.systemPrompt = config.has("systemPrompt") ?
                 context.resolveExpression(config.get("systemPrompt").asText()) : null;
         params.temperature = config.has("temperature") ? config.get("temperature").asDouble() : null;
-        params.maxTokens = config.has("maxTokens") ? config.get("maxTokens").asInt() : null;
+        params.maxTokens = config.has(MAX_TOKENS) ? config.get(MAX_TOKENS).asInt() : null;
         params.maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
         params.responseFormat = config.has("responseFormat") ? config.get("responseFormat") : null;
@@ -266,10 +268,10 @@ public class LlmNodeExecutor implements NodeExecutor {
     private void resolveMemoryAndLoadHistory(JsonNode config, ExecutionContext context,
                                               WorkflowNodeEntity node, InitialMessagesResult result) {
         // Check for memory config in node configuration
-        if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
-            config.get("memoryConfig").get("enabled").asBoolean()) {
+        if (config.has(MEMORY_CONFIG) && config.get(MEMORY_CONFIG).has("enabled") &&
+            config.get(MEMORY_CONFIG).get("enabled").asBoolean()) {
             LOG.debugf("Found memory config in node configuration");
-            result.memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
+            result.memoryConfig = parseMemoryConfigFromJson(config.get(MEMORY_CONFIG), context);
             result.conversationId = result.memoryConfig.conversationId;
         } else {
             // Find connected memory node
@@ -297,8 +299,7 @@ public class LlmNodeExecutor implements NodeExecutor {
     private LlmLoopResult executeLlmLoop(List<LlmMessage> messages, List<ToolDefinition> tools,
                                            Map<String, ToolContext> toolContextMap,
                                            ProviderConfig providerConfig, LlmParameters params,
-                                           JsonNode config, ExecutionContext context,
-                                           WorkflowNodeEntity node) {
+                                           ExecutionContext context, WorkflowNodeEntity node) {
         LlmLoopResult result = new LlmLoopResult();
         result.iterations = 0;
 
@@ -314,10 +315,11 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             emitLlmCallCompletedEvent(context, node, providerConfig.providerName, params.model, result.iterations);
 
-            if (!response.isSuccess()) {
+            if (response == null || !response.isSuccess()) {
+                String errorMsg = response != null ? response.getError() : "null response from provider";
                 LOG.errorf("LLM API error (provider=%s, model=%s): %s",
-                        providerConfig.providerName, params.model, response.getError());
-                result.error = "LLM error: " + response.getError();
+                        providerConfig.providerName, params.model, errorMsg);
+                result.error = "LLM error: " + errorMsg;
                 return result;
             }
 
@@ -475,7 +477,7 @@ public class LlmNodeExecutor implements NodeExecutor {
             output.put("response", lastResponse.getContent());
         }
 
-        output.put("model", lastResponse.getModel() != null ? lastResponse.getModel() : model);
+        output.put(MODEL, lastResponse.getModel() != null ? lastResponse.getModel() : model);
         output.put("finishReason", lastResponse.getFinishReason().toString());
         output.put("iterations", iterations);
 
@@ -1175,8 +1177,8 @@ public class LlmNodeExecutor implements NodeExecutor {
                     ? nodeConfig.get("maxMessages").asInt()
                     : 50;
 
-            config.maxTokens = nodeConfig.has("maxTokens")
-                    ? nodeConfig.get("maxTokens").asInt()
+            config.maxTokens = nodeConfig.has(MAX_TOKENS)
+                    ? nodeConfig.get(MAX_TOKENS).asInt()
                     : 4000;
 
             String conversationIdExpression = nodeConfig.has("conversationIdExpression")
@@ -1244,8 +1246,8 @@ public class LlmNodeExecutor implements NodeExecutor {
                 ? memoryConfigJson.get("maxMessages").asInt()
                 : 50;
 
-        config.maxTokens = memoryConfigJson.has("maxTokens")
-                ? memoryConfigJson.get("maxTokens").asInt()
+        config.maxTokens = memoryConfigJson.has(MAX_TOKENS)
+                ? memoryConfigJson.get(MAX_TOKENS).asInt()
                 : 4000;
 
         String conversationIdExpression = memoryConfigJson.has("conversationIdExpression")
