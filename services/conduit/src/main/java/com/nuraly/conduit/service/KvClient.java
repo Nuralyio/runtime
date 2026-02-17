@@ -85,29 +85,7 @@ public class KvClient {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                JsonNode kvEntry = objectMapper.readTree(response.body());
-
-                if (kvEntry.has("value")) {
-                    JsonNode valueNode = kvEntry.get("value");
-
-                    // Value might be a JSON string or already parsed object
-                    DatabaseCredential credential;
-                    if (valueNode.isTextual()) {
-                        // Value is a JSON string, need to parse it
-                        credential = objectMapper.readValue(valueNode.asText(), DatabaseCredential.class);
-                    } else {
-                        // Value is already a JSON object
-                        credential = objectMapper.treeToValue(valueNode, DatabaseCredential.class);
-                    }
-
-                    // Infer type from scope if not set
-                    if (credential.getType() == null && kvEntry.has("scope")) {
-                        credential.setType(kvEntry.get("scope").asText());
-                    }
-
-                    LOG.debugf("Successfully fetched credential for: %s", connectionPath);
-                    return credential;
-                }
+                return parseCredential(response.body(), connectionPath);
             } else if (response.statusCode() == 404) {
                 LOG.warnf("Credential not found: %s", connectionPath);
             } else {
@@ -115,10 +93,36 @@ public class KvClient {
             }
 
             return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.errorf("Interrupted while fetching credential from KV: %s", e.getMessage());
+            return null;
         } catch (Exception e) {
             LOG.errorf("Error fetching credential from KV: %s", e.getMessage());
             return null;
         }
+    }
+
+    private DatabaseCredential parseCredential(String body, String connectionPath) throws java.io.IOException {
+        JsonNode kvEntry = objectMapper.readTree(body);
+        if (!kvEntry.has("value")) {
+            return null;
+        }
+
+        JsonNode valueNode = kvEntry.get("value");
+        DatabaseCredential credential;
+        if (valueNode.isTextual()) {
+            credential = objectMapper.readValue(valueNode.asText(), DatabaseCredential.class);
+        } else {
+            credential = objectMapper.treeToValue(valueNode, DatabaseCredential.class);
+        }
+
+        if (credential.getType() == null && kvEntry.has("scope")) {
+            credential.setType(kvEntry.get("scope").asText());
+        }
+
+        LOG.debugf("Successfully fetched credential for: %s", connectionPath);
+        return credential;
     }
 
     /**
