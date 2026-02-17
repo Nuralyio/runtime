@@ -118,6 +118,11 @@ public class OpenAiProvider implements StreamingLlmProvider {
             }
         }
 
+        // Structured output (response_format)
+        if (request.getResponseFormat() != null) {
+            body.set("response_format", request.getResponseFormat());
+        }
+
         return body;
     }
 

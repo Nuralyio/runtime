@@ -1,5 +1,6 @@
 package com.nuraly.workflows.llm.dto;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,4 +59,11 @@ public class LlmRequest {
      * Used primarily for self-hosted providers like Ollama.
      */
     private String baseUrl;
+
+    /**
+     * Structured output response format specification.
+     * For OpenAI: {"type": "json_schema", "json_schema": {"name": "...", "schema": {...}}}
+     * When set, the LLM response will conform to the specified JSON schema.
+     */
+    private JsonNode responseFormat;
 }

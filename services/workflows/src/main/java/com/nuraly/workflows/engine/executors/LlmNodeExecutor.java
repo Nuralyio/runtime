@@ -167,6 +167,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         Integer maxTokens = config.has("maxTokens") ? config.get("maxTokens").asInt() : null;
         int maxIterations = config.has("maxToolIterations") ?
                 config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
+        JsonNode responseFormat = config.has("responseFormat") ? config.get("responseFormat") : null;
 
         // Build resilience configuration
         ResilienceConfig resilienceConfig = buildResilienceConfig(config);
@@ -249,6 +250,7 @@ public class LlmNodeExecutor implements NodeExecutor {
                     .temperature(temperature)
                     .maxTokens(maxTokens)
                     .baseUrl(baseUrl)
+                    .responseFormat(responseFormat)
                     .build();
 
             // Emit LLM call started event
