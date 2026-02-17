@@ -103,4 +103,22 @@ class OpenAiProviderTest {
         assertEquals(2, request.getMessages().size());
         assertEquals(1, request.getTools().size());
     }
+
+    @Test
+    void testSupportsStructuredOutput_Gpt4Models() {
+        assertTrue(provider.supportsStructuredOutput("gpt-4o"));
+        assertTrue(provider.supportsStructuredOutput("gpt-4-turbo"));
+        assertTrue(provider.supportsStructuredOutput("gpt-4o-mini"));
+    }
+
+    @Test
+    void testSupportsStructuredOutput_Gpt35Unsupported() {
+        assertFalse(provider.supportsStructuredOutput("gpt-3.5-turbo"));
+        assertFalse(provider.supportsStructuredOutput("gpt-3.5-turbo-16k"));
+    }
+
+    @Test
+    void testSupportsStructuredOutput_NullModel() {
+        assertFalse(provider.supportsStructuredOutput(null));
+    }
 }
