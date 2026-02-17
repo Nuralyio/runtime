@@ -249,6 +249,13 @@ public class OllamaProvider implements LlmProvider {
             body.set("options", options);
         }
 
+        // Structured output via Ollama's format field
+        if (request.getResponseFormat() != null
+                && request.getResponseFormat().has("json_schema")
+                && request.getResponseFormat().get("json_schema").has("schema")) {
+            body.set("format", request.getResponseFormat().get("json_schema").get("schema"));
+        }
+
         // Tools
         if (request.getTools() != null && !request.getTools().isEmpty()) {
             ArrayNode tools = objectMapper.createArrayNode();
