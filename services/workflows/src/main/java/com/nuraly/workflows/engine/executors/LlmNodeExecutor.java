@@ -1406,45 +1406,51 @@ public class LlmNodeExecutor implements NodeExecutor {
     private ResilienceConfig buildResilienceConfig(JsonNode config) {
         ResilienceConfig.Builder builder = ResilienceConfig.builder();
 
-        // Parse retry configuration
-        if (config.has("retry") && config.get("retry").isObject()) {
-            JsonNode retryConfig = config.get("retry");
+        parseRetryConfig(config, builder);
+        parseFallbackConfig(config, builder);
 
-            if (retryConfig.has(ENABLED) && !retryConfig.get(ENABLED).asBoolean()) {
-                builder.maxRetries(0);
-            } else {
-                if (retryConfig.has("maxAttempts")) {
-                    builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1); // -1 because maxRetries doesn't include initial attempt
-                }
-                if (retryConfig.has("initialBackoffMs")) {
-                    builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
-                }
-                if (retryConfig.has("maxBackoffMs")) {
-                    builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
-                }
-            }
-        }
-
-        // Parse fallback configuration
-        if (config.has("fallback") && config.get("fallback").isObject()) {
-            JsonNode fallbackConfig = config.get("fallback");
-
-            if (fallbackConfig.has(ENABLED) && fallbackConfig.get(ENABLED).asBoolean()) {
-                if (fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
-                    List<String> fallbackProviders = new ArrayList<>();
-                    for (JsonNode provider : fallbackConfig.get("providers")) {
-                        fallbackProviders.add(provider.asText());
-                    }
-                    builder.fallbackProviders(fallbackProviders);
-                }
-            }
-        }
-
-        // Parse timeout
         if (config.has("timeout")) {
             builder.timeoutMs(config.get("timeout").asLong());
         }
 
         return builder.build();
+    }
+
+    private void parseRetryConfig(JsonNode config, ResilienceConfig.Builder builder) {
+        if (!config.has("retry") || !config.get("retry").isObject()) {
+            return;
+        }
+
+        JsonNode retryConfig = config.get("retry");
+        if (retryConfig.has(ENABLED) && !retryConfig.get(ENABLED).asBoolean()) {
+            builder.maxRetries(0);
+            return;
+        }
+
+        if (retryConfig.has("maxAttempts")) {
+            builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1);
+        }
+        if (retryConfig.has("initialBackoffMs")) {
+            builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
+        }
+        if (retryConfig.has("maxBackoffMs")) {
+            builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
+        }
+    }
+
+    private void parseFallbackConfig(JsonNode config, ResilienceConfig.Builder builder) {
+        if (!config.has("fallback") || !config.get("fallback").isObject()) {
+            return;
+        }
+
+        JsonNode fallbackConfig = config.get("fallback");
+        if (fallbackConfig.has(ENABLED) && fallbackConfig.get(ENABLED).asBoolean()
+                && fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
+            List<String> fallbackProviders = new ArrayList<>();
+            for (JsonNode provider : fallbackConfig.get("providers")) {
+                fallbackProviders.add(provider.asText());
+            }
+            builder.fallbackProviders(fallbackProviders);
+        }
     }
 }

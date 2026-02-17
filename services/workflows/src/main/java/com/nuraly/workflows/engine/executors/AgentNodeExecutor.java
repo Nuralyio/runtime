@@ -100,6 +100,8 @@ public class AgentNodeExecutor implements NodeExecutor {
     private static final String MESSAGE = "message";
     private static final String CONTENT = "content";
     private static final String MAX_TOKENS = "maxTokens";
+    private static final String PROMPT = "prompt";
+    private static final String RESULTS = "results";
 
     // Accepted port names for memory/context connection
     private static final List<String> MEMORY_PORTS = Arrays.asList(
@@ -181,7 +183,7 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
 
         // Find connected config nodes
-        WorkflowNodeEntity promptNode = findConnectedNode(node, "prompt");
+        WorkflowNodeEntity promptNode = findConnectedNode(node, PROMPT);
         WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
         WorkflowNodeEntity structuredOutputNode = findConnectedNode(node, "structured_output");
         List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, TOOLS);
@@ -303,8 +305,8 @@ public class AgentNodeExecutor implements NodeExecutor {
 
             if (promptConfig.has("template")) {
                 systemPrompt = promptConfig.get("template").asText();
-            } else if (promptConfig.has("prompt")) {
-                systemPrompt = promptConfig.get("prompt").asText();
+            } else if (promptConfig.has(PROMPT)) {
+                systemPrompt = promptConfig.get(PROMPT).asText();
             } else if (promptConfig.has(SYSTEM_PROMPT)) {
                 systemPrompt = promptConfig.get(SYSTEM_PROMPT).asText();
             }
@@ -926,7 +928,7 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
 
         // Try common field names
-        String[] fields = {"prompt", MESSAGE, "query", "text", "input"};
+        String[] fields = {PROMPT, MESSAGE, QUERY, "text", "input"};
 
         for (String field : fields) {
             if (input.has(field) && !input.get(field).isNull()) {
@@ -992,11 +994,11 @@ public class AgentNodeExecutor implements NodeExecutor {
     }
 
     private String buildContextFromResults(JsonNode input) {
-        if (!input.has("results") || !input.get("results").isArray()) {
+        if (!input.has(RESULTS) || !input.get(RESULTS).isArray()) {
             return null;
         }
 
-        JsonNode results = input.get("results");
+        JsonNode results = input.get(RESULTS);
         if (results.isEmpty()) {
             return null;
         }
