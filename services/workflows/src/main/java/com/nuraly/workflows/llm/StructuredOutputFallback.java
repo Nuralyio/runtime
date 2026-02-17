@@ -21,7 +21,7 @@ public final class StructuredOutputFallback {
     private static final Logger LOG = Logger.getLogger(StructuredOutputFallback.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private static final String JSON_SCHEMA = JSON_SCHEMA;
+    private static final String JSON_SCHEMA = "json_schema";
     private static final Pattern CODE_BLOCK_PATTERN = Pattern.compile("```(?:json)?\\s*\\n?(.*?)\\n?```", Pattern.DOTALL);
     private static final Pattern JSON_OBJECT_PATTERN = Pattern.compile("\\{.*}", Pattern.DOTALL);
 
