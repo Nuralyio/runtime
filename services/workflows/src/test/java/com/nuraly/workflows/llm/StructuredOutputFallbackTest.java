@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.llm.dto.LlmMessage;
 import com.nuraly.workflows.llm.dto.LlmRequest;
 import com.nuraly.workflows.llm.dto.LlmResponse;
+import com.nuraly.workflows.llm.providers.OllamaProvider;
+import com.nuraly.workflows.llm.providers.OpenAiProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
@@ -35,7 +39,7 @@ class StructuredOutputFallbackTest {
         String systemContent = result.getMessages().get(0).getContent();
         assertTrue(systemContent.startsWith("You are a helper."));
         assertTrue(systemContent.contains("You MUST respond with valid JSON only"));
-        assertTrue(systemContent.contains("json_schema"));
+        assertTrue(systemContent.contains("\"type\" : \"object\""));
     }
 
     @Test
@@ -138,34 +142,18 @@ class StructuredOutputFallbackTest {
         assertEquals("[{\"id\":1},{\"id\":2}]", result.getContent());
     }
 
-    @Test
-    void extractJson_strategy2_codeBlock() {
-        String content = "Here is the result:\n```json\n{\"key\": \"value\"}\n```\nDone.";
-        LlmResponse response = LlmResponse.builder().content(content).build();
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+        "Here is the result:\n```json\n{\"key\": \"value\"}\n```\nDone. | {\"key\":\"value\"}",
+        "Result:\n```\n{\"key\": \"value\"}\n```                        | {\"key\":\"value\"}",
+        "The answer is {\"result\": 42} as requested.                   | {\"result\":42}"
+    })
+    void extractJson_extractsFromVariousFormats(String content, String expectedJson) {
+        LlmResponse response = LlmResponse.builder().content(content.trim()).build();
 
         LlmResponse result = StructuredOutputFallback.extractJson(response);
 
-        assertEquals("{\"key\":\"value\"}", result.getContent());
-    }
-
-    @Test
-    void extractJson_strategy2_codeBlockWithoutJsonLabel() {
-        String content = "Result:\n```\n{\"key\": \"value\"}\n```";
-        LlmResponse response = LlmResponse.builder().content(content).build();
-
-        LlmResponse result = StructuredOutputFallback.extractJson(response);
-
-        assertEquals("{\"key\":\"value\"}", result.getContent());
-    }
-
-    @Test
-    void extractJson_strategy3_embeddedJsonObject() {
-        String content = "The answer is {\"result\": 42} as requested.";
-        LlmResponse response = LlmResponse.builder().content(content).build();
-
-        LlmResponse result = StructuredOutputFallback.extractJson(response);
-
-        assertEquals("{\"result\":42}", result.getContent());
+        assertEquals(expectedJson.trim(), result.getContent());
     }
 
     @Test
@@ -206,6 +194,44 @@ class StructuredOutputFallbackTest {
         LlmResponse result = StructuredOutputFallback.extractJson(response);
 
         assertEquals("{\"key\":\"value\"}", result.getContent());
+    }
+
+    // ── Provider supportsStructuredOutput ───────────────────────────────
+
+    @Test
+    void openAi_supportsStructuredOutput_gpt4() {
+        OpenAiProvider provider = new OpenAiProvider();
+        assertTrue(provider.supportsStructuredOutput("gpt-4o"));
+        assertTrue(provider.supportsStructuredOutput("gpt-4-turbo"));
+        assertTrue(provider.supportsStructuredOutput("gpt-4o-mini"));
+    }
+
+    @Test
+    void openAi_supportsStructuredOutput_gpt35Unsupported() {
+        OpenAiProvider provider = new OpenAiProvider();
+        assertFalse(provider.supportsStructuredOutput("gpt-3.5-turbo"));
+        assertFalse(provider.supportsStructuredOutput("gpt-3.5-turbo-16k"));
+        assertFalse(provider.supportsStructuredOutput(null));
+    }
+
+    @Test
+    void ollama_supportsStructuredOutput_allowedModels() {
+        OllamaProvider provider = new OllamaProvider();
+        assertTrue(provider.supportsStructuredOutput("llama3"));
+        assertTrue(provider.supportsStructuredOutput("llama3.1"));
+        assertTrue(provider.supportsStructuredOutput("mistral"));
+        assertTrue(provider.supportsStructuredOutput("qwen2"));
+        assertTrue(provider.supportsStructuredOutput("deepseek-v2"));
+        assertTrue(provider.supportsStructuredOutput("gemma2"));
+        assertTrue(provider.supportsStructuredOutput("phi3"));
+    }
+
+    @Test
+    void ollama_supportsStructuredOutput_unsupportedModels() {
+        OllamaProvider provider = new OllamaProvider();
+        assertFalse(provider.supportsStructuredOutput("codellama"));
+        assertFalse(provider.supportsStructuredOutput("llama2"));
+        assertFalse(provider.supportsStructuredOutput(null));
     }
 
     // ── helpers ──────────────────────────────────────────────────────────
