@@ -71,6 +71,7 @@ import {
   renderMemoryFields,
   renderToolFields,
   renderRetrieverFields,
+  renderStructuredOutputFields,
 } from './agent-node-fields.js';
 import { renderNoteFields } from './note-node-fields.js';
 import { renderMermaidFields } from './mermaid-fields.js';
@@ -216,6 +217,9 @@ export function renderTypeFields(
 
     case AgentNodeType.RETRIEVER:
       return renderRetrieverFields(config, onUpdate);
+
+    case AgentNodeType.STRUCTURED_OUTPUT:
+      return renderStructuredOutputFields(config, onUpdate);
 
     // DB Designer nodes
     case DbDesignerNodeType.TABLE:

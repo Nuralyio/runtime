@@ -88,6 +88,7 @@ export enum AgentNodeType {
   ROUTER = 'ROUTER',
   HUMAN_INPUT = 'HUMAN_INPUT',
   OUTPUT_PARSER = 'OUTPUT_PARSER',
+  STRUCTURED_OUTPUT = 'STRUCTURED_OUTPUT',
 }
 
 /**
@@ -652,6 +653,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [AgentNodeType.ROUTER]: '#fb923c',
   [AgentNodeType.HUMAN_INPUT]: '#4ade80',
   [AgentNodeType.OUTPUT_PARSER]: '#2dd4bf',
+  [AgentNodeType.STRUCTURED_OUTPUT]: '#f59e0b',
   // DB Designer nodes
   [DbDesignerNodeType.TABLE]: '#64748b', // Soft slate for tables
   [DbDesignerNodeType.VIEW]: '#a855f7', // Purple for views
@@ -754,6 +756,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [AgentNodeType.ROUTER]: 'git-pull-request',
   [AgentNodeType.HUMAN_INPUT]: 'user',
   [AgentNodeType.OUTPUT_PARSER]: 'file-text',
+  [AgentNodeType.STRUCTURED_OUTPUT]: 'braces',
   // DB Designer nodes
   [DbDesignerNodeType.TABLE]: 'table',
   [DbDesignerNodeType.VIEW]: 'eye',
@@ -1738,6 +1741,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
         { id: 'prompt', type: PortType.CONFIG, label: 'Prompt' },
         { id: 'memory', type: PortType.CONFIG, label: 'Memory' },
         { id: 'tools', type: PortType.CONFIG, label: 'Tools', multiple: true },
+        { id: 'structured_output', type: PortType.CONFIG, label: 'Structured Output' },
       ],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Output' },
@@ -1889,6 +1893,28 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Raw Output' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Parsed Data' }],
+    },
+  },
+  {
+    type: AgentNodeType.STRUCTURED_OUTPUT,
+    name: 'Structured Output',
+    description: 'Define a JSON schema to enforce structured LLM output',
+    icon: NODE_ICONS[AgentNodeType.STRUCTURED_OUTPUT],
+    color: NODE_COLORS[AgentNodeType.STRUCTURED_OUTPUT],
+    category: 'agent',
+    defaultConfig: {
+      schemaName: 'structured_output',
+      strict: true,
+      schema: {
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      },
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Schema' }],
     },
   },
   // DB Designer nodes
@@ -2401,6 +2427,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       AgentNodeType.ROUTER,
       AgentNodeType.HUMAN_INPUT,
       AgentNodeType.OUTPUT_PARSER,
+      AgentNodeType.STRUCTURED_OUTPUT,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
