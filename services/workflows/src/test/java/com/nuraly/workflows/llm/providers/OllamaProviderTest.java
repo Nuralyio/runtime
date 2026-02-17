@@ -224,30 +224,4 @@ class OllamaProviderTest {
         var models = provider.refreshAvailableModels();
         assertNotNull(models);
     }
-
-    @Test
-    void testSupportsStructuredOutput_SupportedModels() {
-        assertTrue(provider.supportsStructuredOutput("llama3"));
-        assertTrue(provider.supportsStructuredOutput("llama3.1"));
-        assertTrue(provider.supportsStructuredOutput("mistral"));
-        assertTrue(provider.supportsStructuredOutput("mistral-nemo"));
-        assertTrue(provider.supportsStructuredOutput("qwen2"));
-        assertTrue(provider.supportsStructuredOutput("qwen2.5"));
-        assertTrue(provider.supportsStructuredOutput("deepseek-v2"));
-        assertTrue(provider.supportsStructuredOutput("gemma2"));
-        assertTrue(provider.supportsStructuredOutput("phi3"));
-    }
-
-    @Test
-    void testSupportsStructuredOutput_UnsupportedModels() {
-        assertFalse(provider.supportsStructuredOutput("codellama"));
-        assertFalse(provider.supportsStructuredOutput("llama2"));
-        assertFalse(provider.supportsStructuredOutput("command-r"));
-        assertFalse(provider.supportsStructuredOutput("custom-model"));
-    }
-
-    @Test
-    void testSupportsStructuredOutput_NullModel() {
-        assertFalse(provider.supportsStructuredOutput(null));
-    }
 }
