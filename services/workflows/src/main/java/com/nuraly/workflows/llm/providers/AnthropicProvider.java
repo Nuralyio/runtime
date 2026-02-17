@@ -35,7 +35,7 @@ public class AnthropicProvider implements LlmProvider {
 
     private static final String JSON_SCHEMA = "json_schema";
     private static final String SCHEMA = "schema";
-    private static final String INPUT_SCHEMA = INPUT_SCHEMA;
+    private static final String INPUT_SCHEMA = "input_schema";
     private static final String INPUT = "input";
 
     private final ObjectMapper objectMapper = new ObjectMapper();

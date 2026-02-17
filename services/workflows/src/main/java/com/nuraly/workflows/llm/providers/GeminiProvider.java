@@ -33,7 +33,7 @@ public class GeminiProvider implements LlmProvider {
     );
 
     private static final String JSON_SCHEMA = "json_schema";
-    private static final String PARTS = PARTS;
+    private static final String PARTS = "parts";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
