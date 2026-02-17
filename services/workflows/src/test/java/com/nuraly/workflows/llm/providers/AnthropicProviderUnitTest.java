@@ -111,7 +111,7 @@ class AnthropicProviderUnitTest {
                 .messages(List.of(
                         LlmMessage.user("Search for cats"),
                         LlmMessage.assistantWithTools(List.of(tc)),
-                        LlmMessage.tool("call-1", "search", "{\"results\": []}"),
+                        LlmMessage.toolResult("call-1", "search", "{\"results\": []}"),
                         LlmMessage.user("What did you find?")
                 ))
                 .build();
