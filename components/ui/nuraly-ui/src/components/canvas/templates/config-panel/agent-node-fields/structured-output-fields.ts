@@ -6,6 +6,7 @@
 
 import { html, TemplateResult } from 'lit';
 import { NodeConfiguration } from '../../../workflow-canvas.types.js';
+import type { CodeEditorChangeEventDetail } from '../../../../code-editor/code-editor.types.js';
 
 /**
  * Render Structured Output node fields
@@ -17,6 +18,26 @@ export function renderStructuredOutputFields(
   const schemaStr = config.schema ? JSON.stringify(config.schema, null, 2) : '{\n  "type": "object",\n  "properties": {},\n  "required": [],\n  "additionalProperties": false\n}';
 
   return html`
+    <style>
+      .schema-editor-wrapper {
+        position: relative;
+        height: 250px;
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .schema-editor-wrapper nr-code-editor {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        --nuraly-code-editor-height: 100%;
+        --nuraly-code-editor-width: 100%;
+        --nuraly-code-editor-border-radius: 4px;
+        --nuraly-code-editor-border: none;
+      }
+    </style>
     <div class="config-section">
       <div class="config-section-header">
         <span class="config-section-title">Structured Output</span>
@@ -33,19 +54,21 @@ export function renderStructuredOutputFields(
       </div>
       <div class="config-field">
         <label>JSON Schema</label>
-        <nr-textarea
-          value=${schemaStr}
-          rows="12"
-          placeholder='{"type": "object", "properties": {...}}'
-          @nr-input=${(e: CustomEvent) => {
-            try {
-              const parsed = JSON.parse(e.detail.value);
-              onUpdate('schema', parsed);
-            } catch {
-              // Don't update on invalid JSON
-            }
-          }}
-        ></nr-textarea>
+        <div class="schema-editor-wrapper">
+          <nr-code-editor
+            language="json"
+            theme="vs-dark"
+            .code=${schemaStr}
+            @nr-change=${(e: CustomEvent<CodeEditorChangeEventDetail>) => {
+              try {
+                const parsed = JSON.parse(e.detail.value);
+                onUpdate('schema', parsed);
+              } catch {
+                // Don't update on invalid JSON
+              }
+            }}
+          ></nr-code-editor>
+        </div>
         <span class="field-description">JSON Schema defining the expected output structure</span>
       </div>
       <div class="config-field">
