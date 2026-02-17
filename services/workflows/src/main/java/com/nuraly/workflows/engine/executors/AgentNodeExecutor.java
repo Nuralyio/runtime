@@ -92,6 +92,13 @@ public class AgentNodeExecutor implements NodeExecutor {
 
     private static final String SCHEMA = "schema";
     private static final String STRICT = "strict";
+    private static final String TOOLS = "tools";
+    private static final String SYSTEM_PROMPT = "systemPrompt";
+    private static final String PROVIDER = "provider";
+    private static final String MODEL = "model";
+    private static final String QUERY = "query";
+    private static final String MESSAGE = "message";
+    private static final String CONTENT = "content";
 
     // Accepted port names for memory/context connection
     private static final List<String> MEMORY_PORTS = Arrays.asList(
@@ -176,7 +183,7 @@ public class AgentNodeExecutor implements NodeExecutor {
         WorkflowNodeEntity promptNode = findConnectedNode(node, "prompt");
         WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
         WorkflowNodeEntity structuredOutputNode = findConnectedNode(node, "structured_output");
-        List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, "tools");
+        List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, TOOLS);
         LOG.infof("Agent '%s': found %d tool nodes, edges count: %d",
             node.name, toolNodes.size(),
             node.workflow != null && node.workflow.edges != null ? node.workflow.edges.size() : -1);
@@ -206,13 +213,13 @@ public class AgentNodeExecutor implements NodeExecutor {
         systemPrompt = injectRagContext(systemPrompt, ragResult.context);
 
         if (systemPrompt != null && !systemPrompt.isEmpty()) {
-            mergedConfig.put("systemPrompt", systemPrompt);
+            mergedConfig.put(SYSTEM_PROMPT, systemPrompt);
         }
 
         // Build tools array from connected Tool nodes
         ArrayNode toolsArray = buildToolsArray(llmConfig, toolNodes, context, node);
         if (toolsArray.size() > 0) {
-            mergedConfig.set("tools", toolsArray);
+            mergedConfig.set(TOOLS, toolsArray);
             LOG.debugf("Agent has %d tools available", toolsArray.size());
         }
 
@@ -247,7 +254,7 @@ public class AgentNodeExecutor implements NodeExecutor {
     /**
      * Parse a JSON configuration string, returning an empty ObjectNode if null.
      */
-    private JsonNode parseConfiguration(String configuration) throws Exception {
+    private JsonNode parseConfiguration(String configuration) throws com.fasterxml.jackson.core.JsonProcessingException {
         return configuration != null
             ? objectMapper.readTree(configuration)
             : objectMapper.createObjectNode();
@@ -287,7 +294,7 @@ public class AgentNodeExecutor implements NodeExecutor {
     /**
      * Resolve system prompt from Prompt node configuration, with fallback to LLM config.
      */
-    private String resolveSystemPrompt(WorkflowNodeEntity promptNode, JsonNode llmConfig) throws Exception {
+    private String resolveSystemPrompt(WorkflowNodeEntity promptNode, JsonNode llmConfig) throws com.fasterxml.jackson.core.JsonProcessingException {
         String systemPrompt = null;
 
         if (promptNode != null) {
@@ -297,15 +304,15 @@ public class AgentNodeExecutor implements NodeExecutor {
                 systemPrompt = promptConfig.get("template").asText();
             } else if (promptConfig.has("prompt")) {
                 systemPrompt = promptConfig.get("prompt").asText();
-            } else if (promptConfig.has("systemPrompt")) {
-                systemPrompt = promptConfig.get("systemPrompt").asText();
+            } else if (promptConfig.has(SYSTEM_PROMPT)) {
+                systemPrompt = promptConfig.get(SYSTEM_PROMPT).asText();
             }
             LOG.debugf("Using system prompt from connected Prompt node: %s", promptNode.name);
         }
 
         // Fallback to LLM config system prompt
-        if ((systemPrompt == null || systemPrompt.isEmpty()) && llmConfig.has("systemPrompt")) {
-            systemPrompt = llmConfig.get("systemPrompt").asText();
+        if ((systemPrompt == null || systemPrompt.isEmpty()) && llmConfig.has(SYSTEM_PROMPT)) {
+            systemPrompt = llmConfig.get(SYSTEM_PROMPT).asText();
         }
 
         return systemPrompt;
@@ -342,11 +349,11 @@ public class AgentNodeExecutor implements NodeExecutor {
      * Extract the original query from retriever output.
      */
     private String extractRetrieverQuery(JsonNode retrieverOutput) {
-        if (retrieverOutput.has("query")) {
-            return retrieverOutput.get("query").asText();
+        if (retrieverOutput.has(QUERY)) {
+            return retrieverOutput.get(QUERY).asText();
         }
-        if (retrieverOutput.has("message")) {
-            return retrieverOutput.get("message").asText();
+        if (retrieverOutput.has(MESSAGE)) {
+            return retrieverOutput.get(MESSAGE).asText();
         }
         return null;
     }
@@ -412,10 +419,10 @@ public class AgentNodeExecutor implements NodeExecutor {
         JsonNode currentInput = context.getInput();
         if (currentInput == null || currentInput.isNull() || currentInput.isEmpty()) {
             ObjectNode newInput = objectMapper.createObjectNode();
-            newInput.put("query", userMessage);
+            newInput.put(QUERY, userMessage);
             context.setInput(newInput);
         } else if (currentInput.isObject()) {
-            ((ObjectNode) currentInput).put("query", userMessage);
+            ((ObjectNode) currentInput).put(QUERY, userMessage);
         }
     }
 
@@ -452,8 +459,8 @@ public class AgentNodeExecutor implements NodeExecutor {
         ArrayNode toolsArray = objectMapper.createArrayNode();
 
         // Copy tools from LLM config if present
-        if (llmConfig.has("tools") && llmConfig.get("tools").isArray()) {
-            for (JsonNode tool : llmConfig.get("tools")) {
+        if (llmConfig.has(TOOLS) && llmConfig.get(TOOLS).isArray()) {
+            for (JsonNode tool : llmConfig.get(TOOLS)) {
                 toolsArray.add(tool);
             }
         }
@@ -563,52 +570,63 @@ public class AgentNodeExecutor implements NodeExecutor {
      * Load conversation history from the memory node.
      * Returns null if no memory node is connected or it is not a MEMORY type.
      */
-    private MemoryResult loadMemoryHistory(WorkflowNodeEntity memoryNode, ExecutionContext context) throws Exception {
+    private MemoryResult loadMemoryHistory(WorkflowNodeEntity memoryNode, ExecutionContext context) {
         if (memoryNode == null || memoryNode.type != NodeType.MEMORY) {
             return null;
         }
 
         LOG.debugf("Found connected memory node: %s", memoryNode.name);
 
-        // Parse memory node configuration with defaults
+        MemoryNodeConfig memConfig = parseMemoryNodeConfig(memoryNode);
+
+        String conversationId = context.resolveExpression(memConfig.conversationIdExpression);
+        if (conversationId == null || conversationId.isEmpty() || conversationId.equals(memConfig.conversationIdExpression)) {
+            conversationId = resolveConversationId(context);
+        }
+
+        List<LlmMessage> conversationHistory = loadMessages(conversationId, memConfig);
+
+        return new MemoryResult(conversationId, conversationHistory);
+    }
+
+    private MemoryNodeConfig parseMemoryNodeConfig(WorkflowNodeEntity memoryNode) {
+        MemoryNodeConfig config = new MemoryNodeConfig();
+        if (memoryNode.configuration == null) {
+            return config;
+        }
+        try {
+            JsonNode nodeConfig = objectMapper.readTree(memoryNode.configuration);
+            config.cutoffMode = nodeConfig.has("cutoffMode") ? nodeConfig.get("cutoffMode").asText() : "message";
+            config.maxMessages = nodeConfig.has("maxMessages") ? nodeConfig.get("maxMessages").asInt() : 50;
+            config.maxTokens = nodeConfig.has("maxTokens") ? nodeConfig.get("maxTokens").asInt() : 4000;
+            config.conversationIdExpression = nodeConfig.has("conversationIdExpression")
+                ? nodeConfig.get("conversationIdExpression").asText()
+                : "${input.threadId}";
+        } catch (Exception e) {
+            LOG.warnf("Failed to parse memory node config: %s", e.getMessage());
+        }
+        return config;
+    }
+
+    private List<LlmMessage> loadMessages(String conversationId, MemoryNodeConfig memConfig) {
+        if (conversationId == null || conversationId.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<LlmMessage> history;
+        if ("token".equalsIgnoreCase(memConfig.cutoffMode)) {
+            history = contextMemoryStore.getMessagesByTokens(conversationId, memConfig.maxTokens);
+        } else {
+            history = contextMemoryStore.getMessagesByCount(conversationId, memConfig.maxMessages);
+        }
+        LOG.debugf("Loaded %d messages from conversation history for: %s", history.size(), conversationId);
+        return history;
+    }
+
+    private static class MemoryNodeConfig {
         String cutoffMode = "message";
         int maxMessages = 50;
         int maxTokens = 4000;
         String conversationIdExpression = "${input.threadId}";
-
-        if (memoryNode.configuration != null) {
-            try {
-                JsonNode nodeConfig = objectMapper.readTree(memoryNode.configuration);
-                cutoffMode = nodeConfig.has("cutoffMode") ? nodeConfig.get("cutoffMode").asText() : "message";
-                maxMessages = nodeConfig.has("maxMessages") ? nodeConfig.get("maxMessages").asInt() : 50;
-                maxTokens = nodeConfig.has("maxTokens") ? nodeConfig.get("maxTokens").asInt() : 4000;
-                conversationIdExpression = nodeConfig.has("conversationIdExpression")
-                    ? nodeConfig.get("conversationIdExpression").asText()
-                    : "${input.threadId}";
-            } catch (Exception e) {
-                LOG.warnf("Failed to parse memory node config: %s", e.getMessage());
-            }
-        }
-
-        // Resolve conversation ID
-        String conversationId = context.resolveExpression(conversationIdExpression);
-        if (conversationId == null || conversationId.isEmpty() || conversationId.equals(conversationIdExpression)) {
-            conversationId = resolveConversationId(context);
-        }
-
-        List<LlmMessage> conversationHistory = new ArrayList<>();
-
-        // Load conversation history from memory store
-        if (conversationId != null && !conversationId.isEmpty()) {
-            if ("token".equalsIgnoreCase(cutoffMode)) {
-                conversationHistory = contextMemoryStore.getMessagesByTokens(conversationId, maxTokens);
-            } else {
-                conversationHistory = contextMemoryStore.getMessagesByCount(conversationId, maxMessages);
-            }
-            LOG.debugf("Loaded %d messages from conversation history for: %s", conversationHistory.size(), conversationId);
-        }
-
-        return new MemoryResult(conversationId, conversationHistory);
     }
 
     /**
@@ -620,7 +638,7 @@ public class AgentNodeExecutor implements NodeExecutor {
             ObjectNode msgNode = objectMapper.createObjectNode();
             msgNode.put("role", msg.getRole().toString().toLowerCase());
             if (msg.getContent() != null) {
-                msgNode.put("content", msg.getContent());
+                msgNode.put(CONTENT, msg.getContent());
             }
             if (msg.getToolCallId() != null) {
                 msgNode.put("toolCallId", msg.getToolCallId());
@@ -637,7 +655,7 @@ public class AgentNodeExecutor implements NodeExecutor {
      * Build structured output response_format from connected Structured Output node.
      * Returns null if no structured output node or no valid schema.
      */
-    private JsonNode buildStructuredOutputConfig(WorkflowNodeEntity structuredOutputNode) throws Exception {
+    private JsonNode buildStructuredOutputConfig(WorkflowNodeEntity structuredOutputNode) throws com.fasterxml.jackson.core.JsonProcessingException {
         if (structuredOutputNode == null) {
             return null;
         }
@@ -685,8 +703,8 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         LOG.debugf("Agent using LLM config: %s", tempLlmNode.configuration);
 
-        String provider = llmConfig.has("provider") ? llmConfig.get("provider").asText() : "unknown";
-        String model = llmConfig.has("model") ? llmConfig.get("model").asText() : "unknown";
+        String provider = llmConfig.has(PROVIDER) ? llmConfig.get(PROVIDER).asText() : "unknown";
+        String model = llmConfig.has(MODEL) ? llmConfig.get(MODEL).asText() : "unknown";
 
         // Emit LLM call started event
         if (context.getExecution() != null) {
@@ -746,8 +764,8 @@ public class AgentNodeExecutor implements NodeExecutor {
      * Extract the assistant response text from LLM output.
      */
     private String extractAssistantResponse(JsonNode outputNode) {
-        if (outputNode.has("content")) {
-            return outputNode.get("content").asText();
+        if (outputNode.has(CONTENT)) {
+            return outputNode.get(CONTENT).asText();
         }
         if (outputNode.has("response")) {
             return outputNode.get("response").asText();
@@ -967,12 +985,12 @@ public class AgentNodeExecutor implements NodeExecutor {
                 StringBuilder contextBuilder = new StringBuilder();
                 for (int i = 0; i < results.size(); i++) {
                     JsonNode result = results.get(i);
-                    if (result.has("content")) {
+                    if (result.has(CONTENT)) {
                         if (i > 0) {
                             contextBuilder.append("\n\n---\n\n");
                         }
                         contextBuilder.append("[").append(i + 1).append("] ");
-                        contextBuilder.append(result.get("content").asText());
+                        contextBuilder.append(result.get(CONTENT).asText());
                         if (result.has("sourceId")) {
                             contextBuilder.append("\n(Source: ").append(result.get("sourceId").asText()).append(")");
                         }

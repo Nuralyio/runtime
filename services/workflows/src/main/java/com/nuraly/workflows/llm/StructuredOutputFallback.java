@@ -21,6 +21,7 @@ public final class StructuredOutputFallback {
     private static final Logger LOG = Logger.getLogger(StructuredOutputFallback.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private static final String JSON_SCHEMA = JSON_SCHEMA;
     private static final Pattern CODE_BLOCK_PATTERN = Pattern.compile("```(?:json)?\\s*\\n?(.*?)\\n?```", Pattern.DOTALL);
     private static final Pattern JSON_OBJECT_PATTERN = Pattern.compile("\\{.*}", Pattern.DOTALL);
 
@@ -118,9 +119,9 @@ public final class StructuredOutputFallback {
 
     private static String extractSchemaText(JsonNode responseFormat) {
         if (responseFormat != null
-                && responseFormat.has("json_schema")
-                && responseFormat.get("json_schema").has("schema")) {
-            return responseFormat.get("json_schema").get("schema").toPrettyString();
+                && responseFormat.has(JSON_SCHEMA)
+                && responseFormat.get(JSON_SCHEMA).has("schema")) {
+            return responseFormat.get(JSON_SCHEMA).get("schema").toPrettyString();
         }
         // Fall back to the whole responseFormat node
         return responseFormat != null ? responseFormat.toPrettyString() : "{}";
@@ -133,6 +134,7 @@ public final class StructuredOutputFallback {
                 return node.toString();
             }
         } catch (Exception ignored) {
+            // Expected when text is not valid JSON — fallback strategies will handle it
         }
         return null;
     }
