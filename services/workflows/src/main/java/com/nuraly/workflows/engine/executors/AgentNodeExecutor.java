@@ -99,6 +99,7 @@ public class AgentNodeExecutor implements NodeExecutor {
     private static final String QUERY = "query";
     private static final String MESSAGE = "message";
     private static final String CONTENT = "content";
+    private static final String MAX_TOKENS = "maxTokens";
 
     // Accepted port names for memory/context connection
     private static final List<String> MEMORY_PORTS = Arrays.asList(
@@ -267,12 +268,12 @@ public class AgentNodeExecutor implements NodeExecutor {
         ObjectNode mergedConfig = objectMapper.createObjectNode();
 
         // Copy LLM config (provider, apiKeyPath, apiUrlPath, model, temperature, maxTokens)
-        copyStringField(mergedConfig, llmConfig, "provider");
+        copyStringField(mergedConfig, llmConfig, PROVIDER);
         copyStringField(mergedConfig, llmConfig, "apiKeyPath");
         copyStringField(mergedConfig, llmConfig, "apiUrlPath");
-        copyStringField(mergedConfig, llmConfig, "model");
+        copyStringField(mergedConfig, llmConfig, MODEL);
         if (llmConfig.has("temperature")) mergedConfig.put("temperature", llmConfig.get("temperature").asDouble());
-        if (llmConfig.has("maxTokens")) mergedConfig.put("maxTokens", llmConfig.get("maxTokens").asInt());
+        if (llmConfig.has(MAX_TOKENS)) mergedConfig.put(MAX_TOKENS, llmConfig.get(MAX_TOKENS).asInt());
 
         // Set max iterations from agent config
         if (agentConfig.has("maxIterations")) {
@@ -596,9 +597,9 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
         try {
             JsonNode nodeConfig = objectMapper.readTree(memoryNode.configuration);
-            config.cutoffMode = nodeConfig.has("cutoffMode") ? nodeConfig.get("cutoffMode").asText() : "message";
+            config.cutoffMode = nodeConfig.has("cutoffMode") ? nodeConfig.get("cutoffMode").asText() : MESSAGE;
             config.maxMessages = nodeConfig.has("maxMessages") ? nodeConfig.get("maxMessages").asInt() : 50;
-            config.maxTokens = nodeConfig.has("maxTokens") ? nodeConfig.get("maxTokens").asInt() : 4000;
+            config.maxTokens = nodeConfig.has(MAX_TOKENS) ? nodeConfig.get(MAX_TOKENS).asInt() : 4000;
             config.conversationIdExpression = nodeConfig.has("conversationIdExpression")
                 ? nodeConfig.get("conversationIdExpression").asText()
                 : "${input.threadId}";
@@ -623,7 +624,7 @@ public class AgentNodeExecutor implements NodeExecutor {
     }
 
     private static class MemoryNodeConfig {
-        String cutoffMode = "message";
+        String cutoffMode = MESSAGE;
         int maxMessages = 50;
         int maxTokens = 4000;
         String conversationIdExpression = "${input.threadId}";
@@ -925,7 +926,7 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
 
         // Try common field names
-        String[] fields = {"prompt", "message", "query", "text", "input"};
+        String[] fields = {"prompt", MESSAGE, "query", "text", "input"};
 
         for (String field : fields) {
             if (input.has(field) && !input.get(field).isNull()) {
@@ -971,38 +972,55 @@ public class AgentNodeExecutor implements NodeExecutor {
         }
 
         // Primary: 'context' field from Context Builder
+        String directContext = extractDirectContext(input);
+        if (directContext != null) {
+            return directContext;
+        }
+
+        // Alternative: Build context from 'results' array (direct from Vector Search)
+        return buildContextFromResults(input);
+    }
+
+    private String extractDirectContext(JsonNode input) {
         if (input.has("context") && input.get("context").isTextual()) {
             String context = input.get("context").asText();
             if (!context.isEmpty()) {
                 return context;
             }
         }
+        return null;
+    }
 
-        // Alternative: Build context from 'results' array (direct from Vector Search)
-        if (input.has("results") && input.get("results").isArray()) {
-            JsonNode results = input.get("results");
-            if (!results.isEmpty()) {
-                StringBuilder contextBuilder = new StringBuilder();
-                for (int i = 0; i < results.size(); i++) {
-                    JsonNode result = results.get(i);
-                    if (result.has(CONTENT)) {
-                        if (i > 0) {
-                            contextBuilder.append("\n\n---\n\n");
-                        }
-                        contextBuilder.append("[").append(i + 1).append("] ");
-                        contextBuilder.append(result.get(CONTENT).asText());
-                        if (result.has("sourceId")) {
-                            contextBuilder.append("\n(Source: ").append(result.get("sourceId").asText()).append(")");
-                        }
-                    }
-                }
-                String context = contextBuilder.toString();
-                if (!context.isEmpty()) {
-                    return context;
-                }
+    private String buildContextFromResults(JsonNode input) {
+        if (!input.has("results") || !input.get("results").isArray()) {
+            return null;
+        }
+
+        JsonNode results = input.get("results");
+        if (results.isEmpty()) {
+            return null;
+        }
+
+        StringBuilder contextBuilder = new StringBuilder();
+        for (int i = 0; i < results.size(); i++) {
+            JsonNode result = results.get(i);
+            if (result.has(CONTENT)) {
+                appendResultEntry(contextBuilder, result, i);
             }
         }
 
-        return null;
+        String context = contextBuilder.toString();
+        return context.isEmpty() ? null : context;
+    }
+
+    private void appendResultEntry(StringBuilder builder, JsonNode result, int index) {
+        if (index > 0) {
+            builder.append("\n\n---\n\n");
+        }
+        builder.append("[").append(index + 1).append("] ");
+        builder.append(result.get(CONTENT).asText());
+        if (result.has("sourceId")) {
+            builder.append("\n(Source: ").append(result.get("sourceId").asText()).append(")");
+        }
     }
 }
