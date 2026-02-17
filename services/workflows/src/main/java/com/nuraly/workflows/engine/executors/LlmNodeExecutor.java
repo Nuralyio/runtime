@@ -76,6 +76,7 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static final String MODEL = "model";
     private static final String MAX_TOKENS = "maxTokens";
     private static final String MEMORY_CONFIG = "memoryConfig";
+    private static final String ENABLED = "enabled";
 
     @Inject
     LlmProviderFactory providerFactory;
@@ -168,7 +169,13 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         result.isOllama = "ollama".equalsIgnoreCase(result.providerName);
 
-        // Get API key from KV store (optional for Ollama)
+        resolveApiKey(config, context, result);
+        resolveBaseUrl(config, context, result);
+
+        return result;
+    }
+
+    private void resolveApiKey(JsonNode config, ExecutionContext context, ProviderConfig result) {
         String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
         if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
             result.apiKey = fetchFromKvStore(apiKeyPath, context);
@@ -178,8 +185,9 @@ public class LlmNodeExecutor implements NodeExecutor {
         } else if (!result.isOllama) {
             LOG.warnf("No API key path configured for %s provider (will try without it)", result.providerName);
         }
+    }
 
-        // Get API URL from KV store (required for Ollama and local providers)
+    private void resolveBaseUrl(JsonNode config, ExecutionContext context, ProviderConfig result) {
         String apiUrlPath = config.has("apiUrlPath") ? config.get("apiUrlPath").asText() : null;
         if (apiUrlPath != null && !apiUrlPath.isEmpty()) {
             result.baseUrl = fetchFromKvStore(apiUrlPath, context);
@@ -188,14 +196,11 @@ public class LlmNodeExecutor implements NodeExecutor {
             }
         }
 
-        // Ollama and local providers require an API URL
         boolean requiresUrl = result.isOllama || "local".equalsIgnoreCase(result.providerName);
         if (requiresUrl && (result.baseUrl == null || result.baseUrl.isEmpty())) {
             LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", result.providerName);
             result.error = "API URL is required for " + result.providerName + " provider. Please configure a server URL in the node settings.";
         }
-
-        return result;
     }
 
     /**
@@ -268,8 +273,8 @@ public class LlmNodeExecutor implements NodeExecutor {
     private void resolveMemoryAndLoadHistory(JsonNode config, ExecutionContext context,
                                               WorkflowNodeEntity node, InitialMessagesResult result) {
         // Check for memory config in node configuration
-        if (config.has(MEMORY_CONFIG) && config.get(MEMORY_CONFIG).has("enabled") &&
-            config.get(MEMORY_CONFIG).get("enabled").asBoolean()) {
+        if (config.has(MEMORY_CONFIG) && config.get(MEMORY_CONFIG).has(ENABLED) &&
+            config.get(MEMORY_CONFIG).get(ENABLED).asBoolean()) {
             LOG.debugf("Found memory config in node configuration");
             result.memoryConfig = parseMemoryConfigFromJson(config.get(MEMORY_CONFIG), context);
             result.conversationId = result.memoryConfig.conversationId;
@@ -1405,7 +1410,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         if (config.has("retry") && config.get("retry").isObject()) {
             JsonNode retryConfig = config.get("retry");
 
-            if (retryConfig.has("enabled") && !retryConfig.get("enabled").asBoolean()) {
+            if (retryConfig.has(ENABLED) && !retryConfig.get(ENABLED).asBoolean()) {
                 builder.maxRetries(0);
             } else {
                 if (retryConfig.has("maxAttempts")) {
@@ -1424,7 +1429,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         if (config.has("fallback") && config.get("fallback").isObject()) {
             JsonNode fallbackConfig = config.get("fallback");
 
-            if (fallbackConfig.has("enabled") && fallbackConfig.get("enabled").asBoolean()) {
+            if (fallbackConfig.has(ENABLED) && fallbackConfig.get(ENABLED).asBoolean()) {
                 if (fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
                     List<String> fallbackProviders = new ArrayList<>();
                     for (JsonNode provider : fallbackConfig.get("providers")) {
