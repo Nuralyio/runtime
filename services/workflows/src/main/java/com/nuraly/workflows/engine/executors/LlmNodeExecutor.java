@@ -77,6 +77,9 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static final String MAX_TOKENS = "maxTokens";
     private static final String MEMORY_CONFIG = "memoryConfig";
     private static final String ENABLED = "enabled";
+    private static final String RETRY = "retry";
+    private static final String FALLBACK = "fallback";
+    private static final String PROVIDERS = "providers";
 
     @Inject
     LlmProviderFactory providerFactory;
@@ -1417,11 +1420,11 @@ public class LlmNodeExecutor implements NodeExecutor {
     }
 
     private void parseRetryConfig(JsonNode config, ResilienceConfig.Builder builder) {
-        if (!config.has("retry") || !config.get("retry").isObject()) {
+        if (!config.has(RETRY) || !config.get(RETRY).isObject()) {
             return;
         }
 
-        JsonNode retryConfig = config.get("retry");
+        JsonNode retryConfig = config.get(RETRY);
         if (retryConfig.has(ENABLED) && !retryConfig.get(ENABLED).asBoolean()) {
             builder.maxRetries(0);
             return;
@@ -1439,15 +1442,15 @@ public class LlmNodeExecutor implements NodeExecutor {
     }
 
     private void parseFallbackConfig(JsonNode config, ResilienceConfig.Builder builder) {
-        if (!config.has("fallback") || !config.get("fallback").isObject()) {
+        if (!config.has(FALLBACK) || !config.get(FALLBACK).isObject()) {
             return;
         }
 
-        JsonNode fallbackConfig = config.get("fallback");
+        JsonNode fallbackConfig = config.get(FALLBACK);
         if (fallbackConfig.has(ENABLED) && fallbackConfig.get(ENABLED).asBoolean()
-                && fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
+                && fallbackConfig.has(PROVIDERS) && fallbackConfig.get(PROVIDERS).isArray()) {
             List<String> fallbackProviders = new ArrayList<>();
-            for (JsonNode provider : fallbackConfig.get("providers")) {
+            for (JsonNode provider : fallbackConfig.get(PROVIDERS)) {
                 fallbackProviders.add(provider.asText());
             }
             builder.fallbackProviders(fallbackProviders);
