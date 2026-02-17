@@ -103,7 +103,7 @@ public class KvClient {
         }
     }
 
-    private DatabaseCredential parseCredential(String body, String connectionPath) throws Exception {
+    private DatabaseCredential parseCredential(String body, String connectionPath) throws java.io.IOException {
         JsonNode kvEntry = objectMapper.readTree(body);
         if (!kvEntry.has("value")) {
             return null;
