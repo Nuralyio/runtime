@@ -414,4 +414,84 @@ class LlmNodeExecutorUnitTest {
 
         verify(contextMemoryStore).getMessagesByCount("thread-abc", 20);
     }
+
+    @Test
+    void structuredOutputFallbackTriggeredWhenProviderDoesNotSupport() throws Exception {
+        stubKvAndProvider();
+        when(mockProvider.supportsStructuredOutput("gpt-3.5-turbo")).thenReturn(false);
+
+        ObjectNode config = objectMapper.createObjectNode();
+        config.put("provider", "openai");
+        config.put("model", "gpt-3.5-turbo");
+        config.put("apiKeyPath", "key");
+
+        // Add responseFormat with json_schema
+        ObjectNode responseFormat = objectMapper.createObjectNode();
+        ObjectNode jsonSchema = objectMapper.createObjectNode();
+        ObjectNode schema = objectMapper.createObjectNode();
+        schema.put("type", "object");
+        schema.putObject("properties").putObject("name").put("type", "string");
+        jsonSchema.set("schema", schema);
+        jsonSchema.put("name", "test_output");
+        responseFormat.set("json_schema", jsonSchema);
+        config.set("responseFormat", responseFormat);
+
+        // The LLM returns JSON embedded in text (fallback should extract it)
+        LlmResponse llmResp = LlmResponse.builder()
+                .content("Here is the result: {\"name\": \"Alice\"}")
+                .model("gpt-3.5-turbo")
+                .finishReason(LlmResponse.FinishReason.STOP)
+                .usage(LlmResponse.Usage.builder()
+                        .promptTokens(10).completionTokens(20).totalTokens(30).build())
+                .build();
+
+        ArgumentCaptor<LlmRequest> reqCaptor = ArgumentCaptor.forClass(LlmRequest.class);
+        when(resilienceService.executeWithResilience(reqCaptor.capture(), eq("openai"), any(), any(ResilienceConfig.class)))
+                .thenReturn(llmResp);
+
+        ExecutionContext ctx = contextWithInput("{\"prompt\":\"give me data\"}");
+        NodeExecutionResult result = executor.execute(ctx, llmNode(objectMapper.writeValueAsString(config)));
+
+        assertTrue(result.isSuccess());
+
+        // Verify the request had responseFormat stripped (fallback injected schema into prompt)
+        LlmRequest captured = reqCaptor.getValue();
+        assertNull(captured.getResponseFormat());
+        // System message should contain schema instruction
+        boolean hasSchemaInstruction = captured.getMessages().stream()
+                .anyMatch(m -> m.getRole() == LlmMessage.Role.SYSTEM
+                        && m.getContent().contains("You MUST respond with valid JSON only"));
+        assertTrue(hasSchemaInstruction);
+
+        // Response content should be extracted JSON
+        assertEquals("{\"name\":\"Alice\"}", result.getOutput().get("content").asText());
+    }
+
+    @Test
+    void structuredOutputNativeModeWhenProviderSupports() throws Exception {
+        stubKvAndProvider();
+        when(mockProvider.supportsStructuredOutput("gpt-4o")).thenReturn(true);
+
+        ObjectNode config = objectMapper.createObjectNode();
+        config.put("provider", "openai");
+        config.put("model", "gpt-4o");
+        config.put("apiKeyPath", "key");
+
+        ObjectNode responseFormat = objectMapper.createObjectNode();
+        ObjectNode jsonSchema = objectMapper.createObjectNode();
+        jsonSchema.putObject("schema").put("type", "object");
+        responseFormat.set("json_schema", jsonSchema);
+        config.set("responseFormat", responseFormat);
+
+        ArgumentCaptor<LlmRequest> reqCaptor = ArgumentCaptor.forClass(LlmRequest.class);
+        when(resilienceService.executeWithResilience(reqCaptor.capture(), eq("openai"), any(), any(ResilienceConfig.class)))
+                .thenReturn(successResponse("{\"result\":true}"));
+
+        ExecutionContext ctx = contextWithInput("{\"prompt\":\"test\"}");
+        executor.execute(ctx, llmNode(objectMapper.writeValueAsString(config)));
+
+        // The request should keep responseFormat (native mode, no fallback)
+        LlmRequest captured = reqCaptor.getValue();
+        assertNotNull(captured.getResponseFormat());
+    }
 }
