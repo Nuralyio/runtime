@@ -36,6 +36,10 @@ export function renderAgentFields(
         <nr-icon name="tool" size="small"></nr-icon>
         <span><strong>Tools</strong> - Connect Tool nodes for agent to use (optional)</span>
       </div>
+      <div class="config-info-box">
+        <nr-icon name="braces" size="small"></nr-icon>
+        <span><strong>Structured Output</strong> - JSON schema to constrain output format (optional)</span>
+      </div>
     </div>
     <div class="config-section">
       <div class="config-section-header">

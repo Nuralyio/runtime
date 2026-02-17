@@ -22,3 +22,4 @@ export { renderPromptFields } from './prompt-fields.js';
 export { renderMemoryFields } from './memory-fields.js';
 export { renderToolFields } from './tool-fields.js';
 export { renderRetrieverFields } from './retriever-fields.js';
+export { renderStructuredOutputFields } from './structured-output-fields.js';
