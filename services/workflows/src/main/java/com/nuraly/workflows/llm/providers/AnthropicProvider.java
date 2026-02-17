@@ -55,6 +55,16 @@ public class AnthropicProvider implements LlmProvider {
         try {
             ObjectNode requestBody = buildRequestBody(request);
 
+            // Resolve structured output tool name for response parsing
+            String soToolName = null;
+            if (request.getResponseFormat() != null
+                    && request.getResponseFormat().has("json_schema")
+                    && request.getResponseFormat().get("json_schema").has("schema")) {
+                JsonNode jsonSchema = request.getResponseFormat().get("json_schema");
+                soToolName = jsonSchema.has("name")
+                        ? jsonSchema.get("name").asText() : "structured_output";
+            }
+
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 HttpPost httpPost = new HttpPost(API_URL);
                 httpPost.addHeader("Content-Type", "application/json");
@@ -67,7 +77,7 @@ public class AnthropicProvider implements LlmProvider {
                 String responseBody = EntityUtils.toString(response.getEntity());
 
                 if (statusCode >= 200 && statusCode < 300) {
-                    return parseResponse(responseBody);
+                    return parseResponse(responseBody, soToolName);
                 } else {
                     return LlmResponse.error("Anthropic API error (status " + statusCode + "): " + extractErrorMessage(responseBody));
                 }
@@ -120,19 +130,56 @@ public class AnthropicProvider implements LlmProvider {
             body.put("temperature", request.getTemperature());
         }
 
-        // Tools
-        if (request.getTools() != null && !request.getTools().isEmpty()) {
+        // Structured output via tool use pattern
+        // Anthropic doesn't have a native response_format parameter, so we inject
+        // a tool with the desired schema and force the model to call it.
+        boolean hasStructuredOutput = false;
+        String structuredOutputToolName = null;
+        if (request.getResponseFormat() != null
+                && request.getResponseFormat().has("json_schema")
+                && request.getResponseFormat().get("json_schema").has("schema")) {
+            hasStructuredOutput = true;
+            JsonNode jsonSchema = request.getResponseFormat().get("json_schema");
+            structuredOutputToolName = jsonSchema.has("name")
+                    ? jsonSchema.get("name").asText() : "structured_output";
+
+            // Build a tool definition from the schema
+            ObjectNode soTool = objectMapper.createObjectNode();
+            soTool.put("name", structuredOutputToolName);
+            soTool.put("description",
+                    "Return the response formatted according to the required schema. Always use this tool to structure your output.");
+            soTool.set("input_schema", jsonSchema.get("schema"));
+
+            // Prepend to tools array (existing tools may coexist)
             ArrayNode tools = objectMapper.createArrayNode();
-            for (ToolDefinition tool : request.getTools()) {
-                tools.add(convertTool(tool));
+            tools.add(soTool);
+            if (request.getTools() != null) {
+                for (ToolDefinition tool : request.getTools()) {
+                    tools.add(convertTool(tool));
+                }
             }
             body.set("tools", tools);
 
-            // Force tool use if requested
-            if (Boolean.TRUE.equals(request.getForceToolUse())) {
-                ObjectNode toolChoice = objectMapper.createObjectNode();
-                toolChoice.put("type", "any");
-                body.set("tool_choice", toolChoice);
+            // Force this specific tool to be called
+            ObjectNode toolChoice = objectMapper.createObjectNode();
+            toolChoice.put("type", "tool");
+            toolChoice.put("name", structuredOutputToolName);
+            body.set("tool_choice", toolChoice);
+        } else {
+            // Regular tools
+            if (request.getTools() != null && !request.getTools().isEmpty()) {
+                ArrayNode tools = objectMapper.createArrayNode();
+                for (ToolDefinition tool : request.getTools()) {
+                    tools.add(convertTool(tool));
+                }
+                body.set("tools", tools);
+
+                // Force tool use if requested
+                if (Boolean.TRUE.equals(request.getForceToolUse())) {
+                    ObjectNode toolChoice = objectMapper.createObjectNode();
+                    toolChoice.put("type", "any");
+                    body.set("tool_choice", toolChoice);
+                }
             }
         }
 
@@ -215,6 +262,10 @@ public class AnthropicProvider implements LlmProvider {
     }
 
     private LlmResponse parseResponse(String responseBody) {
+        return parseResponse(responseBody, null);
+    }
+
+    private LlmResponse parseResponse(String responseBody, String structuredOutputToolName) {
         try {
             JsonNode json = objectMapper.readTree(responseBody);
             LlmResponse.LlmResponseBuilder builder = LlmResponse.builder();
@@ -230,9 +281,16 @@ public class AnthropicProvider implements LlmProvider {
                 if ("text".equals(type)) {
                     textContent.append(block.get("text").asText());
                 } else if ("tool_use".equals(type)) {
+                    String toolName = block.get("name").asText();
+                    // If this is our injected structured output tool, return input as content
+                    if (structuredOutputToolName != null && structuredOutputToolName.equals(toolName)) {
+                        String structured = objectMapper.writeValueAsString(block.get("input"));
+                        textContent.append(structured);
+                        continue;
+                    }
                     ToolCall toolCall = ToolCall.builder()
                             .id(block.get("id").asText())
-                            .name(block.get("name").asText())
+                            .name(toolName)
                             .arguments(block.get("input"))
                             .build();
                     toolCalls.add(toolCall);

@@ -124,6 +124,16 @@ public class GeminiProvider implements LlmProvider {
         if (request.getMaxTokens() != null) {
             generationConfig.put("maxOutputTokens", request.getMaxTokens());
         }
+
+        // Structured output via Gemini's native responseSchema
+        if (request.getResponseFormat() != null
+                && request.getResponseFormat().has("json_schema")
+                && request.getResponseFormat().get("json_schema").has("schema")) {
+            generationConfig.put("responseMimeType", "application/json");
+            generationConfig.set("responseSchema",
+                    request.getResponseFormat().get("json_schema").get("schema"));
+        }
+
         if (!generationConfig.isEmpty()) {
             body.set("generationConfig", generationConfig);
         }
