@@ -115,6 +115,10 @@ public class KvClient {
             }
 
             return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.errorf("Interrupted while fetching credential from KV: %s", e.getMessage());
+            return null;
         } catch (Exception e) {
             LOG.errorf("Error fetching credential from KV: %s", e.getMessage());
             return null;
