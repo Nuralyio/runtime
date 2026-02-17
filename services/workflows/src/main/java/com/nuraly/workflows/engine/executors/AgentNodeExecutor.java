@@ -135,6 +135,9 @@ public class AgentNodeExecutor implements NodeExecutor {
         // Find the connected Memory node (optional) - check multiple port names
         WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
 
+        // Find the connected Structured Output node (optional)
+        WorkflowNodeEntity structuredOutputNode = findConnectedNode(node, "structured_output");
+
         // Find connected Tool nodes (optional, can be multiple)
         List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, "tools");
         LOG.infof("Agent '%s': found %d tool nodes, edges count: %d",
@@ -435,6 +438,33 @@ public class AgentNodeExecutor implements NodeExecutor {
                     }
                     mergedConfig.set("conversationHistory", historyArray);
                 }
+            }
+        }
+
+        // Build structured output response_format from connected Structured Output node
+        if (structuredOutputNode != null) {
+            LOG.debugf("Found connected Structured Output node: %s", structuredOutputNode.name);
+            JsonNode soConfig = structuredOutputNode.configuration != null
+                ? objectMapper.readTree(structuredOutputNode.configuration)
+                : objectMapper.createObjectNode();
+
+            if (soConfig.has("schema") && soConfig.get("schema").isObject()) {
+                String schemaName = soConfig.has("schemaName")
+                    ? soConfig.get("schemaName").asText()
+                    : "structured_output";
+                boolean strict = !soConfig.has("strict") || soConfig.get("strict").asBoolean(true);
+
+                ObjectNode responseFormat = objectMapper.createObjectNode();
+                responseFormat.put("type", "json_schema");
+
+                ObjectNode jsonSchema = objectMapper.createObjectNode();
+                jsonSchema.put("name", schemaName);
+                jsonSchema.put("strict", strict);
+                jsonSchema.set("schema", soConfig.get("schema"));
+                responseFormat.set("json_schema", jsonSchema);
+
+                mergedConfig.set("responseFormat", responseFormat);
+                LOG.debugf("Structured output enabled with schema: %s", schemaName);
             }
         }
 

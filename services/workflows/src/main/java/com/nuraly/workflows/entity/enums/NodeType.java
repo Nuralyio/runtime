@@ -45,6 +45,7 @@ public enum NodeType {
     ROUTER,         // Route to different chains based on input
     HUMAN_INPUT,    // Wait for human input in the workflow
     OUTPUT_PARSER,  // Parse LLM output into structured data
+    STRUCTURED_OUTPUT, // Define JSON schema for structured LLM output
 
     // RAG nodes (Retrieval-Augmented Generation)
     EMBEDDING,      // Generate vector embeddings from text (OpenAI, Ollama, Local ONNX)

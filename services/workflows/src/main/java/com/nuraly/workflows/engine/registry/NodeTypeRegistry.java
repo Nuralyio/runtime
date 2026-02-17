@@ -254,15 +254,17 @@ public class NodeTypeRegistry {
         // VERSION HISTORY:
         //   v1: in + llm + tools + output
         //   v2: added memory, prompt, retriever input ports
+        //   v3: added structured_output input port
         register(NodeType.AGENT, NodeTypeDefinition.builder()
-                .schemaVersion(2)
+                .schemaVersion(3)
                 .inputs(List.of(
                         port("in", "Input", true, 1),
                         port("llm", "LLM", true, 1),
                         optionalPort("tools", "Tools", 1),
                         optionalPort("memory", "Memory", 2),
                         optionalPort("prompt", "Prompt", 2),
-                        optionalPort("retriever", "Retriever", 2)
+                        optionalPort("retriever", "Retriever", 2),
+                        optionalPort("structured_output", "Structured Output", 3)
                 ))
                 .outputs(List.of(
                         port("out", "Output", true, 1)
@@ -295,6 +297,14 @@ public class NodeTypeRegistry {
                 .inputs(List.of(
                         port("input", "Input", true, 1)
                 ))
+                .outputs(List.of(
+                        port("out", "Output", true, 1)
+                ))
+                .build());
+
+        register(NodeType.STRUCTURED_OUTPUT, NodeTypeDefinition.builder()
+                .schemaVersion(1)
+                .inputs(List.of())
                 .outputs(List.of(
                         port("out", "Output", true, 1)
                 ))
