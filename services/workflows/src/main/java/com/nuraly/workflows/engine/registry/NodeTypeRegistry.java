@@ -477,6 +477,15 @@ public class NodeTypeRegistry {
                 ))
                 .build());
 
+        // --- MCP integration ---
+
+        register(NodeType.MCP, NodeTypeDefinition.builder()
+                .schemaVersion(1)
+                .outputs(List.of(
+                        port("out", "Output", true, 1)
+                ))
+                .build());
+
         // --- DB Designer nodes (visual only) ---
 
         register(NodeType.DB_TABLE, NodeTypeDefinition.builder().schemaVersion(1).build());

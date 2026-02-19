@@ -42,4 +42,10 @@ public class ToolDefinition {
      * The port ID on the LLM node that connects to this tool
      */
     private String sourcePortId;
+
+    /**
+     * Whether this tool is provided by an MCP server connection.
+     * MCP tools are routed through McpConnection.callTool() instead of executing a workflow node.
+     */
+    private boolean mcpTool;
 }

@@ -19,6 +19,9 @@ import com.nuraly.workflows.llm.StreamingLlmProvider.StreamToken;
 import com.nuraly.workflows.llm.dto.*;
 import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
+import com.nuraly.workflows.triggers.connectors.McpConnection;
+import com.nuraly.workflows.triggers.connectors.McpConnector;
+import io.modelcontextprotocol.spec.McpSchema;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -90,6 +93,9 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     ContextMemoryNodeExecutor contextMemoryNodeExecutor;
+
+    @Inject
+    McpConnector mcpConnector;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -476,7 +482,7 @@ public class LlmNodeExecutor implements NodeExecutor {
             for (JsonNode toolConfig : config.get("tools")) {
                 // Check if this is OpenAI format (from Tool nodes) or simple format
                 if (toolConfig.has("type") && "function".equals(toolConfig.get("type").asText())) {
-                    // OpenAI format from Tool node: { type: "function", function: {...}, nodeId: "..." }
+                    // OpenAI format from Tool/MCP node: { type: "function", function: {...}, nodeId: "...", _mcpTool: bool }
                     JsonNode funcDef = toolConfig.get("function");
                     if (funcDef != null) {
                         ToolDefinition.ToolDefinitionBuilder builder = ToolDefinition.builder()
@@ -490,6 +496,12 @@ public class LlmNodeExecutor implements NodeExecutor {
                                 builder.nodeId(UUID.fromString(toolConfig.get("nodeId").asText()));
                             } catch (Exception ignored) {}
                         }
+
+                        // Check if this is an MCP-sourced tool
+                        if (toolConfig.has("_mcpTool") && toolConfig.get("_mcpTool").asBoolean()) {
+                            builder.mcpTool(true);
+                        }
+
                         tools.add(builder.build());
                     }
                 } else {
@@ -579,6 +591,19 @@ public class LlmNodeExecutor implements NodeExecutor {
         for (ToolDefinition tool : tools) {
             ToolContext ctx = new ToolContext();
             ctx.definition = tool;
+
+            // Check if this tool was tagged as an MCP tool by AgentNodeExecutor
+            if (tool.isMcpTool()) {
+                ctx.isMcpTool = true;
+                ctx.mcpNodeId = tool.getNodeId();
+                if (ctx.mcpNodeId != null) {
+                    ctx.targetNode = findNodeById(node.workflow.nodes, ctx.mcpNodeId);
+                }
+                map.put(tool.getName(), ctx);
+                LOG.debugf("Registered MCP tool in context map: %s (mcpNode: %s)",
+                    tool.getName(), ctx.mcpNodeId);
+                continue;
+            }
 
             // Find the connected node for this tool
             if (tool.getNodeId() != null) {
@@ -746,8 +771,21 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         try {
             ToolContext toolCtx = toolContextMap.get(toolCall.getName());
-            if (toolCtx == null || toolCtx.targetNode == null) {
+            if (toolCtx == null) {
                 LOG.warnf("Tool not found in context map: %s. Available tools: %s",
+                    toolCall.getName(), toolContextMap.keySet());
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "Tool not found: " + toolCall.getName())
+                );
+            }
+
+            // Handle MCP tools: route call through MCP connection
+            if (toolCtx.isMcpTool) {
+                return executeMcpToolCall(toolCall, toolCtx, context, parentNode);
+            }
+
+            if (toolCtx.targetNode == null) {
+                LOG.warnf("Tool has no target node: %s. Available tools: %s",
                     toolCall.getName(), toolContextMap.keySet());
                 return objectMapper.writeValueAsString(
                         Map.of("error", "Tool not found: " + toolCall.getName())
@@ -835,6 +873,96 @@ public class LlmNodeExecutor implements NodeExecutor {
         }
     }
 
+    /**
+     * Execute a tool call through the MCP server connection.
+     */
+    @SuppressWarnings("unchecked")
+    private String executeMcpToolCall(ToolCall toolCall, ToolContext toolCtx,
+                                      ExecutionContext context, WorkflowNodeEntity parentNode) {
+        try {
+            WorkflowNodeEntity mcpNode = toolCtx.targetNode;
+
+            // Emit tool call started event
+            if (context.getExecution() != null) {
+                eventService.logToolCallStarted(
+                    context.getExecution(),
+                    parentNode.id.toString(),
+                    parentNode.name,
+                    toolCall.getName(),
+                    mcpNode != null ? mcpNode.id.toString() : "mcp"
+                );
+            }
+
+            McpConnection conn = mcpNode != null
+                    ? mcpConnector.getConnectionForNode(mcpNode)
+                    : null;
+
+            if (conn == null || !conn.isConnected()) {
+                LOG.errorf("MCP connection not available for tool: %s", toolCall.getName());
+                if (context.getExecution() != null) {
+                    eventService.logToolCallCompleted(
+                        context.getExecution(),
+                        parentNode.id.toString(),
+                        parentNode.name,
+                        toolCall.getName(),
+                        mcpNode != null ? mcpNode.id.toString() : "mcp",
+                        false
+                    );
+                }
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "MCP server not connected")
+                );
+            }
+
+            // Parse arguments as Map
+            Map<String, Object> args = new HashMap<>();
+            if (toolCall.getArguments() != null && toolCall.getArguments().isObject()) {
+                args = objectMapper.convertValue(toolCall.getArguments(), Map.class);
+            }
+
+            // Call the tool via MCP
+            var result = conn.callTool(toolCall.getName(), args);
+
+            // Emit tool call completed event
+            if (context.getExecution() != null) {
+                eventService.logToolCallCompleted(
+                    context.getExecution(),
+                    parentNode.id.toString(),
+                    parentNode.name,
+                    toolCall.getName(),
+                    mcpNode != null ? mcpNode.id.toString() : "mcp",
+                    !Boolean.TRUE.equals(result.isError())
+                );
+            }
+
+            // Extract text content from MCP result
+            StringBuilder resultText = new StringBuilder();
+            if (result.content() != null) {
+                for (var content : result.content()) {
+                    if (content instanceof McpSchema.TextContent textContent) {
+                        if (!resultText.isEmpty()) resultText.append("\n");
+                        resultText.append(textContent.text());
+                    }
+                }
+            }
+
+            String toolResult = resultText.isEmpty() ? "{\"success\": true}" : resultText.toString();
+            LOG.infof("MCP tool %s executed successfully, result length: %d",
+                    toolCall.getName(), toolResult.length());
+            return toolResult;
+
+        } catch (Exception e) {
+            LOG.errorf("MCP tool %s execution failed: %s", toolCall.getName(), e.getMessage());
+            try {
+                return objectMapper.writeValueAsString(
+                        Map.of("error", "MCP tool execution failed: " + e.getMessage())
+                );
+            } catch (Exception ex) {
+                return "{\"error\": \"MCP tool execution failed\"}";
+            }
+        }
+    }
+
     private ExecutionContext createSubContext(ExecutionContext parentContext, JsonNode toolArguments) {
         // Create a new context with tool arguments merged into input
         ExecutionContext subContext = new ExecutionContext(parentContext.getExecution());
@@ -860,6 +988,8 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static class ToolContext {
         ToolDefinition definition;
         WorkflowNodeEntity targetNode;
+        boolean isMcpTool;
+        UUID mcpNodeId; // The MCP node ID that provides this tool
     }
 
     /**
