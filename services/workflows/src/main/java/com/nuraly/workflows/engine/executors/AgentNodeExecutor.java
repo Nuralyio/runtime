@@ -137,7 +137,9 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         // Find connected Tool nodes (optional, can be multiple)
         List<WorkflowNodeEntity> toolNodes = findConnectedNodes(node, "tools");
-        LOG.debugf("Found %d connected Tool nodes", toolNodes.size());
+        LOG.infof("Agent '%s': found %d tool nodes, edges count: %d",
+            node.name, toolNodes.size(),
+            node.workflow != null && node.workflow.edges != null ? node.workflow.edges.size() : -1);
 
         // Get agent configuration
         JsonNode agentConfig = node.configuration != null
