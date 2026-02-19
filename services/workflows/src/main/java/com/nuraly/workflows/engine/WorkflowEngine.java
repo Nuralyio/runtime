@@ -20,6 +20,7 @@ import com.nuraly.workflows.service.WorkflowRevisionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.jboss.logging.Logger;
 
 import java.time.Instant;
@@ -64,6 +65,8 @@ public class WorkflowEngine {
     public void execute(WorkflowExecutionEntity execution) throws WorkflowExecutionException {
         metricsService.recordExecutionStart();
         long startTime = System.currentTimeMillis();
+
+        initializeWorkflow(execution.workflow);
 
         ExecutionContext context = new ExecutionContext(execution);
 
@@ -216,6 +219,8 @@ public class WorkflowEngine {
         metricsService.recordExecutionStart();
         long startTime = System.currentTimeMillis();
 
+        initializeWorkflow(execution.workflow);
+
         ExecutionContext context = new ExecutionContext(execution);
 
         // Load revision snapshot if executing a specific revision
@@ -296,6 +301,8 @@ public class WorkflowEngine {
     public void retryNode(WorkflowExecutionEntity execution, UUID nodeId) throws WorkflowExecutionException {
         metricsService.recordExecutionStart();
         long startTime = System.currentTimeMillis();
+
+        initializeWorkflow(execution.workflow);
 
         ExecutionContext context = new ExecutionContext(execution);
 
@@ -708,6 +715,19 @@ public class WorkflowEngine {
         LOG.debugf("Node %s has all %d INPUT ports ready, proceeding with execution",
                 targetNode.name, inputSourceNodes.size());
         return true;
+    }
+
+    /**
+     * Force-initialize all lazy workflow relationships to prevent
+     * LazyInitializationException during node execution.
+     */
+    private void initializeWorkflow(WorkflowEntity workflow) {
+        Hibernate.initialize(workflow.nodes);
+        Hibernate.initialize(workflow.edges);
+        for (WorkflowEdgeEntity edge : workflow.edges) {
+            Hibernate.initialize(edge.sourceNode);
+            Hibernate.initialize(edge.targetNode);
+        }
     }
 
     private boolean evaluateEdgeCondition(ExecutionContext context, String condition) {

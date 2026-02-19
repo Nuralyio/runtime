@@ -154,6 +154,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         // Build tool definitions from config and connected nodes
         List<ToolDefinition> tools = buildToolDefinitions(config, node);
+        LOG.infof("LLM '%s': built %d tool definitions from config", node.name, tools.size());
         Map<String, ToolContext> toolContextMap = buildToolContextMap(tools, node);
 
         // Get model
