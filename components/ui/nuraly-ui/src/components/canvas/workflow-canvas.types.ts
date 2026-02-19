@@ -66,6 +66,8 @@ export enum WorkflowNodeType {
   DISCORD_BOT = 'DISCORD_BOT',
   WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
   CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
+  // MCP integration
+  MCP = 'MCP',
   // Display nodes
   UI_TABLE = 'UI_TABLE',
   // Annotation nodes
@@ -636,6 +638,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
+  // MCP integration
+  [WorkflowNodeType.MCP]: '#7c3aed',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: '#0891b2',
   // Annotation nodes
@@ -739,6 +743,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: 'gamepad-2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
+  // MCP integration
+  [WorkflowNodeType.MCP]: 'plug',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: 'table',
   // Annotation nodes
@@ -1679,6 +1685,25 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // MCP integration
+  {
+    type: WorkflowNodeType.MCP,
+    name: 'MCP Server',
+    description: 'Connect to MCP server - provides tools to Agent/LLM nodes',
+    icon: NODE_ICONS[WorkflowNodeType.MCP],
+    color: NODE_COLORS[WorkflowNodeType.MCP],
+    category: 'trigger',
+    defaultConfig: {
+      serverUrl: '',
+      transportType: 'streamable_http',
+    },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Event' },
+      ],
+    },
+  },
   // Annotation nodes
   {
     type: WorkflowNodeType.NOTE,
@@ -2281,6 +2306,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.DISCORD_BOT,
       WorkflowNodeType.WHATSAPP_WEBHOOK,
       WorkflowNodeType.CUSTOM_WEBSOCKET,
+      WorkflowNodeType.MCP,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
