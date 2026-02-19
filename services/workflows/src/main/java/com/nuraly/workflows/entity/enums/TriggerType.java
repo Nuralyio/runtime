@@ -11,5 +11,6 @@ public enum TriggerType {
     SLACK_SOCKET,       // Slack Socket Mode (WebSocket)
     DISCORD_BOT,        // Discord Gateway (WebSocket)
     WHATSAPP_WEBHOOK,   // WhatsApp Business API webhook
-    CUSTOM_WEBSOCKET    // Generic WebSocket listener
+    CUSTOM_WEBSOCKET,   // Generic WebSocket listener
+    MCP                 // MCP server persistent connection
 }

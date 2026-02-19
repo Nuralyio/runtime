@@ -226,6 +226,13 @@
             <version>2.9.1</version>
         </dependency>
 
+        <!-- MCP SDK for Model Context Protocol integration -->
+        <dependency>
+            <groupId>io.modelcontextprotocol.sdk</groupId>
+            <artifactId>mcp</artifactId>
+            <version>0.18.0</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>io.quarkus</groupId>

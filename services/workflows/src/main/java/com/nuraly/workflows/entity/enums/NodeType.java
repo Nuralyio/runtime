@@ -65,6 +65,9 @@ public enum NodeType {
     WEB_SEARCH,     // Search the web using multiple providers (Google, Bing, SerpAPI, Brave, DuckDuckGo)
     WEB_CRAWL,      // Crawl web pages and extract text content
 
+    // MCP integration
+    MCP,            // Persistent MCP server connection (tool provider for Agent/LLM)
+
     // DB Designer nodes
     DB_TABLE,       // Database table definition
     DB_VIEW,        // Database view definition

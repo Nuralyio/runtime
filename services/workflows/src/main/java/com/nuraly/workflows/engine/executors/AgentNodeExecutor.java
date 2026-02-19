@@ -12,6 +12,8 @@ import com.nuraly.workflows.entity.WorkflowNodeEntity;
 import com.nuraly.workflows.entity.enums.NodeType;
 import com.nuraly.workflows.llm.dto.LlmMessage;
 import com.nuraly.workflows.service.WorkflowEventService;
+import com.nuraly.workflows.triggers.connectors.McpConnection;
+import com.nuraly.workflows.triggers.connectors.McpConnector;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -104,6 +106,9 @@ public class AgentNodeExecutor implements NodeExecutor {
 
     @Inject
     ContextMemoryStore contextMemoryStore;
+
+    @Inject
+    McpConnector mcpConnector;
 
     @Override
     public NodeType getType() {
@@ -286,10 +291,39 @@ public class AgentNodeExecutor implements NodeExecutor {
             }
         }
 
-        // Add tools from connected Tool nodes
+        // Add tools from connected Tool/MCP nodes
         for (WorkflowNodeEntity toolNode : toolNodes) {
+            if (toolNode.type == NodeType.MCP) {
+                // MCP node: discover tools from persistent connection
+                try {
+                    McpConnection conn = mcpConnector.getConnectionForNode(toolNode);
+                    if (conn != null && conn.isConnected() && conn.getTools() != null) {
+                        for (var mcpTool : conn.getTools().tools()) {
+                            ObjectNode toolDef = objectMapper.createObjectNode();
+                            toolDef.put("type", "function");
+                            ObjectNode function = objectMapper.createObjectNode();
+                            function.put("name", mcpTool.name());
+                            function.put("description", mcpTool.description() != null ? mcpTool.description() : "");
+                            if (mcpTool.inputSchema() != null) {
+                                function.set("parameters", objectMapper.valueToTree(mcpTool.inputSchema()));
+                            }
+                            toolDef.set("function", function);
+                            toolDef.put("nodeId", toolNode.id.toString());
+                            toolDef.put("_mcpTool", true);
+                            toolsArray.add(toolDef);
+                        }
+                        LOG.debugf("Added %d MCP tools from node: %s", conn.getTools().tools().size(), toolNode.name);
+                    } else {
+                        LOG.warnf("MCP node %s has no active connection", toolNode.name);
+                    }
+                } catch (Exception e) {
+                    LOG.errorf("Error discovering MCP tools from node %s: %s", toolNode.name, e.getMessage());
+                }
+                continue;
+            }
+
             if (toolNode.type != NodeType.TOOL) {
-                LOG.warnf("Node connected to 'tools' port is not a Tool node: %s (%s)", toolNode.name, toolNode.type);
+                LOG.warnf("Node connected to 'tools' port is not a Tool/MCP node: %s (%s)", toolNode.name, toolNode.type);
                 continue;
             }
 
