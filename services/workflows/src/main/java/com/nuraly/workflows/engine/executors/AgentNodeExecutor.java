@@ -484,31 +484,7 @@ public class AgentNodeExecutor implements NodeExecutor {
             ExecutionContext context, WorkflowNodeEntity node) {
 
         if (toolNode.type == NodeType.MCP) {
-            // MCP node: discover tools from persistent connection
-            try {
-                McpConnection conn = mcpConnector.getConnectionForNode(toolNode);
-                if (conn != null && conn.isConnected() && conn.getTools() != null) {
-                    for (var mcpTool : conn.getTools().tools()) {
-                        ObjectNode toolDef = objectMapper.createObjectNode();
-                        toolDef.put("type", "function");
-                        ObjectNode function = objectMapper.createObjectNode();
-                        function.put("name", mcpTool.name());
-                        function.put("description", mcpTool.description() != null ? mcpTool.description() : "");
-                        if (mcpTool.inputSchema() != null) {
-                            function.set("parameters", objectMapper.valueToTree(mcpTool.inputSchema()));
-                        }
-                        toolDef.set("function", function);
-                        toolDef.put("nodeId", toolNode.id.toString());
-                        toolDef.put("_mcpTool", true);
-                        toolsArray.add(toolDef);
-                    }
-                    LOG.debugf("Added %d MCP tools from node: %s", conn.getTools().tools().size(), toolNode.name);
-                } else {
-                    LOG.warnf("MCP node %s has no active connection", toolNode.name);
-                }
-            } catch (Exception e) {
-                LOG.errorf("Error discovering MCP tools from node %s: %s", toolNode.name, e.getMessage());
-            }
+            addMcpToolsFromNode(toolsArray, toolNode);
             return;
         }
 
@@ -533,6 +509,36 @@ public class AgentNodeExecutor implements NodeExecutor {
             }
         } catch (Exception e) {
             LOG.errorf("Error processing Tool node %s: %s", toolNode.name, e.getMessage());
+        }
+    }
+
+    /**
+     * Discover and add tools from an MCP node's persistent connection.
+     */
+    private void addMcpToolsFromNode(ArrayNode toolsArray, WorkflowNodeEntity mcpNode) {
+        try {
+            McpConnection conn = mcpConnector.getConnectionForNode(mcpNode);
+            if (conn == null || !conn.isConnected() || conn.getTools() == null) {
+                LOG.warnf("MCP node %s has no active connection", mcpNode.name);
+                return;
+            }
+            for (var mcpTool : conn.getTools().tools()) {
+                ObjectNode toolDef = objectMapper.createObjectNode();
+                toolDef.put("type", "function");
+                ObjectNode function = objectMapper.createObjectNode();
+                function.put("name", mcpTool.name());
+                function.put("description", mcpTool.description() != null ? mcpTool.description() : "");
+                if (mcpTool.inputSchema() != null) {
+                    function.set("parameters", objectMapper.valueToTree(mcpTool.inputSchema()));
+                }
+                toolDef.set("function", function);
+                toolDef.put("nodeId", mcpNode.id.toString());
+                toolDef.put("_mcpTool", true);
+                toolsArray.add(toolDef);
+            }
+            LOG.debugf("Added %d MCP tools from node: %s", conn.getTools().tools().size(), mcpNode.name);
+        } catch (Exception e) {
+            LOG.errorf("Error discovering MCP tools from node %s: %s", mcpNode.name, e.getMessage());
         }
     }
 
