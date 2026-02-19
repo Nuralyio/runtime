@@ -49,3 +49,5 @@ export { renderGuardrailFields } from './guardrail-fields.js';
 export { renderTelegramSendFields } from './telegram-send-fields.js';
 // Persistent trigger nodes
 export { renderTelegramBotFields } from './telegram-bot-fields.js';
+// MCP integration
+export { renderMcpFields } from './mcp-fields.js';

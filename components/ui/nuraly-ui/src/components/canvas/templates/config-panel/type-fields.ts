@@ -63,6 +63,8 @@ import {
   renderTelegramSendFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
+  // MCP integration
+  renderMcpFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -190,6 +192,10 @@ export function renderTypeFields(
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:
       return renderTelegramBotFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // MCP integration
+    case WorkflowNodeType.MCP:
+      return renderMcpFields(config, onUpdate, triggerInfo, triggerActions);
 
     // Display nodes
     case WorkflowNodeType.UI_TABLE:
