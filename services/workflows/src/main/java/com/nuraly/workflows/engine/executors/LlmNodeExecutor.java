@@ -15,6 +15,7 @@ import com.nuraly.workflows.llm.LlmProviderFactory;
 import com.nuraly.workflows.llm.LlmResilienceService;
 import com.nuraly.workflows.llm.LlmResilienceService.ResilienceConfig;
 import com.nuraly.workflows.llm.StreamingLlmProvider;
+import com.nuraly.workflows.llm.StructuredOutputFallback;
 import com.nuraly.workflows.llm.StreamingLlmProvider.StreamToken;
 import com.nuraly.workflows.llm.dto.*;
 import com.nuraly.workflows.engine.memory.ContextMemoryStore;
@@ -72,6 +73,13 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     private static final Logger LOG = Logger.getLogger(LlmNodeExecutor.class);
     private static final int DEFAULT_MAX_TOOL_ITERATIONS = 10;
+    private static final String MODEL = "model";
+    private static final String MAX_TOKENS = "maxTokens";
+    private static final String MEMORY_CONFIG = "memoryConfig";
+    private static final String ENABLED = "enabled";
+    private static final String RETRY = "retry";
+    private static final String FALLBACK = "fallback";
+    private static final String PROVIDERS = "providers";
 
     @Inject
     LlmProviderFactory providerFactory;
@@ -112,200 +120,222 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         JsonNode config = objectMapper.readTree(node.configuration);
 
-        // Get provider
-        String providerName = config.has("provider") ? config.get("provider").asText() : "openai";
-        LlmProvider provider = providerFactory.getProvider(providerName);
-        if (provider == null) {
-            return NodeExecutionResult.failure("Unknown LLM provider: " + providerName);
+        // Step 1: Resolve provider and credentials
+        ProviderConfig providerConfig = resolveProviderAndCredentials(config, context);
+        if (providerConfig.error != null) {
+            return NodeExecutionResult.failure(providerConfig.error);
         }
 
-        // Get API key from KV store (optional for Ollama)
-        String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
-        String apiKey = null;
-
-        boolean isOllama = "ollama".equalsIgnoreCase(providerName);
-
-        if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
-            apiKey = fetchFromKvStore(apiKeyPath, context);
-            if (apiKey == null || apiKey.isEmpty()) {
-                LOG.warnf("Could not retrieve API key from KV store: %s (will try without it)", apiKeyPath);
-            }
-        } else if (!isOllama) {
-            LOG.warnf("No API key path configured for %s provider (will try without it)", providerName);
-        }
-
-        // Get API URL from KV store (required for Ollama and local providers)
-        String apiUrlPath = config.has("apiUrlPath") ? config.get("apiUrlPath").asText() : null;
-        String baseUrl = null;
-        if (apiUrlPath != null && !apiUrlPath.isEmpty()) {
-            baseUrl = fetchFromKvStore(apiUrlPath, context);
-            if (baseUrl != null) {
-                LOG.debugf("Using API URL from KV store: %s", baseUrl);
-            }
-        }
-
-        // Ollama and local providers require an API URL
-        if (isOllama || "local".equalsIgnoreCase(providerName)) {
-            if (baseUrl == null || baseUrl.isEmpty()) {
-                LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", providerName);
-                return NodeExecutionResult.failure("API URL is required for " + providerName + " provider. Please configure a server URL in the node settings.");
-            }
-        }
-
-        // Build tool definitions from config and connected nodes
+        // Step 2: Build tool definitions
         List<ToolDefinition> tools = buildToolDefinitions(config, node);
         LOG.infof("LLM '%s': built %d tool definitions from config", node.name, tools.size());
         Map<String, ToolContext> toolContextMap = buildToolContextMap(tools, node);
 
-        // Get model
-        String model = config.has("model") && !config.get("model").asText().isEmpty()
-                ? config.get("model").asText()
-                : provider.getDefaultModel();
-        String systemPrompt = config.has("systemPrompt") ?
-                context.resolveExpression(config.get("systemPrompt").asText()) : null;
-        Double temperature = config.has("temperature") ? config.get("temperature").asDouble() : null;
-        Integer maxTokens = config.has("maxTokens") ? config.get("maxTokens").asInt() : null;
-        int maxIterations = config.has("maxToolIterations") ?
-                config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
+        // Step 3: Extract model parameters
+        LlmParameters params = extractLlmParameters(config, context, providerConfig);
 
-        // Build resilience configuration
-        ResilienceConfig resilienceConfig = buildResilienceConfig(config);
-
-        // Check for streaming mode
-        boolean streamingEnabled = config.has("streaming") && config.get("streaming").asBoolean();
-        boolean streamToChat = !config.has("streamToChat") || config.get("streamToChat").asBoolean();
-
-        // Build initial messages
-        List<LlmMessage> messages = new ArrayList<>();
-
-        if (systemPrompt != null && !systemPrompt.isEmpty()) {
-            messages.add(LlmMessage.system(systemPrompt));
+        // Step 4: Build initial messages (system prompt, history, user prompt)
+        InitialMessagesResult messagesResult = buildInitialMessages(config, context, node, params.systemPrompt);
+        if (messagesResult.error != null) {
+            return NodeExecutionResult.failure(messagesResult.error);
         }
 
-        // Memory handling variables
-        boolean historyFromAgent = false;
-        MemoryConfig memoryConfig = null;
-        String conversationId = null;
+        // Step 5: Execute the LLM loop (call LLM, handle tool calls)
+        LlmLoopResult loopResult = executeLlmLoop(
+                messagesResult.messages, tools, toolContextMap, providerConfig, params, context, node);
+        if (loopResult.error != null) {
+            return NodeExecutionResult.failure(loopResult.error, true);
+        }
+
+        // Step 6: Save conversation history (only for direct LLM usage, not when Agent handles memory)
+        saveConversationHistory(messagesResult, loopResult.lastResponse);
+
+        // Step 7: Build and return output
+        ObjectNode output = buildExecutionOutput(
+                loopResult, params.model, messagesResult, config, context);
+
+        return NodeExecutionResult.success(output);
+    }
+
+    /**
+     * Resolves LLM provider, API key, and base URL from config and KV store.
+     */
+    private ProviderConfig resolveProviderAndCredentials(JsonNode config, ExecutionContext context) {
+        ProviderConfig result = new ProviderConfig();
+
+        result.providerName = config.has("provider") ? config.get("provider").asText() : "openai";
+        result.provider = providerFactory.getProvider(result.providerName);
+        if (result.provider == null) {
+            result.error = "Unknown LLM provider: " + result.providerName;
+            return result;
+        }
+
+        result.isOllama = "ollama".equalsIgnoreCase(result.providerName);
+
+        resolveApiKey(config, context, result);
+        resolveBaseUrl(config, context, result);
+
+        return result;
+    }
+
+    private void resolveApiKey(JsonNode config, ExecutionContext context, ProviderConfig result) {
+        String apiKeyPath = config.has("apiKeyPath") ? config.get("apiKeyPath").asText() : null;
+        if (apiKeyPath != null && !apiKeyPath.isEmpty()) {
+            result.apiKey = fetchFromKvStore(apiKeyPath, context);
+            if (result.apiKey == null || result.apiKey.isEmpty()) {
+                LOG.warnf("Could not retrieve API key from KV store: %s (will try without it)", apiKeyPath);
+            }
+        } else if (!result.isOllama) {
+            LOG.warnf("No API key path configured for %s provider (will try without it)", result.providerName);
+        }
+    }
+
+    private void resolveBaseUrl(JsonNode config, ExecutionContext context, ProviderConfig result) {
+        String apiUrlPath = config.has("apiUrlPath") ? config.get("apiUrlPath").asText() : null;
+        if (apiUrlPath != null && !apiUrlPath.isEmpty()) {
+            result.baseUrl = fetchFromKvStore(apiUrlPath, context);
+            if (result.baseUrl != null) {
+                LOG.debugf("Using API URL from KV store: %s", result.baseUrl);
+            }
+        }
+
+        boolean requiresUrl = result.isOllama || "local".equalsIgnoreCase(result.providerName);
+        if (requiresUrl && (result.baseUrl == null || result.baseUrl.isEmpty())) {
+            LOG.errorf("LLM node error: API URL is required for %s provider. Configure apiUrlPath in KV store.", result.providerName);
+            result.error = "API URL is required for " + result.providerName + " provider. Please configure a server URL in the node settings.";
+        }
+    }
+
+    /**
+     * Extracts model, temperature, maxTokens, and other LLM parameters from config.
+     */
+    private LlmParameters extractLlmParameters(JsonNode config, ExecutionContext context, ProviderConfig providerConfig) {
+        LlmParameters params = new LlmParameters();
+
+        params.model = config.has(MODEL) && !config.get(MODEL).asText().isEmpty()
+                ? config.get(MODEL).asText()
+                : providerConfig.provider.getDefaultModel();
+        params.systemPrompt = config.has("systemPrompt") ?
+                context.resolveExpression(config.get("systemPrompt").asText()) : null;
+        params.temperature = config.has("temperature") ? config.get("temperature").asDouble() : null;
+        params.maxTokens = config.has(MAX_TOKENS) ? config.get(MAX_TOKENS).asInt() : null;
+        params.maxIterations = config.has("maxToolIterations") ?
+                config.get("maxToolIterations").asInt() : DEFAULT_MAX_TOOL_ITERATIONS;
+        params.responseFormat = config.has("responseFormat") ? config.get("responseFormat") : null;
+        params.useStructuredOutputFallback = params.responseFormat != null
+                && !providerConfig.provider.supportsStructuredOutput(params.model);
+        params.resilienceConfig = buildResilienceConfig(config);
+        params.streamingEnabled = config.has("streaming") && config.get("streaming").asBoolean();
+        params.streamToChat = !config.has("streamToChat") || config.get("streamToChat").asBoolean();
+
+        return params;
+    }
+
+    /**
+     * Builds the initial list of messages: system prompt, conversation history, and user prompt.
+     */
+    private InitialMessagesResult buildInitialMessages(JsonNode config, ExecutionContext context,
+                                                        WorkflowNodeEntity node, String systemPrompt) {
+        InitialMessagesResult result = new InitialMessagesResult();
+        result.messages = new ArrayList<>();
+
+        if (systemPrompt != null && !systemPrompt.isEmpty()) {
+            result.messages.add(LlmMessage.system(systemPrompt));
+        }
 
         // Check for conversation history passed by Agent (Option A: Agent handles memory)
         if (config.has("conversationHistory") && config.get("conversationHistory").isArray()) {
-            historyFromAgent = true;
+            result.historyFromAgent = true;
             LOG.debugf("Found conversation history from Agent (%d messages)",
                     config.get("conversationHistory").size());
             for (JsonNode msgNode : config.get("conversationHistory")) {
                 LlmMessage msg = parseMessageFromJson(msgNode);
                 if (msg != null) {
-                    messages.add(msg);
+                    result.messages.add(msg);
                 }
             }
         } else {
             // Fallback: Load from memory store for direct LLM usage (without Agent)
-
-            // Check for memory config in node configuration
-            if (config.has("memoryConfig") && config.get("memoryConfig").has("enabled") &&
-                config.get("memoryConfig").get("enabled").asBoolean()) {
-                LOG.debugf("Found memory config in node configuration");
-                memoryConfig = parseMemoryConfigFromJson(config.get("memoryConfig"), context);
-                conversationId = memoryConfig.conversationId;
-            } else {
-                // Find connected memory node
-                WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
-                if (memoryNode != null) {
-                    LOG.debugf("Found connected memory node: %s", memoryNode.name);
-                    memoryConfig = parseMemoryConfig(memoryNode, context);
-                    conversationId = memoryConfig.conversationId;
-                }
-            }
-
-            // Load conversation history from memory store
-            if (memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
-                List<LlmMessage> history = loadConversationHistory(conversationId, memoryConfig);
-                if (!history.isEmpty()) {
-                    LOG.debugf("Loaded %d messages from memory store for: %s", history.size(), conversationId);
-                    messages.addAll(history);
-                }
-            }
+            resolveMemoryAndLoadHistory(config, context, node, result);
         }
 
         // Get user prompt from input
-        String userPrompt = extractUserPrompt(context, config);
-        if (userPrompt == null || userPrompt.isEmpty()) {
-            return NodeExecutionResult.failure("User prompt is required (from input.prompt or input.message)");
+        result.userPrompt = extractUserPrompt(context, config);
+        if (result.userPrompt == null || result.userPrompt.isEmpty()) {
+            result.error = "User prompt is required (from input.prompt or input.message)";
+            return result;
         }
-        messages.add(LlmMessage.user(userPrompt));
+        result.messages.add(LlmMessage.user(result.userPrompt));
 
-        // Tool execution loop
-        int iterations = 0;
-        LlmResponse lastResponse = null;
+        return result;
+    }
 
-        while (iterations < maxIterations) {
-            iterations++;
+    /**
+     * Resolves memory configuration and loads conversation history from the memory store.
+     */
+    private void resolveMemoryAndLoadHistory(JsonNode config, ExecutionContext context,
+                                              WorkflowNodeEntity node, InitialMessagesResult result) {
+        // Check for memory config in node configuration
+        if (config.has(MEMORY_CONFIG) && config.get(MEMORY_CONFIG).has(ENABLED) &&
+            config.get(MEMORY_CONFIG).get(ENABLED).asBoolean()) {
+            LOG.debugf("Found memory config in node configuration");
+            result.memoryConfig = parseMemoryConfigFromJson(config.get(MEMORY_CONFIG), context);
+            result.conversationId = result.memoryConfig.conversationId;
+        } else {
+            // Find connected memory node
+            WorkflowNodeEntity memoryNode = findConnectedMemoryNode(node);
+            if (memoryNode != null) {
+                LOG.debugf("Found connected memory node: %s", memoryNode.name);
+                result.memoryConfig = parseMemoryConfig(memoryNode, context);
+                result.conversationId = result.memoryConfig.conversationId;
+            }
+        }
 
-            // Build request
-            LlmRequest request = LlmRequest.builder()
-                    .model(model)
-                    .messages(messages)
-                    .tools(tools.isEmpty() ? null : tools)
-                    .temperature(temperature)
-                    .maxTokens(maxTokens)
-                    .baseUrl(baseUrl)
-                    .build();
+        // Load conversation history from memory store
+        if (result.memoryConfig != null && result.conversationId != null && !result.conversationId.isEmpty()) {
+            List<LlmMessage> history = loadConversationHistory(result.conversationId, result.memoryConfig);
+            if (!history.isEmpty()) {
+                LOG.debugf("Loaded %d messages from memory store for: %s", history.size(), result.conversationId);
+                result.messages.addAll(history);
+            }
+        }
+    }
 
-            // Emit LLM call started event
-            if (context.getExecution() != null) {
-                eventService.logLlmCallStarted(
-                    context.getExecution(),
-                    node.id.toString(),
-                    node.name,
-                    providerName,
-                    model
-                );
+    /**
+     * Executes the LLM call loop, handling tool calls across multiple iterations.
+     */
+    private LlmLoopResult executeLlmLoop(List<LlmMessage> messages, List<ToolDefinition> tools,
+                                           Map<String, ToolContext> toolContextMap,
+                                           ProviderConfig providerConfig, LlmParameters params,
+                                           ExecutionContext context, WorkflowNodeEntity node) {
+        LlmLoopResult result = new LlmLoopResult();
+        result.iterations = 0;
+
+        while (result.iterations < params.maxIterations) {
+            result.iterations++;
+
+            LlmRequest request = buildLlmRequest(messages, tools, params, providerConfig);
+
+            emitLlmCallStartedEvent(context, node, providerConfig.providerName, params.model);
+
+            LlmResponse response = callLlmProvider(
+                    providerConfig, params, tools, request, context, node);
+
+            emitLlmCallCompletedEvent(context, node, providerConfig.providerName, params.model, result.iterations);
+
+            if (response == null || !response.isSuccess()) {
+                String errorMsg = response != null ? response.getError() : "null response from provider";
+                LOG.errorf("LLM API error (provider=%s, model=%s): %s",
+                        providerConfig.providerName, params.model, errorMsg);
+                result.error = "LLM error: " + errorMsg;
+                return result;
             }
 
-            LlmResponse response;
+            result.lastResponse = response;
 
-            // Check if we should use streaming (only for final response, not tool calls)
-            boolean useStreaming = streamingEnabled &&
-                                   tools.isEmpty() &&  // No streaming with tool calls (need full response)
-                                   iterations == 1 &&   // Only on first iteration
-                                   provider instanceof StreamingLlmProvider;
-
-            if (useStreaming) {
-                // STREAMING MODE: Stream tokens directly to chat
-                LOG.debugf("Calling LLM provider: %s, model: %s (STREAMING)", providerName, model);
-                response = executeStreamingLlmCall(
-                    (StreamingLlmProvider) provider,
-                    request,
-                    apiKey,
-                    context,
-                    node,
-                    streamToChat
-                );
-            } else {
-                // NON-STREAMING MODE: Use resilience service
-                LOG.debugf("Calling LLM provider: %s, model: %s (with resilience)", providerName, model);
-                response = resilienceService.executeWithResilience(
-                        request, providerName, apiKey, resilienceConfig);
+            if (params.useStructuredOutputFallback) {
+                result.lastResponse = StructuredOutputFallback.extractJson(result.lastResponse);
             }
-
-            // Emit LLM call completed event
-            if (context.getExecution() != null) {
-                eventService.logLlmCallCompleted(
-                    context.getExecution(),
-                    node.id.toString(),
-                    node.name,
-                    providerName,
-                    model,
-                    iterations
-                );
-            }
-
-            if (!response.isSuccess()) {
-                LOG.errorf("LLM API error (provider=%s, model=%s): %s", providerName, model, response.getError());
-                return NodeExecutionResult.failure("LLM error: " + response.getError(), true);
-            }
-
-            lastResponse = response;
 
             // If no tool calls, we're done
             if (!response.hasToolCalls()) {
@@ -318,56 +348,123 @@ public class LlmNodeExecutor implements NodeExecutor {
             // Execute each tool call
             for (ToolCall toolCall : response.getToolCalls()) {
                 String toolResult = executeToolCall(toolCall, toolContextMap, context, node);
-
-                // Add tool result to messages
-                messages.add(LlmMessage.toolResult(
-                        toolCall.getId(),
-                        toolCall.getName(),
-                        toolResult
-                ));
+                messages.add(LlmMessage.toolResult(toolCall.getId(), toolCall.getName(), toolResult));
             }
         }
 
-        // Save messages to memory only if NOT from Agent (Agent handles its own saving)
-        if (!historyFromAgent && memoryConfig != null && conversationId != null && !conversationId.isEmpty()) {
-            // Save the user message
-            contextMemoryStore.addMessage(conversationId, LlmMessage.user(userPrompt));
+        return result;
+    }
 
-            // Save the assistant response
-            if (lastResponse != null && lastResponse.getContent() != null) {
-                contextMemoryStore.addMessage(conversationId, LlmMessage.assistant(lastResponse.getContent()));
-            }
-            LOG.debugf("Saved messages to conversation history: %s (total: %d messages)",
-                    conversationId, contextMemoryStore.getMessageCount(conversationId));
+    /**
+     * Builds an LlmRequest from current messages, tools, and parameters.
+     */
+    private LlmRequest buildLlmRequest(List<LlmMessage> messages, List<ToolDefinition> tools,
+                                         LlmParameters params, ProviderConfig providerConfig) {
+        LlmRequest request = LlmRequest.builder()
+                .model(params.model)
+                .messages(messages)
+                .tools(tools.isEmpty() ? null : tools)
+                .temperature(params.temperature)
+                .maxTokens(params.maxTokens)
+                .baseUrl(providerConfig.baseUrl)
+                .responseFormat(params.responseFormat)
+                .build();
+
+        if (params.useStructuredOutputFallback) {
+            request = StructuredOutputFallback.applyPromptFallback(request);
         }
 
-        // Build output
+        return request;
+    }
+
+    /**
+     * Calls the LLM provider, choosing between streaming and non-streaming modes.
+     */
+    private LlmResponse callLlmProvider(ProviderConfig providerConfig, LlmParameters params,
+                                          List<ToolDefinition> tools, LlmRequest request,
+                                          ExecutionContext context, WorkflowNodeEntity node) {
+        boolean useStreaming = params.streamingEnabled
+                && tools.isEmpty()
+                && providerConfig.provider instanceof StreamingLlmProvider;
+
+        if (useStreaming) {
+            LOG.debugf("Calling LLM provider: %s, model: %s (STREAMING)", providerConfig.providerName, params.model);
+            return executeStreamingLlmCall(
+                    (StreamingLlmProvider) providerConfig.provider,
+                    request,
+                    providerConfig.apiKey,
+                    context,
+                    node,
+                    params.streamToChat
+            );
+        } else {
+            LOG.debugf("Calling LLM provider: %s, model: %s (with resilience)", providerConfig.providerName, params.model);
+            return resilienceService.executeWithResilience(
+                    request, providerConfig.providerName, providerConfig.apiKey, params.resilienceConfig);
+        }
+    }
+
+    /**
+     * Emits an LLM call started event if an execution context is available.
+     */
+    private void emitLlmCallStartedEvent(ExecutionContext context, WorkflowNodeEntity node,
+                                           String providerName, String model) {
+        if (context.getExecution() != null) {
+            eventService.logLlmCallStarted(
+                    context.getExecution(), node.id.toString(), node.name, providerName, model);
+        }
+    }
+
+    /**
+     * Emits an LLM call completed event if an execution context is available.
+     */
+    private void emitLlmCallCompletedEvent(ExecutionContext context, WorkflowNodeEntity node,
+                                             String providerName, String model, int iterations) {
+        if (context.getExecution() != null) {
+            eventService.logLlmCallCompleted(
+                    context.getExecution(), node.id.toString(), node.name, providerName, model, iterations);
+        }
+    }
+
+    /**
+     * Saves conversation history to the memory store (only for direct LLM usage, not when Agent handles memory).
+     */
+    private void saveConversationHistory(InitialMessagesResult messagesResult, LlmResponse lastResponse) {
+        if (messagesResult.historyFromAgent) {
+            return;
+        }
+        if (messagesResult.memoryConfig == null || messagesResult.conversationId == null
+                || messagesResult.conversationId.isEmpty()) {
+            return;
+        }
+
+        contextMemoryStore.addMessage(messagesResult.conversationId, LlmMessage.user(messagesResult.userPrompt));
+
+        if (lastResponse != null && lastResponse.getContent() != null) {
+            contextMemoryStore.addMessage(messagesResult.conversationId, LlmMessage.assistant(lastResponse.getContent()));
+        }
+        LOG.debugf("Saved messages to conversation history: %s (total: %d messages)",
+                messagesResult.conversationId, contextMemoryStore.getMessageCount(messagesResult.conversationId));
+    }
+
+    /**
+     * Builds the final execution output ObjectNode from the LLM response and metadata.
+     */
+    private ObjectNode buildExecutionOutput(LlmLoopResult loopResult, String model,
+                                             InitialMessagesResult messagesResult,
+                                             JsonNode config, ExecutionContext context) {
         ObjectNode output = objectMapper.createObjectNode();
 
-        if (lastResponse != null) {
-            if (lastResponse.getContent() != null) {
-                output.put("content", lastResponse.getContent());
-                output.put("response", lastResponse.getContent());
-            }
-
-            output.put("model", lastResponse.getModel() != null ? lastResponse.getModel() : model);
-            output.put("finishReason", lastResponse.getFinishReason().toString());
-            output.put("iterations", iterations);
-
-            if (lastResponse.getUsage() != null) {
-                ObjectNode usage = objectMapper.createObjectNode();
-                usage.put("promptTokens", lastResponse.getUsage().getPromptTokens());
-                usage.put("completionTokens", lastResponse.getUsage().getCompletionTokens());
-                usage.put("totalTokens", lastResponse.getUsage().getTotalTokens());
-                output.set("usage", usage);
-            }
+        if (loopResult.lastResponse != null) {
+            appendResponseToOutput(output, loopResult.lastResponse, model, loopResult.iterations);
         }
 
         // Add memory info to output (only for direct LLM usage, not when Agent handles memory)
-        if (!historyFromAgent && conversationId != null && !conversationId.isEmpty()) {
-            output.put("conversationId", conversationId);
+        if (!messagesResult.historyFromAgent && messagesResult.conversationId != null
+                && !messagesResult.conversationId.isEmpty()) {
+            output.put("conversationId", messagesResult.conversationId);
             output.put("memoryEnabled", true);
-            output.put("totalMessages", contextMemoryStore.getMessageCount(conversationId));
+            output.put("totalMessages", contextMemoryStore.getMessageCount(messagesResult.conversationId));
         }
 
         // Store response in variables if configured
@@ -376,7 +473,29 @@ public class LlmNodeExecutor implements NodeExecutor {
             context.setVariable(varName, output);
         }
 
-        return NodeExecutionResult.success(output);
+        return output;
+    }
+
+    /**
+     * Appends LLM response content, model info, finish reason, iterations, and usage to the output node.
+     */
+    private void appendResponseToOutput(ObjectNode output, LlmResponse lastResponse, String model, int iterations) {
+        if (lastResponse.getContent() != null) {
+            output.put("content", lastResponse.getContent());
+            output.put("response", lastResponse.getContent());
+        }
+
+        output.put(MODEL, lastResponse.getModel() != null ? lastResponse.getModel() : model);
+        output.put("finishReason", lastResponse.getFinishReason().toString());
+        output.put("iterations", iterations);
+
+        if (lastResponse.getUsage() != null) {
+            ObjectNode usage = objectMapper.createObjectNode();
+            usage.put("promptTokens", lastResponse.getUsage().getPromptTokens());
+            usage.put("completionTokens", lastResponse.getUsage().getCompletionTokens());
+            usage.put("totalTokens", lastResponse.getUsage().getTotalTokens());
+            output.set("usage", usage);
+        }
     }
 
     private String extractUserPrompt(ExecutionContext context, JsonNode config) {
@@ -1066,8 +1185,8 @@ public class LlmNodeExecutor implements NodeExecutor {
                     ? nodeConfig.get("maxMessages").asInt()
                     : 50;
 
-            config.maxTokens = nodeConfig.has("maxTokens")
-                    ? nodeConfig.get("maxTokens").asInt()
+            config.maxTokens = nodeConfig.has(MAX_TOKENS)
+                    ? nodeConfig.get(MAX_TOKENS).asInt()
                     : 4000;
 
             String conversationIdExpression = nodeConfig.has("conversationIdExpression")
@@ -1135,8 +1254,8 @@ public class LlmNodeExecutor implements NodeExecutor {
                 ? memoryConfigJson.get("maxMessages").asInt()
                 : 50;
 
-        config.maxTokens = memoryConfigJson.has("maxTokens")
-                ? memoryConfigJson.get("maxTokens").asInt()
+        config.maxTokens = memoryConfigJson.has(MAX_TOKENS)
+                ? memoryConfigJson.get(MAX_TOKENS).asInt()
                 : 4000;
 
         String conversationIdExpression = memoryConfigJson.has("conversationIdExpression")
@@ -1221,6 +1340,55 @@ public class LlmNodeExecutor implements NodeExecutor {
     }
 
     /**
+     * Holds resolved provider, API key, base URL, and error info.
+     */
+    private static class ProviderConfig {
+        String providerName;
+        LlmProvider provider;
+        String apiKey;
+        String baseUrl;
+        boolean isOllama;
+        String error;
+    }
+
+    /**
+     * Holds extracted LLM call parameters (model, temperature, etc.).
+     */
+    private static class LlmParameters {
+        String model;
+        String systemPrompt;
+        Double temperature;
+        Integer maxTokens;
+        int maxIterations;
+        JsonNode responseFormat;
+        boolean useStructuredOutputFallback;
+        ResilienceConfig resilienceConfig;
+        boolean streamingEnabled;
+        boolean streamToChat;
+    }
+
+    /**
+     * Holds the result of building initial messages, including memory context.
+     */
+    private static class InitialMessagesResult {
+        List<LlmMessage> messages;
+        boolean historyFromAgent;
+        MemoryConfig memoryConfig;
+        String conversationId;
+        String userPrompt;
+        String error;
+    }
+
+    /**
+     * Holds the result of the LLM execution loop.
+     */
+    private static class LlmLoopResult {
+        LlmResponse lastResponse;
+        int iterations;
+        String error;
+    }
+
+    /**
      * Build resilience configuration from node config.
      *
      * Supported configuration:
@@ -1241,45 +1409,51 @@ public class LlmNodeExecutor implements NodeExecutor {
     private ResilienceConfig buildResilienceConfig(JsonNode config) {
         ResilienceConfig.Builder builder = ResilienceConfig.builder();
 
-        // Parse retry configuration
-        if (config.has("retry") && config.get("retry").isObject()) {
-            JsonNode retryConfig = config.get("retry");
+        parseRetryConfig(config, builder);
+        parseFallbackConfig(config, builder);
 
-            if (retryConfig.has("enabled") && !retryConfig.get("enabled").asBoolean()) {
-                builder.maxRetries(0);
-            } else {
-                if (retryConfig.has("maxAttempts")) {
-                    builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1); // -1 because maxRetries doesn't include initial attempt
-                }
-                if (retryConfig.has("initialBackoffMs")) {
-                    builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
-                }
-                if (retryConfig.has("maxBackoffMs")) {
-                    builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
-                }
-            }
-        }
-
-        // Parse fallback configuration
-        if (config.has("fallback") && config.get("fallback").isObject()) {
-            JsonNode fallbackConfig = config.get("fallback");
-
-            if (fallbackConfig.has("enabled") && fallbackConfig.get("enabled").asBoolean()) {
-                if (fallbackConfig.has("providers") && fallbackConfig.get("providers").isArray()) {
-                    List<String> fallbackProviders = new ArrayList<>();
-                    for (JsonNode provider : fallbackConfig.get("providers")) {
-                        fallbackProviders.add(provider.asText());
-                    }
-                    builder.fallbackProviders(fallbackProviders);
-                }
-            }
-        }
-
-        // Parse timeout
         if (config.has("timeout")) {
             builder.timeoutMs(config.get("timeout").asLong());
         }
 
         return builder.build();
+    }
+
+    private void parseRetryConfig(JsonNode config, ResilienceConfig.Builder builder) {
+        if (!config.has(RETRY) || !config.get(RETRY).isObject()) {
+            return;
+        }
+
+        JsonNode retryConfig = config.get(RETRY);
+        if (retryConfig.has(ENABLED) && !retryConfig.get(ENABLED).asBoolean()) {
+            builder.maxRetries(0);
+            return;
+        }
+
+        if (retryConfig.has("maxAttempts")) {
+            builder.maxRetries(retryConfig.get("maxAttempts").asInt() - 1);
+        }
+        if (retryConfig.has("initialBackoffMs")) {
+            builder.initialBackoffMs(retryConfig.get("initialBackoffMs").asLong());
+        }
+        if (retryConfig.has("maxBackoffMs")) {
+            builder.maxBackoffMs(retryConfig.get("maxBackoffMs").asLong());
+        }
+    }
+
+    private void parseFallbackConfig(JsonNode config, ResilienceConfig.Builder builder) {
+        if (!config.has(FALLBACK) || !config.get(FALLBACK).isObject()) {
+            return;
+        }
+
+        JsonNode fallbackConfig = config.get(FALLBACK);
+        if (fallbackConfig.has(ENABLED) && fallbackConfig.get(ENABLED).asBoolean()
+                && fallbackConfig.has(PROVIDERS) && fallbackConfig.get(PROVIDERS).isArray()) {
+            List<String> fallbackProviders = new ArrayList<>();
+            for (JsonNode provider : fallbackConfig.get(PROVIDERS)) {
+                fallbackProviders.add(provider.asText());
+            }
+            builder.fallbackProviders(fallbackProviders);
+        }
     }
 }

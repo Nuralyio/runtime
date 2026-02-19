@@ -24,6 +24,14 @@ public interface LlmProvider {
     String getDefaultModel();
 
     /**
+     * Check if this provider supports native structured output (JSON schema)
+     * for the given model. When false, a prompt-based fallback will be used.
+     */
+    default boolean supportsStructuredOutput(String model) {
+        return true;
+    }
+
+    /**
      * Send a request to the LLM and get a response.
      *
      * @param request The LLM request
