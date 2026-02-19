@@ -32,6 +32,9 @@ public class GeminiProvider implements LlmProvider {
             "gemini-1.5-pro", "gemini-1.5-flash", "gemini-2.0-flash-exp"
     );
 
+    private static final String JSON_SCHEMA = "json_schema";
+    private static final String PARTS = "parts";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -98,25 +101,32 @@ public class GeminiProvider implements LlmProvider {
         body.set("contents", contents);
 
         // System instruction
-        if (systemInstruction != null) {
-            ObjectNode systemNode = objectMapper.createObjectNode();
-            ArrayNode parts = objectMapper.createArrayNode();
-            ObjectNode textPart = objectMapper.createObjectNode();
-            textPart.put("text", systemInstruction);
-            parts.add(textPart);
-            systemNode.set("parts", parts);
-            body.set("systemInstruction", systemNode);
-        } else if (request.getSystemPrompt() != null) {
-            ObjectNode systemNode = objectMapper.createObjectNode();
-            ArrayNode parts = objectMapper.createArrayNode();
-            ObjectNode textPart = objectMapper.createObjectNode();
-            textPart.put("text", request.getSystemPrompt());
-            parts.add(textPart);
-            systemNode.set("parts", parts);
-            body.set("systemInstruction", systemNode);
+        String effectiveSystemInstruction = systemInstruction != null
+                ? systemInstruction : request.getSystemPrompt();
+        if (effectiveSystemInstruction != null) {
+            body.set("systemInstruction", buildSystemInstruction(effectiveSystemInstruction));
         }
 
         // Generation config
+        body.set("generationConfig", buildGenerationConfig(request));
+
+        // Tools
+        addToolsToBody(request, body);
+
+        return body;
+    }
+
+    private ObjectNode buildSystemInstruction(String text) {
+        ObjectNode systemNode = objectMapper.createObjectNode();
+        ArrayNode parts = objectMapper.createArrayNode();
+        ObjectNode textPart = objectMapper.createObjectNode();
+        textPart.put("text", text);
+        parts.add(textPart);
+        systemNode.set(PARTS, parts);
+        return systemNode;
+    }
+
+    private ObjectNode buildGenerationConfig(LlmRequest request) {
         ObjectNode generationConfig = objectMapper.createObjectNode();
         if (request.getTemperature() != null) {
             generationConfig.put("temperature", request.getTemperature());
@@ -124,35 +134,42 @@ public class GeminiProvider implements LlmProvider {
         if (request.getMaxTokens() != null) {
             generationConfig.put("maxOutputTokens", request.getMaxTokens());
         }
-        if (!generationConfig.isEmpty()) {
-            body.set("generationConfig", generationConfig);
+
+        if (request.getResponseFormat() != null
+                && request.getResponseFormat().has(JSON_SCHEMA)
+                && request.getResponseFormat().get(JSON_SCHEMA).has("schema")) {
+            generationConfig.put("responseMimeType", "application/json");
+            generationConfig.set("responseSchema",
+                    request.getResponseFormat().get(JSON_SCHEMA).get("schema"));
         }
 
-        // Tools
-        if (request.getTools() != null && !request.getTools().isEmpty()) {
-            ArrayNode tools = objectMapper.createArrayNode();
-            ObjectNode toolsWrapper = objectMapper.createObjectNode();
-            ArrayNode functionDeclarations = objectMapper.createArrayNode();
+        return generationConfig;
+    }
 
-            for (ToolDefinition tool : request.getTools()) {
-                functionDeclarations.add(convertTool(tool));
-            }
-
-            toolsWrapper.set("functionDeclarations", functionDeclarations);
-            tools.add(toolsWrapper);
-            body.set("tools", tools);
-
-            // Tool config
-            if (Boolean.TRUE.equals(request.getForceToolUse())) {
-                ObjectNode toolConfig = objectMapper.createObjectNode();
-                ObjectNode functionCallingConfig = objectMapper.createObjectNode();
-                functionCallingConfig.put("mode", "ANY");
-                toolConfig.set("functionCallingConfig", functionCallingConfig);
-                body.set("toolConfig", toolConfig);
-            }
+    private void addToolsToBody(LlmRequest request, ObjectNode body) {
+        if (request.getTools() == null || request.getTools().isEmpty()) {
+            return;
         }
 
-        return body;
+        ArrayNode tools = objectMapper.createArrayNode();
+        ObjectNode toolsWrapper = objectMapper.createObjectNode();
+        ArrayNode functionDeclarations = objectMapper.createArrayNode();
+
+        for (ToolDefinition tool : request.getTools()) {
+            functionDeclarations.add(convertTool(tool));
+        }
+
+        toolsWrapper.set("functionDeclarations", functionDeclarations);
+        tools.add(toolsWrapper);
+        body.set("tools", tools);
+
+        if (Boolean.TRUE.equals(request.getForceToolUse())) {
+            ObjectNode toolConfig = objectMapper.createObjectNode();
+            ObjectNode functionCallingConfig = objectMapper.createObjectNode();
+            functionCallingConfig.put("mode", "ANY");
+            toolConfig.set("functionCallingConfig", functionCallingConfig);
+            body.set("toolConfig", toolConfig);
+        }
     }
 
     private ObjectNode convertMessage(LlmMessage message) {
@@ -210,7 +227,7 @@ public class GeminiProvider implements LlmProvider {
             }
         }
 
-        node.set("parts", parts);
+        node.set(PARTS, parts);
         return node;
     }
 
@@ -253,7 +270,7 @@ public class GeminiProvider implements LlmProvider {
 
             JsonNode candidate = json.get("candidates").get(0);
             JsonNode content = candidate.get("content");
-            JsonNode parts = content.get("parts");
+            JsonNode parts = content.get(PARTS);
 
             LlmResponse.LlmResponseBuilder builder = LlmResponse.builder();
 

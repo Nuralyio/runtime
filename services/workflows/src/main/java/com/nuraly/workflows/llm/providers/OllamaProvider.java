@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class OllamaProvider implements LlmProvider {
 
     private static final Logger LOG = Logger.getLogger(OllamaProvider.class);
+    private static final String JSON_SCHEMA = "json_schema";
     private static final String DEFAULT_API_URL = "http://localhost:11434";
     private static final long CACHE_TTL_MS = 60_000; // Cache models for 1 minute
 
@@ -181,6 +182,15 @@ public class OllamaProvider implements LlmProvider {
     }
 
     @Override
+    public boolean supportsStructuredOutput(String model) {
+        if (model == null) return false;
+        String lower = model.toLowerCase();
+        return lower.startsWith("llama3") || lower.startsWith("mistral") ||
+               lower.startsWith("qwen2") || lower.startsWith("deepseek-v2") ||
+               lower.startsWith("gemma2") || lower.startsWith("phi3");
+    }
+
+    @Override
     public String getDefaultModel() {
         return "llama3.2";
     }
@@ -247,6 +257,13 @@ public class OllamaProvider implements LlmProvider {
         }
         if (!options.isEmpty()) {
             body.set("options", options);
+        }
+
+        // Structured output via Ollama's format field
+        if (request.getResponseFormat() != null
+                && request.getResponseFormat().has(JSON_SCHEMA)
+                && request.getResponseFormat().get(JSON_SCHEMA).has("schema")) {
+            body.set("format", request.getResponseFormat().get(JSON_SCHEMA).get("schema"));
         }
 
         // Tools

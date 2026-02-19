@@ -50,6 +50,12 @@ public class OpenAiProvider implements StreamingLlmProvider {
     }
 
     @Override
+    public boolean supportsStructuredOutput(String model) {
+        if (model == null) return false;
+        return !model.equals("gpt-3.5-turbo") && !model.equals("gpt-3.5-turbo-16k");
+    }
+
+    @Override
     public String getDefaultModel() {
         return "gpt-4o";
     }
@@ -116,6 +122,11 @@ public class OpenAiProvider implements StreamingLlmProvider {
             if (Boolean.TRUE.equals(request.getForceToolUse())) {
                 body.put("tool_choice", "required");
             }
+        }
+
+        // Structured output (response_format)
+        if (request.getResponseFormat() != null) {
+            body.set("response_format", request.getResponseFormat());
         }
 
         return body;

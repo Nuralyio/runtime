@@ -33,6 +33,11 @@ public class AnthropicProvider implements LlmProvider {
             "claude-sonnet-4-20250514", "claude-opus-4-5-20251101"
     );
 
+    private static final String JSON_SCHEMA = "json_schema";
+    private static final String SCHEMA = "schema";
+    private static final String INPUT_SCHEMA = "input_schema";
+    private static final String INPUT = "input";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -55,6 +60,16 @@ public class AnthropicProvider implements LlmProvider {
         try {
             ObjectNode requestBody = buildRequestBody(request);
 
+            // Resolve structured output tool name for response parsing
+            String soToolName = null;
+            if (request.getResponseFormat() != null
+                    && request.getResponseFormat().has(JSON_SCHEMA)
+                    && request.getResponseFormat().get(JSON_SCHEMA).has(SCHEMA)) {
+                JsonNode jsonSchema = request.getResponseFormat().get(JSON_SCHEMA);
+                soToolName = jsonSchema.has("name")
+                        ? jsonSchema.get("name").asText() : "structured_output";
+            }
+
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
                 HttpPost httpPost = new HttpPost(API_URL);
                 httpPost.addHeader("Content-Type", "application/json");
@@ -67,7 +82,7 @@ public class AnthropicProvider implements LlmProvider {
                 String responseBody = EntityUtils.toString(response.getEntity());
 
                 if (statusCode >= 200 && statusCode < 300) {
-                    return parseResponse(responseBody);
+                    return parseResponse(responseBody, soToolName);
                 } else {
                     return LlmResponse.error("Anthropic API error (status " + statusCode + "): " + extractErrorMessage(responseBody));
                 }
@@ -87,7 +102,79 @@ public class AnthropicProvider implements LlmProvider {
         // Max tokens (required for Anthropic)
         body.put("max_tokens", request.getMaxTokens() != null ? request.getMaxTokens() : 4096);
 
-        // System prompt (separate from messages in Anthropic API)
+        // System prompt and messages (system prompt is separate in Anthropic API)
+        addSystemPromptAndMessages(request, body);
+
+        // Temperature
+        if (request.getTemperature() != null) {
+            body.put("temperature", request.getTemperature());
+        }
+
+        // Tools and structured output
+        addToolsToBody(request, body);
+
+        return body;
+    }
+
+    private void addToolsToBody(LlmRequest request, ObjectNode body) {
+        if (hasStructuredOutputSchema(request)) {
+            addStructuredOutputTools(request, body);
+        } else {
+            addRegularTools(request, body);
+        }
+    }
+
+    private boolean hasStructuredOutputSchema(LlmRequest request) {
+        return request.getResponseFormat() != null
+                && request.getResponseFormat().has(JSON_SCHEMA)
+                && request.getResponseFormat().get(JSON_SCHEMA).has(SCHEMA);
+    }
+
+    private void addStructuredOutputTools(LlmRequest request, ObjectNode body) {
+        JsonNode jsonSchema = request.getResponseFormat().get(JSON_SCHEMA);
+        String structuredOutputToolName = jsonSchema.has("name")
+                ? jsonSchema.get("name").asText() : "structured_output";
+
+        ObjectNode soTool = objectMapper.createObjectNode();
+        soTool.put("name", structuredOutputToolName);
+        soTool.put("description",
+                "Return the response formatted according to the required schema. Always use this tool to structure your output.");
+        soTool.set(INPUT_SCHEMA, jsonSchema.get(SCHEMA));
+
+        ArrayNode tools = objectMapper.createArrayNode();
+        tools.add(soTool);
+        if (request.getTools() != null) {
+            for (ToolDefinition tool : request.getTools()) {
+                tools.add(convertTool(tool));
+            }
+        }
+        body.set("tools", tools);
+
+        ObjectNode toolChoice = objectMapper.createObjectNode();
+        toolChoice.put("type", "tool");
+        toolChoice.put("name", structuredOutputToolName);
+        body.set("tool_choice", toolChoice);
+    }
+
+    private void addRegularTools(LlmRequest request, ObjectNode body) {
+        if (request.getTools() == null || request.getTools().isEmpty()) {
+            return;
+        }
+
+        ArrayNode tools = objectMapper.createArrayNode();
+        for (ToolDefinition tool : request.getTools()) {
+            tools.add(convertTool(tool));
+        }
+        body.set("tools", tools);
+
+        if (Boolean.TRUE.equals(request.getForceToolUse())) {
+            ObjectNode toolChoice = objectMapper.createObjectNode();
+            toolChoice.put("type", "any");
+            body.set("tool_choice", toolChoice);
+        }
+    }
+
+    private void addSystemPromptAndMessages(LlmRequest request, ObjectNode body) {
         String systemPrompt = null;
         List<LlmMessage> conversationMessages = new ArrayList<>();
 
@@ -99,13 +186,11 @@ public class AnthropicProvider implements LlmProvider {
             }
         }
 
-        if (systemPrompt != null) {
-            body.put("system", systemPrompt);
-        } else if (request.getSystemPrompt() != null) {
-            body.put("system", request.getSystemPrompt());
+        String effectiveSystemPrompt = systemPrompt != null ? systemPrompt : request.getSystemPrompt();
+        if (effectiveSystemPrompt != null) {
+            body.put("system", effectiveSystemPrompt);
         }
 
-        // Messages
         ArrayNode messages = objectMapper.createArrayNode();
         for (LlmMessage msg : conversationMessages) {
             ObjectNode msgNode = convertMessage(msg);
@@ -114,29 +199,6 @@ public class AnthropicProvider implements LlmProvider {
             }
         }
         body.set("messages", messages);
-
-        // Temperature
-        if (request.getTemperature() != null) {
-            body.put("temperature", request.getTemperature());
-        }
-
-        // Tools
-        if (request.getTools() != null && !request.getTools().isEmpty()) {
-            ArrayNode tools = objectMapper.createArrayNode();
-            for (ToolDefinition tool : request.getTools()) {
-                tools.add(convertTool(tool));
-            }
-            body.set("tools", tools);
-
-            // Force tool use if requested
-            if (Boolean.TRUE.equals(request.getForceToolUse())) {
-                ObjectNode toolChoice = objectMapper.createObjectNode();
-                toolChoice.put("type", "any");
-                body.set("tool_choice", toolChoice);
-            }
-        }
-
-        return body;
     }
 
     private ObjectNode convertMessage(LlmMessage message) {
@@ -171,7 +233,7 @@ public class AnthropicProvider implements LlmProvider {
                         toolUse.put("type", "tool_use");
                         toolUse.put("id", tc.getId());
                         toolUse.put("name", tc.getName());
-                        toolUse.set("input", tc.getArguments());
+                        toolUse.set(INPUT, tc.getArguments());
                         content.add(toolUse);
                     }
                 }
@@ -202,19 +264,23 @@ public class AnthropicProvider implements LlmProvider {
         node.put("description", tool.getDescription());
 
         if (tool.getParameters() != null) {
-            node.set("input_schema", tool.getParameters());
+            node.set(INPUT_SCHEMA, tool.getParameters());
         } else {
             // Default empty object schema
             ObjectNode schema = objectMapper.createObjectNode();
             schema.put("type", "object");
             schema.set("properties", objectMapper.createObjectNode());
-            node.set("input_schema", schema);
+            node.set(INPUT_SCHEMA, schema);
         }
 
         return node;
     }
 
     private LlmResponse parseResponse(String responseBody) {
+        return parseResponse(responseBody, null);
+    }
+
+    private LlmResponse parseResponse(String responseBody, String structuredOutputToolName) {
         try {
             JsonNode json = objectMapper.readTree(responseBody);
             LlmResponse.LlmResponseBuilder builder = LlmResponse.builder();
@@ -230,10 +296,17 @@ public class AnthropicProvider implements LlmProvider {
                 if ("text".equals(type)) {
                     textContent.append(block.get("text").asText());
                 } else if ("tool_use".equals(type)) {
+                    String toolName = block.get("name").asText();
+                    // If this is our injected structured output tool, return input as content
+                    if (structuredOutputToolName != null && structuredOutputToolName.equals(toolName)) {
+                        String structured = objectMapper.writeValueAsString(block.get(INPUT));
+                        textContent.append(structured);
+                        continue;
+                    }
                     ToolCall toolCall = ToolCall.builder()
                             .id(block.get("id").asText())
-                            .name(block.get("name").asText())
-                            .arguments(block.get("input"))
+                            .name(toolName)
+                            .arguments(block.get(INPUT))
                             .build();
                     toolCalls.add(toolCall);
                 }

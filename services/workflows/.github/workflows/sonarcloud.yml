@@ -34,8 +34,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and test
-        run: mvn -B verify -DskipITs
-        continue-on-error: true
+        run: mvn -B verify -DskipITs -Dmaven.test.failure.ignore=true
       - name: SonarQube analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
