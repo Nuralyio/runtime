@@ -136,6 +136,13 @@ export function renderWbSidebarTemplate(data: WbSidebarTemplateData): TemplateRe
       >
         <nr-icon name="thumbs-up" size="small"></nr-icon>
       </button>
+      <button
+        class="wb-sidebar-btn"
+        @click=${() => data.onAddNode(WhiteboardNodeType.WORKFLOW)}
+        title="Workflow"
+      >
+        <nr-icon name="layers" size="small"></nr-icon>
+      </button>
 
       <div class="wb-sidebar-divider"></div>
 

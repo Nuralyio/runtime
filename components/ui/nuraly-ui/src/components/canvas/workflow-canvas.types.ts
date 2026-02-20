@@ -125,6 +125,7 @@ export enum WhiteboardNodeType {
   VOTING = 'WB_VOTING',
   MERMAID = 'WB_MERMAID',
   ANCHOR = 'WB_ANCHOR',
+  WORKFLOW = 'WB_WORKFLOW',
 }
 
 /**
@@ -412,6 +413,10 @@ export interface NodeConfiguration {
   tableEmptyText?: string;
   tableWidth?: number;
   tableHeight?: number;
+  // Whiteboard Workflow node
+  workflowId?: string;
+  workflowName?: string;
+  workflowSteps?: Array<{ name: string; type: string }>;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -682,6 +687,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WhiteboardNodeType.VOTING]: '#ef4444',
   [WhiteboardNodeType.MERMAID]: '#8b5cf6',
   [WhiteboardNodeType.ANCHOR]: '#f59e0b',
+  [WhiteboardNodeType.WORKFLOW]: '#6366f1',
 };
 
 /**
@@ -787,6 +793,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WhiteboardNodeType.VOTING]: 'thumbs-up',
   [WhiteboardNodeType.MERMAID]: 'git-branch',
   [WhiteboardNodeType.ANCHOR]: 'anchor',
+  [WhiteboardNodeType.WORKFLOW]: 'layers',
 };
 
 /**
@@ -2284,6 +2291,25 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [],
       outputs: [],
+    },
+  },
+  {
+    type: WhiteboardNodeType.WORKFLOW,
+    name: 'Workflow',
+    description: 'Embed a workflow on the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.WORKFLOW],
+    color: NODE_COLORS[WhiteboardNodeType.WORKFLOW],
+    category: 'wb-media',
+    defaultConfig: {
+      workflowId: '',
+      workflowName: 'Workflow',
+      workflowSteps: [],
+      width: 280,
+      height: 200,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
     },
   },
 ];
