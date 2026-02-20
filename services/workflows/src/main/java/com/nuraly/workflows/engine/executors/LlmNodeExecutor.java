@@ -22,6 +22,7 @@ import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
 import com.nuraly.workflows.triggers.connectors.McpConnection;
 import com.nuraly.workflows.triggers.connectors.McpConnector;
+import com.nuraly.library.logging.LogClient;
 import io.modelcontextprotocol.spec.McpSchema;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -104,6 +105,9 @@ public class LlmNodeExecutor implements NodeExecutor {
 
     @Inject
     McpConnector mcpConnector;
+
+    @Inject
+    LogClient logClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -316,12 +320,21 @@ public class LlmNodeExecutor implements NodeExecutor {
 
             LlmRequest request = buildLlmRequest(messages, tools, params, providerConfig);
 
-            emitLlmCallStartedEvent(context, node, providerConfig.providerName, params.model);
+            emitLlmCallStartedEvent(context, node, providerConfig.providerName, params.model,
+                    params.temperature, params.maxTokens, tools.size());
+
+            long startTime = System.currentTimeMillis();
 
             LlmResponse response = callLlmProvider(
                     providerConfig, params, tools, request, context, node);
 
-            emitLlmCallCompletedEvent(context, node, providerConfig.providerName, params.model, result.iterations);
+            long durationMs = System.currentTimeMillis() - startTime;
+
+            emitLlmCallCompletedEvent(context, node, providerConfig.providerName, params.model,
+                    result.iterations, durationMs, response);
+
+            logLlmCallToJournal(context, node, providerConfig.providerName, params.model,
+                    result.iterations, durationMs, response);
 
             if (response == null || !response.isSuccess()) {
                 String errorMsg = response != null ? response.getError() : "null response from provider";
@@ -408,10 +421,12 @@ public class LlmNodeExecutor implements NodeExecutor {
      * Emits an LLM call started event if an execution context is available.
      */
     private void emitLlmCallStartedEvent(ExecutionContext context, WorkflowNodeEntity node,
-                                           String providerName, String model) {
+                                           String providerName, String model,
+                                           Double temperature, Integer maxTokens, int toolCount) {
         if (context.getExecution() != null) {
             eventService.logLlmCallStarted(
-                    context.getExecution(), node.id.toString(), node.name, providerName, model);
+                    context.getExecution(), node.id.toString(), node.name, providerName, model,
+                    temperature, maxTokens, toolCount);
         }
     }
 
@@ -419,10 +434,76 @@ public class LlmNodeExecutor implements NodeExecutor {
      * Emits an LLM call completed event if an execution context is available.
      */
     private void emitLlmCallCompletedEvent(ExecutionContext context, WorkflowNodeEntity node,
-                                             String providerName, String model, int iterations) {
+                                             String providerName, String model, int iterations,
+                                             long durationMs, LlmResponse response) {
         if (context.getExecution() != null) {
+            Integer promptTokens = null;
+            Integer completionTokens = null;
+            Integer totalTokens = null;
+            String finishReason = null;
+            String error = null;
+
+            if (response != null) {
+                if (response.getUsage() != null) {
+                    promptTokens = response.getUsage().getPromptTokens();
+                    completionTokens = response.getUsage().getCompletionTokens();
+                    totalTokens = response.getUsage().getTotalTokens();
+                }
+                if (response.getFinishReason() != null) {
+                    finishReason = response.getFinishReason().name();
+                }
+                error = response.getError();
+            }
+
             eventService.logLlmCallCompleted(
-                    context.getExecution(), node.id.toString(), node.name, providerName, model, iterations);
+                    context.getExecution(), node.id.toString(), node.name, providerName, model,
+                    iterations, durationMs, promptTokens, completionTokens, totalTokens,
+                    finishReason, error);
+        }
+    }
+
+    /**
+     * Logs an LLM call to the journal service via LogClient for observability.
+     */
+    private void logLlmCallToJournal(ExecutionContext context, WorkflowNodeEntity node,
+                                      String providerName, String model, int iterations,
+                                      long durationMs, LlmResponse response) {
+        if (context.getExecution() == null) {
+            return;
+        }
+
+        try {
+            Map<String, Object> data = new HashMap<>();
+            data.put("executionId", context.getExecution().id.toString());
+            data.put("workflowId", context.getExecution().workflow.id.toString());
+            data.put("nodeId", node.id.toString());
+            data.put("nodeName", node.name);
+            data.put("provider", providerName);
+            data.put("model", model);
+            data.put("iteration", iterations);
+            data.put("durationMs", durationMs);
+
+            if (response != null) {
+                data.put("promptTokens", response.getUsage() != null ? response.getUsage().getPromptTokens() : 0);
+                data.put("completionTokens", response.getUsage() != null ? response.getUsage().getCompletionTokens() : 0);
+                data.put("totalTokens", response.getUsage() != null ? response.getUsage().getTotalTokens() : 0);
+                data.put("finishReason", response.getFinishReason() != null ? response.getFinishReason().name() : "");
+                data.put("toolCallCount", response.hasToolCalls() ? response.getToolCalls().size() : 0);
+                data.put("status", response.isSuccess() ? "SUCCESS" : "ERROR");
+
+                if (response.isSuccess()) {
+                    logClient.info("llm", null, data);
+                } else {
+                    data.put("error", response.getError() != null ? response.getError() : "unknown");
+                    logClient.error("llm", null, data);
+                }
+            } else {
+                data.put("status", "ERROR");
+                data.put("error", "null response from provider");
+                logClient.error("llm", null, data);
+            }
+        } catch (Exception e) {
+            LOG.warnf("Failed to log LLM call to journal: %s", e.getMessage());
         }
     }
 

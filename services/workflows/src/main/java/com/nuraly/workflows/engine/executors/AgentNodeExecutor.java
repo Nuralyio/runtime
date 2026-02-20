@@ -715,20 +715,25 @@ public class AgentNodeExecutor implements NodeExecutor {
         String provider = llmConfig.has(PROVIDER) ? llmConfig.get(PROVIDER).asText() : "unknown";
         String model = llmConfig.has(MODEL) ? llmConfig.get(MODEL).asText() : "unknown";
 
-        // Emit LLM call started event
+        // Emit LLM call started event (detailed logging happens inside LlmNodeExecutor)
         if (context.getExecution() != null) {
             eventService.logLlmCallStarted(
                 context.getExecution(),
                 node.id.toString(),
                 node.name,
                 provider,
-                model
+                model,
+                null, null, 0
             );
         }
 
+        long startTime = System.currentTimeMillis();
+
         NodeExecutionResult llmResult = llmExecutor.execute(context, tempLlmNode);
 
-        // Emit LLM call completed event
+        long durationMs = System.currentTimeMillis() - startTime;
+
+        // Emit LLM call completed event (detailed logging happens inside LlmNodeExecutor)
         if (context.getExecution() != null) {
             eventService.logLlmCallCompleted(
                 context.getExecution(),
@@ -736,7 +741,11 @@ public class AgentNodeExecutor implements NodeExecutor {
                 node.name,
                 provider,
                 model,
-                1  // iteration count
+                1,
+                durationMs,
+                null, null, null,
+                null,
+                llmResult.isSuccess() ? null : llmResult.getErrorMessage()
             );
         }
 

@@ -189,34 +189,61 @@ public class WorkflowEventService {
     /**
      * Log LLM call started - for agent UX feedback
      */
-    public void logLlmCallStarted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String provider, String model) {
+    public void logLlmCallStarted(WorkflowExecutionEntity execution, String nodeId, String nodeName,
+                                   String provider, String model, Double temperature, Integer maxTokens, int toolCount) {
         LOG.infof(">>> EMITTING LLM_CALL_STARTED: nodeId=%s, nodeName=%s, provider=%s, model=%s", nodeId, nodeName, provider, model);
-        sendEvent("LLM_CALL_STARTED", Map.of(
-                "executionId", String.valueOf(execution.id),
-                "workflowId", String.valueOf(execution.workflow.id),
-                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
-                "nodeId", nodeId,
-                "nodeName", nodeName,
-                "provider", provider,
-                "model", model
-        ));
+        Map<String, Object> data = new HashMap<>();
+        data.put("executionId", String.valueOf(execution.id));
+        data.put("workflowId", String.valueOf(execution.workflow.id));
+        data.put("applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "");
+        data.put("nodeId", nodeId);
+        data.put("nodeName", nodeName);
+        data.put("provider", provider);
+        data.put("model", model);
+        data.put("toolCount", toolCount);
+        if (temperature != null) {
+            data.put("temperature", temperature);
+        }
+        if (maxTokens != null) {
+            data.put("maxTokens", maxTokens);
+        }
+        sendEvent("LLM_CALL_STARTED", data);
     }
 
     /**
      * Log LLM call completed - for agent UX feedback
      */
-    public void logLlmCallCompleted(WorkflowExecutionEntity execution, String nodeId, String nodeName, String provider, String model, int iteration) {
+    public void logLlmCallCompleted(WorkflowExecutionEntity execution, String nodeId, String nodeName,
+                                     String provider, String model, int iteration,
+                                     long durationMs, Integer promptTokens, Integer completionTokens,
+                                     Integer totalTokens, String finishReason, String error) {
         LOG.infof(">>> EMITTING LLM_CALL_COMPLETED: nodeId=%s, iteration=%d", nodeId, iteration);
-        sendEvent("LLM_CALL_COMPLETED", Map.of(
-                "executionId", String.valueOf(execution.id),
-                "workflowId", String.valueOf(execution.workflow.id),
-                "applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "",
-                "nodeId", nodeId,
-                "nodeName", nodeName,
-                "provider", provider,
-                "model", model,
-                "iteration", iteration
-        ));
+        Map<String, Object> data = new HashMap<>();
+        data.put("executionId", String.valueOf(execution.id));
+        data.put("workflowId", String.valueOf(execution.workflow.id));
+        data.put("applicationId", execution.workflow.applicationId != null ? execution.workflow.applicationId : "");
+        data.put("nodeId", nodeId);
+        data.put("nodeName", nodeName);
+        data.put("provider", provider);
+        data.put("model", model);
+        data.put("iteration", iteration);
+        data.put("durationMs", durationMs);
+        if (promptTokens != null) {
+            data.put("promptTokens", promptTokens);
+        }
+        if (completionTokens != null) {
+            data.put("completionTokens", completionTokens);
+        }
+        if (totalTokens != null) {
+            data.put("totalTokens", totalTokens);
+        }
+        if (finishReason != null) {
+            data.put("finishReason", finishReason);
+        }
+        if (error != null) {
+            data.put("error", error);
+        }
+        sendEvent("LLM_CALL_COMPLETED", data);
     }
 
     /**
