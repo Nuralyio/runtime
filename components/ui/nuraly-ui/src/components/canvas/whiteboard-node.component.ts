@@ -551,6 +551,64 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private renderWbWorkflow(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const workflowName = (config.workflowName as string) || 'Workflow';
+    const steps = (config.workflowSteps as Array<{ name: string; type: string }>) || [];
+    const headerColor = NODE_COLORS[WhiteboardNodeType.WORKFLOW] || '#6366f1';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-workflow': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-workflow-header" style="background: ${headerColor};">
+          <nr-icon name="layers" size="small"></nr-icon>
+          <span class="wb-workflow-header-name">${workflowName}</span>
+        </div>
+        <div class="wb-workflow-body">
+          ${steps.length > 0 ? html`
+            <div class="wb-workflow-steps">
+              ${steps.map(step => html`
+                <div class="wb-workflow-step">
+                  <nr-icon name=${this._getStepIcon(step.type)} size="small"></nr-icon>
+                  <span class="wb-workflow-step-name">${step.name}</span>
+                </div>
+              `)}
+            </div>
+          ` : html`
+            <div class="wb-workflow-empty">
+              <nr-icon name="layers" size="large"></nr-icon>
+              <span>Double-click to configure</span>
+            </div>
+          `}
+        </div>
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private _getStepIcon(type: string): string {
+    const iconMap: Record<string, string> = {
+      START: 'play',
+      END: 'stop',
+      HTTP: 'globe',
+      FUNCTION: 'code',
+      CONDITION: 'git-branch',
+      LOOP: 'repeat',
+      DELAY: 'clock',
+      TRANSFORM: 'shuffle',
+      LLM: 'brain',
+      SUB_WORKFLOW: 'layers',
+      DATABASE: 'database',
+      EMAIL: 'mail',
+      NOTIFICATION: 'bell',
+    };
+    return iconMap[type] || 'circle';
+  }
+
   private renderActionIndicator() {
     const action = this.node.configuration?.onClickAction;
     if (!action || action === 'none') return nothing;
@@ -695,6 +753,10 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
       case WhiteboardNodeType.ANCHOR:
         nodeContent = this.renderWbAnchor(containerClasses, containerStyles, config);
+        break;
+
+      case WhiteboardNodeType.WORKFLOW:
+        nodeContent = this.renderWbWorkflow(containerClasses, containerStyles, config);
         break;
 
       case WhiteboardNodeType.SHAPE_RECTANGLE:

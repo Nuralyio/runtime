@@ -60,14 +60,16 @@ export function wbHasFill(node: WorkflowNode): boolean {
   return node.type !== WhiteboardNodeType.DRAWING &&
          node.type !== WhiteboardNodeType.SHAPE_LINE &&
          node.type !== WhiteboardNodeType.SHAPE_ARROW &&
-         node.type !== WhiteboardNodeType.ANCHOR;
+         node.type !== WhiteboardNodeType.ANCHOR &&
+         node.type !== WhiteboardNodeType.WORKFLOW;
 }
 
 export function wbHasBorder(node: WorkflowNode): boolean {
   return node.type === WhiteboardNodeType.MERMAID ||
          node.type === WhiteboardNodeType.SHAPE_RECTANGLE ||
          node.type === WhiteboardNodeType.IMAGE ||
-         node.type === WhiteboardNodeType.FRAME;
+         node.type === WhiteboardNodeType.FRAME ||
+         node.type === WhiteboardNodeType.WORKFLOW;
 }
 
 // ==================== Template Interface ====================
