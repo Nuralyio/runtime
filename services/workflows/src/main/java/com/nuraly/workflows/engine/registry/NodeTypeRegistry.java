@@ -24,6 +24,7 @@ import java.util.Map;
 public class NodeTypeRegistry {
 
     private static final String OUTPUT = "Output";
+    private static final String INPUT = "Input";
 
     private final Map<NodeType, NodeTypeDefinition> definitions = new EnumMap<>(NodeType.class);
 
@@ -57,7 +58,7 @@ public class NodeTypeRegistry {
         register(NodeType.END, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .build());
 
@@ -71,7 +72,7 @@ public class NodeTypeRegistry {
         register(NodeType.HTTP_END, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .build());
 
@@ -85,7 +86,7 @@ public class NodeTypeRegistry {
         register(NodeType.CHAT_OUTPUT, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .build());
 
@@ -94,7 +95,7 @@ public class NodeTypeRegistry {
         register(NodeType.FUNCTION, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -104,7 +105,7 @@ public class NodeTypeRegistry {
         register(NodeType.HTTP, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -114,7 +115,7 @@ public class NodeTypeRegistry {
         register(NodeType.CONDITION, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("true", "True", true, 1),
@@ -125,7 +126,7 @@ public class NodeTypeRegistry {
         register(NodeType.DELAY, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -135,7 +136,7 @@ public class NodeTypeRegistry {
         register(NodeType.TRANSFORM, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -145,7 +146,7 @@ public class NodeTypeRegistry {
         register(NodeType.VARIABLE, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -158,7 +159,7 @@ public class NodeTypeRegistry {
         register(NodeType.DEBUG, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("in", "Input", true, 1)
+                        port("in", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -168,7 +169,7 @@ public class NodeTypeRegistry {
         register(NodeType.DATABASE, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -178,7 +179,7 @@ public class NodeTypeRegistry {
         register(NodeType.EMAIL, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -188,7 +189,7 @@ public class NodeTypeRegistry {
         register(NodeType.NOTIFICATION, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -198,7 +199,7 @@ public class NodeTypeRegistry {
         register(NodeType.SUB_WORKFLOW, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -208,7 +209,7 @@ public class NodeTypeRegistry {
         register(NodeType.PARALLEL, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -218,7 +219,7 @@ public class NodeTypeRegistry {
         register(NodeType.LOOP, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("loop_body", "Loop Body", true, 1),
@@ -234,7 +235,7 @@ public class NodeTypeRegistry {
         register(NodeType.LLM, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("input", "Input", true, 1),
+                        port("input", INPUT, true, 1),
                         optionalPort("context_memory", "Context Memory", 2)
                 ))
                 .outputs(List.of(
@@ -260,7 +261,7 @@ public class NodeTypeRegistry {
         register(NodeType.AGENT, NodeTypeDefinition.builder()
                 .schemaVersion(3)
                 .inputs(List.of(
-                        port("in", "Input", true, 1),
+                        port("in", INPUT, true, 1),
                         port("llm", "LLM", true, 1),
                         optionalPort("tools", "Tools", 1),
                         optionalPort("memory", "Memory", 2),
@@ -297,7 +298,7 @@ public class NodeTypeRegistry {
         register(NodeType.OUTPUT_PARSER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -337,7 +338,7 @@ public class NodeTypeRegistry {
         register(NodeType.GUARDRAIL, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("pass", "Pass", true, 1),
@@ -348,7 +349,7 @@ public class NodeTypeRegistry {
         register(NodeType.HUMAN_INPUT, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -360,7 +361,7 @@ public class NodeTypeRegistry {
         register(NodeType.EMBEDDING, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("in", "Input", true, 1)
+                        port("in", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -370,7 +371,7 @@ public class NodeTypeRegistry {
         register(NodeType.DOCUMENT_LOADER, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("in", "Input", true, 1)
+                        port("in", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -380,7 +381,7 @@ public class NodeTypeRegistry {
         register(NodeType.TEXT_SPLITTER, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("in", "Input", true, 1)
+                        port("in", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -390,7 +391,7 @@ public class NodeTypeRegistry {
         register(NodeType.VECTOR_WRITE, NodeTypeDefinition.builder()
                 .schemaVersion(2)
                 .inputs(List.of(
-                        port("in", "Input", true, 1)
+                        port("in", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -413,7 +414,7 @@ public class NodeTypeRegistry {
         register(NodeType.CONTEXT_BUILDER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -423,7 +424,7 @@ public class NodeTypeRegistry {
         register(NodeType.RETRIEVER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -433,7 +434,7 @@ public class NodeTypeRegistry {
         register(NodeType.RERANKER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -445,7 +446,7 @@ public class NodeTypeRegistry {
         register(NodeType.FILE_STORAGE, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -455,7 +456,7 @@ public class NodeTypeRegistry {
         register(NodeType.OCR, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -465,7 +466,7 @@ public class NodeTypeRegistry {
         register(NodeType.WEB_SEARCH, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -475,7 +476,7 @@ public class NodeTypeRegistry {
         register(NodeType.WEB_CRAWL, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .inputs(List.of(
-                        port("input", "Input", true, 1)
+                        port("input", INPUT, true, 1)
                 ))
                 .outputs(List.of(
                         port("out", OUTPUT, true, 1)
@@ -494,7 +495,7 @@ public class NodeTypeRegistry {
         register(NodeType.MCP, NodeTypeDefinition.builder()
                 .schemaVersion(1)
                 .outputs(List.of(
-                        port("out", "Output", true, 1)
+                        port("out", OUTPUT, true, 1)
                 ))
                 .build());
 
@@ -527,13 +528,13 @@ public class NodeTypeRegistry {
         // Nodes without explicit executors but still useful to define
         register(NodeType.CHAIN, NodeTypeDefinition.builder()
                 .schemaVersion(1)
-                .inputs(List.of(port("input", "Input", true, 1)))
+                .inputs(List.of(port("input", INPUT, true, 1)))
                 .outputs(List.of(port("out", OUTPUT, true, 1)))
                 .build());
 
         register(NodeType.ROUTER, NodeTypeDefinition.builder()
                 .schemaVersion(1)
-                .inputs(List.of(port("input", "Input", true, 1)))
+                .inputs(List.of(port("input", INPUT, true, 1)))
                 .outputs(List.of(port("out", OUTPUT, true, 1)))
                 .build());
     }

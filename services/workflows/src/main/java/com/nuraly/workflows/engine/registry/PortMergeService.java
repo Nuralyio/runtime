@@ -34,6 +34,7 @@ import java.util.Set;
 public class PortMergeService {
 
     private static final Logger LOG = Logger.getLogger(PortMergeService.class);
+    private static final String SCHEMA_VERSION = "_schemaVersion";
 
     @Inject
     NodeTypeRegistry registry;
@@ -55,54 +56,45 @@ public class PortMergeService {
 
         try {
             JsonNode stored = parseStoredPorts(storedPorts);
+            boolean outdated = isSchemaOutdated(stored, definition);
+            Set<String> configPortIds = collectConfigPortIds(stored);
+
             ObjectNode merged = objectMapper.createObjectNode();
 
-            // Check if stored ports are outdated (schema version mismatch)
-            boolean outdated = false;
-            if (stored == null || !stored.has("_schemaVersion")
-                    || stored.get("_schemaVersion").asInt() < definition.getSchemaVersion()) {
-                outdated = true;
-            }
-
-            // Collect config port IDs so canonical inputs that already exist as configs
-            // are not duplicated into the inputs array (e.g. AGENT's llm, prompt, memory, tools)
-            Set<String> configPortIds = new HashSet<>();
-            if (stored != null && stored.has("configs") && stored.get("configs").isArray()) {
-                for (JsonNode configPort : stored.get("configs")) {
-                    if (configPort.has("id")) {
-                        configPortIds.add(configPort.get("id").asText());
-                    }
-                }
-            }
-
-            ArrayNode mergedInputs = mergePortList(
+            merged.set("inputs", mergePortList(
                     stored != null && stored.has("inputs") ? stored.get("inputs") : null,
-                    definition.getInputs(),
-                    configPortIds,
-                    outdated
-            );
-            ArrayNode mergedOutputs = mergePortList(
+                    definition.getInputs(), configPortIds, outdated));
+            merged.set("outputs", mergePortList(
                     stored != null && stored.has("outputs") ? stored.get("outputs") : null,
-                    definition.getOutputs(),
-                    Set.of(),
-                    outdated
-            );
+                    definition.getOutputs(), Set.of(), outdated));
 
-            merged.set("inputs", mergedInputs);
-            merged.set("outputs", mergedOutputs);
-
-            // Preserve config ports (bottom ports used by agent nodes like AGENT)
             if (stored != null && stored.has("configs")) {
                 merged.set("configs", stored.get("configs").deepCopy());
             }
-
-            merged.put("_schemaVersion", definition.getSchemaVersion());
+            merged.put(SCHEMA_VERSION, definition.getSchemaVersion());
 
             return objectMapper.writeValueAsString(merged);
         } catch (Exception e) {
             LOG.warnf("Failed to merge ports for node type %s: %s", nodeType, e.getMessage());
             return storedPorts;
         }
+    }
+
+    private boolean isSchemaOutdated(JsonNode stored, NodeTypeDefinition definition) {
+        return stored == null || !stored.has(SCHEMA_VERSION)
+                || stored.get(SCHEMA_VERSION).asInt() < definition.getSchemaVersion();
+    }
+
+    private Set<String> collectConfigPortIds(JsonNode stored) {
+        Set<String> configPortIds = new HashSet<>();
+        if (stored != null && stored.has("configs") && stored.get("configs").isArray()) {
+            for (JsonNode configPort : stored.get("configs")) {
+                if (configPort.has("id")) {
+                    configPortIds.add(configPort.get("id").asText());
+                }
+            }
+        }
+        return configPortIds;
     }
 
     /**
@@ -122,8 +114,8 @@ public class PortMergeService {
             }
 
             // Check if stored has a schema version
-            if (stored.has("_schemaVersion")) {
-                return stored.get("_schemaVersion").asInt() < definition.getSchemaVersion();
+            if (stored.has(SCHEMA_VERSION)) {
+                return stored.get(SCHEMA_VERSION).asInt() < definition.getSchemaVersion();
             }
 
             // No version tag → check if any canonical ports are missing
@@ -150,46 +142,54 @@ public class PortMergeService {
      * - When schema is outdated: only keep canonical ports (removes stale ports)
      * - When schema is current: keep stored ports + append missing canonical ports
      */
-    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts, Set<String> excludeIds, boolean isOutdated) {
+    private ArrayNode mergePortList(JsonNode storedArray, List<PortDefinition> canonicalPorts,
+                                    Set<String> excludeIds, boolean isOutdated) {
         ArrayNode result = objectMapper.createArrayNode();
 
-        // Build set of canonical port IDs
         Set<String> canonicalIds = new HashSet<>();
         for (PortDefinition canonical : canonicalPorts) {
             canonicalIds.add(canonical.getId());
         }
 
-        // Collect IDs of stored ports
-        Set<String> storedIds = new HashSet<>();
-        if (storedArray != null && storedArray.isArray()) {
-            for (JsonNode portNode : storedArray) {
-                String portId = portNode.has("id") ? portNode.get("id").asText() : null;
-                if (portId != null) {
-                    storedIds.add(portId);
-                }
-                // When outdated, only keep ports that still exist in canonical definition
-                if (isOutdated && portId != null && !canonicalIds.contains(portId)) {
-                    continue; // drop stale port
-                }
-                result.add(portNode.deepCopy());
-            }
-        }
-
-        // Append missing canonical ports (skip those already present as config ports)
-        for (PortDefinition canonical : canonicalPorts) {
-            if (excludeIds.contains(canonical.getId())) continue;
-            if (!storedIds.contains(canonical.getId())) {
-                ObjectNode newPort = objectMapper.createObjectNode();
-                newPort.put("id", canonical.getId());
-                newPort.put("name", canonical.getName());
-                newPort.put("type", canonical.getType());
-                newPort.put("required", canonical.isRequired());
-                newPort.put("_addedByMerge", true);
-                result.add(newPort);
-            }
-        }
+        Set<String> storedIds = retainStoredPorts(storedArray, canonicalIds, isOutdated, result);
+        appendMissingCanonicalPorts(canonicalPorts, storedIds, excludeIds, result);
 
         return result;
+    }
+
+    private Set<String> retainStoredPorts(JsonNode storedArray, Set<String> canonicalIds,
+                                          boolean isOutdated, ArrayNode result) {
+        Set<String> storedIds = new HashSet<>();
+        if (storedArray == null || !storedArray.isArray()) {
+            return storedIds;
+        }
+        for (JsonNode portNode : storedArray) {
+            String portId = portNode.has("id") ? portNode.get("id").asText() : null;
+            if (portId != null) {
+                storedIds.add(portId);
+            }
+            if (isOutdated && portId != null && !canonicalIds.contains(portId)) {
+                continue;
+            }
+            result.add(portNode.deepCopy());
+        }
+        return storedIds;
+    }
+
+    private void appendMissingCanonicalPorts(List<PortDefinition> canonicalPorts, Set<String> storedIds,
+                                              Set<String> excludeIds, ArrayNode result) {
+        for (PortDefinition canonical : canonicalPorts) {
+            if (excludeIds.contains(canonical.getId()) || storedIds.contains(canonical.getId())) {
+                continue;
+            }
+            ObjectNode newPort = objectMapper.createObjectNode();
+            newPort.put("id", canonical.getId());
+            newPort.put("name", canonical.getName());
+            newPort.put("type", canonical.getType());
+            newPort.put("required", canonical.isRequired());
+            newPort.put("_addedByMerge", true);
+            result.add(newPort);
+        }
     }
 
     private boolean hasMissingPorts(JsonNode storedArray, List<PortDefinition> canonicalPorts) {

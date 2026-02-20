@@ -69,6 +69,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     private static final Logger LOG = Logger.getLogger(VectorSearchNodeExecutor.class);
     private static final int DEFAULT_TOP_K = 5;
     private static final double DEFAULT_MIN_SCORE = 0.0;
+    private static final String QUERY = "query";
 
     @Inject
     VectorStoreService vectorStoreService;
@@ -98,164 +99,197 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         JsonNode config = objectMapper.readTree(node.configuration);
         JsonNode input = context.getInput();
 
-        // Get collection name (required)
         if (!config.has("collectionName") || config.get("collectionName").asText().isEmpty()) {
             return NodeExecutionResult.failure("collectionName is required in VECTOR_SEARCH configuration");
         }
-        String collectionName = config.get("collectionName").asText();
 
-        // Get search parameters
-        int topK = config.has("topK") ? config.get("topK").asInt() : DEFAULT_TOP_K;
-        double minScore = config.has("minScore") ? config.get("minScore").asDouble() : DEFAULT_MIN_SCORE;
-        boolean includeContent = !config.has("includeContent") || config.get("includeContent").asBoolean();
-        boolean includeMetadata = !config.has("includeMetadata") || config.get("includeMetadata").asBoolean();
-
-        // Get workflow ID
-        UUID workflowId = null;
-        if (context.getExecution() != null && context.getExecution().workflow != null) {
-            workflowId = context.getExecution().workflow.id;
-        }
-        if (workflowId == null) {
-            return NodeExecutionResult.failure("Could not determine workflow ID for vector search");
+        SearchParams params = parseSearchParams(config, input, context);
+        if (params.error != null) {
+            return params.error;
         }
 
-        // Get isolation key
-        String isolationKey = null;
-        if (input.has("isolationKey")) {
-            isolationKey = input.get("isolationKey").asText();
-        } else if (config.has("isolationKey")) {
-            isolationKey = config.get("isolationKey").asText();
+        List<VectorStoreService.VectorSearchResult> results = executeSearch(params);
+
+        ObjectNode output = buildSearchOutput(results, params);
+
+        LOG.debugf("Vector search found %d results in collection '%s' (topK=%d, minScore=%.2f)",
+                   results.size(), params.collectionName, params.topK, params.minScore);
+
+        return NodeExecutionResult.success(output);
+    }
+
+    private SearchParams parseSearchParams(JsonNode config, JsonNode input, ExecutionContext context) throws Exception {
+        SearchParams params = new SearchParams();
+        params.collectionName = config.get("collectionName").asText();
+        params.topK = config.has("topK") ? config.get("topK").asInt() : DEFAULT_TOP_K;
+        params.minScore = config.has("minScore") ? config.get("minScore").asDouble() : DEFAULT_MIN_SCORE;
+        params.includeContent = !config.has("includeContent") || config.get("includeContent").asBoolean();
+        params.includeMetadata = !config.has("includeMetadata") || config.get("includeMetadata").asBoolean();
+
+        params.workflowId = resolveWorkflowId(context);
+        if (params.workflowId == null) {
+            params.error = NodeExecutionResult.failure("Could not determine workflow ID for vector search");
+            return params;
         }
 
-        // Get configurable input field name (defaults to "query")
+        params.isolationKey = resolveIsolationKey(input, config);
+        params.metadataFilter = parseMetadataFilter(input);
         String inputField = config.has("inputField") && !config.get("inputField").asText().isEmpty()
-                ? config.get("inputField").asText()
-                : "query";
+                ? config.get("inputField").asText() : QUERY;
 
-        // Get or compute query embedding
-        float[] queryEmbedding;
-        String queryText = null;
+        return resolveEmbedding(params, input, inputField, config, context);
+    }
 
+    private SearchParams resolveEmbedding(SearchParams params, JsonNode input, String inputField,
+                                           JsonNode config, ExecutionContext context) {
         if (input.has("embedding") && input.get("embedding").isArray()) {
-            // Use pre-computed embedding
-            queryEmbedding = jsonArrayToFloatArray(input.get("embedding"));
-        } else {
-            // Try to resolve query text from inputField
-            if (inputField.contains("${")) {
-                // Dynamic expression (e.g. "${input.message.text}") - resolve via context
-                String resolved = context.resolveExpression(inputField);
-                if (resolved != null && !resolved.isEmpty()) {
-                    queryText = resolved;
-                }
-            } else {
-                // Treat as a JSON path - supports both flat keys ("query") and dot-notation ("message.text")
-                JsonNode fieldValue = resolveJsonPath(input, inputField);
-                if (fieldValue != null && fieldValue.isTextual()) {
-                    queryText = fieldValue.asText();
-                }
-            }
-
-            // Fallback to "query" field if custom inputField didn't resolve
-            if ((queryText == null || queryText.isEmpty()) && !inputField.equals("query")) {
-                if (input.has("query") && input.get("query").isTextual()) {
-                    queryText = input.get("query").asText();
-                }
-            }
-
-            if (queryText == null || queryText.isEmpty()) {
-                return NodeExecutionResult.failure(
-                        "Input must contain either '" + inputField + "' (text), 'query' (text), or 'embedding' (vector array)");
-            }
-
-            try {
-                queryEmbedding = computeQueryEmbedding(queryText, config, context);
-            } catch (Exception e) {
-                LOG.errorf(e, "Failed to compute query embedding");
-                return NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
-            }
+            params.queryEmbedding = jsonArrayToFloatArray(input.get("embedding"));
+            return params;
         }
 
-        // Get metadata filter if provided
-        Map<String, Object> metadataFilter = null;
-        if (input.has("metadataFilter") && input.get("metadataFilter").isObject()) {
-            final Map<String, Object> filterMap = new HashMap<>();
-            input.get("metadataFilter").fields().forEachRemaining(entry ->
-                filterMap.put(entry.getKey(), entry.getValue().asText()));
-            metadataFilter = filterMap;
-        }
+        params.queryText = resolveQueryText(input, inputField, context);
 
-        // Perform search with metrics
-        long searchStart = System.currentTimeMillis();
-        ragMetrics.recordSearchStart();
-        List<VectorStoreService.VectorSearchResult> results;
+        if (params.queryText == null || params.queryText.isEmpty()) {
+            params.error = NodeExecutionResult.failure(
+                    "Input must contain either '" + inputField + "' (text), '" + QUERY + "' (text), or 'embedding' (vector array)");
+            return params;
+        }
 
         try {
-            results = vectorStoreService.search(
-                    workflowId,
-                    isolationKey,
-                    collectionName,
-                    queryEmbedding,
-                    topK,
-                    minScore > 0 ? minScore : null,
-                    metadataFilter
-            );
-            long searchDuration = System.currentTimeMillis() - searchStart;
-            ragMetrics.recordSearchComplete(collectionName, results.size(), searchDuration, true);
+            params.queryEmbedding = computeQueryEmbedding(params.queryText, config, context);
         } catch (Exception e) {
-            long searchDuration = System.currentTimeMillis() - searchStart;
-            ragMetrics.recordSearchComplete(collectionName, 0, searchDuration, false);
-            throw e;
+            LOG.errorf(e, "Failed to compute query embedding");
+            params.error = NodeExecutionResult.failure("Failed to compute query embedding: " + e.getMessage(), true);
+        }
+        return params;
+    }
+
+    private UUID resolveWorkflowId(ExecutionContext context) {
+        if (context.getExecution() != null && context.getExecution().workflow != null) {
+            return context.getExecution().workflow.id;
+        }
+        return null;
+    }
+
+    private String resolveIsolationKey(JsonNode input, JsonNode config) {
+        if (input.has("isolationKey")) {
+            return input.get("isolationKey").asText();
+        }
+        if (config.has("isolationKey")) {
+            return config.get("isolationKey").asText();
+        }
+        return null;
+    }
+
+    private String resolveQueryText(JsonNode input, String inputField, ExecutionContext context) {
+        String queryText = null;
+        if (inputField.contains("${")) {
+            String resolved = context.resolveExpression(inputField);
+            if (resolved != null && !resolved.isEmpty()) {
+                queryText = resolved;
+            }
+        } else {
+            JsonNode fieldValue = resolveJsonPath(input, inputField);
+            if (fieldValue != null && fieldValue.isTextual()) {
+                queryText = fieldValue.asText();
+            }
         }
 
-        // Build output
+        if ((queryText == null || queryText.isEmpty()) && !inputField.equals(QUERY)
+                && input.has(QUERY) && input.get(QUERY).isTextual()) {
+            queryText = input.get(QUERY).asText();
+        }
+        return queryText;
+    }
+
+    private Map<String, Object> parseMetadataFilter(JsonNode input) {
+        if (input == null || !input.has("metadataFilter") || !input.get("metadataFilter").isObject()) {
+            return null;
+        }
+        final Map<String, Object> filterMap = new HashMap<>();
+        input.get("metadataFilter").fields().forEachRemaining(entry ->
+            filterMap.put(entry.getKey(), entry.getValue().asText()));
+        return filterMap;
+    }
+
+    private List<VectorStoreService.VectorSearchResult> executeSearch(SearchParams params) throws Exception {
+        long searchStart = System.currentTimeMillis();
+        ragMetrics.recordSearchStart();
+
+        try {
+            List<VectorStoreService.VectorSearchResult> results = vectorStoreService.search(
+                    params.workflowId, params.isolationKey, params.collectionName,
+                    params.queryEmbedding, params.topK,
+                    params.minScore > 0 ? params.minScore : null, params.metadataFilter);
+            long searchDuration = System.currentTimeMillis() - searchStart;
+            ragMetrics.recordSearchComplete(params.collectionName, results.size(), searchDuration, true);
+            return results;
+        } catch (Exception e) {
+            long searchDuration = System.currentTimeMillis() - searchStart;
+            ragMetrics.recordSearchComplete(params.collectionName, 0, searchDuration, false);
+            throw e;
+        }
+    }
+
+    private ObjectNode buildSearchOutput(List<VectorStoreService.VectorSearchResult> results, SearchParams params) {
         ObjectNode output = objectMapper.createObjectNode();
-
         ArrayNode resultsArray = objectMapper.createArrayNode();
+
         for (VectorStoreService.VectorSearchResult result : results) {
-            ObjectNode resultNode = objectMapper.createObjectNode();
-
-            if (includeContent) {
-                resultNode.put("content", result.content);
-            }
-            resultNode.put("score", result.score);
-            resultNode.put("id", result.id.toString());
-
-            if (result.sourceId != null) {
-                resultNode.put("sourceId", result.sourceId);
-            }
-            if (result.sourceType != null) {
-                resultNode.put("sourceType", result.sourceType);
-            }
-            resultNode.put("chunkIndex", result.chunkIndex);
-
-            if (includeMetadata && result.metadata != null) {
-                try {
-                    JsonNode metadataNode = objectMapper.readTree(result.metadata);
-                    resultNode.set("metadata", metadataNode);
-                } catch (Exception e) {
-                    resultNode.put("metadata", result.metadata);
-                }
-            }
-
-            resultsArray.add(resultNode);
+            resultsArray.add(buildResultNode(result, params.includeContent, params.includeMetadata));
         }
 
         output.set("results", resultsArray);
         output.put("count", results.size());
-        output.put("collection", collectionName);
-        output.put("topK", topK);
+        output.put("collection", params.collectionName);
+        output.put("topK", params.topK);
 
-        if (queryText != null) {
-            output.put("query", queryText);
+        if (params.queryText != null) {
+            output.put(QUERY, params.queryText);
         }
-        if (isolationKey != null) {
-            output.put("isolationKey", isolationKey);
+        if (params.isolationKey != null) {
+            output.put("isolationKey", params.isolationKey);
         }
+        return output;
+    }
 
-        LOG.debugf("Vector search found %d results in collection '%s' (topK=%d, minScore=%.2f)",
-                   results.size(), collectionName, topK, minScore);
+    private ObjectNode buildResultNode(VectorStoreService.VectorSearchResult result,
+                                        boolean includeContent, boolean includeMetadata) {
+        ObjectNode resultNode = objectMapper.createObjectNode();
+        if (includeContent) {
+            resultNode.put("content", result.content);
+        }
+        resultNode.put("score", result.score);
+        resultNode.put("id", result.id.toString());
+        if (result.sourceId != null) {
+            resultNode.put("sourceId", result.sourceId);
+        }
+        if (result.sourceType != null) {
+            resultNode.put("sourceType", result.sourceType);
+        }
+        resultNode.put("chunkIndex", result.chunkIndex);
+        if (includeMetadata && result.metadata != null) {
+            try {
+                resultNode.set("metadata", objectMapper.readTree(result.metadata));
+            } catch (Exception e) {
+                resultNode.put("metadata", result.metadata);
+            }
+        }
+        return resultNode;
+    }
 
-        return NodeExecutionResult.success(output);
+    private static class SearchParams {
+        String collectionName;
+        int topK;
+        double minScore;
+        boolean includeContent;
+        boolean includeMetadata;
+        UUID workflowId;
+        String isolationKey;
+        String queryText;
+        float[] queryEmbedding;
+        Map<String, Object> metadataFilter;
+        NodeExecutionResult error;
     }
 
     /**

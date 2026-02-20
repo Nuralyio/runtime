@@ -723,7 +723,7 @@ public class AgentNodeExecutor implements NodeExecutor {
                 node.name,
                 provider,
                 model,
-                null, null, 0
+                new WorkflowEventService.LlmCallParams(null, null, 0)
             );
         }
 
@@ -735,6 +735,7 @@ public class AgentNodeExecutor implements NodeExecutor {
 
         // Emit LLM call completed event (detailed logging happens inside LlmNodeExecutor)
         if (context.getExecution() != null) {
+            String error = llmResult.isSuccess() ? null : llmResult.getErrorMessage();
             eventService.logLlmCallCompleted(
                 context.getExecution(),
                 node.id.toString(),
@@ -742,10 +743,7 @@ public class AgentNodeExecutor implements NodeExecutor {
                 provider,
                 model,
                 1,
-                durationMs,
-                null, null, null,
-                null,
-                llmResult.isSuccess() ? null : llmResult.getErrorMessage()
+                new WorkflowEventService.LlmCallMetrics(durationMs, null, null, null, null, error)
             );
         }
 

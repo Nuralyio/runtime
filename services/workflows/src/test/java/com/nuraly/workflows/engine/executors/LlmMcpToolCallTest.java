@@ -31,7 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,6 +82,7 @@ class LlmMcpToolCallTest {
         when(mockConn.isConnected()).thenReturn(true);
 
         // MCP returns text content
+        @SuppressWarnings("deprecation")
         CallToolResult toolResult = new CallToolResult(
                 List.of(new McpSchema.TextContent("Found: 42 results")),
                 null // isError = null (not an error)
@@ -179,6 +179,7 @@ class LlmMcpToolCallTest {
         when(mockConn.isConnected()).thenReturn(true);
 
         // MCP returns multiple text contents
+        @SuppressWarnings("deprecation")
         CallToolResult toolResult = new CallToolResult(
                 List.of(
                         new McpSchema.TextContent("Line 1"),

@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class McpConnector implements TriggerConnector {
 
     private static final Logger LOG = Logger.getLogger(McpConnector.class);
+    private static final String SERVER_URL = "serverUrl";
+    private static final String TRANSPORT_TYPE = "transportType";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<UUID, McpConnection> connections = new ConcurrentHashMap<>();
@@ -44,7 +46,7 @@ public class McpConnector implements TriggerConnector {
     public String getResourceKey(WorkflowTriggerEntity trigger) {
         try {
             JsonNode config = objectMapper.readTree(trigger.configuration);
-            String serverUrl = config.get("serverUrl").asText();
+            String serverUrl = config.get(SERVER_URL).asText();
             return "mcp:" + hashString(serverUrl);
         } catch (Exception e) {
             return "mcp:" + trigger.id.toString().substring(0, 8);
@@ -56,9 +58,9 @@ public class McpConnector implements TriggerConnector {
         return CompletableFuture.runAsync(() -> {
             try {
                 JsonNode config = objectMapper.readTree(trigger.configuration);
-                String serverUrl = config.get("serverUrl").asText();
-                String transportType = config.has("transportType")
-                        ? config.get("transportType").asText()
+                String serverUrl = config.get(SERVER_URL).asText();
+                String transportType = config.has(TRANSPORT_TYPE)
+                        ? config.get(TRANSPORT_TYPE).asText()
                         : "streamable_http";
 
                 McpConnection connection = new McpConnection(serverUrl, transportType);
@@ -85,7 +87,7 @@ public class McpConnector implements TriggerConnector {
 
             } catch (Exception e) {
                 LOG.errorf(e, "Failed to start MCP connection for trigger %s", trigger.id);
-                throw new RuntimeException("Failed to connect to MCP server", e);
+                throw new IllegalStateException("Failed to connect to MCP server", e);
             }
         });
     }
@@ -127,12 +129,12 @@ public class McpConnector implements TriggerConnector {
     public ValidationResult validateConfiguration(JsonNode configuration) {
         ValidationResult result = ValidationResult.valid();
 
-        if (!configuration.has("serverUrl") || configuration.get("serverUrl").asText().isEmpty()) {
+        if (!configuration.has(SERVER_URL) || configuration.get(SERVER_URL).asText().isEmpty()) {
             result.addError("serverUrl is required");
         }
 
-        if (configuration.has("transportType")) {
-            String transport = configuration.get("transportType").asText();
+        if (configuration.has(TRANSPORT_TYPE)) {
+            String transport = configuration.get(TRANSPORT_TYPE).asText();
             if (!"streamable_http".equals(transport) && !"sse".equals(transport)) {
                 result.addError("transportType must be 'streamable_http' or 'sse'");
             }
@@ -162,25 +164,29 @@ public class McpConnector implements TriggerConnector {
             return null;
         }
 
-        // Try to match by MCP node configuration (serverUrl) against trigger config
         String nodeServerUrl = extractServerUrl(node);
 
         for (var trigger : node.workflow.triggers) {
-            if (trigger.type == TriggerType.MCP) {
-                McpConnection conn = connections.get(trigger.id);
-                if (conn != null && conn.isConnected()) {
-                    // If we have a serverUrl, match it
-                    if (nodeServerUrl != null && nodeServerUrl.equals(conn.getServerUrl())) {
-                        return conn;
-                    }
-                    // Otherwise return the first connected MCP trigger
-                    if (nodeServerUrl == null) {
-                        return conn;
-                    }
-                }
+            McpConnection match = matchMcpTrigger(trigger, nodeServerUrl);
+            if (match != null) {
+                return match;
             }
         }
 
+        return null;
+    }
+
+    private McpConnection matchMcpTrigger(WorkflowTriggerEntity trigger, String nodeServerUrl) {
+        if (trigger.type != TriggerType.MCP) {
+            return null;
+        }
+        McpConnection conn = connections.get(trigger.id);
+        if (conn == null || !conn.isConnected()) {
+            return null;
+        }
+        if (nodeServerUrl == null || nodeServerUrl.equals(conn.getServerUrl())) {
+            return conn;
+        }
         return null;
     }
 
@@ -188,7 +194,7 @@ public class McpConnector implements TriggerConnector {
         if (node.configuration == null) return null;
         try {
             JsonNode config = objectMapper.readTree(node.configuration);
-            return config.has("serverUrl") ? config.get("serverUrl").asText() : null;
+            return config.has(SERVER_URL) ? config.get(SERVER_URL).asText() : null;
         } catch (Exception e) {
             return null;
         }
