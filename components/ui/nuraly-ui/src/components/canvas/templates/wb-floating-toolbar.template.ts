@@ -61,7 +61,8 @@ export function wbHasFill(node: WorkflowNode): boolean {
          node.type !== WhiteboardNodeType.SHAPE_LINE &&
          node.type !== WhiteboardNodeType.SHAPE_ARROW &&
          node.type !== WhiteboardNodeType.ANCHOR &&
-         node.type !== WhiteboardNodeType.WORKFLOW;
+         node.type !== WhiteboardNodeType.WORKFLOW &&
+         node.type !== WhiteboardNodeType.DATABASE;
 }
 
 export function wbHasBorder(node: WorkflowNode): boolean {
@@ -69,7 +70,8 @@ export function wbHasBorder(node: WorkflowNode): boolean {
          node.type === WhiteboardNodeType.SHAPE_RECTANGLE ||
          node.type === WhiteboardNodeType.IMAGE ||
          node.type === WhiteboardNodeType.FRAME ||
-         node.type === WhiteboardNodeType.WORKFLOW;
+         node.type === WhiteboardNodeType.WORKFLOW ||
+         node.type === WhiteboardNodeType.DATABASE;
 }
 
 // ==================== Template Interface ====================
