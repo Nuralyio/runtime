@@ -187,10 +187,21 @@ public class WorkflowEventService {
     }
 
     /**
+     * Bundles LLM request parameters for the started event.
+     */
+    public record LlmCallParams(Double temperature, Integer maxTokens, int toolCount) {}
+
+    /**
+     * Bundles LLM response metrics for the completed event.
+     */
+    public record LlmCallMetrics(long durationMs, Integer promptTokens, Integer completionTokens,
+                                  Integer totalTokens, String finishReason, String error) {}
+
+    /**
      * Log LLM call started - for agent UX feedback
      */
     public void logLlmCallStarted(WorkflowExecutionEntity execution, String nodeId, String nodeName,
-                                   String provider, String model, Double temperature, Integer maxTokens, int toolCount) {
+                                   String provider, String model, LlmCallParams params) {
         LOG.infof(">>> EMITTING LLM_CALL_STARTED: nodeId=%s, nodeName=%s, provider=%s, model=%s", nodeId, nodeName, provider, model);
         Map<String, Object> data = new HashMap<>();
         data.put("executionId", String.valueOf(execution.id));
@@ -200,12 +211,12 @@ public class WorkflowEventService {
         data.put("nodeName", nodeName);
         data.put("provider", provider);
         data.put("model", model);
-        data.put("toolCount", toolCount);
-        if (temperature != null) {
-            data.put("temperature", temperature);
+        data.put("toolCount", params.toolCount());
+        if (params.temperature() != null) {
+            data.put("temperature", params.temperature());
         }
-        if (maxTokens != null) {
-            data.put("maxTokens", maxTokens);
+        if (params.maxTokens() != null) {
+            data.put("maxTokens", params.maxTokens());
         }
         sendEvent("LLM_CALL_STARTED", data);
     }
@@ -215,8 +226,7 @@ public class WorkflowEventService {
      */
     public void logLlmCallCompleted(WorkflowExecutionEntity execution, String nodeId, String nodeName,
                                      String provider, String model, int iteration,
-                                     long durationMs, Integer promptTokens, Integer completionTokens,
-                                     Integer totalTokens, String finishReason, String error) {
+                                     LlmCallMetrics metrics) {
         LOG.infof(">>> EMITTING LLM_CALL_COMPLETED: nodeId=%s, iteration=%d", nodeId, iteration);
         Map<String, Object> data = new HashMap<>();
         data.put("executionId", String.valueOf(execution.id));
@@ -227,21 +237,21 @@ public class WorkflowEventService {
         data.put("provider", provider);
         data.put("model", model);
         data.put("iteration", iteration);
-        data.put("durationMs", durationMs);
-        if (promptTokens != null) {
-            data.put("promptTokens", promptTokens);
+        data.put("durationMs", metrics.durationMs());
+        if (metrics.promptTokens() != null) {
+            data.put("promptTokens", metrics.promptTokens());
         }
-        if (completionTokens != null) {
-            data.put("completionTokens", completionTokens);
+        if (metrics.completionTokens() != null) {
+            data.put("completionTokens", metrics.completionTokens());
         }
-        if (totalTokens != null) {
-            data.put("totalTokens", totalTokens);
+        if (metrics.totalTokens() != null) {
+            data.put("totalTokens", metrics.totalTokens());
         }
-        if (finishReason != null) {
-            data.put("finishReason", finishReason);
+        if (metrics.finishReason() != null) {
+            data.put("finishReason", metrics.finishReason());
         }
-        if (error != null) {
-            data.put("error", error);
+        if (metrics.error() != null) {
+            data.put("error", metrics.error());
         }
         sendEvent("LLM_CALL_COMPLETED", data);
     }

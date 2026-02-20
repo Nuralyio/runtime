@@ -1,6 +1,5 @@
 package com.nuraly.workflows.triggers.connectors;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nuraly.workflows.entity.WorkflowEntity;
@@ -46,7 +45,7 @@ class McpConnectorTest {
     // ------------------------------------------------------------------
 
     @Test
-    void resourceKeyBasedOnServerUrl() throws Exception {
+    void resourceKeyBasedOnServerUrl() {
         WorkflowTriggerEntity trigger = createTrigger(
                 "{\"serverUrl\":\"http://localhost:3000/mcp\"}");
 
@@ -56,7 +55,7 @@ class McpConnectorTest {
     }
 
     @Test
-    void resourceKeyDifferentForDifferentUrls() throws Exception {
+    void resourceKeyDifferentForDifferentUrls() {
         WorkflowTriggerEntity trigger1 = createTrigger(
                 "{\"serverUrl\":\"http://server-a/mcp\"}");
         WorkflowTriggerEntity trigger2 = createTrigger(
@@ -69,7 +68,7 @@ class McpConnectorTest {
     }
 
     @Test
-    void resourceKeySameForSameUrl() throws Exception {
+    void resourceKeySameForSameUrl() {
         WorkflowTriggerEntity trigger1 = createTrigger(
                 "{\"serverUrl\":\"http://same-server/mcp\"}");
         WorkflowTriggerEntity trigger2 = createTrigger(
@@ -96,7 +95,7 @@ class McpConnectorTest {
     // ------------------------------------------------------------------
 
     @Test
-    void validConfigurationAccepted() throws Exception {
+    void validConfigurationAccepted() {
         ObjectNode config = objectMapper.createObjectNode();
         config.put("serverUrl", "http://localhost:3000/mcp");
         config.put("transportType", "streamable_http");
@@ -107,7 +106,7 @@ class McpConnectorTest {
     }
 
     @Test
-    void validConfigurationWithSseTransport() throws Exception {
+    void validConfigurationWithSseTransport() {
         ObjectNode config = objectMapper.createObjectNode();
         config.put("serverUrl", "http://localhost:3000/sse");
         config.put("transportType", "sse");

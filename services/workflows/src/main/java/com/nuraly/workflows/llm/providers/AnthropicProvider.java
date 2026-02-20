@@ -276,10 +276,6 @@ public class AnthropicProvider implements LlmProvider {
         return node;
     }
 
-    private LlmResponse parseResponse(String responseBody) {
-        return parseResponse(responseBody, null);
-    }
-
     private LlmResponse parseResponse(String responseBody, String structuredOutputToolName) {
         try {
             JsonNode json = objectMapper.readTree(responseBody);

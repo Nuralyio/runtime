@@ -16,7 +16,6 @@ import com.nuraly.workflows.llm.LlmResilienceService;
 import com.nuraly.workflows.llm.LlmResilienceService.ResilienceConfig;
 import com.nuraly.workflows.llm.StreamingLlmProvider;
 import com.nuraly.workflows.llm.StructuredOutputFallback;
-import com.nuraly.workflows.llm.StreamingLlmProvider.StreamToken;
 import com.nuraly.workflows.llm.dto.*;
 import com.nuraly.workflows.engine.memory.ContextMemoryStore;
 import com.nuraly.workflows.service.WorkflowEventService;
@@ -81,6 +80,15 @@ public class LlmNodeExecutor implements NodeExecutor {
     private static final String RETRY = "retry";
     private static final String FALLBACK = "fallback";
     private static final String PROVIDERS = "providers";
+    private static final String PROVIDER_KEY = "provider";
+    private static final String NODE_ID_KEY = "nodeId";
+    private static final String NODE_NAME_KEY = "nodeName";
+    private static final String PROMPT_TOKENS = "promptTokens";
+    private static final String COMPLETION_TOKENS = "completionTokens";
+    private static final String TOTAL_TOKENS = "totalTokens";
+    private static final String ERROR_KEY = "error";
+    private static final String DURATION_MS_KEY = "durationMs";
+    private static final String FINISH_REASON_KEY = "finishReason";
 
     @Inject
     LlmProviderFactory providerFactory;
@@ -167,7 +175,7 @@ public class LlmNodeExecutor implements NodeExecutor {
     private ProviderConfig resolveProviderAndCredentials(JsonNode config, ExecutionContext context) {
         ProviderConfig result = new ProviderConfig();
 
-        result.providerName = config.has("provider") ? config.get("provider").asText() : "openai";
+        result.providerName = config.has(PROVIDER_KEY) ? config.get(PROVIDER_KEY).asText() : "openai";
         result.provider = providerFactory.getProvider(result.providerName);
         if (result.provider == null) {
             result.error = "Unknown LLM provider: " + result.providerName;
@@ -426,7 +434,7 @@ public class LlmNodeExecutor implements NodeExecutor {
         if (context.getExecution() != null) {
             eventService.logLlmCallStarted(
                     context.getExecution(), node.id.toString(), node.name, providerName, model,
-                    temperature, maxTokens, toolCount);
+                    new WorkflowEventService.LlmCallParams(temperature, maxTokens, toolCount));
         }
     }
 
@@ -437,29 +445,26 @@ public class LlmNodeExecutor implements NodeExecutor {
                                              String providerName, String model, int iterations,
                                              long durationMs, LlmResponse response) {
         if (context.getExecution() != null) {
-            Integer promptTokens = null;
-            Integer completionTokens = null;
-            Integer totalTokens = null;
-            String finishReason = null;
-            String error = null;
-
-            if (response != null) {
-                if (response.getUsage() != null) {
-                    promptTokens = response.getUsage().getPromptTokens();
-                    completionTokens = response.getUsage().getCompletionTokens();
-                    totalTokens = response.getUsage().getTotalTokens();
-                }
-                if (response.getFinishReason() != null) {
-                    finishReason = response.getFinishReason().name();
-                }
-                error = response.getError();
-            }
-
+            WorkflowEventService.LlmCallMetrics metrics = buildLlmCallMetrics(durationMs, response);
             eventService.logLlmCallCompleted(
                     context.getExecution(), node.id.toString(), node.name, providerName, model,
-                    iterations, durationMs, promptTokens, completionTokens, totalTokens,
-                    finishReason, error);
+                    iterations, metrics);
         }
+    }
+
+    /**
+     * Builds LlmCallMetrics from an LlmResponse.
+     */
+    private WorkflowEventService.LlmCallMetrics buildLlmCallMetrics(long durationMs, LlmResponse response) {
+        if (response == null) {
+            return new WorkflowEventService.LlmCallMetrics(durationMs, null, null, null, null, null);
+        }
+        Integer promptTokens = response.getUsage() != null ? response.getUsage().getPromptTokens() : null;
+        Integer completionTokens = response.getUsage() != null ? response.getUsage().getCompletionTokens() : null;
+        Integer totalTokens = response.getUsage() != null ? response.getUsage().getTotalTokens() : null;
+        String finishReason = response.getFinishReason() != null ? response.getFinishReason().name() : null;
+        return new WorkflowEventService.LlmCallMetrics(durationMs, promptTokens, completionTokens,
+                totalTokens, finishReason, response.getError());
     }
 
     /**
@@ -473,37 +478,58 @@ public class LlmNodeExecutor implements NodeExecutor {
         }
 
         try {
-            Map<String, Object> data = new HashMap<>();
-            data.put("executionId", context.getExecution().id.toString());
-            data.put("workflowId", context.getExecution().workflow.id.toString());
-            data.put("nodeId", node.id.toString());
-            data.put("nodeName", node.name);
-            data.put("provider", providerName);
-            data.put("model", model);
-            data.put("iteration", iterations);
-            data.put("durationMs", durationMs);
-
-            if (response != null) {
-                data.put("promptTokens", response.getUsage() != null ? response.getUsage().getPromptTokens() : 0);
-                data.put("completionTokens", response.getUsage() != null ? response.getUsage().getCompletionTokens() : 0);
-                data.put("totalTokens", response.getUsage() != null ? response.getUsage().getTotalTokens() : 0);
-                data.put("finishReason", response.getFinishReason() != null ? response.getFinishReason().name() : "");
-                data.put("toolCallCount", response.hasToolCalls() ? response.getToolCalls().size() : 0);
-                data.put("status", response.isSuccess() ? "SUCCESS" : "ERROR");
-
-                if (response.isSuccess()) {
-                    logClient.info("llm", null, data);
-                } else {
-                    data.put("error", response.getError() != null ? response.getError() : "unknown");
-                    logClient.error("llm", null, data);
-                }
-            } else {
-                data.put("status", "ERROR");
-                data.put("error", "null response from provider");
-                logClient.error("llm", null, data);
-            }
+            Map<String, Object> data = buildJournalData(context, node, providerName, model, iterations, durationMs);
+            populateResponseMetrics(data, response);
         } catch (Exception e) {
             LOG.warnf("Failed to log LLM call to journal: %s", e.getMessage());
+        }
+    }
+
+    /**
+     * Builds the base journal data map with execution context fields.
+     */
+    private Map<String, Object> buildJournalData(ExecutionContext context, WorkflowNodeEntity node,
+                                                   String providerName, String model, int iterations,
+                                                   long durationMs) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("executionId", context.getExecution().id.toString());
+        data.put("workflowId", context.getExecution().workflow.id.toString());
+        data.put(NODE_ID_KEY, node.id.toString());
+        data.put(NODE_NAME_KEY, node.name);
+        data.put(PROVIDER_KEY, providerName);
+        data.put(MODEL, model);
+        data.put("iteration", iterations);
+        data.put(DURATION_MS_KEY, durationMs);
+        return data;
+    }
+
+    /**
+     * Populates response metrics into the journal data map and sends the log.
+     */
+    private void populateResponseMetrics(Map<String, Object> data, LlmResponse response) {
+        if (response == null) {
+            data.put("status", "ERROR");
+            data.put(ERROR_KEY, "null response from provider");
+            logClient.error("llm", null, data);
+            return;
+        }
+
+        int promptTkns = response.getUsage() != null ? response.getUsage().getPromptTokens() : 0;
+        int completionTkns = response.getUsage() != null ? response.getUsage().getCompletionTokens() : 0;
+        int totalTkns = response.getUsage() != null ? response.getUsage().getTotalTokens() : 0;
+
+        data.put(PROMPT_TOKENS, promptTkns);
+        data.put(COMPLETION_TOKENS, completionTkns);
+        data.put(TOTAL_TOKENS, totalTkns);
+        data.put(FINISH_REASON_KEY, response.getFinishReason() != null ? response.getFinishReason().name() : "");
+        data.put("toolCallCount", response.hasToolCalls() ? response.getToolCalls().size() : 0);
+        data.put("status", response.isSuccess() ? "SUCCESS" : "ERROR");
+
+        if (response.isSuccess()) {
+            logClient.info("llm", null, data);
+        } else {
+            data.put(ERROR_KEY, response.getError() != null ? response.getError() : "unknown");
+            logClient.error("llm", null, data);
         }
     }
 

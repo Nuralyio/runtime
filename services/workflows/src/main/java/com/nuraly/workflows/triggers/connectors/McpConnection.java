@@ -4,7 +4,6 @@ import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.HttpClientSseClientTransport;
 import io.modelcontextprotocol.client.transport.HttpClientStreamableHttpTransport;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ListToolsResult;
@@ -35,7 +34,7 @@ public class McpConnection {
     private final String serverUrl;
     private final String transportType; // "streamable_http" or "sse"
 
-    private volatile McpSyncClient client;
+    private final AtomicReference<McpSyncClient> clientRef = new AtomicReference<>();
     private final AtomicReference<ListToolsResult> cachedTools = new AtomicReference<>();
     private final AtomicBoolean connected = new AtomicBoolean(false);
     private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -63,11 +62,12 @@ public class McpConnection {
 
             McpClientTransport transport = createTransport();
 
-            client = McpClient.sync(transport)
+            McpSyncClient newClient = McpClient.sync(transport)
                     .requestTimeout(REQUEST_TIMEOUT)
                     .build();
 
-            client.initialize();
+            newClient.initialize();
+            clientRef.set(newClient);
 
             // Cache tools on connect
             refreshTools();
@@ -86,7 +86,7 @@ public class McpConnection {
             connected.set(false);
             lastError = e.getMessage();
             LOG.errorf(e, "Failed to connect to MCP server: %s", serverUrl);
-            throw new RuntimeException("Failed to connect to MCP server: " + serverUrl, e);
+            throw new IllegalStateException("Failed to connect to MCP server: " + serverUrl, e);
         }
     }
 
@@ -94,9 +94,9 @@ public class McpConnection {
      * Refresh the cached tool list from the MCP server.
      */
     public void refreshTools() {
-        if (client == null) return;
+        if (clientRef.get() == null) return;
         try {
-            ListToolsResult tools = client.listTools();
+            ListToolsResult tools = clientRef.get().listTools();
             cachedTools.set(tools);
             LOG.debugf("Refreshed MCP tools: %d tools available", tools.tools().size());
         } catch (Exception e) {
@@ -115,14 +115,13 @@ public class McpConnection {
      * Call a tool on the MCP server.
      */
     public CallToolResult callTool(String name, Map<String, Object> arguments) {
-        if (!connected.get() || client == null) {
+        if (!connected.get() || clientRef.get() == null) {
             throw new IllegalStateException("Not connected to MCP server");
         }
 
         try {
             lastToolCallAt = Instant.now();
-            CallToolResult result = client.callTool(new CallToolRequest(name, arguments));
-            return result;
+            return clientRef.get().callTool(new CallToolRequest(name, arguments));
         } catch (Exception e) {
             LOG.errorf("MCP tool call failed: %s - %s", name, e.getMessage());
             // Mark as disconnected if it's a connection error
@@ -130,7 +129,7 @@ public class McpConnection {
                 connected.set(false);
                 lastError = "Connection lost during tool call: " + e.getMessage();
             }
-            throw new RuntimeException("MCP tool call failed: " + name, e);
+            throw new IllegalStateException("MCP tool call failed: " + name, e);
         }
     }
 
@@ -146,14 +145,7 @@ public class McpConnection {
             reconnectExecutor = null;
         }
 
-        if (client != null) {
-            try {
-                client.closeGracefully();
-            } catch (Exception e) {
-                LOG.warnf("Error closing MCP client: %s", e.getMessage());
-            }
-            client = null;
-        }
+        closeClientQuietly(clientRef.getAndSet(null));
 
         cachedTools.set(null);
         LOG.infof("Disconnected from MCP server: %s", serverUrl);
@@ -213,15 +205,12 @@ public class McpConnection {
                     newClient.initialize();
 
                     // Swap client
-                    McpSyncClient oldClient = client;
-                    client = newClient;
+                    McpSyncClient oldClient = clientRef.getAndSet(newClient);
                     refreshTools();
                     connected.set(true);
                     lastError = null;
 
-                    if (oldClient != null) {
-                        try { oldClient.closeGracefully(); } catch (Exception ignored) {}
-                    }
+                    closeClientQuietly(oldClient);
 
                     LOG.infof("MCP reconnect successful: %s", serverUrl);
                 } catch (Exception e) {
@@ -230,6 +219,16 @@ public class McpConnection {
                 }
             }
         }, RECONNECT_DELAY_SECONDS, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private static void closeClientQuietly(McpSyncClient client) {
+        if (client != null) {
+            try {
+                client.close();
+            } catch (Exception e) {
+                LOG.warnf("Error closing MCP client: %s", e.getMessage());
+            }
+        }
     }
 
     private boolean isConnectionError(Exception e) {
