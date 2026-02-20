@@ -126,6 +126,7 @@ export enum WhiteboardNodeType {
   MERMAID = 'WB_MERMAID',
   ANCHOR = 'WB_ANCHOR',
   WORKFLOW = 'WB_WORKFLOW',
+  DATABASE = 'WB_DATABASE',
 }
 
 /**
@@ -417,6 +418,11 @@ export interface NodeConfiguration {
   workflowId?: string;
   workflowName?: string;
   workflowSteps?: Array<{ name: string; type: string }>;
+  // Whiteboard Database node
+  dbTableId?: string;
+  dbTableName?: string;
+  dbTableColumns?: Array<{ name: string; type: string; nullable?: boolean }>;
+  dbPrimaryKey?: string;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -688,6 +694,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WhiteboardNodeType.MERMAID]: '#8b5cf6',
   [WhiteboardNodeType.ANCHOR]: '#f59e0b',
   [WhiteboardNodeType.WORKFLOW]: '#6366f1',
+  [WhiteboardNodeType.DATABASE]: '#64748b',
 };
 
 /**
@@ -794,6 +801,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WhiteboardNodeType.MERMAID]: 'git-branch',
   [WhiteboardNodeType.ANCHOR]: 'anchor',
   [WhiteboardNodeType.WORKFLOW]: 'layers',
+  [WhiteboardNodeType.DATABASE]: 'table',
 };
 
 /**
@@ -2304,6 +2312,26 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       workflowId: '',
       workflowName: 'Workflow',
       workflowSteps: [],
+      width: 280,
+      height: 200,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'In' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Out' }],
+    },
+  },
+  {
+    type: WhiteboardNodeType.DATABASE,
+    name: 'Database Table',
+    description: 'Embed a database table on the whiteboard',
+    icon: NODE_ICONS[WhiteboardNodeType.DATABASE],
+    color: NODE_COLORS[WhiteboardNodeType.DATABASE],
+    category: 'wb-media',
+    defaultConfig: {
+      dbTableId: '',
+      dbTableName: 'Table',
+      dbTableColumns: [],
+      dbPrimaryKey: '',
       width: 280,
       height: 200,
     },

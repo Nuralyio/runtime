@@ -429,6 +429,106 @@ export const whiteboardNodeStyles = css`
     font-size: 12px;
   }
 
+  /* ---- Database ---- */
+  .node-container.wb-database {
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--nuraly-color-surface, #ffffff);
+    border: 1px solid var(--nuraly-color-border, #e5e7eb);
+    width: var(--wb-width, 280px);
+    height: var(--wb-height, 200px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wb-database-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .wb-database-header nr-icon {
+    color: rgba(255, 255, 255, 0.9);
+    flex-shrink: 0;
+  }
+
+  .wb-database-header-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wb-database-body {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--nuraly-color-surface, #ffffff);
+  }
+
+  .wb-database-columns {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wb-database-column {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--nuraly-color-text, #1a1a1a);
+    border-bottom: 1px solid var(--nuraly-color-border, #f3f4f6);
+  }
+
+  .wb-database-column:last-child {
+    border-bottom: none;
+  }
+
+  .wb-database-column nr-icon {
+    color: var(--nuraly-color-text-secondary, #6b7280);
+    flex-shrink: 0;
+  }
+
+  .wb-database-column.primary-key nr-icon {
+    color: #f59e0b;
+  }
+
+  .wb-database-column-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .wb-database-column-type {
+    font-size: 11px;
+    color: var(--nuraly-color-text-secondary, #888);
+    flex-shrink: 0;
+  }
+
+  .wb-database-column-required {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .wb-database-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--nuraly-color-text-secondary, #888);
+    font-size: 12px;
+  }
+
   /* ---- Anchor ---- */
   .wb-anchor {
     display: flex;

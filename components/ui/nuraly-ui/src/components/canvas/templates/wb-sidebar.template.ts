@@ -143,6 +143,13 @@ export function renderWbSidebarTemplate(data: WbSidebarTemplateData): TemplateRe
       >
         <nr-icon name="layers" size="small"></nr-icon>
       </button>
+      <button
+        class="wb-sidebar-btn"
+        @click=${() => data.onAddNode(WhiteboardNodeType.DATABASE)}
+        title="Database Table"
+      >
+        <nr-icon name="table" size="small"></nr-icon>
+      </button>
 
       <div class="wb-sidebar-divider"></div>
 

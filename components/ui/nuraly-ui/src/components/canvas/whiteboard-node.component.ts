@@ -590,6 +590,59 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
     `;
   }
 
+  private renderWbDatabase(classes: Record<string, boolean>, styles: Record<string, string>, config: Record<string, unknown>) {
+    const tableName = (config.dbTableName as string) || 'Table';
+    const columns = (config.dbTableColumns as Array<{ name: string; type: string; nullable?: boolean }>) || [];
+    const primaryKey = (config.dbPrimaryKey as string) || '';
+    const headerColor = NODE_COLORS[WhiteboardNodeType.DATABASE] || '#64748b';
+
+    return html`
+      <div
+        class=${classMap({ ...classes, 'wb-database': true })}
+        style=${styleMap(styles)}
+        data-theme=${this.currentTheme}
+        @mousedown=${this.handleNodeMouseDown}
+        @dblclick=${this.handleNodeDblClick}
+      >
+        <div class="wb-database-header" style="background: ${headerColor};">
+          <nr-icon name="table" size="small"></nr-icon>
+          <span class="wb-database-header-name">${tableName}</span>
+        </div>
+        <div class="wb-database-body">
+          ${columns.length > 0 ? html`
+            <div class="wb-database-columns">
+              ${columns.map(col => html`
+                <div class="wb-database-column ${col.name === primaryKey ? 'primary-key' : ''}">
+                  <nr-icon name=${col.name === primaryKey ? 'key' : this._getColumnTypeIcon(col.type)} size="small"></nr-icon>
+                  <span class="wb-database-column-name">${col.name}</span>
+                  <span class="wb-database-column-type">${col.type}</span>
+                  ${col.nullable === false ? html`<span class="wb-database-column-required">*</span>` : nothing}
+                </div>
+              `)}
+            </div>
+          ` : html`
+            <div class="wb-database-empty">
+              <nr-icon name="table" size="large"></nr-icon>
+              <span>Double-click to configure</span>
+            </div>
+          `}
+        </div>
+        ${this.selected ? html`<div class="wb-resize-handle" @mousedown=${this.handleWbResizeStart}></div>` : nothing}
+      </div>
+    `;
+  }
+
+  private _getColumnTypeIcon(type: string): string {
+    const t = type.toLowerCase();
+    if (['number', 'int', 'integer', 'decimal', 'float', 'bigint', 'numeric'].some(k => t.includes(k))) return 'hash';
+    if (['date', 'datetime', 'timestamp', 'time'].some(k => t.includes(k))) return 'calendar';
+    if (['boolean', 'bool'].some(k => t.includes(k))) return 'toggle-right';
+    if (['json', 'array', 'jsonb'].some(k => t.includes(k))) return 'braces';
+    if (['text', 'varchar', 'char', 'string'].some(k => t.includes(k))) return 'type';
+    if (['blob', 'binary', 'bytea'].some(k => t.includes(k))) return 'file';
+    return 'minus';
+  }
+
   private _getStepIcon(type: string): string {
     const iconMap: Record<string, string> = {
       START: 'play',
@@ -757,6 +810,10 @@ export class WhiteboardNodeElement extends NuralyUIBaseMixin(LitElement) {
 
       case WhiteboardNodeType.WORKFLOW:
         nodeContent = this.renderWbWorkflow(containerClasses, containerStyles, config);
+        break;
+
+      case WhiteboardNodeType.DATABASE:
+        nodeContent = this.renderWbDatabase(containerClasses, containerStyles, config);
         break;
 
       case WhiteboardNodeType.SHAPE_RECTANGLE:
