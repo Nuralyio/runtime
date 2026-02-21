@@ -1,17 +1,21 @@
 #!/bin/bash
 # claude-autonomous-worker.sh
 # Run in tmux on your dev VM and forget about it
-# Supports tickets that touch one or multiple submodules
+#
+# Tickets live in EACH service repo (e.g. Nuralyio/studio, Nuralyio/api).
+# The worker polls all submodule repos for "claude-fix" labelled issues.
+# No tickets on the stack repo — each project tracks its own issues.
 #
 # IMPORTANT: All tests/lints run inside Docker containers.
 # Each iteration starts FRESH: hard-reset to main, clean Docker state.
 #
 # Features:
-# - Creates PRs in EACH affected submodule repo + the stack repo
+# - Polls all submodule repos for claude-fix issues
+# - Creates PR in the service repo + updates the stack pointer
 # - Label-based locking (claude-in-progress / claude-done / claude-failed)
 # - Continue from comments: add "claude-continue" label to resume work
 
-REPO="Nuralyio/stack"
+STACK_REPO="Nuralyio/stack"
 PROJECT_DIR="/home/gateway/stack"
 PROJECT_MAP="$PROJECT_DIR/.claude/project-map.yml"
 PROCESSED="$PROJECT_DIR/.processed_issues"
@@ -32,8 +36,12 @@ get_config() {
   yq -r ".submodules.${module}.${key}" "$PROJECT_MAP"
 }
 
+# Get all submodule names from project map
+get_all_modules() {
+  yq -r '.submodules | keys | .[]' "$PROJECT_MAP"
+}
+
 # Get the GitHub org/repo from a submodule's remote URL
-# e.g. git@github.com:Nuralyio/studio.git -> Nuralyio/studio
 get_submodule_repo() {
   local mod_path=$1
   cd "$PROJECT_DIR/$mod_path"
@@ -41,11 +49,19 @@ get_submodule_repo() {
   echo "$url" | sed -E 's|.*github\.com[:/]||; s|\.git$||'
 }
 
-# Parse checked submodules from issue body
-# GitHub checkboxes render as: - [X] studio
-parse_submodules() {
-  local body="$1"
-  echo "$body" | grep -oP '\- \[X\] \K[\w-]+' | tr '\n' ' '
+# Resolve module name from a GitHub repo name
+# e.g. Nuralyio/studio -> studio, Nuralyio/workflow -> workflows
+resolve_module_from_repo() {
+  local repo=$1
+  for MOD in $(get_all_modules); do
+    local mod_path=$(get_config "$MOD" "path")
+    local mod_repo=$(get_submodule_repo "$mod_path")
+    if [ "$mod_repo" = "$repo" ]; then
+      echo "$MOD"
+      return
+    fi
+  done
+  echo ""
 }
 
 # Build module context block for Claude prompt
@@ -81,45 +97,116 @@ build_allowed_paths() {
   echo "${paths%, }"
 }
 
-# Run SonarQube for a single module, return gate status
-run_sonar_for_module() {
-  local mod=$1
-  local mod_path=$(get_config "$mod" "path")
-  local mod_sonar=$(get_config "$mod" "sonar_key")
+# Wait for PR CI checks to complete
+# Returns: PASS, FAIL, TIMEOUT, or SKIPPED
+wait_for_pr_checks() {
+  local repo=$1
+  local pr_number=$2
+  local timeout=${3:-900}  # 15 minutes default
 
-  # Skip modules without a sonar key
-  if [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
-    echo "OK"
+  if [ -z "$pr_number" ] || [ "$pr_number" = "null" ]; then
+    echo "SKIPPED"
     return
   fi
 
-  cd "$PROJECT_DIR/$mod_path"
+  echo "  Waiting for CI checks on $repo PR #$pr_number (timeout: ${timeout}s)..."
 
-  sonar-scanner \
-    -Dsonar.projectKey="$mod_sonar" \
-    -Dsonar.sources=. \
-    -Dsonar.host.url="$SONAR_URL" \
-    -Dsonar.token="$SONAR_TOKEN"
+  local elapsed=0
+  local interval=30
 
-  local task_id=$(grep "ceTaskId" .scannerwork/report-task.txt | cut -d'=' -f2)
-  for i in $(seq 1 60); do
-    local status=$(curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/ce/task?id=$task_id" | jq -r '.task.status')
-    [ "$status" = "SUCCESS" ] || [ "$status" = "FAILED" ] && break
-    sleep 10
+  while [ "$elapsed" -lt "$timeout" ]; do
+    local checks=$(gh pr checks "$pr_number" --repo "$repo" --json bucket 2>/dev/null)
+
+    # No checks registered yet — give CI a moment to start
+    if [ -z "$checks" ] || [ "$checks" = "[]" ] || [ "$checks" = "null" ]; then
+      if [ "$elapsed" -gt 120 ]; then
+        echo "  No CI checks found after 2 min, skipping"
+        echo "SKIPPED"
+        return
+      fi
+      sleep "$interval"
+      elapsed=$((elapsed + interval))
+      continue
+    fi
+
+    local pending=$(echo "$checks" | jq '[.[] | select(.bucket == "pending")] | length' 2>/dev/null)
+
+    if [ "$pending" = "0" ] || [ -z "$pending" ]; then
+      local failed=$(echo "$checks" | jq '[.[] | select(.bucket == "fail")] | length' 2>/dev/null)
+      if [ "$failed" -gt 0 ] && [ "$failed" != "0" ]; then
+        echo "  CI checks failed ($failed failures)"
+        echo "FAIL"
+      else
+        echo "  CI checks passed"
+        echo "PASS"
+      fi
+      return
+    fi
+
+    echo "  ... $pending check(s) still running (${elapsed}s elapsed)"
+    sleep "$interval"
+    elapsed=$((elapsed + interval))
   done
 
-  curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/qualitygates/project_status?projectKey=$mod_sonar" | \
-    jq -r '.projectStatus.status'
+  echo "  CI checks timed out after ${timeout}s"
+  echo "TIMEOUT"
+}
+
+# Run SonarQube quality gate check for a module via API (no local scanner needed)
+# Uses sonar.nuraly.io REST API — if project not found, returns SKIPPED
+run_sonar_for_module() {
+  local mod=$1
+  local mod_sonar=$(get_config "$mod" "sonar_key")
+
+  if [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  if [ -z "$SONAR_TOKEN" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  # Search for the project on SonarQube (keys have UUID suffixes)
+  local search_result=$(curl -s -u "$SONAR_TOKEN:" \
+    "$SONAR_URL/api/projects/search?q=$mod_sonar" 2>/dev/null)
+
+  # Find the actual project key that starts with our prefix
+  local actual_key=$(echo "$search_result" | \
+    jq -r ".components[]? | select(.key | startswith(\"$mod_sonar\")) | .key" 2>/dev/null | head -1)
+
+  if [ -z "$actual_key" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  # Check quality gate status
+  local gate_result=$(curl -s -u "$SONAR_TOKEN:" \
+    "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null)
+
+  # Check for API errors (project not found, etc.)
+  local has_error=$(echo "$gate_result" | jq -r '.errors // empty' 2>/dev/null)
+  if [ -n "$has_error" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  local status=$(echo "$gate_result" | jq -r '.projectStatus.status' 2>/dev/null)
+  if [ -z "$status" ] || [ "$status" = "null" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  echo "$status"
 }
 
 # ============================================
-# Setup fresh environment for a new ticket
+# Setup fresh environment
 # ============================================
 setup_fresh_env() {
   local branch=$1
-  local submodules=$2
+  local module=$2
 
   cd "$PROJECT_DIR"
   docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
@@ -129,15 +216,14 @@ setup_fresh_env() {
   git clean -fd
   git pull origin main
   git submodule update --init --recursive
-  git submodule foreach --recursive 'git checkout . && git clean -fd'
+  git submodule foreach --recursive 'git checkout . 2>/dev/null; git clean -fd 2>/dev/null; true'
 
   git branch -D "$branch" 2>/dev/null || true
   git checkout -b "$branch"
 
-  for MOD in $submodules; do
-    MOD_PATH=$(get_config "$MOD" "path")
-    (cd "$PROJECT_DIR/$MOD_PATH" && git checkout -b "$branch" 2>/dev/null || true)
-  done
+  # Create matching branch in the affected submodule
+  local mod_path=$(get_config "$module" "path")
+  (cd "$PROJECT_DIR/$mod_path" && git checkout -b "$branch" 2>/dev/null || true)
 
   docker compose -f "$COMPOSE_FILE" up -d
 }
@@ -147,7 +233,7 @@ setup_fresh_env() {
 # ============================================
 setup_continue_env() {
   local branch=$1
-  local submodules=$2
+  local module=$2
 
   cd "$PROJECT_DIR"
   docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
@@ -158,131 +244,106 @@ setup_continue_env() {
   git pull origin main
   git submodule update --init --recursive
 
-  # Try to checkout the existing fix branch
   git checkout "$branch" 2>/dev/null || git checkout -b "$branch" "origin/$branch" 2>/dev/null || {
     echo "✗ Branch $branch not found, falling back to fresh"
     git checkout -b "$branch"
   }
 
-  for MOD in $submodules; do
-    MOD_PATH=$(get_config "$MOD" "path")
-    (cd "$PROJECT_DIR/$MOD_PATH" && git fetch origin 2>/dev/null && git checkout "$branch" 2>/dev/null || true)
-  done
+  local mod_path=$(get_config "$module" "path")
+  (cd "$PROJECT_DIR/$mod_path" && git fetch origin 2>/dev/null && git checkout "$branch" 2>/dev/null || true)
 
   docker compose -f "$COMPOSE_FILE" up -d
 }
 
 # ============================================
-# Push submodule branches, create per-module PRs, collect branch map
+# Push and create PRs (service repo + stack)
 # ============================================
 push_and_create_prs() {
-  local n=$1
+  local issue_number=$1
   local branch=$2
-  local submodules=$3
+  local module=$3
   local title=$4
+  local issue_repo=$5
 
-  BRANCH_MAP="| Repo | Branch | Commit | PR |\n|---|---|---|---|"
-  BRANCH_MAP+="\n| **stack** | \`$branch\` | \`$(git rev-parse --short HEAD)\` | — |"
+  local mod_path=$(get_config "$module" "path")
+  cd "$PROJECT_DIR/$mod_path"
 
-  ALL_PR_URLS=""
+  local mod_sha=$(git rev-parse --short HEAD 2>/dev/null)
+  local mod_branch=$(git branch --show-current 2>/dev/null)
+  local mod_diff=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
 
-  for MOD in $submodules; do
-    MOD_PATH=$(get_config "$MOD" "path")
-    cd "$PROJECT_DIR/$MOD_PATH"
+  SERVICE_PR_URL=""
+  if [ "$mod_diff" -gt 0 ] && [ "$mod_branch" = "$branch" ]; then
+    git push origin "$branch" 2>/dev/null
 
-    MOD_SHA=$(git rev-parse --short HEAD 2>/dev/null)
-    MOD_BRANCH=$(git branch --show-current 2>/dev/null)
-    MOD_REPO=$(get_submodule_repo "$MOD_PATH")
-
-    if [ -n "$MOD_BRANCH" ] && [ "$MOD_BRANCH" = "$branch" ]; then
-      MOD_DIFF=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
-
-      if [ "$MOD_DIFF" -gt 0 ]; then
-        git push origin "$branch" 2>/dev/null
-
-        # Create PR (safe to call if PR already exists — gh returns error, we catch it)
-        MOD_PR_URL=$(gh pr create \
-          --repo "$MOD_REPO" \
-          --head "$branch" \
-          --title "Fix #$n: $title" \
-          --body "Automated fix from [stack issue #$n](https://github.com/$REPO/issues/$n)
-
-Part of stack branch \`$branch\`" \
-          --base main 2>/dev/null) || MOD_PR_URL=""
-
-        if [ -n "$MOD_PR_URL" ]; then
-          BRANCH_MAP+="\n| **$MOD** | \`$branch\` | \`$MOD_SHA\` | $MOD_PR_URL |"
-          ALL_PR_URLS+="- **$MOD**: $MOD_PR_URL\n"
-        else
-          # PR probably already exists
-          EXISTING_PR=$(gh pr list --repo "$MOD_REPO" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
-          BRANCH_MAP+="\n| **$MOD** | \`$branch\` | \`$MOD_SHA\` | ${EXISTING_PR:-updated} |"
-          [ -n "$EXISTING_PR" ] && ALL_PR_URLS+="- **$MOD**: $EXISTING_PR (updated)\n"
-        fi
-      else
-        BRANCH_MAP+="\n| **$MOD** | (no changes) | \`$MOD_SHA\` | — |"
-      fi
-    else
-      BRANCH_MAP+="\n| **$MOD** | (no changes) | \`$MOD_SHA\` | — |"
-    fi
-  done
-
-  cd "$PROJECT_DIR"
-  git push origin "$branch"
-
-  # Create stack PR (or get existing)
-  STACK_PR_URL=$(gh pr create \
-    --repo "$REPO" \
-    --head "$branch" \
-    --title "Fix #$n [$submodules]: $title" \
-    --body "Automated fix spanning: **$submodules**
-
-Fixes #$n
-
-### Submodule PRs
-$(echo -e "$ALL_PR_URLS")
+    # Create PR in the service repo (links back to the issue in the same repo)
+    SERVICE_PR_URL=$(gh pr create \
+      --repo "$issue_repo" \
+      --head "$branch" \
+      --title "Fix #$issue_number: $title" \
+      --body "Fixes #$issue_number
 
 <details>
 <summary>Claude transcript</summary>
 
 \`\`\`
-$(tail -100 "$TRANSCRIPTS/issue-$n.log")
+$(tail -100 "$TRANSCRIPTS/$issue_repo-$issue_number.log" 2>/dev/null)
 \`\`\`
 </details>" \
+      --base main 2>/dev/null) || SERVICE_PR_URL=""
+
+    if [ -z "$SERVICE_PR_URL" ]; then
+      SERVICE_PR_URL=$(gh pr list --repo "$issue_repo" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
+    fi
+  fi
+
+  # Update the stack pointer and push
+  cd "$PROJECT_DIR"
+  git add .
+  git commit -m "fix($module): update submodule pointer for #$issue_number — $title" 2>/dev/null || true
+  git push origin "$branch" 2>/dev/null
+
+  # Create stack PR (or get existing)
+  STACK_PR_URL=$(gh pr create \
+    --repo "$STACK_REPO" \
+    --head "$branch" \
+    --title "Fix $module#$issue_number: $title" \
+    --body "Updates **$module** submodule pointer.
+
+Source issue: $issue_repo#$issue_number
+Service PR: ${SERVICE_PR_URL:-pending}" \
     --base main 2>/dev/null) || STACK_PR_URL=""
 
   if [ -z "$STACK_PR_URL" ]; then
-    STACK_PR_URL=$(gh pr list --repo "$REPO" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
+    STACK_PR_URL=$(gh pr list --repo "$STACK_REPO" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
   fi
   STACK_PR_NUMBER=$(echo "$STACK_PR_URL" | grep -oP '\d+$')
 
-  # Comment branch map + all PRs on the issue
-  gh issue comment "$n" --repo "$REPO" \
-    --body "$(echo -e "## Branch Map\n\nTo spin up this fix on another VM, check out these branches:\n\n$BRANCH_MAP\n\n### PRs\n- **stack**: $STACK_PR_URL\n$ALL_PR_URLS\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$REPO.git\ncd stack\ngit checkout $branch\n$(for MOD in $submodules; do
-        MOD_PATH=$(get_config "$MOD" "path")
-        echo "cd $MOD_PATH && git checkout $branch 2>/dev/null; cd $PROJECT_DIR"
-      done)\nmake dev-detached\n\`\`\`")"
+  # Comment branch map on the service issue
+  gh issue comment "$issue_number" --repo "$issue_repo" \
+    --body "$(echo -e "## Branch Map\n\n| Repo | Branch | Commit | PR |\n|---|---|---|---|\n| **$module** | \`$branch\` | \`$mod_sha\` | ${SERVICE_PR_URL:-—} |\n| **stack** | \`$branch\` | \`$(git rev-parse --short HEAD)\` | ${STACK_PR_URL:-—} |\n\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$STACK_REPO.git\ncd stack\ngit checkout $branch\ncd $mod_path && git checkout $branch\ncd $PROJECT_DIR\nmake dev-detached\n\`\`\`")"
 
-  # Export for sonar section
   export STACK_PR_NUMBER
+  export SERVICE_PR_URL
 }
 
 # ============================================
 # Run the fix loop
 # ============================================
 run_fix_loop() {
-  local n=$1
+  local issue_number=$1
   local title=$2
   local body=$3
-  local submodules=$4
-  local extra_context="${5:-}"
+  local module=$4
+  local issue_repo=$5
+  local extra_context="${6:-}"
 
-  MODULE_CONTEXT=$(build_module_context "$submodules")
-  ALLOWED_PATHS=$(build_allowed_paths "$submodules")
+  MODULE_CONTEXT=$(build_module_context "$module")
+  ALLOWED_PATHS=$(build_allowed_paths "$module")
 
   claude -p "
 /ralph-loop \"
-You are fixing issue #$n in the Nuraly Stack project.
+You are fixing issue #$issue_number from the $module service repo ($issue_repo).
 
 ## CRITICAL: Docker-only development
 - All services run inside Docker containers with hot reload.
@@ -290,123 +351,108 @@ You are fixing issue #$n in the Nuraly Stack project.
 - Edit source files directly — containers pick up changes automatically.
 - Use the test/lint commands below which exec into Docker containers.
 
-## Affected modules
+## Affected module
 $MODULE_CONTEXT
 
-## Issue
+## Issue ($issue_repo#$issue_number)
 Title: $title
 Description: $body
 $extra_context
 
 ## Rules
-- ONLY modify files inside these paths: $ALLOWED_PATHS
+- ONLY modify files inside: $ALLOWED_PATHS
 - Do NOT touch other submodules or infrastructure files
-- Read CLAUDE.md in each affected module for context (if it exists)
+- Read CLAUDE.md in the module for context (if it exists)
 - Services are already running in Docker containers
-- Commit INSIDE each affected submodule first, then update the stack pointer
+- Commit INSIDE the submodule first, then update the stack pointer
 
 ## Steps
-1. Read the issue carefully — understand how the modules interact
-2. Read CLAUDE.md in each affected module (if present)
-3. Plan the fix across modules (what changes where)
-4. Implement changes in each affected module
-5. Run tests in ALL affected modules (inside Docker):
-$(for MOD in $submodules; do
-  echo "   - $MOD: $(get_config "$MOD" "test")"
-done)
-6. Run lint in ALL affected modules (inside Docker):
-$(for MOD in $submodules; do
-  echo "   - $MOD: $(get_config "$MOD" "lint")"
-done)
+1. Read the issue carefully
+2. Read CLAUDE.md in the module (if present)
+3. Plan the fix
+4. Implement changes
+5. Run tests (inside Docker):
+   $(get_config "$module" "test")
+6. Run lint (inside Docker):
+   $(get_config "$module" "lint")
 7. If anything fails, fix and retry
-8. When ALL tests and lints pass, commit in each submodule:
-   cd <submodule-path> && git add -A && git commit -m 'fix(\$MOD): resolve #$n - $title'
+8. When tests and lint pass, commit in the submodule:
+   cd $(get_config "$module" "path") && git add -A && git commit -m 'fix($module): resolve $issue_repo#$issue_number - $title'
 9. Then update the stack pointer:
-   cd $PROJECT_DIR && git add . && git commit -m 'fix($(echo $submodules | tr ' ' ',')): resolve #$n - $title'
+   cd $PROJECT_DIR && git add . && git commit -m 'fix($module): update pointer for $issue_repo#$issue_number'
 10. Say DONE
 
 If stuck after 10 iterations, commit partial:
-'wip($(echo $submodules | tr ' ' ',')): partial fix #$n' and say DONE
+'wip($module): partial fix $issue_repo#$issue_number' and say DONE
 \" --completion-promise \"DONE\" --max-iterations 15
-" --dangerously-skip-permissions 2>&1 | tee "$TRANSCRIPTS/issue-$n.log"
+" --dangerously-skip-permissions 2>&1 | tee "$TRANSCRIPTS/$issue_repo-$issue_number.log"
 }
 
 # ============================================
 # Run SonarQube checks
 # ============================================
 run_sonar_checks() {
-  local n=$1
+  local issue_number=$1
   local branch=$2
-  local submodules=$3
+  local module=$3
   local pr_number=$4
+  local issue_repo=$5
 
-  SONAR_FAILED_MODULES=""
+  MOD_SONAR=$(get_config "$module" "sonar_key")
+  [ "$MOD_SONAR" = "null" ] || [ -z "$MOD_SONAR" ] && return
 
-  for MOD in $submodules; do
-    MOD_SONAR=$(get_config "$MOD" "sonar_key")
-    [ "$MOD_SONAR" = "null" ] || [ -z "$MOD_SONAR" ] && continue
+  echo "= SonarQube check for $module..."
+  GATE=$(run_sonar_for_module "$module")
+  echo "   $module: $GATE"
 
-    echo "= SonarQube scan for $MOD..."
-    GATE=$(run_sonar_for_module "$MOD")
-    echo "   $MOD: $GATE"
-
-    if [ "$GATE" != "OK" ]; then
-      SONAR_FAILED_MODULES+="$MOD "
+  if [ "$GATE" = "OK" ] || [ "$GATE" = "SKIPPED" ]; then
+    if [ "$GATE" = "OK" ] && [ -n "$pr_number" ]; then
+      gh pr comment "$pr_number" --repo "$issue_repo" \
+        --body "SonarQube quality gate **passed** for **$module**. Ready for review."
     fi
-  done
+  elif [ "$GATE" = "ERROR" ]; then
+    echo "⚠ SonarQube failed for: $module"
 
-  if [ -z "$SONAR_FAILED_MODULES" ]; then
-    [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$REPO" \
-      --body "SonarQube passed for all modules: **$submodules**. Ready for review."
-  else
-    echo "⚠ SonarQube failed for: $SONAR_FAILED_MODULES"
+    # Resolve the actual SonarQube project key (with UUID suffix)
+    local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+      "$SONAR_URL/api/projects/search?q=$MOD_SONAR" 2>/dev/null | \
+      jq -r ".components[]? | select(.key | startswith(\"$MOD_SONAR\")) | .key" 2>/dev/null | head -1)
 
-    ALL_SONAR_ISSUES=""
-    FAILED_CONTEXT=""
-    for MOD in $SONAR_FAILED_MODULES; do
-      MOD_SONAR=$(get_config "$MOD" "sonar_key")
-      MOD_PATH=$(get_config "$MOD" "path")
+    MOD_PATH=$(get_config "$module" "path")
+    ISSUES=""
+    if [ -n "$actual_key" ]; then
       ISSUES=$(curl -s -u "$SONAR_TOKEN:" \
-        "$SONAR_URL/api/issues/search?projectKeys=$MOD_SONAR&statuses=OPEN" | \
-        jq -c '[.issues[] | {rule, message, component, line}] | .[0:10]')
-      ALL_SONAR_ISSUES+="
-### $MOD ($MOD_PATH)
-$ISSUES
-"
-      FAILED_CONTEXT+="- $MOD: $(get_config "$MOD" "test")
-"
-    done
+        "$SONAR_URL/api/issues/search?projectKeys=$actual_key&statuses=OPEN" | \
+        jq -c '[.issues[]? | {rule, message, component, line}] | .[0:10]')
+    fi
 
     cd "$PROJECT_DIR"
 
     claude -p "
 /ralph-loop \"
-SonarQube FAILED for these modules: $SONAR_FAILED_MODULES
+SonarQube FAILED for $module
 
-Issues per module:
-$ALL_SONAR_ISSUES
+Issues:
+$ISSUES
 
 CRITICAL: Do NOT run commands on the host. All tests run inside Docker containers.
-ONLY modify files in these paths: $(build_allowed_paths "$SONAR_FAILED_MODULES")
+ONLY modify files in: $MOD_PATH
 
-Test commands (run inside Docker):
-$FAILED_CONTEXT
+Test: $(get_config "$module" "test")
 
-Commit in each submodule first, then update stack pointer.
-Commit message: 'fix(\$MOD): sonarqube issues #$n'
+Commit in submodule first, then update stack pointer.
+Commit message: 'fix($module): sonarqube issues $issue_repo#$issue_number'
 Say DONE when fixed.
 \" --completion-promise \"DONE\" --max-iterations 10
-" --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/issue-$n.log"
+" --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/$issue_repo-$issue_number.log"
 
-    for MOD in $SONAR_FAILED_MODULES; do
-      MOD_PATH=$(get_config "$MOD" "path")
-      (cd "$PROJECT_DIR/$MOD_PATH" && git push origin "$branch" 2>/dev/null)
-    done
+    (cd "$PROJECT_DIR/$MOD_PATH" && git push origin "$branch" 2>/dev/null)
     cd "$PROJECT_DIR"
+    git add . && git commit -m "fix($module): sonarqube issues $issue_repo#$issue_number" 2>/dev/null
     git push origin "$branch"
 
-    [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$REPO" \
-      --body "SonarQube issues fixed for **$SONAR_FAILED_MODULES**. Re-scan needed."
+    [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
+      --body "SonarQube issues fixed for **$module**. Re-scan needed."
   fi
 }
 
@@ -419,151 +465,169 @@ cleanup_env() {
   git checkout main
   git reset --hard origin/main
   git clean -fd
-  git submodule foreach --recursive 'git checkout . && git clean -fd'
+  git submodule foreach --recursive 'git checkout . 2>/dev/null; git clean -fd 2>/dev/null; true'
+}
+
+# ============================================
+# Build list of all repos to poll
+# ============================================
+build_repo_list() {
+  local repos=""
+  for MOD in $(get_all_modules); do
+    local mod_path=$(get_config "$MOD" "path")
+    local repo=$(get_submodule_repo "$mod_path")
+    if [ -n "$repo" ] && [ "$repo" != "null" ]; then
+      repos+="$repo "
+    fi
+  done
+  echo "$repos"
 }
 
 # ============================================
 # MAIN LOOP
 # ============================================
-echo "> Claude autonomous worker started (Nuraly Stack — multi-submodule)"
+echo "> Claude autonomous worker started (per-service tickets)"
+echo "> Building repo list from project-map.yml..."
+
+REPOS=$(build_repo_list)
+echo "> Watching repos: $REPOS"
 
 while true; do
 
   # ============================================
-  # PHASE 1: NEW TICKETS (claude-fix, not locked)
+  # PHASE 1: NEW TICKETS — poll each service repo
   # ============================================
-  gh issue list --repo "$REPO" --label "claude-fix" --state open --json number,title,body,labels | \
-  jq -c '.[] | select(.labels | map(.name) | index("claude-in-progress") | not) | select(.labels | map(.name) | index("claude-done") | not) | select(.labels | map(.name) | index("claude-failed") | not)' | \
-  while read -r issue; do
-    N=$(echo "$issue" | jq -r '.number')
-    grep -q "^$N$" "$PROCESSED" && continue
+  for ISSUE_REPO in $REPOS; do
+    gh issue list --repo "$ISSUE_REPO" --label "claude-fix" --state open --json number,title,body,labels 2>/dev/null | \
+    jq -c '.[] | select(.labels | map(.name) | index("claude-in-progress") | not) | select(.labels | map(.name) | index("claude-done") | not) | select(.labels | map(.name) | index("claude-failed") | not)' | \
+    while read -r issue; do
+      N=$(echo "$issue" | jq -r '.number')
 
-    TITLE=$(echo "$issue" | jq -r '.title')
-    BODY=$(echo "$issue" | jq -r '.body')
-    BRANCH="fix/issue-$N"
+      # Unique key: repo+issue number (avoids collision across repos)
+      ISSUE_KEY="${ISSUE_REPO}#${N}"
+      grep -q "^${ISSUE_KEY}$" "$PROCESSED" && continue
 
-    # LOCK
-    gh issue edit "$N" --repo "$REPO" --add-label "claude-in-progress"
-    echo "🔒 Issue #$N locked (claude-in-progress)"
+      TITLE=$(echo "$issue" | jq -r '.title')
+      BODY=$(echo "$issue" | jq -r '.body')
 
-    # DETECT SUBMODULES
-    SUBMODULES=$(parse_submodules "$BODY")
-
-    if [ -z "$SUBMODULES" ]; then
-      echo "⚠ Issue #$N: no submodules checked, skipping"
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> No submodules selected. Please check at least one."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    VALID=true
-    for MOD in $SUBMODULES; do
-      if [ "$(get_config "$MOD" "path")" = "null" ]; then
-        echo "✗ Unknown submodule: $MOD"
-        VALID=false
+      # Resolve which module this repo maps to
+      MODULE=$(resolve_module_from_repo "$ISSUE_REPO")
+      if [ -z "$MODULE" ]; then
+        echo "⚠ Repo $ISSUE_REPO not found in project-map.yml, skipping #$N"
+        echo "$ISSUE_KEY" >> "$PROCESSED"
+        continue
       fi
+
+      BRANCH="fix/${MODULE}-issue-$N"
+
+      # LOCK
+      gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-in-progress"
+      echo "🔒 $ISSUE_REPO#$N locked ($MODULE)"
+
+      echo ""
+      echo "========================================"
+      echo "= $ISSUE_REPO#$N: $TITLE"
+      echo "= Module: $MODULE"
+      echo "========================================"
+
+      # FRESH ENV
+      setup_fresh_env "$BRANCH" "$MODULE"
+
+      # FIX
+      run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO"
+
+      # CHECK COMMITS
+      cd "$PROJECT_DIR"
+      MOD_PATH=$(get_config "$MODULE" "path")
+      MOD_COMMITS=$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+      STACK_COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
+
+      if [ "$MOD_COMMITS" -eq 0 ] && [ "$STACK_COMMITS" -eq 0 ]; then
+        echo "✗ No commits produced, skipping"
+        gh issue comment "$N" --repo "$ISSUE_REPO" \
+          --body "> Could not produce a fix. Needs human attention."
+        gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
+        cleanup_env
+        echo "$ISSUE_KEY" >> "$PROCESSED"
+        continue
+      fi
+
+      # PUSH & CREATE PRs (service repo + stack)
+      push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
+
+      # WAIT FOR CI BUILD (triggers SonarQube analysis)
+      SERVICE_PR_NUMBER=$(echo "$SERVICE_PR_URL" | grep -oP '\d+$')
+      echo "= Waiting for CI build..."
+      CI_STATUS=$(wait_for_pr_checks "$ISSUE_REPO" "$SERVICE_PR_NUMBER")
+      echo "  CI result: $CI_STATUS"
+
+      # SONARQUBE (check quality gate after CI finishes the analysis)
+      if [ "$CI_STATUS" != "SKIPPED" ]; then
+        run_sonar_checks "$N" "$BRANCH" "$MODULE" "$SERVICE_PR_NUMBER" "$ISSUE_REPO"
+      else
+        echo "  Skipping SonarQube check (no CI)"
+      fi
+
+      # UNLOCK
+      gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
+      echo "🔓 $ISSUE_REPO#$N done"
+
+      # CLEAN UP
+      cleanup_env
+      echo "$ISSUE_KEY" >> "$PROCESSED"
+      echo "✓ $ISSUE_REPO#$N complete — environment reset"
+
     done
-    if [ "$VALID" = false ]; then
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> Unknown submodule in selection. Check project-map.yml."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    MODULE_COUNT=$(echo "$SUBMODULES" | wc -w)
-    echo ""
-    echo "========================================"
-    echo "= Issue #$N: $TITLE"
-    echo "= Modules ($MODULE_COUNT): $SUBMODULES"
-    echo "========================================"
-
-    # FRESH ENV
-    setup_fresh_env "$BRANCH" "$SUBMODULES"
-
-    # FIX
-    run_fix_loop "$N" "$TITLE" "$BODY" "$SUBMODULES"
-
-    # CHECK COMMITS
-    cd "$PROJECT_DIR"
-    COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
-    if [ "$COMMITS" -eq 0 ]; then
-      echo "✗ No commits produced, skipping"
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> Could not produce a fix. Needs human attention."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      git checkout main
-      git branch -D "$BRANCH" 2>/dev/null
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    # PUSH & CREATE PRs (stack + each submodule)
-    push_and_create_prs "$N" "$BRANCH" "$SUBMODULES" "$TITLE"
-
-    # SONARQUBE
-    run_sonar_checks "$N" "$BRANCH" "$SUBMODULES" "$STACK_PR_NUMBER"
-
-    # UNLOCK
-    gh issue edit "$N" --repo "$REPO" --add-label "claude-done" --remove-label "claude-in-progress"
-    echo "🔓 Issue #$N unlocked (claude-done)"
-
-    # CLEAN UP
-    cleanup_env
-    echo "$N" >> "$PROCESSED"
-    echo "✓ Issue #$N complete — environment reset"
-
   done
 
   # ============================================
-  # PHASE 2: CONTINUE TICKETS (claude-continue label)
+  # PHASE 2: CONTINUE TICKETS — poll each service repo
   # ============================================
-  gh issue list --repo "$REPO" --label "claude-continue" --state open --json number,title,body,labels | \
-  jq -c '.[]' | \
-  while read -r issue; do
-    N=$(echo "$issue" | jq -r '.number')
-    TITLE=$(echo "$issue" | jq -r '.title')
-    BODY=$(echo "$issue" | jq -r '.body')
-    BRANCH="fix/issue-$N"
+  for ISSUE_REPO in $REPOS; do
+    gh issue list --repo "$ISSUE_REPO" --label "claude-continue" --state open --json number,title,body,labels 2>/dev/null | \
+    jq -c '.[]' | \
+    while read -r issue; do
+      N=$(echo "$issue" | jq -r '.number')
+      TITLE=$(echo "$issue" | jq -r '.title')
+      BODY=$(echo "$issue" | jq -r '.body')
 
-    # Get the latest comment as the continuation instruction
-    LATEST_COMMENT=$(gh api "repos/$REPO/issues/$N/comments" --jq '.[-1].body' 2>/dev/null)
+      MODULE=$(resolve_module_from_repo "$ISSUE_REPO")
+      if [ -z "$MODULE" ]; then
+        gh issue edit "$N" --repo "$ISSUE_REPO" --remove-label "claude-continue"
+        continue
+      fi
 
-    if [ -z "$LATEST_COMMENT" ]; then
-      echo "⚠ Issue #$N: claude-continue but no comments found, skipping"
-      gh issue edit "$N" --repo "$REPO" --remove-label "claude-continue"
-      continue
-    fi
+      BRANCH="fix/${MODULE}-issue-$N"
 
-    # LOCK
-    gh issue edit "$N" --repo "$REPO" \
-      --add-label "claude-in-progress" \
-      --remove-label "claude-continue" \
-      --remove-label "claude-done" \
-      --remove-label "claude-failed"
-    echo "🔒 Issue #$N resumed (claude-continue → claude-in-progress)"
+      # Get the latest comment as the continuation instruction
+      LATEST_COMMENT=$(gh api "repos/$ISSUE_REPO/issues/$N/comments" --jq '.[-1].body' 2>/dev/null)
 
-    SUBMODULES=$(parse_submodules "$BODY")
-    if [ -z "$SUBMODULES" ]; then
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      continue
-    fi
+      if [ -z "$LATEST_COMMENT" ]; then
+        echo "⚠ $ISSUE_REPO#$N: claude-continue but no comments, skipping"
+        gh issue edit "$N" --repo "$ISSUE_REPO" --remove-label "claude-continue"
+        continue
+      fi
 
-    MODULE_COUNT=$(echo "$SUBMODULES" | wc -w)
-    echo ""
-    echo "========================================"
-    echo "= CONTINUE Issue #$N: $TITLE"
-    echo "= Modules ($MODULE_COUNT): $SUBMODULES"
-    echo "= Instruction: $(echo "$LATEST_COMMENT" | head -1)"
-    echo "========================================"
+      # LOCK
+      gh issue edit "$N" --repo "$ISSUE_REPO" \
+        --add-label "claude-in-progress" \
+        --remove-label "claude-continue" \
+        --remove-label "claude-done" \
+        --remove-label "claude-failed"
+      echo "🔒 $ISSUE_REPO#$N resumed ($MODULE)"
 
-    # RESUME ENV (checkout existing branch, don't reset)
-    setup_continue_env "$BRANCH" "$SUBMODULES"
+      echo ""
+      echo "========================================"
+      echo "= CONTINUE $ISSUE_REPO#$N: $TITLE"
+      echo "= Module: $MODULE"
+      echo "= Instruction: $(echo "$LATEST_COMMENT" | head -1)"
+      echo "========================================"
 
-    # FIX with extra context from comment
-    EXTRA_CONTEXT="
+      # RESUME ENV
+      setup_continue_env "$BRANCH" "$MODULE"
+
+      # FIX with extra context
+      EXTRA_CONTEXT="
 ## Follow-up instruction (from issue comment)
 $LATEST_COMMENT
 
@@ -571,38 +635,51 @@ $LATEST_COMMENT
 This is a CONTINUATION of previous work. The branch $BRANCH already has prior commits.
 Review what was already done before making changes.
 "
-    run_fix_loop "$N" "$TITLE" "$BODY" "$SUBMODULES" "$EXTRA_CONTEXT"
+      run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO" "$EXTRA_CONTEXT"
 
-    # CHECK COMMITS
-    cd "$PROJECT_DIR"
-    COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
-    if [ "$COMMITS" -eq 0 ]; then
-      echo "✗ No commits produced on continue"
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> Continue attempt produced no commits. Needs human attention."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
+      # CHECK COMMITS
+      cd "$PROJECT_DIR"
+      MOD_PATH=$(get_config "$MODULE" "path")
+      MOD_COMMITS=$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+
+      if [ "$MOD_COMMITS" -eq 0 ]; then
+        echo "✗ No commits on continue"
+        gh issue comment "$N" --repo "$ISSUE_REPO" \
+          --body "> Continue attempt produced no commits. Needs human attention."
+        gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
+        cleanup_env
+        continue
+      fi
+
+      # PUSH & CREATE PRs
+      push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
+
+      # Comment update
+      gh issue comment "$N" --repo "$ISSUE_REPO" \
+        --body "$(echo -e "## Continuation complete\n\nUpdated branch \`$BRANCH\`.\n\nNew commits:\n\`\`\`\n$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline)\n\`\`\`")"
+
+      # WAIT FOR CI BUILD (triggers SonarQube analysis)
+      SERVICE_PR_NUMBER=$(echo "$SERVICE_PR_URL" | grep -oP '\d+$')
+      echo "= Waiting for CI build..."
+      CI_STATUS=$(wait_for_pr_checks "$ISSUE_REPO" "$SERVICE_PR_NUMBER")
+      echo "  CI result: $CI_STATUS"
+
+      # SONARQUBE (check quality gate after CI finishes the analysis)
+      if [ "$CI_STATUS" != "SKIPPED" ]; then
+        run_sonar_checks "$N" "$BRANCH" "$MODULE" "$SERVICE_PR_NUMBER" "$ISSUE_REPO"
+      else
+        echo "  Skipping SonarQube check (no CI)"
+      fi
+
+      # UNLOCK
+      gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
+      echo "🔓 $ISSUE_REPO#$N continued and done"
+
+      # CLEAN UP
       cleanup_env
-      continue
-    fi
+      echo "✓ $ISSUE_REPO#$N continue complete"
 
-    # PUSH & CREATE PRs (creates if missing, updates if existing)
-    push_and_create_prs "$N" "$BRANCH" "$SUBMODULES" "$TITLE"
-
-    # Comment on issue with update
-    gh issue comment "$N" --repo "$REPO" \
-      --body "$(echo -e "## Continuation complete\n\nUpdated branch \`$BRANCH\` with follow-up changes.\n\nNew commits:\n\`\`\`\n$(git log main..HEAD --oneline)\n\`\`\`")"
-
-    # SONARQUBE
-    run_sonar_checks "$N" "$BRANCH" "$SUBMODULES" "$STACK_PR_NUMBER"
-
-    # UNLOCK
-    gh issue edit "$N" --repo "$REPO" --add-label "claude-done" --remove-label "claude-in-progress"
-    echo "🔓 Issue #$N continued and unlocked (claude-done)"
-
-    # CLEAN UP
-    cleanup_env
-    echo "✓ Issue #$N continue complete — environment reset"
-
+    done
   done
 
   sleep 120

@@ -121,10 +121,28 @@ docker compose -f docker-compose.dev.yml exec workflows ./mvnw test
 - **Node.js**: Jest (api, gateway), Vitest (studio), Playwright for E2E
 - **Java**: JUnit + Mockito, JaCoCo for coverage
 
-## Code Quality
+## Code Quality — SonarQube
 
-- SonarQube at `https://sonar.nuraly.io` — each service has its own project key (see `.claude/project-map.yml`)
-- CI runs SonarCloud per-service via GitHub Actions
+SonarQube instance at `https://sonar.nuraly.io` (v26.1). Quality gate is checked via REST API (no local sonar-scanner needed).
+
+| Service | SonarQube Project Key |
+|---|---|
+| studio | `Nuralyio_studio` |
+| api | `Nuralyio_api` |
+| gateway | `Nuralyio_gateway` |
+| functions | `Nuralyio_functions` |
+| workflows | `Nuralyio_workflow` |
+| kv | `Nuralyio_kv` |
+| conduit | `Nuralyio_conduit` |
+| journal | `Nuralyio_journal` |
+| document-generator | `Nuralyio_document-generator` |
+| textlens | `Nuralyio_textlens` |
+| parcour | `Nuralyio_parcour` |
+| shared-java-library | `Nuralyio_shared-java-library` |
+
+**No SonarQube**: docs
+
+Note: Actual keys on the server have UUID suffixes (e.g. `Nuralyio_studio_a223350e-...`). The worker script resolves them dynamically via the API.
 
 ## Don't
 
