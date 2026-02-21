@@ -204,6 +204,15 @@ run_sonar_for_module() {
   echo "$status"
 }
 
+# Find all git repos (including nested submodules) under a path
+# Returns paths deepest-first so we process bottom-up
+find_nested_git_repos() {
+  local base_path=$1
+  find "$base_path" -name ".git" -print 2>/dev/null | while read gitpath; do
+    dirname "$gitpath"
+  done | sort -r
+}
+
 # ============================================
 # Setup fresh environment
 # ============================================
@@ -224,9 +233,11 @@ setup_fresh_env() {
   git branch -D "$branch" 2>/dev/null || true
   git checkout -b "$branch"
 
-  # Create matching branch in the affected submodule
+  # Create matching branch in ALL nested submodules (studio → runtime → nuraly-ui)
   local mod_path=$(get_config "$module" "path")
-  (cd "$PROJECT_DIR/$mod_path" && git checkout -b "$branch" 2>/dev/null || true)
+  for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
+    (cd "$repo_path" && git checkout -b "$branch" 2>/dev/null || true)
+  done
 
   docker compose -f "$COMPOSE_FILE" up -d
 }
@@ -252,8 +263,11 @@ setup_continue_env() {
     git checkout -b "$branch"
   }
 
+  # Checkout branch in ALL nested submodules
   local mod_path=$(get_config "$module" "path")
-  (cd "$PROJECT_DIR/$mod_path" && git fetch origin 2>/dev/null && git checkout "$branch" 2>/dev/null || true)
+  for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
+    (cd "$repo_path" && git fetch origin 2>/dev/null && git checkout "$branch" 2>/dev/null || true)
+  done
 
   docker compose -f "$COMPOSE_FILE" up -d
 }
@@ -269,22 +283,33 @@ push_and_create_prs() {
   local issue_repo=$5
 
   local mod_path=$(get_config "$module" "path")
-  cd "$PROJECT_DIR/$mod_path"
+  local branch_map_rows=""
 
-  local mod_sha=$(git rev-parse --short HEAD 2>/dev/null)
-  local mod_branch=$(git branch --show-current 2>/dev/null)
-  local mod_diff=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
-
+  # ── Push & PR all nested repos (deepest first: nuraly-ui → runtime → studio) ──
   SERVICE_PR_URL=""
-  if [ "$mod_diff" -gt 0 ] && [ "$mod_branch" = "$branch" ]; then
-    git push origin "$branch" 2>/dev/null
+  for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
+    cd "$repo_path"
+    local repo_branch=$(git branch --show-current 2>/dev/null)
+    local commits=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
 
-    # Create PR in the service repo (links back to the issue in the same repo)
-    SERVICE_PR_URL=$(gh pr create \
-      --repo "$issue_repo" \
-      --head "$branch" \
-      --title "Fix #$issue_number: $title" \
-      --body "Fixes #$issue_number
+    [ "$commits" -eq 0 ] && continue
+
+    local repo_remote=$(git remote get-url origin 2>/dev/null | sed -E 's|.*github\.com[:/]||; s|\.git$||')
+    local repo_name=$(basename "$repo_remote")
+    local sha=$(git rev-parse --short HEAD 2>/dev/null)
+
+    echo "  Pushing $repo_name ($repo_branch, $commits commits)..."
+    git push origin "$branch" 2>/dev/null || git push origin HEAD:"$branch" 2>/dev/null
+
+    # Create PR (or get existing)
+    local pr_url=""
+    if [ "$repo_remote" = "$issue_repo" ]; then
+      # This is the service repo — link to issue
+      pr_url=$(gh pr create \
+        --repo "$repo_remote" \
+        --head "$branch" \
+        --title "Fix #$issue_number: $title" \
+        --body "Fixes #$issue_number
 
 <details>
 <summary>Claude transcript</summary>
@@ -293,14 +318,27 @@ push_and_create_prs() {
 $(tail -100 "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log" 2>/dev/null)
 \`\`\`
 </details>" \
-      --base main 2>/dev/null) || SERVICE_PR_URL=""
-
-    if [ -z "$SERVICE_PR_URL" ]; then
-      SERVICE_PR_URL=$(gh pr list --repo "$issue_repo" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
+        --base main 2>/dev/null) || pr_url=""
+      SERVICE_PR_URL="$pr_url"
+    else
+      # Nested submodule repo — reference the parent issue
+      pr_url=$(gh pr create \
+        --repo "$repo_remote" \
+        --head "$branch" \
+        --title "Fix: $title" \
+        --body "Part of $issue_repo#$issue_number" \
+        --base main 2>/dev/null) || pr_url=""
     fi
-  fi
 
-  # Update the stack pointer and push
+    if [ -z "$pr_url" ]; then
+      pr_url=$(gh pr list --repo "$repo_remote" --head "$branch" --json url --jq '.[0].url' 2>/dev/null)
+      [ "$repo_remote" = "$issue_repo" ] && SERVICE_PR_URL="$pr_url"
+    fi
+
+    branch_map_rows+="| **$repo_name** | \`$branch\` | \`$sha\` | ${pr_url:-—} |\n"
+  done
+
+  # ── Update the stack pointer and push ──
   cd "$PROJECT_DIR"
   git add .
   git commit -m "fix($module): update submodule pointer for #$issue_number — $title" 2>/dev/null || true
@@ -322,9 +360,11 @@ Service PR: ${SERVICE_PR_URL:-pending}" \
   fi
   STACK_PR_NUMBER=$(echo "$STACK_PR_URL" | grep -oP '\d+$')
 
-  # Comment branch map on the service issue
+  branch_map_rows+="| **stack** | \`$branch\` | \`$(git rev-parse --short HEAD)\` | ${STACK_PR_URL:-—} |\n"
+
+  # ── Comment branch map on the service issue ──
   gh issue comment "$issue_number" --repo "$issue_repo" \
-    --body "$(echo -e "## Branch Map\n\n| Repo | Branch | Commit | PR |\n|---|---|---|---|\n| **$module** | \`$branch\` | \`$mod_sha\` | ${SERVICE_PR_URL:-—} |\n| **stack** | \`$branch\` | \`$(git rev-parse --short HEAD)\` | ${STACK_PR_URL:-—} |\n\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$STACK_REPO.git\ncd stack\ngit checkout $branch\ncd $mod_path && git checkout $branch\ncd $PROJECT_DIR\nmake dev-detached\n\`\`\`")"
+    --body "$(echo -e "## Branch Map\n\n| Repo | Branch | Commit | PR |\n|---|---|---|---|\n${branch_map_rows}\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$STACK_REPO.git\ncd stack\ngit checkout $branch\ngit submodule update --init --recursive\ngit submodule foreach --recursive 'git checkout $branch 2>/dev/null || true'\nmake dev-detached\n\`\`\`")"
 
   export STACK_PR_NUMBER
   export SERVICE_PR_URL
@@ -539,13 +579,18 @@ while true; do
       # FIX
       run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO"
 
-      # CHECK COMMITS
+      # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
       MOD_PATH=$(get_config "$MODULE" "path")
-      MOD_COMMITS=$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+      TOTAL_COMMITS=0
+      for rp in $(find_nested_git_repos "$PROJECT_DIR/$MOD_PATH"); do
+        c=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+        TOTAL_COMMITS=$((TOTAL_COMMITS + c))
+      done
       STACK_COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
+      TOTAL_COMMITS=$((TOTAL_COMMITS + STACK_COMMITS))
 
-      if [ "$MOD_COMMITS" -eq 0 ] && [ "$STACK_COMMITS" -eq 0 ]; then
+      if [ "$TOTAL_COMMITS" -eq 0 ]; then
         echo "✗ No commits produced, skipping"
         gh issue comment "$N" --repo "$ISSUE_REPO" \
           --body "> Could not produce a fix. Needs human attention."
@@ -555,7 +600,7 @@ while true; do
         continue
       fi
 
-      # PUSH & CREATE PRs (service repo + stack)
+      # PUSH & CREATE PRs (all nested repos + stack)
       push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
 
       # WAIT FOR CI BUILD (triggers SonarQube analysis)
@@ -640,12 +685,16 @@ Review what was already done before making changes.
 "
       run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO" "$EXTRA_CONTEXT"
 
-      # CHECK COMMITS
+      # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
       MOD_PATH=$(get_config "$MODULE" "path")
-      MOD_COMMITS=$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+      TOTAL_COMMITS=0
+      for rp in $(find_nested_git_repos "$PROJECT_DIR/$MOD_PATH"); do
+        c=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+        TOTAL_COMMITS=$((TOTAL_COMMITS + c))
+      done
 
-      if [ "$MOD_COMMITS" -eq 0 ]; then
+      if [ "$TOTAL_COMMITS" -eq 0 ]; then
         echo "✗ No commits on continue"
         gh issue comment "$N" --repo "$ISSUE_REPO" \
           --body "> Continue attempt produced no commits. Needs human attention."
@@ -654,7 +703,7 @@ Review what was already done before making changes.
         continue
       fi
 
-      # PUSH & CREATE PRs
+      # PUSH & CREATE PRs (all nested repos + stack)
       push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
 
       # Comment update
