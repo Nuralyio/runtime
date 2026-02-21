@@ -18,7 +18,7 @@
 STACK_REPO="Nuralyio/stack"
 PROJECT_DIR="/home/gateway/stack"
 PROJECT_MAP="$PROJECT_DIR/.claude/project-map.yml"
-PROCESSED="$PROJECT_DIR/.processed_issues"
+PROCESSED="$HOME/.claude-processed-issues"
 TRANSCRIPTS="$HOME/transcripts"
 SONAR_URL="${SONAR_HOST_URL:-https://sonar.nuraly.io}"
 SONAR_TOKEN="${SONAR_TOKEN}"
