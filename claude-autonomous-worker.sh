@@ -15,6 +15,9 @@
 # - Label-based locking (claude-in-progress / claude-done / claude-failed)
 # - Continue from comments: add "claude-continue" label to resume work
 
+# Allow spawning Claude subprocesses (unset nesting guard)
+unset CLAUDECODE
+
 STACK_REPO="Nuralyio/stack"
 PROJECT_DIR="/home/gateway/stack"
 PROJECT_MAP="$PROJECT_DIR/.claude/project-map.yml"
@@ -287,7 +290,7 @@ push_and_create_prs() {
 <summary>Claude transcript</summary>
 
 \`\`\`
-$(tail -100 "$TRANSCRIPTS/$issue_repo-$issue_number.log" 2>/dev/null)
+$(tail -100 "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log" 2>/dev/null)
 \`\`\`
 </details>" \
       --base main 2>/dev/null) || SERVICE_PR_URL=""
@@ -385,7 +388,7 @@ $extra_context
 If stuck after 10 iterations, commit partial:
 'wip($module): partial fix $issue_repo#$issue_number' and say DONE
 \" --completion-promise \"DONE\" --max-iterations 15
-" --dangerously-skip-permissions 2>&1 | tee "$TRANSCRIPTS/$issue_repo-$issue_number.log"
+" --dangerously-skip-permissions 2>&1 | tee "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
 }
 
 # ============================================
@@ -444,7 +447,7 @@ Commit in submodule first, then update stack pointer.
 Commit message: 'fix($module): sonarqube issues $issue_repo#$issue_number'
 Say DONE when fixed.
 \" --completion-promise \"DONE\" --max-iterations 10
-" --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/$issue_repo-$issue_number.log"
+" --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
 
     (cd "$PROJECT_DIR/$MOD_PATH" && git push origin "$branch" 2>/dev/null)
     cd "$PROJECT_DIR"
