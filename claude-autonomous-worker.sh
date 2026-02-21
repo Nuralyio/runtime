@@ -620,21 +620,21 @@ while true; do
 
         if [ "$CI_STATUS" != "SKIPPED" ]; then
           # Resolve module name for this repo (for sonar key lookup)
-          local nested_mod=$(resolve_module_from_repo "$pr_repo")
+          nested_mod=$(resolve_module_from_repo "$pr_repo")
           if [ -n "$nested_mod" ]; then
             run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
           else
             # Not in project-map (e.g. NuralyUI, runtime) — check sonar by repo name
-            echo "  [$pr_name] No sonar key mapped, checking by name..."
-            local sonar_prefix="Nuralyio_${pr_name}"
-            local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+            echo "  [$pr_name] Checking SonarQube by name..."
+            sonar_prefix="Nuralyio_${pr_name}"
+            actual_sonar_key=$(curl -s -u "$SONAR_TOKEN:" \
               "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
               jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
-            if [ -n "$actual_key" ]; then
-              local gate=$(curl -s -u "$SONAR_TOKEN:" \
-                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
+            if [ -n "$actual_sonar_key" ]; then
+              gate_status=$(curl -s -u "$SONAR_TOKEN:" \
+                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_sonar_key" 2>/dev/null | \
                 jq -r '.projectStatus.status' 2>/dev/null)
-              echo "  [$pr_name] SonarQube: ${gate:-SKIPPED}"
+              echo "  [$pr_name] SonarQube: ${gate_status:-SKIPPED}"
             else
               echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
             fi
@@ -749,20 +749,20 @@ Review what was already done before making changes.
         echo "  [$pr_name] CI result: $CI_STATUS"
 
         if [ "$CI_STATUS" != "SKIPPED" ]; then
-          local nested_mod=$(resolve_module_from_repo "$pr_repo")
+          nested_mod=$(resolve_module_from_repo "$pr_repo")
           if [ -n "$nested_mod" ]; then
             run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
           else
-            echo "  [$pr_name] No sonar key mapped, checking by name..."
-            local sonar_prefix="Nuralyio_${pr_name}"
-            local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+            echo "  [$pr_name] Checking SonarQube by name..."
+            sonar_prefix="Nuralyio_${pr_name}"
+            actual_sonar_key=$(curl -s -u "$SONAR_TOKEN:" \
               "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
               jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
-            if [ -n "$actual_key" ]; then
-              local gate=$(curl -s -u "$SONAR_TOKEN:" \
-                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
+            if [ -n "$actual_sonar_key" ]; then
+              gate_status=$(curl -s -u "$SONAR_TOKEN:" \
+                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_sonar_key" 2>/dev/null | \
                 jq -r '.projectStatus.status' 2>/dev/null)
-              echo "  [$pr_name] SonarQube: ${gate:-SKIPPED}"
+              echo "  [$pr_name] SonarQube: ${gate_status:-SKIPPED}"
             else
               echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
             fi
