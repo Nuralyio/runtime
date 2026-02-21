@@ -1,0 +1,67 @@
+name: Claude Auto-Fix Issue
+description: File a bug or task for the autonomous Claude worker to fix
+labels: ["claude-fix"]
+body:
+  - type: checkboxes
+    id: submodules
+    attributes:
+      label: Affected submodules (select all that apply)
+      options:
+        - label: studio
+        - label: api
+        - label: gateway
+        - label: functions
+        - label: workflows
+        - label: kv
+        - label: conduit
+        - label: journal
+        - label: document-generator
+        - label: textlens
+        - label: parcour
+        - label: docs
+        - label: shared-java-library
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong?
+      description: Clear description of the bug or task
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: files
+    attributes:
+      label: Relevant files/modules
+      description: Where should Claude look?
+      placeholder: services/api/src/auth/tokenService.ts, services/workflows/src/main/java/.../WorkflowResource.java
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: How do we know it's fixed?
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
