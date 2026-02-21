@@ -656,6 +656,12 @@ while true; do
     git branch -D "$BRANCH" 2>/dev/null || true
     git checkout -b "$BRANCH"
 
+    # Create matching branch in each affected submodule
+    for MOD in $SUBMODULES; do
+      MOD_PATH=$(get_config "$MOD" "path")
+      (cd "$PROJECT_DIR/$MOD_PATH" && git checkout -b "$BRANCH" 2>/dev/null || true)
+    done
+
     # Rebuild and start fresh containers
     docker compose -f "$COMPOSE_FILE" up -d --build
 
@@ -724,7 +730,34 @@ If stuck after 10 iterations, commit partial:
     fi
 
     # ============================================
-    # PUSH & CREATE PR
+    # PUSH SUBMODULE BRANCHES & COLLECT BRANCH MAP
+    # ============================================
+    BRANCH_MAP="| Repo | Branch | Commit |\n|---|---|---|"
+    BRANCH_MAP+="\n| **stack** | \`$BRANCH\` | \`$(git rev-parse --short HEAD)\` |"
+
+    for MOD in $SUBMODULES; do
+      MOD_PATH=$(get_config "$MOD" "path")
+      cd "$PROJECT_DIR/$MOD_PATH"
+
+      # Check if submodule has commits on the fix branch
+      MOD_COMMITS=$(git log --oneline -1 2>/dev/null)
+      MOD_SHA=$(git rev-parse --short HEAD 2>/dev/null)
+      MOD_BRANCH=$(git branch --show-current 2>/dev/null)
+
+      if [ -n "$MOD_BRANCH" ] && [ "$MOD_BRANCH" = "$BRANCH" ]; then
+        # Push the submodule branch to its own remote
+        git push origin "$BRANCH" 2>/dev/null && \
+          BRANCH_MAP+="\n| **$MOD** | \`$BRANCH\` | \`$MOD_SHA\` |" || \
+          BRANCH_MAP+="\n| **$MOD** | \`$BRANCH\` (local only) | \`$MOD_SHA\` |"
+      else
+        BRANCH_MAP+="\n| **$MOD** | (no changes) | \`$MOD_SHA\` |"
+      fi
+    done
+
+    cd "$PROJECT_DIR"
+
+    # ============================================
+    # PUSH STACK & CREATE PR
     # ============================================
     git push origin "$BRANCH"
 
@@ -746,6 +779,15 @@ $(tail -100 "$TRANSCRIPTS/issue-$N.log")
       --base main)
 
     PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
+
+    # ============================================
+    # COMMENT BRANCH MAP ON THE ISSUE
+    # ============================================
+    gh issue comment "$N" --repo "$REPO" \
+      --body "$(echo -e "## Branch Map\n\nTo spin up this fix on another VM, check out these branches:\n\n$BRANCH_MAP\n\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$REPO.git\ncd stack\ngit checkout $BRANCH\n$(for MOD in $SUBMODULES; do
+        MOD_PATH=$(get_config "$MOD" "path")
+        echo "cd $MOD_PATH && git checkout $BRANCH 2>/dev/null; cd $PROJECT_DIR"
+      done)\nmake dev-detached\n\`\`\`\n\nPR: $PR_URL")"
 
     # ============================================
     # SONARQUBE — SCAN EACH AFFECTED MODULE
