@@ -1,0 +1,95 @@
+submodules:
+  studio:
+    path: services/studio
+    stack: Astro, React, Lit, TypeScript, Tailwind
+    docker_service: studio
+    test: docker compose -f docker-compose.dev.yml exec studio npm test
+    lint: docker compose -f docker-compose.dev.yml exec studio npm run lint
+    sonar_key: Nuralyio_studio
+
+  api:
+    path: services/api
+    stack: Node.js, Express, TypeScript, Prisma
+    docker_service: api
+    test: docker compose -f docker-compose.dev.yml exec api npm test
+    lint: docker compose -f docker-compose.dev.yml exec api npm run lint
+    sonar_key: nuralyio_api
+
+  gateway:
+    path: services/gateway
+    stack: Node.js, Express, TypeScript, Keycloak
+    docker_service: gateway
+    test: docker compose -f docker-compose.dev.yml exec gateway npm test
+    lint: docker compose -f docker-compose.dev.yml exec gateway npm run lint
+
+  functions:
+    path: services/functions
+    stack: Java 21, Quarkus, Flyway
+    docker_service: functions
+    test: docker compose -f docker-compose.dev.yml exec functions ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec functions ./mvnw checkstyle:check
+    sonar_key: nuralyio_functions
+
+  workflows:
+    path: services/workflows
+    stack: Java 21, Quarkus, Flyway
+    docker_service: workflows
+    test: docker compose -f docker-compose.dev.yml exec workflows ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec workflows ./mvnw checkstyle:check
+    sonar_key: nuralyio_workflows
+
+  kv:
+    path: services/kv
+    stack: Java 21, Quarkus, Flyway
+    docker_service: kv
+    test: docker compose -f docker-compose.dev.yml exec kv ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec kv ./mvnw checkstyle:check
+    sonar_key: nuralyio_kv
+
+  conduit:
+    path: services/conduit
+    stack: Java 21, Quarkus, Flyway
+    docker_service: conduit
+    test: docker compose -f docker-compose.dev.yml exec conduit ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec conduit ./mvnw checkstyle:check
+    sonar_key: nuralyio_conduit
+
+  journal:
+    path: services/journal
+    stack: Java 21, Quarkus, Flyway
+    docker_service: journal
+    test: docker compose -f docker-compose.dev.yml exec journal ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec journal ./mvnw checkstyle:check
+    sonar_key: nuralyio_journal
+
+  document-generator:
+    path: services/document-generator
+    stack: Java 21, Quarkus
+    docker_service: document-generator
+    test: docker compose -f docker-compose.dev.yml exec document-generator ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec document-generator ./mvnw checkstyle:check
+    sonar_key: nuralyio_document
+
+  textlens:
+    path: services/textlens
+    stack: Node.js, TypeScript (API + Worker)
+    docker_service: textlens-api
+    test: docker compose -f docker-compose.dev.yml exec textlens-api npm test
+    lint: docker compose -f docker-compose.dev.yml exec textlens-api npm run lint
+
+  parcour:
+    path: services/parcour
+    stack: Java 21, Quarkus
+    docker_service: parcour
+    test: docker compose -f docker-compose.dev.yml exec parcour ./mvnw test
+    lint: docker compose -f docker-compose.dev.yml exec parcour ./mvnw checkstyle:check
+    sonar_key: nuralyio_parcour
+
+  docs:
+    path: services/docs
+    stack: Docusaurus
+    docker_service: docs
+
+  shared-java-library:
+    path: libs/shared-java-library
+    stack: Java 21 (shared lib)
