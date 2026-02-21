@@ -78,6 +78,7 @@ import {
 import { renderNoteFields } from './note-node-fields.js';
 import { renderMermaidFields } from './mermaid-fields.js';
 import { renderAnchorFields } from './anchor-node-fields.js';
+import { renderWhiteboardWorkflowFields } from './whiteboard-workflow-fields.js';
 
 /**
  * Render type-specific config fields
@@ -252,6 +253,9 @@ export function renderTypeFields(
 
     case WhiteboardNodeType.ANCHOR:
       return renderAnchorFields(config, onUpdate);
+
+    case WhiteboardNodeType.WORKFLOW:
+      return renderWhiteboardWorkflowFields(config, onUpdate);
 
     default:
       return nothing;
