@@ -284,6 +284,7 @@ push_and_create_prs() {
 
   local mod_path=$(get_config "$module" "path")
   local branch_map_rows=""
+  ALL_PUSHED_PRS=""
 
   # ── Push & PR all nested repos (deepest first: nuraly-ui → runtime → studio) ──
   SERVICE_PR_URL=""
@@ -336,6 +337,9 @@ $(tail -100 "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log" 2>/dev/null)
     fi
 
     branch_map_rows+="| **$repo_name** | \`$branch\` | \`$sha\` | ${pr_url:-—} |\n"
+
+    # Track all pushed repos with PRs for CI/sonar checking later
+    ALL_PUSHED_PRS+="$repo_remote|$(echo "$pr_url" | grep -oP '\d+$' || echo '')|$repo_name "
   done
 
   # ── Update the stack pointer and push ──
@@ -368,6 +372,7 @@ Service PR: ${SERVICE_PR_URL:-pending}" \
 
   export STACK_PR_NUMBER
   export SERVICE_PR_URL
+  export ALL_PUSHED_PRS
 }
 
 # ============================================
@@ -603,18 +608,41 @@ while true; do
       # PUSH & CREATE PRs (all nested repos + stack)
       push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
 
-      # WAIT FOR CI BUILD (triggers SonarQube analysis)
-      SERVICE_PR_NUMBER=$(echo "$SERVICE_PR_URL" | grep -oP '\d+$')
-      echo "= Waiting for CI build..."
-      CI_STATUS=$(wait_for_pr_checks "$ISSUE_REPO" "$SERVICE_PR_NUMBER")
-      echo "  CI result: $CI_STATUS"
+      # WAIT FOR CI + SONARQUBE on ALL pushed PRs (nested repos included)
+      for pr_entry in $ALL_PUSHED_PRS; do
+        pr_repo=$(echo "$pr_entry" | cut -d'|' -f1)
+        pr_num=$(echo "$pr_entry" | cut -d'|' -f2)
+        pr_name=$(echo "$pr_entry" | cut -d'|' -f3)
 
-      # SONARQUBE (check quality gate after CI finishes the analysis)
-      if [ "$CI_STATUS" != "SKIPPED" ]; then
-        run_sonar_checks "$N" "$BRANCH" "$MODULE" "$SERVICE_PR_NUMBER" "$ISSUE_REPO"
-      else
-        echo "  Skipping SonarQube check (no CI)"
-      fi
+        echo "= [$pr_name] Waiting for CI build..."
+        CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
+        echo "  [$pr_name] CI result: $CI_STATUS"
+
+        if [ "$CI_STATUS" != "SKIPPED" ]; then
+          # Resolve module name for this repo (for sonar key lookup)
+          local nested_mod=$(resolve_module_from_repo "$pr_repo")
+          if [ -n "$nested_mod" ]; then
+            run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
+          else
+            # Not in project-map (e.g. NuralyUI, runtime) — check sonar by repo name
+            echo "  [$pr_name] No sonar key mapped, checking by name..."
+            local sonar_prefix="Nuralyio_${pr_name}"
+            local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+              "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
+              jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
+            if [ -n "$actual_key" ]; then
+              local gate=$(curl -s -u "$SONAR_TOKEN:" \
+                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
+                jq -r '.projectStatus.status' 2>/dev/null)
+              echo "  [$pr_name] SonarQube: ${gate:-SKIPPED}"
+            else
+              echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
+            fi
+          fi
+        else
+          echo "  [$pr_name] Skipping SonarQube (no CI)"
+        fi
+      done
 
       # UNLOCK
       gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
@@ -710,18 +738,39 @@ Review what was already done before making changes.
       gh issue comment "$N" --repo "$ISSUE_REPO" \
         --body "$(echo -e "## Continuation complete\n\nUpdated branch \`$BRANCH\`.\n\nNew commits:\n\`\`\`\n$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline)\n\`\`\`")"
 
-      # WAIT FOR CI BUILD (triggers SonarQube analysis)
-      SERVICE_PR_NUMBER=$(echo "$SERVICE_PR_URL" | grep -oP '\d+$')
-      echo "= Waiting for CI build..."
-      CI_STATUS=$(wait_for_pr_checks "$ISSUE_REPO" "$SERVICE_PR_NUMBER")
-      echo "  CI result: $CI_STATUS"
+      # WAIT FOR CI + SONARQUBE on ALL pushed PRs (nested repos included)
+      for pr_entry in $ALL_PUSHED_PRS; do
+        pr_repo=$(echo "$pr_entry" | cut -d'|' -f1)
+        pr_num=$(echo "$pr_entry" | cut -d'|' -f2)
+        pr_name=$(echo "$pr_entry" | cut -d'|' -f3)
 
-      # SONARQUBE (check quality gate after CI finishes the analysis)
-      if [ "$CI_STATUS" != "SKIPPED" ]; then
-        run_sonar_checks "$N" "$BRANCH" "$MODULE" "$SERVICE_PR_NUMBER" "$ISSUE_REPO"
-      else
-        echo "  Skipping SonarQube check (no CI)"
-      fi
+        echo "= [$pr_name] Waiting for CI build..."
+        CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
+        echo "  [$pr_name] CI result: $CI_STATUS"
+
+        if [ "$CI_STATUS" != "SKIPPED" ]; then
+          local nested_mod=$(resolve_module_from_repo "$pr_repo")
+          if [ -n "$nested_mod" ]; then
+            run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
+          else
+            echo "  [$pr_name] No sonar key mapped, checking by name..."
+            local sonar_prefix="Nuralyio_${pr_name}"
+            local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+              "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
+              jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
+            if [ -n "$actual_key" ]; then
+              local gate=$(curl -s -u "$SONAR_TOKEN:" \
+                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
+                jq -r '.projectStatus.status' 2>/dev/null)
+              echo "  [$pr_name] SonarQube: ${gate:-SKIPPED}"
+            else
+              echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
+            fi
+          fi
+        else
+          echo "  [$pr_name] Skipping SonarQube (no CI)"
+        fi
+      done
 
       # UNLOCK
       gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
