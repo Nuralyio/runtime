@@ -70,6 +70,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     private static final int DEFAULT_TOP_K = 5;
     private static final double DEFAULT_MIN_SCORE = 0.0;
     private static final String QUERY = "query";
+    private static final String METADATA_FILTER = METADATA_FILTER;
 
     @Inject
     VectorStoreService vectorStoreService;
@@ -118,7 +119,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
         return NodeExecutionResult.success(output);
     }
 
-    private SearchParams parseSearchParams(JsonNode config, JsonNode input, ExecutionContext context) throws Exception {
+    private SearchParams parseSearchParams(JsonNode config, JsonNode input, ExecutionContext context) {
         SearchParams params = new SearchParams();
         params.collectionName = config.get("collectionName").asText();
         params.topK = config.has("topK") ? config.get("topK").asInt() : DEFAULT_TOP_K;
@@ -203,11 +204,11 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     }
 
     private Map<String, Object> parseMetadataFilter(JsonNode input) {
-        if (input == null || !input.has("metadataFilter") || !input.get("metadataFilter").isObject()) {
+        if (input == null || !input.has(METADATA_FILTER) || !input.get(METADATA_FILTER).isObject()) {
             return null;
         }
         final Map<String, Object> filterMap = new HashMap<>();
-        input.get("metadataFilter").fields().forEachRemaining(entry ->
+        input.get(METADATA_FILTER).fields().forEachRemaining(entry ->
             filterMap.put(entry.getKey(), entry.getValue().asText()));
         return filterMap;
     }
