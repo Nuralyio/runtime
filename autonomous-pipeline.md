@@ -589,14 +589,22 @@ echo "> Claude autonomous worker started (Nuraly Stack — multi-submodule)"
 echo "> Ensure Docker dev environment is running: make dev-detached"
 
 while true; do
-  gh issue list --repo "$REPO" --label "claude-fix" --state open --json number,title,body | \
-  jq -c '.[]' | while read -r issue; do
+  # Only pick up issues labelled "claude-fix" that are NOT already locked
+  gh issue list --repo "$REPO" --label "claude-fix" --state open --json number,title,body,labels | \
+  jq -c '.[] | select(.labels | map(.name) | index("claude-in-progress") | not) | select(.labels | map(.name) | index("claude-done") | not) | select(.labels | map(.name) | index("claude-failed") | not)' | \
+  while read -r issue; do
     N=$(echo "$issue" | jq -r '.number')
     grep -q "^$N$" "$PROCESSED" && continue
 
     TITLE=$(echo "$issue" | jq -r '.title')
     BODY=$(echo "$issue" | jq -r '.body')
     BRANCH="fix/issue-$N"
+
+    # ============================================
+    # LOCK — mark as in-progress so other workers skip it
+    # ============================================
+    gh issue edit "$N" --repo "$REPO" --add-label "claude-in-progress"
+    echo "🔒 Issue #$N locked (claude-in-progress)"
 
     # ============================================
     # DETECT SUBMODULES (one or many)
@@ -607,6 +615,7 @@ while true; do
       echo "⚠ Issue #$N: no submodules checked, skipping"
       gh issue comment "$N" --repo "$REPO" \
         --body "> No submodules selected. Please check at least one."
+      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
       echo "$N" >> "$PROCESSED"
       continue
     fi
@@ -622,6 +631,7 @@ while true; do
     if [ "$VALID" = false ]; then
       gh issue comment "$N" --repo "$REPO" \
         --body "> Unknown submodule in selection. Check project-map.yml."
+      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
       echo "$N" >> "$PROCESSED"
       continue
     fi
@@ -723,6 +733,7 @@ If stuck after 10 iterations, commit partial:
       echo "✗ No commits produced, skipping"
       gh issue comment "$N" --repo "$REPO" \
         --body "> Could not produce a fix. Needs human attention."
+      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
       git checkout main
       git branch -D "$BRANCH"
       echo "$N" >> "$PROCESSED"
@@ -855,6 +866,12 @@ Say DONE when fixed.
       gh pr comment "$PR_NUMBER" --repo "$REPO" \
         --body "SonarQube issues fixed for **$SONAR_FAILED_MODULES**. Re-scan needed."
     fi
+
+    # ============================================
+    # UNLOCK — mark as done
+    # ============================================
+    gh issue edit "$N" --repo "$REPO" --add-label "claude-done" --remove-label "claude-in-progress"
+    echo "🔓 Issue #$N unlocked (claude-done)"
 
     # ============================================
     # CLEAN UP — fresh state for next ticket
