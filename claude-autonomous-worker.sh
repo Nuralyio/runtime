@@ -110,7 +110,8 @@ build_allowed_paths() {
   echo "${paths%, }"
 }
 
-# Wait for PR CI checks to complete
+# Wait for ALL PR checks (CI + SonarQube) using gh pr checks --watch
+# SonarQube posts its quality gate as a GitHub check, so --watch catches everything
 # Returns: PASS, FAIL, TIMEOUT, or SKIPPED
 wait_for_pr_checks() {
   local repo=$1
@@ -122,120 +123,67 @@ wait_for_pr_checks() {
     return
   fi
 
-  echo "  Waiting for CI checks on $repo PR #$pr_number (timeout: ${timeout}s)..."
+  echo "  Watching all checks on $repo PR #$pr_number (timeout: ${timeout}s)..."
 
-  local elapsed=0
-  local interval=30
+  # gh pr checks --watch blocks until all checks complete
+  # exit code 0 = all pass, non-zero = some fail
+  timeout "$timeout" gh pr checks "$pr_number" --repo "$repo" --watch 2>/dev/null
+  local exit_code=$?
 
-  while [ "$elapsed" -lt "$timeout" ]; do
+  if [ "$exit_code" -eq 0 ]; then
+    echo "  All checks passed"
+    echo "PASS"
+  elif [ "$exit_code" -eq 124 ]; then
+    echo "  Checks timed out after ${timeout}s"
+    echo "TIMEOUT"
+  else
+    # Some checks failed — check if any were even registered
     local checks=$(gh pr checks "$pr_number" --repo "$repo" --json bucket 2>/dev/null)
-
-    # No checks registered yet — give CI a moment to start
     if [ -z "$checks" ] || [ "$checks" = "[]" ] || [ "$checks" = "null" ]; then
-      if [ "$elapsed" -gt 120 ]; then
-        echo "  No CI checks found after 2 min, skipping"
-        echo "SKIPPED"
-        return
-      fi
-      sleep "$interval"
-      elapsed=$((elapsed + interval))
-      continue
-    fi
-
-    local pending=$(echo "$checks" | jq '[.[] | select(.bucket == "pending")] | length' 2>/dev/null)
-
-    if [ "$pending" = "0" ] || [ -z "$pending" ]; then
+      echo "  No checks found"
+      echo "SKIPPED"
+    else
       local failed=$(echo "$checks" | jq '[.[] | select(.bucket == "fail")] | length' 2>/dev/null)
-      if [ "$failed" -gt 0 ] && [ "$failed" != "0" ]; then
-        echo "  CI checks failed ($failed failures)"
-        echo "FAIL"
-      else
-        echo "  CI checks passed"
-        echo "PASS"
-      fi
-      return
+      echo "  Checks failed ($failed failures)"
+      echo "FAIL"
     fi
-
-    echo "  ... $pending check(s) still running (${elapsed}s elapsed)"
-    sleep "$interval"
-    elapsed=$((elapsed + interval))
-  done
-
-  echo "  CI checks timed out after ${timeout}s"
-  echo "TIMEOUT"
+  fi
 }
 
-# Run SonarQube quality gate check for a module via API (no local scanner needed)
-# Uses sonar.nuraly.io REST API — if project not found, returns SKIPPED
-run_sonar_for_module() {
-  local mod=$1
-  local mod_sonar=$(get_config "$mod" "sonar_key")
+# Get names of failed checks on a PR (to distinguish build vs sonar failures)
+get_failed_checks() {
+  local repo=$1
+  local pr_number=$2
+  gh pr checks "$pr_number" --repo "$repo" --json name,bucket \
+    --jq '.[] | select(.bucket == "fail") | .name' 2>/dev/null
+}
 
-  if [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
-    echo "SKIPPED"
+# Check if a failed check is SonarQube-related (by name)
+is_sonar_failure() {
+  local failed_names="$1"
+  echo "$failed_names" | grep -qi "sonar"
+}
+
+# Fetch SonarQube issues from API (for the fix prompt — needs specific issue details)
+get_sonar_issues() {
+  local module=$1
+  local mod_sonar=$(get_config "$module" "sonar_key")
+
+  if [ -z "$SONAR_TOKEN" ] || [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
+    echo ""
     return
   fi
 
-  if [ -z "$SONAR_TOKEN" ]; then
-    echo "SKIPPED"
-    return
-  fi
-
-  # Search for the project on SonarQube (keys have UUID suffixes)
-  local search_result=$(curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/projects/search?q=$mod_sonar" 2>/dev/null)
-
-  # Find the actual project key that starts with our prefix
-  local actual_key=$(echo "$search_result" | \
+  local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+    "$SONAR_URL/api/projects/search?q=$mod_sonar" 2>/dev/null | \
     jq -r ".components[]? | select(.key | startswith(\"$mod_sonar\")) | .key" 2>/dev/null | head -1)
 
-  if [ -z "$actual_key" ]; then
-    echo "SKIPPED"
-    return
-  fi
-
-  # Check quality gate status
-  local gate_result=$(curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null)
-
-  # Check for API errors (project not found, etc.)
-  local has_error=$(echo "$gate_result" | jq -r '.errors // empty' 2>/dev/null)
-  if [ -n "$has_error" ]; then
-    echo "SKIPPED"
-    return
-  fi
-
-  local status=$(echo "$gate_result" | jq -r '.projectStatus.status' 2>/dev/null)
-  if [ -z "$status" ] || [ "$status" = "null" ]; then
-    echo "SKIPPED"
-    return
-  fi
-
-  echo "$status"
-}
-
-# Check SonarQube for a repo by name (fallback when not in project-map)
-# Used for nested repos that might not have a module entry
-check_sonar_by_name() {
-  local pr_name=$1
-
-  if [ -z "$SONAR_TOKEN" ]; then
-    echo "SKIPPED"
-    return
-  fi
-
-  local sonar_prefix="Nuralyio_${pr_name}"
-  local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
-    jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
-
   if [ -n "$actual_key" ]; then
-    local gate=$(curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
-      jq -r '.projectStatus.status' 2>/dev/null)
-    echo "${gate:-SKIPPED}"
+    curl -s -u "$SONAR_TOKEN:" \
+      "$SONAR_URL/api/issues/search?projectKeys=$actual_key&statuses=OPEN" 2>/dev/null | \
+      jq -c '[.issues[]? | {rule, message, component, line}] | .[0:10]'
   else
-    echo "SKIPPED"
+    echo ""
   fi
 }
 
@@ -648,20 +596,10 @@ fix_sonar_failures() {
   local pr_number=$4
   local issue_repo=$5
 
-  local mod_sonar=$(get_config "$module" "sonar_key")
   local mod_path=$(get_config "$module" "path")
 
-  # Resolve the actual SonarQube project key (with UUID suffix)
-  local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/projects/search?q=$mod_sonar" 2>/dev/null | \
-    jq -r ".components[]? | select(.key | startswith(\"$mod_sonar\")) | .key" 2>/dev/null | head -1)
-
-  local issues=""
-  if [ -n "$actual_key" ]; then
-    issues=$(curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/issues/search?projectKeys=$actual_key&statuses=OPEN" | \
-      jq -c '[.issues[]? | {rule, message, component, line}] | .[0:10]')
-  fi
+  # Get open SonarQube issues via API for the fix prompt
+  local issues=$(get_sonar_issues "$module")
 
   cd "$PROJECT_DIR"
 
@@ -713,66 +651,41 @@ check_all_pr_ci_and_sonar() {
     retry=0
     while [ "$retry" -lt "$MAX_CI_RETRIES" ]; do
       retry=$((retry + 1))
-      echo "= [$pr_name] CI+Sonar check (attempt $retry/$MAX_CI_RETRIES)..."
+      echo "= [$pr_name] Watching checks (attempt $retry/$MAX_CI_RETRIES)..."
 
-      # ── Wait for CI ──
-      CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
-      echo "  [$pr_name] CI result: $CI_STATUS"
+      # gh pr checks --watch waits for ALL checks (CI + SonarQube) to complete
+      STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
+      echo "  [$pr_name] Result: $STATUS"
 
-      if [ "$CI_STATUS" = "SKIPPED" ]; then
-        echo "  [$pr_name] No CI checks, skipping"
+      if [ "$STATUS" = "PASS" ]; then
+        [ -n "$pr_num" ] && gh pr comment "$pr_num" --repo "$pr_repo" \
+          --body "All checks **passed** for **$pr_name**. Ready for review." 2>/dev/null
         break
       fi
 
-      if [ "$CI_STATUS" = "FAIL" ]; then
-        echo "  [$pr_name] CI failed — attempting fix (retry $retry)..."
-        nested_mod=$(resolve_module_from_repo "$pr_repo")
-        if [ -n "$nested_mod" ]; then
-          fix_ci_failures "$issue_number" "$branch" "$nested_mod" "$pr_num" "$pr_repo"
-        else
-          echo "  [$pr_name] Cannot resolve module, skipping CI fix"
-          break
-        fi
-        continue  # Re-check CI after fix
-      fi
-
-      if [ "$CI_STATUS" = "TIMEOUT" ]; then
-        echo "  [$pr_name] CI timed out, moving on"
+      if [ "$STATUS" = "SKIPPED" ] || [ "$STATUS" = "TIMEOUT" ]; then
+        echo "  [$pr_name] $STATUS — moving on"
         break
       fi
 
-      # ── CI passed — check SonarQube ──
+      # ── FAIL: classify failures and attempt fixes ──
+      failed_names=$(get_failed_checks "$pr_repo" "$pr_num")
+      echo "  [$pr_name] Failed checks: $failed_names"
+
       nested_mod=$(resolve_module_from_repo "$pr_repo")
-      if [ -n "$nested_mod" ]; then
-        mod_sonar=$(get_config "$nested_mod" "sonar_key")
-        if [ "$mod_sonar" != "null" ] && [ -n "$mod_sonar" ]; then
-          echo "  [$pr_name] Checking SonarQube..."
-          gate=$(run_sonar_for_module "$nested_mod")
-          echo "  [$pr_name] SonarQube: $gate"
-
-          if [ "$gate" = "OK" ]; then
-            [ -n "$pr_num" ] && gh pr comment "$pr_num" --repo "$pr_repo" \
-              --body "CI + SonarQube **passed** for **$nested_mod**. Ready for review." 2>/dev/null
-            break  # All good
-          elif [ "$gate" = "ERROR" ]; then
-            echo "  [$pr_name] SonarQube failed — attempting fix (retry $retry)..."
-            fix_sonar_failures "$issue_number" "$branch" "$nested_mod" "$pr_num" "$pr_repo"
-            continue  # Re-check CI+sonar after fix
-          else
-            echo "  [$pr_name] SonarQube: $gate (skipping)"
-            break
-          fi
-        else
-          echo "  [$pr_name] No sonar key, CI passed — done"
-          break
-        fi
-      else
-        # Not in project-map — check sonar by repo name (read-only, no fix)
-        echo "  [$pr_name] Checking SonarQube by name..."
-        gate_status=$(check_sonar_by_name "$pr_name")
-        echo "  [$pr_name] SonarQube: $gate_status"
+      if [ -z "$nested_mod" ]; then
+        echo "  [$pr_name] Cannot resolve module, skipping auto-fix"
         break
       fi
+
+      if is_sonar_failure "$failed_names"; then
+        echo "  [$pr_name] SonarQube failed — attempting fix (retry $retry)..."
+        fix_sonar_failures "$issue_number" "$branch" "$nested_mod" "$pr_num" "$pr_repo"
+      else
+        echo "  [$pr_name] CI build failed — attempting fix (retry $retry)..."
+        fix_ci_failures "$issue_number" "$branch" "$nested_mod" "$pr_num" "$pr_repo"
+      fi
+      # Loop back to re-watch all checks after fix
     done
 
     if [ "$retry" -ge "$MAX_CI_RETRIES" ]; then
