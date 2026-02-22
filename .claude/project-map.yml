@@ -96,3 +96,13 @@ submodules:
     path: libs/shared-java-library
     stack: Java 21 (shared lib)
     sonar_key: Nuralyio_shared-java-library
+
+  nuraly-ui:
+    path: services/studio/src/features/runtime/components/ui/nuraly-ui
+    stack: Lit, TypeScript, Web Components
+    sonar_key: Nuralyio_NuralyUI
+
+  runtime:
+    path: services/studio/src/features/runtime
+    stack: TypeScript
+    sonar_key: Nuralyio_runtime
