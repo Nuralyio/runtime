@@ -420,7 +420,8 @@ $(cat "$ctx_file")
 "
   fi
 
-  local session_num=$(grep -c "^---" "$ctx_file" 2>/dev/null || echo "0")
+  local session_num
+  session_num=$(grep -c "^---" "$ctx_file" 2>/dev/null) || session_num=0
   session_num=$((session_num + 1))
 
   # Ask Claude to generate a compact context summary (merging with previous)
