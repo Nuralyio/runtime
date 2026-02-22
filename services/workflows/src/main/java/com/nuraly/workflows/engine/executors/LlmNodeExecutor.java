@@ -959,9 +959,9 @@ public class LlmNodeExecutor implements NodeExecutor {
                 Map<String, Object> usage = null;
                 if (response != null && response.getUsage() != null) {
                     usage = Map.of(
-                        "promptTokens", response.getUsage().getPromptTokens(),
-                        "completionTokens", response.getUsage().getCompletionTokens(),
-                        "totalTokens", response.getUsage().getTotalTokens()
+                        PROMPT_TOKENS, response.getUsage().getPromptTokens(),
+                        COMPLETION_TOKENS, response.getUsage().getCompletionTokens(),
+                        TOTAL_TOKENS, response.getUsage().getTotalTokens()
                     );
                 }
                 eventService.sendChatStreamEnd(
@@ -1001,12 +1001,9 @@ public class LlmNodeExecutor implements NodeExecutor {
             if (toolCtx == null) {
                 LOG.warnf("Tool not found in context map: %s. Available tools: %s",
                     toolCall.getName(), toolContextMap.keySet());
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, "Tool not found: " + toolCall.getName())
-                );
+                return serializeError("Tool not found: " + toolCall.getName());
             }
 
-            // Handle MCP tools: route call through MCP connection
             if (toolCtx.isMcpTool) {
                 return executeMcpToolCall(toolCall, toolCtx, context, parentNode);
             }
@@ -1014,89 +1011,53 @@ public class LlmNodeExecutor implements NodeExecutor {
             if (toolCtx.targetNode == null) {
                 LOG.warnf("Tool has no target node: %s. Available tools: %s",
                     toolCall.getName(), toolContextMap.keySet());
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, "Tool not found: " + toolCall.getName())
-                );
+                return serializeError("Tool not found: " + toolCall.getName());
             }
 
-            WorkflowNodeEntity targetNode = toolCtx.targetNode;
-            LOG.debugf("Found target node for tool: %s (type: %s, id: %s)",
-                targetNode.name, targetNode.type, targetNode.id);
-
-            // Emit tool call started event
-            if (context.getExecution() != null) {
-                eventService.logToolCallStarted(
-                    context.getExecution(),
-                    parentNode.id.toString(),
-                    parentNode.name,
-                    toolCall.getName(),
-                    targetNode.id.toString()
-                );
-            }
-
-            // Get executor for the target node type
-            if (!nodeExecutorFactory.hasExecutor(targetNode.type)) {
-                LOG.errorf("No executor for node type: %s", targetNode.type);
-                // Emit tool call failed event
-                if (context.getExecution() != null) {
-                    eventService.logToolCallCompleted(
-                        context.getExecution(),
-                        parentNode.id.toString(),
-                        parentNode.name,
-                        toolCall.getName(),
-                        targetNode.id.toString(),
-                        false
-                    );
-                }
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, "No executor for node type: " + targetNode.type)
-                );
-            }
-
-            NodeExecutor executor = nodeExecutorFactory.getExecutor(targetNode.type);
-
-            // Create a sub-context with tool arguments as input
-            ExecutionContext subContext = createSubContext(context, toolCall.getArguments());
-
-            // Execute the tool node
-            NodeExecutionResult result = executor.execute(subContext, targetNode);
-
-            // Emit tool call completed event
-            if (context.getExecution() != null) {
-                eventService.logToolCallCompleted(
-                    context.getExecution(),
-                    parentNode.id.toString(),
-                    parentNode.name,
-                    toolCall.getName(),
-                    targetNode.id.toString(),
-                    result.isSuccess()
-                );
-            }
-
-            if (result.isSuccess()) {
-                String toolResult;
-                if (result.getOutput() != null) {
-                    toolResult = objectMapper.writeValueAsString(result.getOutput());
-                } else {
-                    toolResult = "{\"success\": true}";
-                }
-                LOG.infof("Tool %s executed successfully, result: %s", toolCall.getName(), toolResult);
-                return toolResult;
-            } else {
-                LOG.errorf("Tool %s execution failed: %s", toolCall.getName(), result.getErrorMessage());
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, result.getErrorMessage())
-                );
-            }
+            return executeWorkflowToolCall(toolCall, toolCtx.targetNode, context, parentNode);
         } catch (Exception e) {
             LOG.errorf("Tool %s execution threw exception: %s", toolCall.getName(), e.getMessage());
-            try {
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, "Tool execution failed: " + e.getMessage())
-                );
-            } catch (Exception ex) {
-                return "{\"error\": \"Tool execution failed\"}";
-            }
+            return serializeError("Tool execution failed: " + e.getMessage());
+        }
+    }
+
+    private String executeWorkflowToolCall(ToolCall toolCall, WorkflowNodeEntity targetNode,
+                                            ExecutionContext context, WorkflowNodeEntity parentNode) throws Exception {
+        String targetNodeId = targetNode.id.toString();
+        LOG.debugf("Found target node for tool: %s (type: %s, id: %s)",
+            targetNode.name, targetNode.type, targetNode.id);
+
+        emitToolCallStartedEvent(context, parentNode, toolCall.getName(), targetNodeId);
+
+        if (!nodeExecutorFactory.hasExecutor(targetNode.type)) {
+            LOG.errorf("No executor for node type: %s", targetNode.type);
+            emitToolCallCompletedEvent(context, parentNode, toolCall.getName(), targetNodeId, false);
+            return serializeError("No executor for node type: " + targetNode.type);
+        }
+
+        NodeExecutor executor = nodeExecutorFactory.getExecutor(targetNode.type);
+        ExecutionContext subContext = createSubContext(context, toolCall.getArguments());
+        NodeExecutionResult result = executor.execute(subContext, targetNode);
+
+        emitToolCallCompletedEvent(context, parentNode, toolCall.getName(), targetNodeId, result.isSuccess());
+
+        if (result.isSuccess()) {
+            String toolResult = result.getOutput() != null
+                    ? objectMapper.writeValueAsString(result.getOutput())
+                    : "{\"success\": true}";
+            LOG.infof("Tool %s executed successfully, result: %s", toolCall.getName(), toolResult);
+            return toolResult;
+        }
+
+        LOG.errorf("Tool %s execution failed: %s", toolCall.getName(), result.getErrorMessage());
+        return serializeError(result.getErrorMessage());
+    }
+
+    private String serializeError(String message) {
+        try {
+            return objectMapper.writeValueAsString(Map.of(ERROR_KEY, message));
+        } catch (Exception ex) {
+            return "{\"error\": \"" + message.replace("\"", "'") + "\"}";
         }
     }
 
@@ -1118,7 +1079,7 @@ public class LlmNodeExecutor implements NodeExecutor {
             if (conn == null || !conn.isConnected()) {
                 LOG.errorf("MCP connection not available for tool: %s", toolCall.getName());
                 emitToolCallCompletedEvent(context, parentNode, toolCall.getName(), mcpNodeId, false);
-                return objectMapper.writeValueAsString(Map.of(ERROR_KEY, "MCP server not connected"));
+                return serializeError("MCP server not connected");
             }
 
             Map<String, Object> args = parseToolArguments(toolCall);
@@ -1134,12 +1095,7 @@ public class LlmNodeExecutor implements NodeExecutor {
 
         } catch (Exception e) {
             LOG.errorf("MCP tool %s execution failed: %s", toolCall.getName(), e.getMessage());
-            try {
-                return objectMapper.writeValueAsString(
-                        Map.of(ERROR_KEY, "MCP tool execution failed: " + e.getMessage()));
-            } catch (Exception ex) {
-                return "{\"error\": \"MCP tool execution failed\"}";
-            }
+            return serializeError("MCP tool execution failed: " + e.getMessage());
         }
     }
 

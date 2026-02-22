@@ -70,7 +70,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     private static final int DEFAULT_TOP_K = 5;
     private static final double DEFAULT_MIN_SCORE = 0.0;
     private static final String QUERY = "query";
-    private static final String METADATA_FILTER = METADATA_FILTER;
+    private static final String METADATA_FILTER = "metadataFilter";
 
     @Inject
     VectorStoreService vectorStoreService;
@@ -296,7 +296,7 @@ public class VectorSearchNodeExecutor implements NodeExecutor {
     /**
      * Compute embedding for query text using configured provider.
      */
-    private float[] computeQueryEmbedding(String query, JsonNode config, ExecutionContext context) throws Exception {
+    private float[] computeQueryEmbedding(String query, JsonNode config, ExecutionContext context) {
         String providerName = config.has("provider") ? config.get("provider").asText() : "openai";
         EmbeddingProvider provider = providerFactory.getProvider(providerName);
 
