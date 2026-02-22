@@ -165,8 +165,11 @@ is_sonar_failure() {
 }
 
 # Fetch SonarQube issues from API (for the fix prompt — needs specific issue details)
+# When pr_number is provided, fetches PR-specific new issues (what blocks the quality gate)
+# Without pr_number, fetches all open issues on main branch
 get_sonar_issues() {
   local module=$1
+  local pr_number=${2:-}
   local mod_sonar=$(get_config "$module" "sonar_key")
 
   if [ -z "$SONAR_TOKEN" ] || [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
@@ -179,8 +182,12 @@ get_sonar_issues() {
     jq -r ".components[]? | select(.key | startswith(\"$mod_sonar\")) | .key" 2>/dev/null | head -1)
 
   if [ -n "$actual_key" ]; then
-    curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/issues/search?componentKeys=$actual_key&statuses=OPEN&ps=10" 2>/dev/null | \
+    local url="$SONAR_URL/api/issues/search?componentKeys=$actual_key&statuses=OPEN&ps=10"
+    # If PR number provided, scope to PR-specific new issues only
+    if [ -n "$pr_number" ]; then
+      url+="&pullRequest=$pr_number"
+    fi
+    curl -s -u "$SONAR_TOKEN:" "$url" 2>/dev/null | \
       jq -c '[.issues[]? | {rule, message, component: (.component | split(":")[1] // .component), line}]'
   else
     echo ""
@@ -610,8 +617,8 @@ fix_sonar_failures() {
 
   local mod_path=$(get_config "$module" "path")
 
-  # Get open SonarQube issues via API for the fix prompt
-  local issues=$(get_sonar_issues "$module")
+  # Get PR-specific SonarQube issues (only new violations blocking the quality gate)
+  local issues=$(get_sonar_issues "$module" "$pr_number")
 
   cd "$PROJECT_DIR"
 
