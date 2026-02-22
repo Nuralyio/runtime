@@ -11,9 +11,13 @@
 #
 # Features:
 # - Polls all submodule repos for claude-fix issues
-# - Creates PR in the service repo + updates the stack pointer
+# - Handles nested submodules (studio → runtime → nuraly-ui)
+# - Creates PRs in each nested repo + updates the stack pointer
+# - Waits for CI builds before checking SonarQube quality gate
+# - SonarQube via REST API (no local scanner)
 # - Label-based locking (claude-in-progress / claude-done / claude-failed)
 # - Continue from comments: add "claude-continue" label to resume work
+# - Context persistence: saves/loads session summaries for continue flow
 
 # Allow spawning Claude subprocesses (unset nesting guard)
 unset CLAUDECODE
@@ -45,6 +49,7 @@ get_all_modules() {
 }
 
 # Get the GitHub org/repo from a submodule's remote URL
+# Uses subshell for cd to avoid corrupting caller's working directory
 get_submodule_repo() {
   local mod_path=$1
   local url=$(cd "$PROJECT_DIR/$mod_path" 2>/dev/null && git remote get-url origin 2>/dev/null)
@@ -67,6 +72,7 @@ resolve_module_from_repo() {
 }
 
 # Build module context block for Claude prompt
+# Filters out "null" values for modules without docker_service/test/lint
 build_module_context() {
   local modules="$1"
   local context=""
@@ -74,15 +80,19 @@ build_module_context() {
     local path=$(get_config "$MOD" "path")
     local stack=$(get_config "$MOD" "stack")
     local docker_service=$(get_config "$MOD" "docker_service")
-    local test=$(get_config "$MOD" "test")
-    local lint=$(get_config "$MOD" "lint")
+    local test_cmd=$(get_config "$MOD" "test")
+    local lint_cmd=$(get_config "$MOD" "lint")
     context+="
 ### $MOD
 - Path: $path
-- Stack: $stack
-- Docker service: $docker_service
-- Test: $test
-- Lint: $lint
+- Stack: $stack"
+    [ "$docker_service" != "null" ] && [ -n "$docker_service" ] && context+="
+- Docker service: $docker_service"
+    [ "$test_cmd" != "null" ] && [ -n "$test_cmd" ] && context+="
+- Test: $test_cmd"
+    [ "$lint_cmd" != "null" ] && [ -n "$lint_cmd" ] && context+="
+- Lint: $lint_cmd"
+    context+="
 "
   done
   echo "$context"
@@ -201,6 +211,31 @@ run_sonar_for_module() {
   fi
 
   echo "$status"
+}
+
+# Check SonarQube for a repo by name (fallback when not in project-map)
+# Used for nested repos that might not have a module entry
+check_sonar_by_name() {
+  local pr_name=$1
+
+  if [ -z "$SONAR_TOKEN" ]; then
+    echo "SKIPPED"
+    return
+  fi
+
+  local sonar_prefix="Nuralyio_${pr_name}"
+  local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
+    "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
+    jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
+
+  if [ -n "$actual_key" ]; then
+    local gate=$(curl -s -u "$SONAR_TOKEN:" \
+      "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_key" 2>/dev/null | \
+      jq -r '.projectStatus.status' 2>/dev/null)
+    echo "${gate:-SKIPPED}"
+  else
+    echo "SKIPPED"
+  fi
 }
 
 # Find all git repos (including nested submodules) under a path
@@ -387,12 +422,11 @@ context_file_for() {
 }
 
 # After a fix loop, ask Claude to summarize what was done
-# Appends to existing context file — builds up memory across sessions
+# Merges with existing context file — builds up memory across sessions
 save_context() {
   local issue_repo=$1
   local issue_number=$2
   local module=$3
-  local session_label="${4:-Session}"
   local transcript="$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
   local ctx_file=$(context_file_for "$issue_repo" "$issue_number")
 
@@ -480,7 +514,7 @@ load_context() {
   local ctx_file=$(context_file_for "$issue_repo" "$issue_number")
 
   if [ -f "$ctx_file" ]; then
-    echo "$(cat "$ctx_file")"
+    cat "$ctx_file"
   else
     echo ""
   fi
@@ -497,8 +531,20 @@ run_fix_loop() {
   local issue_repo=$5
   local extra_context="${6:-}"
 
-  MODULE_CONTEXT=$(build_module_context "$module")
-  ALLOWED_PATHS=$(build_allowed_paths "$module")
+  local module_context=$(build_module_context "$module")
+  local allowed_paths=$(build_allowed_paths "$module")
+  local test_cmd=$(get_config "$module" "test")
+  local lint_cmd=$(get_config "$module" "lint")
+
+  # Build test/lint steps only if commands exist
+  local test_step=""
+  local lint_step=""
+  [ "$test_cmd" != "null" ] && [ -n "$test_cmd" ] && test_step="
+5. Run tests (inside Docker):
+   $test_cmd"
+  [ "$lint_cmd" != "null" ] && [ -n "$lint_cmd" ] && lint_step="
+6. Run lint (inside Docker):
+   $lint_cmd"
 
   claude -p "
 /ralph-loop \"
@@ -511,7 +557,7 @@ You are fixing issue #$issue_number from the $module service repo ($issue_repo).
 - Use the test/lint commands below which exec into Docker containers.
 
 ## Affected module
-$MODULE_CONTEXT
+$module_context
 
 ## Issue ($issue_repo#$issue_number)
 Title: $title
@@ -519,7 +565,7 @@ Description: $body
 $extra_context
 
 ## Rules
-- ONLY modify files inside: $ALLOWED_PATHS
+- ONLY modify files inside: $allowed_paths
 - Do NOT touch other submodules or infrastructure files
 - Read CLAUDE.md in the module for context (if it exists)
 - Services are already running in Docker containers
@@ -529,11 +575,7 @@ $extra_context
 1. Read the issue carefully
 2. Read CLAUDE.md in the module (if present)
 3. Plan the fix
-4. Implement changes
-5. Run tests (inside Docker):
-   $(get_config "$module" "test")
-6. Run lint (inside Docker):
-   $(get_config "$module" "lint")
+4. Implement changes$test_step$lint_step
 7. If anything fails, fix and retry
 8. When tests and lint pass, commit in the submodule:
    cd $(get_config "$module" "path") && git add -A && git commit -m 'fix($module): resolve $issue_repo#$issue_number - $title'
@@ -548,7 +590,7 @@ If stuck after 10 iterations, commit partial:
 }
 
 # ============================================
-# Run SonarQube checks
+# Run SonarQube checks (with auto-fix loop if gate fails)
 # ============================================
 run_sonar_checks() {
   local issue_number=$1
@@ -557,30 +599,30 @@ run_sonar_checks() {
   local pr_number=$4
   local issue_repo=$5
 
-  MOD_SONAR=$(get_config "$module" "sonar_key")
-  [ "$MOD_SONAR" = "null" ] || [ -z "$MOD_SONAR" ] && return
+  local mod_sonar=$(get_config "$module" "sonar_key")
+  [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ] && return
 
   echo "= SonarQube check for $module..."
-  GATE=$(run_sonar_for_module "$module")
-  echo "   $module: $GATE"
+  local gate=$(run_sonar_for_module "$module")
+  echo "   $module: $gate"
 
-  if [ "$GATE" = "OK" ] || [ "$GATE" = "SKIPPED" ]; then
-    if [ "$GATE" = "OK" ] && [ -n "$pr_number" ]; then
+  if [ "$gate" = "OK" ] || [ "$gate" = "SKIPPED" ]; then
+    if [ "$gate" = "OK" ] && [ -n "$pr_number" ]; then
       gh pr comment "$pr_number" --repo "$issue_repo" \
         --body "SonarQube quality gate **passed** for **$module**. Ready for review."
     fi
-  elif [ "$GATE" = "ERROR" ]; then
+  elif [ "$gate" = "ERROR" ]; then
     echo "⚠ SonarQube failed for: $module"
 
     # Resolve the actual SonarQube project key (with UUID suffix)
     local actual_key=$(curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/projects/search?q=$MOD_SONAR" 2>/dev/null | \
-      jq -r ".components[]? | select(.key | startswith(\"$MOD_SONAR\")) | .key" 2>/dev/null | head -1)
+      "$SONAR_URL/api/projects/search?q=$mod_sonar" 2>/dev/null | \
+      jq -r ".components[]? | select(.key | startswith(\"$mod_sonar\")) | .key" 2>/dev/null | head -1)
 
-    MOD_PATH=$(get_config "$module" "path")
-    ISSUES=""
+    local mod_path=$(get_config "$module" "path")
+    local issues=""
     if [ -n "$actual_key" ]; then
-      ISSUES=$(curl -s -u "$SONAR_TOKEN:" \
+      issues=$(curl -s -u "$SONAR_TOKEN:" \
         "$SONAR_URL/api/issues/search?projectKeys=$actual_key&statuses=OPEN" | \
         jq -c '[.issues[]? | {rule, message, component, line}] | .[0:10]')
     fi
@@ -592,10 +634,10 @@ run_sonar_checks() {
 SonarQube FAILED for $module
 
 Issues:
-$ISSUES
+$issues
 
 CRITICAL: Do NOT run commands on the host. All tests run inside Docker containers.
-ONLY modify files in: $MOD_PATH
+ONLY modify files in: $mod_path
 
 Test: $(get_config "$module" "test")
 
@@ -605,7 +647,7 @@ Say DONE when fixed.
 \" --completion-promise \"DONE\" --max-iterations 10
 " --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
 
-    (cd "$PROJECT_DIR/$MOD_PATH" && git push origin "$branch" 2>/dev/null)
+    (cd "$PROJECT_DIR/$mod_path" && git push origin "$branch" 2>/dev/null)
     cd "$PROJECT_DIR"
     git add . && git commit -m "fix($module): sonarqube issues $issue_repo#$issue_number" 2>/dev/null
     git push origin "$branch"
@@ -613,6 +655,59 @@ Say DONE when fixed.
     [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
       --body "SonarQube issues fixed for **$module**. Re-scan needed."
   fi
+}
+
+# ============================================
+# Wait for CI + check SonarQube on all pushed PRs
+# ============================================
+check_all_pr_ci_and_sonar() {
+  local issue_number=$1
+  local branch=$2
+
+  for pr_entry in $ALL_PUSHED_PRS; do
+    pr_repo=$(echo "$pr_entry" | cut -d'|' -f1)
+    pr_num=$(echo "$pr_entry" | cut -d'|' -f2)
+    pr_name=$(echo "$pr_entry" | cut -d'|' -f3)
+
+    echo "= [$pr_name] Waiting for CI build..."
+    CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
+    echo "  [$pr_name] CI result: $CI_STATUS"
+
+    if [ "$CI_STATUS" != "SKIPPED" ]; then
+      # Resolve module name for this repo (for sonar key lookup)
+      nested_mod=$(resolve_module_from_repo "$pr_repo")
+      if [ -n "$nested_mod" ]; then
+        run_sonar_checks "$issue_number" "$branch" "$nested_mod" "$pr_num" "$pr_repo"
+      else
+        # Not in project-map — check sonar by repo name
+        echo "  [$pr_name] Checking SonarQube by name..."
+        gate_status=$(check_sonar_by_name "$pr_name")
+        echo "  [$pr_name] SonarQube: $gate_status"
+      fi
+    else
+      echo "  [$pr_name] Skipping SonarQube (no CI)"
+    fi
+  done
+}
+
+# ============================================
+# Count commits across all nested repos
+# ============================================
+count_nested_commits() {
+  local module=$1
+  local mod_path=$(get_config "$module" "path")
+  local total=0
+
+  for rp in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
+    c=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
+    total=$((total + c))
+  done
+
+  # Also count stack-level commits
+  local stack_commits=$(cd "$PROJECT_DIR" && git log main..HEAD --oneline 2>/dev/null | wc -l)
+  total=$((total + stack_commits))
+
+  echo "$total"
 }
 
 # ============================================
@@ -628,15 +723,20 @@ cleanup_env() {
 }
 
 # ============================================
-# Build list of all repos to poll
+# Build list of all repos to poll (deduplicated)
 # ============================================
 build_repo_list() {
   local repos=""
+  local seen=""
   for MOD in $(get_all_modules); do
     local mod_path=$(get_config "$MOD" "path")
     local repo=$(get_submodule_repo "$mod_path")
     if [ -n "$repo" ] && [ "$repo" != "null" ]; then
-      repos+="$repo "
+      # Deduplicate
+      if ! echo "$seen" | grep -q "|${repo}|"; then
+        repos+="$repo "
+        seen+="|${repo}|"
+      fi
     fi
   done
   echo "$repos"
@@ -700,14 +800,7 @@ while true; do
 
       # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
-      MOD_PATH=$(get_config "$MODULE" "path")
-      TOTAL_COMMITS=0
-      for rp in $(find_nested_git_repos "$PROJECT_DIR/$MOD_PATH"); do
-        c=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
-        TOTAL_COMMITS=$((TOTAL_COMMITS + c))
-      done
-      STACK_COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
-      TOTAL_COMMITS=$((TOTAL_COMMITS + STACK_COMMITS))
+      TOTAL_COMMITS=$(count_nested_commits "$MODULE")
 
       if [ "$TOTAL_COMMITS" -eq 0 ]; then
         echo "✗ No commits produced, skipping"
@@ -722,41 +815,8 @@ while true; do
       # PUSH & CREATE PRs (all nested repos + stack)
       push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
 
-      # WAIT FOR CI + SONARQUBE on ALL pushed PRs (nested repos included)
-      for pr_entry in $ALL_PUSHED_PRS; do
-        pr_repo=$(echo "$pr_entry" | cut -d'|' -f1)
-        pr_num=$(echo "$pr_entry" | cut -d'|' -f2)
-        pr_name=$(echo "$pr_entry" | cut -d'|' -f3)
-
-        echo "= [$pr_name] Waiting for CI build..."
-        CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
-        echo "  [$pr_name] CI result: $CI_STATUS"
-
-        if [ "$CI_STATUS" != "SKIPPED" ]; then
-          # Resolve module name for this repo (for sonar key lookup)
-          nested_mod=$(resolve_module_from_repo "$pr_repo")
-          if [ -n "$nested_mod" ]; then
-            run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
-          else
-            # Not in project-map (e.g. NuralyUI, runtime) — check sonar by repo name
-            echo "  [$pr_name] Checking SonarQube by name..."
-            sonar_prefix="Nuralyio_${pr_name}"
-            actual_sonar_key=$(curl -s -u "$SONAR_TOKEN:" \
-              "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
-              jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
-            if [ -n "$actual_sonar_key" ]; then
-              gate_status=$(curl -s -u "$SONAR_TOKEN:" \
-                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_sonar_key" 2>/dev/null | \
-                jq -r '.projectStatus.status' 2>/dev/null)
-              echo "  [$pr_name] SonarQube: ${gate_status:-SKIPPED}"
-            else
-              echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
-            fi
-          fi
-        else
-          echo "  [$pr_name] Skipping SonarQube (no CI)"
-        fi
-      done
+      # WAIT FOR CI + SONARQUBE on ALL pushed PRs
+      check_all_pr_ci_and_sonar "$N" "$BRANCH"
 
       # UNLOCK
       gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
@@ -834,17 +894,12 @@ Focus on the follow-up instruction.
 "
       run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO" "$EXTRA_CONTEXT"
 
-      # SAVE UPDATED CONTEXT
+      # SAVE UPDATED CONTEXT (merges with previous)
       save_context "$ISSUE_REPO" "$N" "$MODULE"
 
       # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
-      MOD_PATH=$(get_config "$MODULE" "path")
-      TOTAL_COMMITS=0
-      for rp in $(find_nested_git_repos "$PROJECT_DIR/$MOD_PATH"); do
-        c=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null | wc -l)
-        TOTAL_COMMITS=$((TOTAL_COMMITS + c))
-      done
+      TOTAL_COMMITS=$(count_nested_commits "$MODULE")
 
       if [ "$TOTAL_COMMITS" -eq 0 ]; then
         echo "✗ No commits on continue"
@@ -859,42 +914,12 @@ Focus on the follow-up instruction.
       push_and_create_prs "$N" "$BRANCH" "$MODULE" "$TITLE" "$ISSUE_REPO"
 
       # Comment update
+      MOD_PATH=$(get_config "$MODULE" "path")
       gh issue comment "$N" --repo "$ISSUE_REPO" \
         --body "$(echo -e "## Continuation complete\n\nUpdated branch \`$BRANCH\`.\n\nNew commits:\n\`\`\`\n$(cd "$PROJECT_DIR/$MOD_PATH" && git log origin/main..HEAD --oneline)\n\`\`\`")"
 
-      # WAIT FOR CI + SONARQUBE on ALL pushed PRs (nested repos included)
-      for pr_entry in $ALL_PUSHED_PRS; do
-        pr_repo=$(echo "$pr_entry" | cut -d'|' -f1)
-        pr_num=$(echo "$pr_entry" | cut -d'|' -f2)
-        pr_name=$(echo "$pr_entry" | cut -d'|' -f3)
-
-        echo "= [$pr_name] Waiting for CI build..."
-        CI_STATUS=$(wait_for_pr_checks "$pr_repo" "$pr_num")
-        echo "  [$pr_name] CI result: $CI_STATUS"
-
-        if [ "$CI_STATUS" != "SKIPPED" ]; then
-          nested_mod=$(resolve_module_from_repo "$pr_repo")
-          if [ -n "$nested_mod" ]; then
-            run_sonar_checks "$N" "$BRANCH" "$nested_mod" "$pr_num" "$pr_repo"
-          else
-            echo "  [$pr_name] Checking SonarQube by name..."
-            sonar_prefix="Nuralyio_${pr_name}"
-            actual_sonar_key=$(curl -s -u "$SONAR_TOKEN:" \
-              "$SONAR_URL/api/projects/search?q=$sonar_prefix" 2>/dev/null | \
-              jq -r ".components[]? | select(.key | startswith(\"$sonar_prefix\")) | .key" 2>/dev/null | head -1)
-            if [ -n "$actual_sonar_key" ]; then
-              gate_status=$(curl -s -u "$SONAR_TOKEN:" \
-                "$SONAR_URL/api/qualitygates/project_status?projectKey=$actual_sonar_key" 2>/dev/null | \
-                jq -r '.projectStatus.status' 2>/dev/null)
-              echo "  [$pr_name] SonarQube: ${gate_status:-SKIPPED}"
-            else
-              echo "  [$pr_name] SonarQube: SKIPPED (project not found)"
-            fi
-          fi
-        else
-          echo "  [$pr_name] Skipping SonarQube (no CI)"
-        fi
-      done
+      # WAIT FOR CI + SONARQUBE on ALL pushed PRs
+      check_all_pr_ci_and_sonar "$N" "$BRANCH"
 
       # UNLOCK
       gh issue edit "$N" --repo "$ISSUE_REPO" --add-label "claude-done" --remove-label "claude-in-progress"
