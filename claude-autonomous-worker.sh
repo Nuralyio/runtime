@@ -47,8 +47,7 @@ get_all_modules() {
 # Get the GitHub org/repo from a submodule's remote URL
 get_submodule_repo() {
   local mod_path=$1
-  cd "$PROJECT_DIR/$mod_path"
-  local url=$(git remote get-url origin 2>/dev/null)
+  local url=$(cd "$PROJECT_DIR/$mod_path" 2>/dev/null && git remote get-url origin 2>/dev/null)
   echo "$url" | sed -E 's|.*github\.com[:/]||; s|\.git$||'
 }
 
