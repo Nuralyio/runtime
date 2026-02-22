@@ -17,6 +17,7 @@
 # - SonarQube via REST API (no local scanner)
 # - Label-based locking (claude-in-progress / claude-done / claude-failed)
 # - Continue from comments: add "claude-continue" label to resume work
+# - PR comment fixes: add "claude-pr-fix" label to address reviewer feedback
 # - Context persistence: saves/loads session summaries for continue flow
 
 # Allow spawning Claude subprocesses (unset nesting guard)
@@ -928,6 +929,181 @@ Focus on the follow-up instruction.
       # CLEAN UP
       cleanup_env
       echo "✓ $ISSUE_REPO#$N continue complete"
+
+    done
+  done
+
+  # ============================================
+  # PHASE 3: PR COMMENTS — poll for PRs with claude-pr-fix label
+  # Handles PRs on ANY repo in the chain (NuralyUI, runtime, studio, stack)
+  # Resolves original issue repo from PR body for context loading
+  # ============================================
+  for PR_REPO in $REPOS; do
+    gh pr list --repo "$PR_REPO" --label "claude-pr-fix" --state open --json number,title,headRefName,body,labels 2>/dev/null | \
+    jq -c '.[] | select(.labels | map(.name) | index("claude-in-progress") | not)' | \
+    while read -r pr; do
+      PR_NUM=$(echo "$pr" | jq -r '.number')
+      PR_TITLE=$(echo "$pr" | jq -r '.title')
+      PR_BRANCH=$(echo "$pr" | jq -r '.headRefName')
+      PR_BODY=$(echo "$pr" | jq -r '.body')
+
+      # Parse module from branch name: fix/<module>-issue-<N>
+      MODULE=$(echo "$PR_BRANCH" | sed -E 's|^fix/||; s|-issue-[0-9]+$||')
+      ISSUE_NUM=$(echo "$PR_BRANCH" | grep -oP 'issue-\K\d+$' || echo "")
+
+      # Validate module exists in project-map
+      MOD_PATH=$(get_config "$MODULE" "path")
+      if [ "$MOD_PATH" = "null" ] || [ -z "$MOD_PATH" ]; then
+        echo "⚠ $PR_REPO PR #$PR_NUM: cannot resolve module from branch $PR_BRANCH"
+        gh pr edit "$PR_NUM" --repo "$PR_REPO" --remove-label "claude-pr-fix"
+        continue
+      fi
+
+      # Resolve the ORIGINAL issue repo from the PR body
+      # PR body patterns:
+      #   Service PR: "Fixes #29"              → issue is on same repo
+      #   Nested PR:  "Part of Org/Repo#29"    → issue is on Org/Repo
+      #   Stack PR:   "Source issue: Org/Repo#29" → issue is on Org/Repo
+      ORIG_ISSUE_REPO=""
+      ORIG_ISSUE_NUM=""
+
+      # Try "Part of Org/Repo#N"
+      ORIG_REF=$(echo "$PR_BODY" | grep -oP 'Part of \K[A-Za-z0-9_-]+/[A-Za-z0-9_-]+#\d+' | head -1)
+      if [ -n "$ORIG_REF" ]; then
+        ORIG_ISSUE_REPO=$(echo "$ORIG_REF" | cut -d'#' -f1)
+        ORIG_ISSUE_NUM=$(echo "$ORIG_REF" | cut -d'#' -f2)
+      fi
+
+      # Try "Source issue: Org/Repo#N"
+      if [ -z "$ORIG_ISSUE_REPO" ]; then
+        ORIG_REF=$(echo "$PR_BODY" | grep -oP 'Source issue: \K[A-Za-z0-9_-]+/[A-Za-z0-9_-]+#\d+' | head -1)
+        if [ -n "$ORIG_REF" ]; then
+          ORIG_ISSUE_REPO=$(echo "$ORIG_REF" | cut -d'#' -f1)
+          ORIG_ISSUE_NUM=$(echo "$ORIG_REF" | cut -d'#' -f2)
+        fi
+      fi
+
+      # Try "Fixes #N" (issue on same repo as PR)
+      if [ -z "$ORIG_ISSUE_REPO" ]; then
+        ORIG_ISSUE_NUM=$(echo "$PR_BODY" | grep -oP 'Fixes #\K\d+' | head -1)
+        if [ -n "$ORIG_ISSUE_NUM" ]; then
+          ORIG_ISSUE_REPO="$PR_REPO"
+        fi
+      fi
+
+      # Fallback: use branch issue number + PR repo
+      if [ -z "$ORIG_ISSUE_REPO" ] && [ -n "$ISSUE_NUM" ]; then
+        ORIG_ISSUE_REPO="$PR_REPO"
+        ORIG_ISSUE_NUM="$ISSUE_NUM"
+      fi
+
+      echo "  Resolved: module=$MODULE, issue=$ORIG_ISSUE_REPO#$ORIG_ISSUE_NUM, PR on $PR_REPO"
+
+      # Get the latest PR comment as the instruction
+      LATEST_COMMENT=$(gh api "repos/$PR_REPO/issues/$PR_NUM/comments" --jq '.[-1].body' 2>/dev/null)
+
+      # Also get inline review comments for code-specific feedback
+      REVIEW_COMMENTS=$(gh api "repos/$PR_REPO/pulls/$PR_NUM/comments" \
+        --jq '[.[-5:] | .[]? | {path: .path, body: .body, line: .line}]' 2>/dev/null)
+
+      if [ -z "$LATEST_COMMENT" ] && { [ -z "$REVIEW_COMMENTS" ] || [ "$REVIEW_COMMENTS" = "[]" ]; }; then
+        echo "⚠ $PR_REPO PR #$PR_NUM: claude-pr-fix but no comments, skipping"
+        gh pr edit "$PR_NUM" --repo "$PR_REPO" --remove-label "claude-pr-fix"
+        continue
+      fi
+
+      # LOCK
+      gh pr edit "$PR_NUM" --repo "$PR_REPO" \
+        --add-label "claude-in-progress" \
+        --remove-label "claude-pr-fix"
+      echo "🔒 $PR_REPO PR #$PR_NUM locked ($MODULE)"
+
+      echo ""
+      echo "========================================"
+      echo "= PR FIX $PR_REPO PR #$PR_NUM: $PR_TITLE"
+      echo "= Module: $MODULE | Branch: $PR_BRANCH"
+      echo "= Source issue: ${ORIG_ISSUE_REPO:-unknown}#${ORIG_ISSUE_NUM:-?}"
+      echo "========================================"
+
+      # RESUME ENV (checkout existing PR branch)
+      setup_continue_env "$PR_BRANCH" "$MODULE"
+
+      # LOAD PREVIOUS CONTEXT from the ORIGINAL issue (not the PR repo)
+      PREV_CONTEXT=""
+      if [ -n "$ORIG_ISSUE_REPO" ] && [ -n "$ORIG_ISSUE_NUM" ]; then
+        PREV_CONTEXT=$(load_context "$ORIG_ISSUE_REPO" "$ORIG_ISSUE_NUM")
+      fi
+
+      # Also load the original issue body for full context
+      ORIG_ISSUE_BODY=""
+      if [ -n "$ORIG_ISSUE_REPO" ] && [ -n "$ORIG_ISSUE_NUM" ]; then
+        ORIG_ISSUE_BODY=$(gh issue view "$ORIG_ISSUE_NUM" --repo "$ORIG_ISSUE_REPO" --json body --jq '.body' 2>/dev/null)
+      fi
+
+      # Build review context block
+      REVIEW_CTX=""
+      if [ -n "$REVIEW_COMMENTS" ] && [ "$REVIEW_COMMENTS" != "[]" ] && [ "$REVIEW_COMMENTS" != "null" ]; then
+        REVIEW_CTX="
+## Inline code review comments
+\`\`\`json
+$REVIEW_COMMENTS
+\`\`\`
+"
+      fi
+
+      # FIX with full context: original issue + previous sessions + reviewer feedback
+      EXTRA_CONTEXT="
+## Original issue
+${ORIG_ISSUE_BODY:-See PR description for context.}
+
+## Previous session context
+${PREV_CONTEXT:-No previous context. Review git log and changed files to understand prior work.}
+
+## PR reviewer comment (instruction)
+${LATEST_COMMENT:-No general comment. Address the inline review comments below.}
+$REVIEW_CTX
+## Important
+This is a PR revision. The branch $PR_BRANCH already has commits from a previous fix.
+Focus on addressing the reviewer's feedback — do NOT redo previous work.
+"
+      run_fix_loop "${ORIG_ISSUE_NUM:-$PR_NUM}" "$PR_TITLE" "$PR_BODY" "$MODULE" "${ORIG_ISSUE_REPO:-$PR_REPO}" "$EXTRA_CONTEXT"
+
+      # SAVE CONTEXT (under the original issue, not the PR)
+      if [ -n "$ORIG_ISSUE_REPO" ] && [ -n "$ORIG_ISSUE_NUM" ]; then
+        save_context "$ORIG_ISSUE_REPO" "$ORIG_ISSUE_NUM" "$MODULE"
+      fi
+
+      # PUSH changes (no new PRs needed — just update existing branches)
+      cd "$PROJECT_DIR"
+      for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$MOD_PATH"); do
+        (cd "$repo_path" && git push origin "$PR_BRANCH" 2>/dev/null || true)
+      done
+      git add . && git commit -m "fix($MODULE): address PR #$PR_NUM feedback — $PR_REPO" 2>/dev/null || true
+      git push origin "$PR_BRANCH" 2>/dev/null
+
+      # Comment on PR
+      gh pr comment "$PR_NUM" --repo "$PR_REPO" \
+        --body "Addressed reviewer feedback. Changes pushed to \`$PR_BRANCH\`."
+
+      # WAIT FOR CI on this PR
+      echo "= [$MODULE] Waiting for CI on PR #$PR_NUM..."
+      CI_STATUS=$(wait_for_pr_checks "$PR_REPO" "$PR_NUM")
+      echo "  [$MODULE] CI result: $CI_STATUS"
+
+      if [ "$CI_STATUS" != "SKIPPED" ]; then
+        echo "= SonarQube check for $MODULE..."
+        GATE=$(run_sonar_for_module "$MODULE")
+        echo "   $MODULE: $GATE"
+      fi
+
+      # UNLOCK
+      gh pr edit "$PR_NUM" --repo "$PR_REPO" \
+        --remove-label "claude-in-progress"
+      echo "🔓 $PR_REPO PR #$PR_NUM done"
+
+      # CLEAN UP
+      cleanup_env
+      echo "✓ $PR_REPO PR #$PR_NUM complete"
 
     done
   done
