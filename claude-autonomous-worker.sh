@@ -123,28 +123,28 @@ wait_for_pr_checks() {
     return
   fi
 
-  echo "  Watching all checks on $repo PR #$pr_number (timeout: ${timeout}s)..."
+  echo "  Watching all checks on $repo PR #$pr_number (timeout: ${timeout}s)..." >&2
 
   # gh pr checks --watch blocks until all checks complete
   # exit code 0 = all pass, non-zero = some fail
-  timeout "$timeout" gh pr checks "$pr_number" --repo "$repo" --watch 2>/dev/null
+  timeout "$timeout" gh pr checks "$pr_number" --repo "$repo" --watch >&2 2>/dev/null
   local exit_code=$?
 
   if [ "$exit_code" -eq 0 ]; then
-    echo "  All checks passed"
+    echo "  All checks passed" >&2
     echo "PASS"
   elif [ "$exit_code" -eq 124 ]; then
-    echo "  Checks timed out after ${timeout}s"
+    echo "  Checks timed out after ${timeout}s" >&2
     echo "TIMEOUT"
   else
     # Some checks failed — check if any were even registered
     local checks=$(gh pr checks "$pr_number" --repo "$repo" --json bucket 2>/dev/null)
     if [ -z "$checks" ] || [ "$checks" = "[]" ] || [ "$checks" = "null" ]; then
-      echo "  No checks found"
+      echo "  No checks found" >&2
       echo "SKIPPED"
     else
       local failed=$(echo "$checks" | jq '[.[] | select(.bucket == "fail")] | length' 2>/dev/null)
-      echo "  Checks failed ($failed failures)"
+      echo "  Checks failed ($failed failures)" >&2
       echo "FAIL"
     fi
   fi
