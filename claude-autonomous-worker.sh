@@ -1122,9 +1122,11 @@ Focus on addressing the reviewer's feedback — do NOT redo previous work.
       git add . && git commit -m "fix($MODULE): address PR #$PR_NUM feedback — $PR_REPO" 2>/dev/null || true
       git push origin "$PR_BRANCH" 2>/dev/null
 
-      # Comment on PR
+      # Comment on PR with summary of changes from transcript
+      local pr_summary=$(tail -50 "$TRANSCRIPTS/${ORIG_ISSUE_REPO//\//-}-${ORIG_ISSUE_NUM:-$PR_NUM}.log" 2>/dev/null | \
+        grep -A50 "^DONE\|^## Summary\|^###\|^\*\*" | head -30)
       gh pr comment "$PR_NUM" --repo "$PR_REPO" \
-        --body "Addressed reviewer feedback. Changes pushed to \`$PR_BRANCH\`."
+        --body "$(echo -e "## Changes pushed to \`$PR_BRANCH\`\n\n${pr_summary:-Addressed reviewer feedback.}")"
 
       # WAIT FOR CI + SONAR with retry loop
       # Build ALL_PUSHED_PRS for the retry function
