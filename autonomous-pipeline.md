@@ -2,44 +2,75 @@
 
 ## Overview
 
-This guide documents a fully autonomous bug-fixing pipeline using **Claude Code** with the **Ralph Wiggum plugin** for iterative development loops. The system watches for labeled GitHub issues, spins up isolated environments, fixes issues autonomously, runs SonarQube quality gates, and creates PRs — all without human intervention.
+This guide documents a fully autonomous bug-fixing pipeline using **Claude Code** with the **Ralph Wiggum plugin** for iterative development loops. The system watches for labeled GitHub issues across all service repos, spins up isolated environments, fixes issues autonomously, waits for CI builds, checks SonarQube quality gates via REST API, and creates PRs — all without human intervention.
 
 ## Architecture
 
 ```
-You write a ticket (2 min) → Label "claude-fix"
-  → Worker script detects it
-  → Checks out fresh branch from main
-  → Identifies target submodule(s) from ticket
+You write a ticket in the SERVICE repo (e.g. Nuralyio/studio) → Label "claude-fix"
+  → Worker polls all service repos every 2 min
+  → Detects new issue, locks it (claude-in-progress label)
+  → Resolves which module it maps to from project-map.yml
+  → Checks out fresh branch from main (in all nested submodules too)
   → Ralph loop iterates until fix is done (context preserved between iterations)
-  → Commits & pushes
-  → Creates PR with transcript
-  → Runs SonarQube per submodule
+  → Commits in submodule(s) + updates stack pointer
+  → Pushes ALL nested repos (deepest first: nuraly-ui → runtime → studio → stack)
+  → Creates PRs in each pushed repo
+  → Waits for CI builds to pass on all PRs
+  → Checks SonarQube quality gate via REST API
   → If SonarQube fails → Ralph loop fixes sonar issues → pushes again
-  → If SonarQube passes → Comments "ready for review"
-  → Resets to main, waits for next issue
+  → Saves compact session context for future continue sessions
+  → Unlocks issue (claude-done label), resets to main
+  → Waits for next issue
+
+Continue flow:
+  → Add "claude-continue" label + comment with instruction
+  → Worker resumes branch, loads saved context from prior session
+  → Merges accumulated knowledge across sessions
+  → Runs fix loop with continuation context
+  → Same push/CI/sonar flow as above
 ```
+
+### Key design decisions
+
+- **Per-service tickets**: Issues live in each service's own repo (Nuralyio/studio, Nuralyio/api, etc.), NOT on the stack repo. The worker polls all repos listed in `project-map.yml`.
+- **Nested submodule support**: The stack has deeply nested submodules (studio → runtime → nuraly-ui). The worker discovers and handles all levels automatically.
+- **SonarQube via REST API**: No local `sonar-scanner` needed. The worker queries `sonar.nuraly.io/api/qualitygates/project_status` directly. Project keys have UUID suffixes resolved dynamically via the search API.
+- **CI-first**: Always wait for CI builds to complete before checking SonarQube (since CI triggers the sonar analysis).
+- **Context persistence**: After each fix session, Claude generates a structured summary saved to `~/.claude-contexts/`. On continue, previous context is loaded and merged with new session data.
+- **Label-based locking**: Prevents multiple workers from grabbing the same ticket.
 
 ## Prerequisites
 
 - **This VM** (`/home/gateway/stack`) is the dev environment — no separate VMs needed
 - Claude Code installed: `npm install -g @anthropic-ai/claude-code`
 - Ralph Wiggum plugin installed: `/install-plugin ralph-wiggum` inside Claude Code
-- GitHub CLI (`gh`) authenticated — **validated**: `labidiaymen` with repo/workflow scopes
-- SonarQube at `https://sonar.nuraly.io` — **validated**: UP (v26.1.0)
-- Environment variables pre-configured: `SONAR_HOST_URL`, `SONAR_TOKEN`
+- GitHub CLI (`gh`) authenticated — `labidiaymen` with repo/workflow scopes
+- SonarQube at `https://sonar.nuraly.io` — v26.1.0
 - `yq` installed for YAML parsing
 - Docker & Docker Compose installed (all services run in containers)
 - Claude Code logged in: run `claude login` once (no API key needed)
 
-### Environment (validated)
+### Environment variables
 
-| Credential | Status |
+| Variable | Purpose | Required |
+|---|---|---|
+| `SONAR_HOST_URL` | SonarQube server URL (default: `https://sonar.nuraly.io`) | Optional |
+| `SONAR_TOKEN` | SonarQube API token | Yes (for sonar checks) |
+
+> **Note**: `SONAR_TOKEN` should be set in the shell environment or systemd config, never hardcoded in the script or committed to git.
+
+### Required GitHub labels
+
+Each service repo needs these labels (create once per repo):
+
+| Label | Purpose |
 |---|---|
-| `gh` CLI | Authenticated as `labidiaymen` (admin:org, repo, workflow scopes) |
-| `SONAR_HOST_URL` | `https://sonar.nuraly.io` |
-| `SONAR_TOKEN` | Set (`squ_...cad`) |
-| SonarQube server | UP — v26.1.0 |
+| `claude-fix` | Marks an issue for the autonomous worker to pick up |
+| `claude-in-progress` | Lock — worker is actively working on this issue |
+| `claude-done` | Worker completed the fix |
+| `claude-failed` | Worker could not fix the issue |
+| `claude-continue` | Resume work on a previously completed/failed issue |
 
 ---
 
@@ -76,6 +107,10 @@ In `.claude/settings.json`:
 }
 ```
 
+### Nesting guard
+
+Claude Code sets a `CLAUDECODE` environment variable to prevent nested sessions. Since the worker script spawns `claude -p` subprocesses, the script must `unset CLAUDECODE` at the top.
+
 ---
 
 ## 2. Ralph Wiggum Plugin
@@ -109,7 +144,6 @@ Ralph Wiggum implements iterative, self-referential AI development loops. It use
 - Always use `--max-iterations` as primary safety mechanism (recommended: 15)
 - If Ralph can't solve it in 8-10 iterations, more iterations probably won't help
 - Token count grows each iteration (full context history), so cost increases per iteration
-- A 20-iteration Ralph loop on a medium issue may cost $10-20 in API calls
 
 ---
 
@@ -124,18 +158,35 @@ Nuraly Stack is a microservices monorepo using **git submodules**. All services 
 | Service | Path | Stack | SonarQube Key |
 |---|---|---|---|
 | **studio** | `services/studio` | Astro, React, Lit, TypeScript, Tailwind | `Nuralyio_studio` |
-| **api** | `services/api` | Node.js, Express, TypeScript, Prisma | `nuralyio_api` |
-| **gateway** | `services/gateway` | Node.js, Express, TypeScript, Keycloak | — |
-| **functions** | `services/functions` | Java 21, Quarkus, Flyway | `nuralyio_functions` |
-| **workflows** | `services/workflows` | Java 21, Quarkus, Flyway | `nuralyio_workflows` |
-| **kv** | `services/kv` | Java 21, Quarkus, Flyway | `nuralyio_kv` |
-| **conduit** | `services/conduit` | Java 21, Quarkus, Flyway | `nuralyio_conduit` |
-| **journal** | `services/journal` | Java 21, Quarkus, Flyway | `nuralyio_journal` |
-| **document-generator** | `services/document-generator` | Java 21, Quarkus | `nuralyio_document` |
-| **textlens** | `services/textlens` | Node.js, TypeScript (API + Worker) | — |
-| **parcour** | `services/parcour` | Java 21, Quarkus | `nuralyio_parcour` |
+| **api** | `services/api` | Node.js, Express, TypeScript, Prisma | `Nuralyio_api` |
+| **gateway** | `services/gateway` | Node.js, Express, TypeScript, Keycloak | `Nuralyio_gateway` |
+| **functions** | `services/functions` | Java 21, Quarkus, Flyway | `Nuralyio_functions` |
+| **workflows** | `services/workflows` | Java 21, Quarkus, Flyway | `Nuralyio_workflow` |
+| **kv** | `services/kv` | Java 21, Quarkus, Flyway | `Nuralyio_kv` |
+| **conduit** | `services/conduit` | Java 21, Quarkus, Flyway | `Nuralyio_conduit` |
+| **journal** | `services/journal` | Java 21, Quarkus, Flyway | `Nuralyio_journal` |
+| **document-generator** | `services/document-generator` | Java 21, Quarkus | `Nuralyio_document-generator` |
+| **textlens** | `services/textlens` | Node.js, TypeScript (API + Worker) | `Nuralyio_textlens` |
+| **parcour** | `services/parcour` | Java 21, Quarkus | `Nuralyio_parcour` |
+| **shared-java-library** | `libs/shared-java-library` | Java 21 (shared lib) | `Nuralyio_shared-java-library` |
+| **nuraly-ui** | `services/studio/src/features/runtime/components/ui/nuraly-ui` | Lit, TypeScript, Web Components | `Nuralyio_NuralyUI` |
+| **runtime** | `services/studio/src/features/runtime` | TypeScript | `Nuralyio_runtime` |
 | **docs** | `services/docs` | Docusaurus | — |
-| **shared-java-library** | `libs/shared-java-library` | Java 21 (shared lib) | — |
+
+> **Note**: Actual SonarQube keys on the server have UUID suffixes (e.g. `Nuralyio_studio_a223350e-...`). The worker resolves them dynamically via the search API.
+
+### Nested submodules
+
+Studio contains deeply nested submodules:
+
+```
+stack/
+  services/studio/                          ← Nuralyio/studio (submodule)
+    src/features/runtime/                   ← Nuralyio/runtime (nested submodule)
+      components/ui/nuraly-ui/              ← Nuralyio/NuralyUI (nested submodule)
+```
+
+When a ticket targets nuraly-ui, the worker creates branches and PRs at all three levels plus the stack. The push order is deepest-first: nuraly-ui → runtime → studio → stack.
 
 ### Infrastructure (Docker Compose)
 
@@ -147,15 +198,9 @@ Nuraly Stack is a microservices monorepo using **git submodules**. All services 
 | Keycloak | 8090 | OAuth2/OpenID Connect auth |
 | Deno Worker | — | Serverless function execution (2 replicas) |
 
-### Database strategy
-
-- **API**: Prisma ORM with `npx prisma migrate deploy` / `npx prisma db seed`
-- **Java services** (functions, workflows, kv, journal, conduit): Flyway migrations via `./mvnw flyway:migrate`
-- Each service has its own database schema: `nuraly`, `functions`, `workflows`, `kv`, `journal`, `conduit`, `keycloak`, `docgen`
-
 ### Project map: `.claude/project-map.yml`
 
-Each submodule has its own stack, Docker service name, and SonarQube project key:
+Each submodule has its own stack, Docker service name, test/lint commands, and SonarQube project key. The worker reads this file to resolve repos to modules and build Claude prompts.
 
 ```yaml
 submodules:
@@ -173,7 +218,7 @@ submodules:
     docker_service: api
     test: docker compose -f docker-compose.dev.yml exec api npm test
     lint: docker compose -f docker-compose.dev.yml exec api npm run lint
-    sonar_key: nuralyio_api
+    sonar_key: Nuralyio_api
 
   gateway:
     path: services/gateway
@@ -181,6 +226,7 @@ submodules:
     docker_service: gateway
     test: docker compose -f docker-compose.dev.yml exec gateway npm test
     lint: docker compose -f docker-compose.dev.yml exec gateway npm run lint
+    sonar_key: Nuralyio_gateway
 
   functions:
     path: services/functions
@@ -188,7 +234,7 @@ submodules:
     docker_service: functions
     test: docker compose -f docker-compose.dev.yml exec functions ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec functions ./mvnw checkstyle:check
-    sonar_key: nuralyio_functions
+    sonar_key: Nuralyio_functions
 
   workflows:
     path: services/workflows
@@ -196,7 +242,7 @@ submodules:
     docker_service: workflows
     test: docker compose -f docker-compose.dev.yml exec workflows ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec workflows ./mvnw checkstyle:check
-    sonar_key: nuralyio_workflows
+    sonar_key: Nuralyio_workflow
 
   kv:
     path: services/kv
@@ -204,7 +250,7 @@ submodules:
     docker_service: kv
     test: docker compose -f docker-compose.dev.yml exec kv ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec kv ./mvnw checkstyle:check
-    sonar_key: nuralyio_kv
+    sonar_key: Nuralyio_kv
 
   conduit:
     path: services/conduit
@@ -212,7 +258,7 @@ submodules:
     docker_service: conduit
     test: docker compose -f docker-compose.dev.yml exec conduit ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec conduit ./mvnw checkstyle:check
-    sonar_key: nuralyio_conduit
+    sonar_key: Nuralyio_conduit
 
   journal:
     path: services/journal
@@ -220,7 +266,7 @@ submodules:
     docker_service: journal
     test: docker compose -f docker-compose.dev.yml exec journal ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec journal ./mvnw checkstyle:check
-    sonar_key: nuralyio_journal
+    sonar_key: Nuralyio_journal
 
   document-generator:
     path: services/document-generator
@@ -228,7 +274,7 @@ submodules:
     docker_service: document-generator
     test: docker compose -f docker-compose.dev.yml exec document-generator ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec document-generator ./mvnw checkstyle:check
-    sonar_key: nuralyio_document
+    sonar_key: Nuralyio_document-generator
 
   textlens:
     path: services/textlens
@@ -236,6 +282,7 @@ submodules:
     docker_service: textlens-api
     test: docker compose -f docker-compose.dev.yml exec textlens-api npm test
     lint: docker compose -f docker-compose.dev.yml exec textlens-api npm run lint
+    sonar_key: Nuralyio_textlens
 
   parcour:
     path: services/parcour
@@ -243,210 +290,48 @@ submodules:
     docker_service: parcour
     test: docker compose -f docker-compose.dev.yml exec parcour ./mvnw test
     lint: docker compose -f docker-compose.dev.yml exec parcour ./mvnw checkstyle:check
-    sonar_key: nuralyio_parcour
+    sonar_key: Nuralyio_parcour
 
   docs:
     path: services/docs
     stack: Docusaurus
     docker_service: docs
-```
 
-### Per-submodule CLAUDE.md
+  shared-java-library:
+    path: libs/shared-java-library
+    stack: Java 21 (shared lib)
+    sonar_key: Nuralyio_shared-java-library
 
-Each submodule should have its own `CLAUDE.md` with module-specific context:
+  nuraly-ui:
+    path: services/studio/src/features/runtime/components/ui/nuraly-ui
+    stack: Lit, TypeScript, Web Components
+    sonar_key: Nuralyio_NuralyUI
 
-```
-stack/
-  CLAUDE.md                         # root — general project info
-  .claude/project-map.yml           # module registry
-  services/
-    studio/
-      CLAUDE.md                   # Astro/React/Lit specifics
-    api/
-      CLAUDE.md                   # Express/Prisma specifics
-    gateway/
-      CLAUDE.md                   # Gateway/Keycloak specifics
-    functions/
-      CLAUDE.md                   # Quarkus specifics
-    workflows/
-      CLAUDE.md                   # Quarkus specifics
-    kv/
-      CLAUDE.md                   # Quarkus specifics
-    conduit/
-      CLAUDE.md                   # Quarkus specifics
-    journal/
-      CLAUDE.md                   # Quarkus specifics
-    document-generator/
-      CLAUDE.md                   # Quarkus specifics
-    textlens/
-      CLAUDE.md                   # Node.js OCR specifics
-    parcour/
-      CLAUDE.md                   # Quarkus crawler specifics
-    docs/
-      CLAUDE.md                   # Docusaurus specifics
-  libs/
-    shared-java-library/
-      CLAUDE.md                   # Shared Java lib specifics
-```
-
-Example `services/api/CLAUDE.md`:
-
-```markdown
-# API Service
-
-## Stack
-Express + TypeScript, PostgreSQL via Prisma ORM
-
-## Build & Dev
-- Runs inside Docker via `docker-compose.dev.yml` with hot reload
-- Do NOT run build, type-check, lint, or test commands on the host
-- Shell into container: `make shell SERVICE=api`
-
-## Key patterns
-- All routes in src/routes/, registered in src/app.ts
-- Auth middleware in src/middleware/auth.ts (Keycloak integration)
-- Business logic in src/services/, never in routes
-- DB access only through Prisma, never raw SQL
-- Real-time via Socket.io
-- GraphQL queries supported
-
-## Database
-- Prisma ORM (schema in prisma/schema.prisma)
-- Migrations: `npx prisma migrate deploy` (inside container)
-- Seed: `npx prisma db seed` (inside container)
-- PostgreSQL 15 with pgvector extension
-
-## Testing
-- Jest with supertest for API tests
-- Run inside container: `docker compose -f docker-compose.dev.yml exec api npm test`
-
-## Don't
-- Don't modify prisma/schema.prisma without a migration
-- Don't add dependencies without checking package.json first
-- Don't put business logic in route handlers
-- Don't run npm/npx commands on the host — use Docker
-```
-
-Example `services/functions/CLAUDE.md`:
-
-```markdown
-# Functions Service
-
-## Stack
-Java 21, Quarkus, Hibernate Panache, Flyway, RabbitMQ, Docker Java SDK
-
-## Build & Dev
-- Runs inside Docker via `docker-compose.dev.yml` with hot reload (Quarkus dev mode)
-- Do NOT run Maven commands on the host
-- Shell into container: `make shell SERVICE=functions`
-
-## Key patterns
-- REST resources in src/main/java/.../resource/
-- Business logic in src/main/java/.../service/
-- Entity classes use Hibernate Panache (ActiveRecord pattern)
-- Migrations in src/main/resources/db/migration/ (Flyway)
-- Uses shared-java-library for common utilities
-- Knative integration for serverless function execution
-
-## Database
-- Flyway migrations (V{n}__{description}.sql)
-- Hibernate Panache for ORM
-- Separate "functions" database schema
-
-## Testing
-- JUnit + Mockito
-- Run inside container: `docker compose -f docker-compose.dev.yml exec functions ./mvnw test`
-
-## Don't
-- Don't skip Flyway migrations for schema changes
-- Don't bypass the shared-java-library for common patterns
-- Don't run Maven on the host — use Docker
+  runtime:
+    path: services/studio/src/features/runtime
+    stack: TypeScript
+    sonar_key: Nuralyio_runtime
 ```
 
 ---
 
-## 4. GitHub Issue Template
+## 4. GitHub Issue Workflow
 
-Force clear specs for high automation success rate:
+### Creating a ticket
 
-```yaml
-# .github/ISSUE_TEMPLATE/claude-fix.yml
-name: Claude Auto-Fix Issue
-labels: ["claude-fix"]
-body:
-  - type: checkboxes
-    id: submodules
-    attributes:
-      label: Affected submodules (select all that apply)
-      options:
-        - label: studio
-        - label: api
-        - label: gateway
-        - label: functions
-        - label: workflows
-        - label: kv
-        - label: conduit
-        - label: journal
-        - label: document-generator
-        - label: textlens
-        - label: parcour
-        - label: docs
-        - label: shared-java-library
-    validations:
-      required: true
+Tickets are created in the **service repo**, not the stack repo. For example:
+- Studio bugs → `Nuralyio/studio` issues
+- API bugs → `Nuralyio/api` issues
+- NuralyUI tasks → `Nuralyio/NuralyUI` issues
 
-  - type: textarea
-    id: description
-    attributes:
-      label: What's wrong?
-      description: Clear description of the bug or task
-    validations:
-      required: true
-
-  - type: textarea
-    id: reproduce
-    attributes:
-      label: Steps to reproduce
-      value: |
-        1.
-        2.
-        3.
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected vs Actual behavior
-    validations:
-      required: true
-
-  - type: textarea
-    id: files
-    attributes:
-      label: Relevant files/modules
-      description: Where should Claude look?
-      placeholder: services/api/src/auth/tokenService.ts, services/workflows/src/main/java/.../WorkflowResource.java
-
-  - type: textarea
-    id: acceptance
-    attributes:
-      label: Acceptance criteria
-      description: How do we know it's fixed?
-      value: |
-        - [ ]
-        - [ ]
-        - [ ]
-    validations:
-      required: true
-```
+Label the issue `claude-fix`. The worker will pick it up on the next poll cycle (every 2 minutes).
 
 ### Good ticket example
 
 ```markdown
-**Affected submodules:**
-- [x] api
-- [x] workflows
+**Title:** Fix workflow execution status not updating after completion
 
-**What's wrong:**
+**Description:**
 Workflow execution fails silently when the API triggers a workflow run.
 The API sends the execution request to the workflows service via RabbitMQ,
 but the workflows service doesn't emit a completion event back, so the API
@@ -456,452 +341,113 @@ never updates the execution status.
 1. Create a workflow with a simple LLM node
 2. Trigger execution via the API (POST /api/workflows/:id/execute)
 3. Check execution status — stays "PENDING" forever
-4. Check workflows service logs — execution completes but no event emitted
 
-**Expected vs Actual:**
-Expected: Workflow execution status updates to COMPLETED/FAILED
-Actual: Status stays PENDING indefinitely after workflows service finishes
+**Expected:** Workflow execution status updates to COMPLETED/FAILED
+**Actual:** Status stays PENDING indefinitely
 
 **Relevant files:**
-api: src/services/workflowService.ts, src/events/workflowEvents.ts
-workflows: src/main/java/.../service/ExecutionService.java, src/main/java/.../event/ExecutionEventPublisher.java
+- src/services/workflowService.ts
+- src/events/workflowEvents.ts
 
 **Acceptance criteria:**
 - [ ] Workflows service emits completion event via RabbitMQ
 - [ ] API listens and updates execution status
-- [ ] Tests pass in both services (run inside Docker containers)
-- [ ] No stale PENDING executions after workflow completes
+- [ ] Tests pass (run inside Docker containers)
 ```
+
+### Continue flow
+
+To resume work on a completed or failed ticket:
+
+1. Add a comment to the issue with your continuation instruction
+2. Add the `claude-continue` label
+
+The worker will:
+- Load the saved context from the previous session
+- Check out the existing branch
+- Run the fix loop with both the original issue context AND the continuation instruction
+- Merge accumulated knowledge across all sessions
 
 ---
 
 ## 5. Autonomous Worker Script
 
-### Main script: `claude-autonomous-worker.sh`
+### File structure
+
+| File | Location | Purpose |
+|---|---|---|
+| `claude-autonomous-worker.sh` | `/home/gateway/stack/` | Main worker script |
+| `.claude/project-map.yml` | `/home/gateway/stack/` | Module registry |
+| `.claude-processed-issues` | `$HOME/` | Tracks processed issues (survives `git reset --hard`) |
+| `~/.claude-contexts/` | `$HOME/` | Saved session summaries for continue flow |
+| `~/transcripts/` | `$HOME/` | Full Claude transcripts per issue |
+
+### How the worker resolves tickets to modules
+
+1. Worker reads `project-map.yml` to get all module paths
+2. For each module, reads the git remote URL to get the GitHub repo name
+3. Polls each repo for `claude-fix` labeled issues
+4. When a ticket is found in e.g. `Nuralyio/studio`, it resolves to the `studio` module
+5. Uses the module's config (path, stack, test commands) to build the Claude prompt
+
+### Key functions
+
+| Function | Purpose |
+|---|---|
+| `build_repo_list()` | Reads project-map.yml, returns all GitHub repos to poll |
+| `resolve_module_from_repo()` | Maps a GitHub repo (e.g. `Nuralyio/studio`) to a module name (`studio`) |
+| `find_nested_git_repos()` | Discovers all `.git` repos under a path, returns deepest-first |
+| `setup_fresh_env()` | Clean state: reset to main, create branch in all nested submodules |
+| `setup_continue_env()` | Resume state: fetch, checkout existing branch in all nested submodules |
+| `run_fix_loop()` | Runs Claude with Ralph Wiggum to fix the issue |
+| `push_and_create_prs()` | Pushes all nested repos deepest-first, creates PRs, posts branch map |
+| `wait_for_pr_checks()` | Polls `gh pr checks` until CI completes (30s intervals, 15min timeout) |
+| `run_sonar_for_module()` | Checks SonarQube quality gate via REST API (no local scanner) |
+| `run_sonar_checks()` | Orchestrates sonar check + sonar fix loop if gate fails |
+| `save_context()` | After fix loop, generates merged structured summary via Claude |
+| `load_context()` | Reads saved context file for continue sessions |
+| `cleanup_env()` | Tears down containers, resets to main |
+
+### CI checking: `wait_for_pr_checks()`
+
+After pushing and creating PRs, the worker waits for CI builds to complete before checking SonarQube. This is critical because CI triggers the SonarQube analysis.
 
-Run this on your local dev VM in a tmux session:
-
-```bash
-#!/bin/bash
-# claude-autonomous-worker.sh
-# Run in tmux on your dev VM and forget about it
-# Supports tickets that touch one or multiple submodules
-#
-# IMPORTANT: All tests/lints run inside Docker containers.
-# The dev environment (docker-compose.dev.yml) must be running.
-# Each iteration starts FRESH: hard-reset to main, clean Docker state.
-
-REPO="Nuralyio/stack"
-PROJECT_DIR="/home/gateway/stack"
-PROJECT_MAP="$PROJECT_DIR/.claude/project-map.yml"
-PROCESSED="$PROJECT_DIR/.processed_issues"
-TRANSCRIPTS="$HOME/transcripts"
-SONAR_URL="${SONAR_HOST_URL:-https://sonar.nuraly.io}"
-SONAR_TOKEN="${SONAR_TOKEN}"
-COMPOSE_FILE="docker-compose.dev.yml"
-
-touch "$PROCESSED"
-mkdir -p "$TRANSCRIPTS"
-
-# ============================================
-# Helpers
-# ============================================
-get_config() {
-  local module=$1
-  local key=$2
-  yq -r ".submodules.${module}.${key}" "$PROJECT_MAP"
-}
-
-# Parse checked submodules from issue body
-# GitHub checkboxes render as: - [X] studio
-parse_submodules() {
-  local body="$1"
-  echo "$body" | grep -oP '\- \[X\] \K[\w-]+' | tr '\n' ' '
-}
-
-# Build module context block for Claude prompt
-build_module_context() {
-  local modules="$1"
-  local context=""
-  for MOD in $modules; do
-    local path=$(get_config "$MOD" "path")
-    local stack=$(get_config "$MOD" "stack")
-    local docker_service=$(get_config "$MOD" "docker_service")
-    local test=$(get_config "$MOD" "test")
-    local lint=$(get_config "$MOD" "lint")
-    context+="
-### $MOD
-- Path: $path
-- Stack: $stack
-- Docker service: $docker_service
-- Test: $test
-- Lint: $lint
-"
-  done
-  echo "$context"
-}
-
-# Build allowed paths list for Claude prompt
-build_allowed_paths() {
-  local modules="$1"
-  local paths=""
-  for MOD in $modules; do
-    local path=$(get_config "$MOD" "path")
-    paths+="$path, "
-  done
-  echo "${paths%, }"
-}
-
-# Run SonarQube for a single module, return gate status
-run_sonar_for_module() {
-  local mod=$1
-  local mod_path=$(get_config "$mod" "path")
-  local mod_sonar=$(get_config "$mod" "sonar_key")
-
-  # Skip modules without a sonar key
-  if [ "$mod_sonar" = "null" ] || [ -z "$mod_sonar" ]; then
-    echo "OK"
-    return
-  fi
-
-  cd "$PROJECT_DIR/$mod_path"
-
-  sonar-scanner \
-    -Dsonar.projectKey="$mod_sonar" \
-    -Dsonar.sources=. \
-    -Dsonar.host.url="$SONAR_URL" \
-    -Dsonar.token="$SONAR_TOKEN"
-
-  local task_id=$(grep "ceTaskId" .scannerwork/report-task.txt | cut -d'=' -f2)
-  for i in $(seq 1 60); do
-    local status=$(curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/ce/task?id=$task_id" | jq -r '.task.status')
-    [ "$status" = "SUCCESS" ] || [ "$status" = "FAILED" ] && break
-    sleep 10
-  done
-
-  curl -s -u "$SONAR_TOKEN:" \
-    "$SONAR_URL/api/qualitygates/project_status?projectKey=$mod_sonar" | \
-    jq -r '.projectStatus.status'
-}
-
-echo "> Claude autonomous worker started (Nuraly Stack — multi-submodule)"
-echo "> Ensure Docker dev environment is running: make dev-detached"
-
-while true; do
-  # Only pick up issues labelled "claude-fix" that are NOT already locked
-  gh issue list --repo "$REPO" --label "claude-fix" --state open --json number,title,body,labels | \
-  jq -c '.[] | select(.labels | map(.name) | index("claude-in-progress") | not) | select(.labels | map(.name) | index("claude-done") | not) | select(.labels | map(.name) | index("claude-failed") | not)' | \
-  while read -r issue; do
-    N=$(echo "$issue" | jq -r '.number')
-    grep -q "^$N$" "$PROCESSED" && continue
-
-    TITLE=$(echo "$issue" | jq -r '.title')
-    BODY=$(echo "$issue" | jq -r '.body')
-    BRANCH="fix/issue-$N"
-
-    # ============================================
-    # LOCK — mark as in-progress so other workers skip it
-    # ============================================
-    gh issue edit "$N" --repo "$REPO" --add-label "claude-in-progress"
-    echo "🔒 Issue #$N locked (claude-in-progress)"
-
-    # ============================================
-    # DETECT SUBMODULES (one or many)
-    # ============================================
-    SUBMODULES=$(parse_submodules "$BODY")
-
-    if [ -z "$SUBMODULES" ]; then
-      echo "⚠ Issue #$N: no submodules checked, skipping"
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> No submodules selected. Please check at least one."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    # Validate all submodules exist in project map
-    VALID=true
-    for MOD in $SUBMODULES; do
-      if [ "$(get_config "$MOD" "path")" = "null" ]; then
-        echo "✗ Unknown submodule: $MOD"
-        VALID=false
-      fi
-    done
-    if [ "$VALID" = false ]; then
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> Unknown submodule in selection. Check project-map.yml."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    MODULE_CONTEXT=$(build_module_context "$SUBMODULES")
-    ALLOWED_PATHS=$(build_allowed_paths "$SUBMODULES")
-    MODULE_COUNT=$(echo "$SUBMODULES" | wc -w)
-
-    echo ""
-    echo "========================================"
-    echo "= Issue #$N: $TITLE"
-    echo "= Modules ($MODULE_COUNT): $SUBMODULES"
-    echo "========================================"
-
-    # ============================================
-    # FRESH START — clean state for each ticket
-    # ============================================
-    cd "$PROJECT_DIR"
-
-    # Stop containers from previous iteration
-    docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
-
-    # Hard-reset working tree to avoid leftover changes
-    git checkout main
-    git reset --hard origin/main
-    git clean -fd
-    git pull origin main
-    git submodule update --init --recursive
-    git submodule foreach --recursive 'git checkout . && git clean -fd'
-
-    # Delete the fix branch if it already exists locally
-    git branch -D "$BRANCH" 2>/dev/null || true
-    git checkout -b "$BRANCH"
-
-    # Create matching branch in each affected submodule
-    for MOD in $SUBMODULES; do
-      MOD_PATH=$(get_config "$MOD" "path")
-      (cd "$PROJECT_DIR/$MOD_PATH" && git checkout -b "$BRANCH" 2>/dev/null || true)
-    done
-
-    # Rebuild and start fresh containers
-    docker compose -f "$COMPOSE_FILE" up -d --build
-
-    # ============================================
-    # RALPH LOOP — MULTI-MODULE AWARE
-    # ============================================
-    claude -p "
-/ralph-loop \"
-You are fixing issue #$N in the Nuraly Stack project.
-
-## CRITICAL: Docker-only development
-- All services run inside Docker containers with hot reload.
-- Do NOT run build, type-check, lint, or test commands on the host machine.
-- Edit source files directly — containers pick up changes automatically.
-- Use the test/lint commands below which exec into Docker containers.
-
-## Affected modules
-$MODULE_CONTEXT
-
-## Issue
-Title: $TITLE
-Description: $BODY
-
-## Rules
-- ONLY modify files inside these paths: $ALLOWED_PATHS
-- Do NOT touch other submodules or infrastructure files
-- Read CLAUDE.md in each affected module for context (if it exists)
-- Services are already running in Docker containers
-
-## Steps
-1. Read the issue carefully — understand how the modules interact
-2. Read CLAUDE.md in each affected module (if present)
-3. Plan the fix across modules (what changes where)
-4. Implement changes in each affected module
-5. Run tests in ALL affected modules (inside Docker):
-$(for MOD in $SUBMODULES; do
-  echo "   - $MOD: $(get_config "$MOD" "test")"
-done)
-6. Run lint in ALL affected modules (inside Docker):
-$(for MOD in $SUBMODULES; do
-  echo "   - $MOD: $(get_config "$MOD" "lint")"
-done)
-7. If anything fails, fix and retry
-8. When ALL tests and lints pass across ALL modules, commit:
-   'fix($(echo $SUBMODULES | tr ' ' ',')): resolve #$N - $TITLE'
-9. Say DONE
-
-If stuck after 10 iterations, commit partial:
-'wip($(echo $SUBMODULES | tr ' ' ',')): partial fix #$N' and say DONE
-\" --completion-promise \"DONE\" --max-iterations 15
-" --dangerously-skip-permissions 2>&1 | tee "$TRANSCRIPTS/issue-$N.log"
-
-    # ============================================
-    # CHECK IF ANYTHING WAS COMMITTED
-    # ============================================
-    COMMITS=$(git log main..HEAD --oneline 2>/dev/null | wc -l)
-
-    if [ "$COMMITS" -eq 0 ]; then
-      echo "✗ No commits produced, skipping"
-      gh issue comment "$N" --repo "$REPO" \
-        --body "> Could not produce a fix. Needs human attention."
-      gh issue edit "$N" --repo "$REPO" --add-label "claude-failed" --remove-label "claude-in-progress"
-      git checkout main
-      git branch -D "$BRANCH"
-      echo "$N" >> "$PROCESSED"
-      continue
-    fi
-
-    # ============================================
-    # PUSH SUBMODULE BRANCHES & COLLECT BRANCH MAP
-    # ============================================
-    BRANCH_MAP="| Repo | Branch | Commit |\n|---|---|---|"
-    BRANCH_MAP+="\n| **stack** | \`$BRANCH\` | \`$(git rev-parse --short HEAD)\` |"
-
-    for MOD in $SUBMODULES; do
-      MOD_PATH=$(get_config "$MOD" "path")
-      cd "$PROJECT_DIR/$MOD_PATH"
-
-      # Check if submodule has commits on the fix branch
-      MOD_COMMITS=$(git log --oneline -1 2>/dev/null)
-      MOD_SHA=$(git rev-parse --short HEAD 2>/dev/null)
-      MOD_BRANCH=$(git branch --show-current 2>/dev/null)
-
-      if [ -n "$MOD_BRANCH" ] && [ "$MOD_BRANCH" = "$BRANCH" ]; then
-        # Push the submodule branch to its own remote
-        git push origin "$BRANCH" 2>/dev/null && \
-          BRANCH_MAP+="\n| **$MOD** | \`$BRANCH\` | \`$MOD_SHA\` |" || \
-          BRANCH_MAP+="\n| **$MOD** | \`$BRANCH\` (local only) | \`$MOD_SHA\` |"
-      else
-        BRANCH_MAP+="\n| **$MOD** | (no changes) | \`$MOD_SHA\` |"
-      fi
-    done
-
-    cd "$PROJECT_DIR"
-
-    # ============================================
-    # PUSH STACK & CREATE PR
-    # ============================================
-    git push origin "$BRANCH"
-
-    PR_URL=$(gh pr create \
-      --repo "$REPO" \
-      --head "$BRANCH" \
-      --title "Fix #$N [$SUBMODULES]: $TITLE" \
-      --body "Automated fix spanning: **$SUBMODULES**
-
-Fixes #$N
-
-<details>
-<summary>Claude transcript</summary>
-
-\`\`\`
-$(tail -100 "$TRANSCRIPTS/issue-$N.log")
-\`\`\`
-</details>" \
-      --base main)
-
-    PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
-
-    # ============================================
-    # COMMENT BRANCH MAP ON THE ISSUE
-    # ============================================
-    gh issue comment "$N" --repo "$REPO" \
-      --body "$(echo -e "## Branch Map\n\nTo spin up this fix on another VM, check out these branches:\n\n$BRANCH_MAP\n\n### Quick setup\n\n\`\`\`bash\ngit clone --recurse-submodules https://github.com/$REPO.git\ncd stack\ngit checkout $BRANCH\n$(for MOD in $SUBMODULES; do
-        MOD_PATH=$(get_config "$MOD" "path")
-        echo "cd $MOD_PATH && git checkout $BRANCH 2>/dev/null; cd $PROJECT_DIR"
-      done)\nmake dev-detached\n\`\`\`\n\nPR: $PR_URL")"
-
-    # ============================================
-    # SONARQUBE — SCAN EACH AFFECTED MODULE
-    # ============================================
-    SONAR_FAILED_MODULES=""
-
-    for MOD in $SUBMODULES; do
-      MOD_SONAR=$(get_config "$MOD" "sonar_key")
-      # Skip modules without sonar key
-      [ "$MOD_SONAR" = "null" ] || [ -z "$MOD_SONAR" ] && continue
-
-      echo "= SonarQube scan for $MOD..."
-      GATE=$(run_sonar_for_module "$MOD")
-      echo "   $MOD: $GATE"
-
-      if [ "$GATE" != "OK" ]; then
-        SONAR_FAILED_MODULES+="$MOD "
-      fi
-    done
-
-    if [ -z "$SONAR_FAILED_MODULES" ]; then
-      gh pr comment "$PR_NUMBER" --repo "$REPO" \
-        --body "SonarQube passed for all modules: **$SUBMODULES**. Ready for review."
-    else
-      echo "⚠ SonarQube failed for: $SONAR_FAILED_MODULES"
-
-      # Collect all sonar issues from failed modules
-      ALL_SONAR_ISSUES=""
-      FAILED_CONTEXT=""
-      for MOD in $SONAR_FAILED_MODULES; do
-        MOD_SONAR=$(get_config "$MOD" "sonar_key")
-        MOD_PATH=$(get_config "$MOD" "path")
-        ISSUES=$(curl -s -u "$SONAR_TOKEN:" \
-          "$SONAR_URL/api/issues/search?projectKeys=$MOD_SONAR&statuses=OPEN" | \
-          jq -c '[.issues[] | {rule, message, component, line}] | .[0:10]')
-        ALL_SONAR_ISSUES+="
-### $MOD ($MOD_PATH)
-$ISSUES
-"
-        FAILED_CONTEXT+="- $MOD: $(get_config "$MOD" "test")
-"
-      done
-
-      cd "$PROJECT_DIR"
-
-      claude -p "
-/ralph-loop \"
-SonarQube FAILED for these modules: $SONAR_FAILED_MODULES
-
-Issues per module:
-$ALL_SONAR_ISSUES
-
-CRITICAL: Do NOT run commands on the host. All tests run inside Docker containers.
-ONLY modify files in these paths: $(build_allowed_paths "$SONAR_FAILED_MODULES")
-
-Test commands (run inside Docker):
-$FAILED_CONTEXT
-
-Commit: 'fix($(echo $SONAR_FAILED_MODULES | tr ' ' ',')): sonarqube issues #$N'
-Say DONE when fixed.
-\" --completion-promise \"DONE\" --max-iterations 10
-" --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/issue-$N.log"
-
-      git push origin "$BRANCH"
-      gh pr comment "$PR_NUMBER" --repo "$REPO" \
-        --body "SonarQube issues fixed for **$SONAR_FAILED_MODULES**. Re-scan needed."
-    fi
-
-    # ============================================
-    # UNLOCK — mark as done
-    # ============================================
-    gh issue edit "$N" --repo "$REPO" --add-label "claude-done" --remove-label "claude-in-progress"
-    echo "🔓 Issue #$N unlocked (claude-done)"
-
-    # ============================================
-    # CLEAN UP — fresh state for next ticket
-    # ============================================
-    cd "$PROJECT_DIR"
-    docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
-    git checkout main
-    git reset --hard origin/main
-    git clean -fd
-    git submodule foreach --recursive 'git checkout . && git clean -fd'
-    echo "$N" >> "$PROCESSED"
-    echo "✓ Issue #$N complete — environment reset"
-
-  done
-
-  sleep 120
-done
 ```
+PR pushed → CI starts → wait_for_pr_checks() polls every 30s
+  → If pending checks remain after 15 min → TIMEOUT
+  → If no checks found after 2 min → SKIPPED
+  → If all pass → PASS
+  → If any fail → FAIL
+```
+
+### SonarQube: REST API approach
+
+The worker does NOT use a local `sonar-scanner`. Instead, it queries the SonarQube REST API directly:
+
+1. **Search for project**: `GET /api/projects/search?q=Nuralyio_studio` → returns actual key with UUID suffix
+2. **Check quality gate**: `GET /api/qualitygates/project_status?projectKey=<actual_key>` → returns OK, ERROR, or NONE
+
+If the quality gate returns ERROR, the worker runs another Ralph loop to fix the SonarQube issues, then pushes again.
+
+### Context persistence
+
+After each fix loop, the worker:
+1. Captures the transcript tail + git diff stats
+2. Asks Claude to generate a structured summary
+3. Merges with any previous context from earlier sessions
+4. Saves to `~/.claude-contexts/<repo>-<issue>.md`
+
+On continue, the saved context is injected into the Claude prompt so it doesn't redo previous work.
 
 ---
 
 ## 6. Running the Worker
 
-Each iteration starts **fresh**: Docker containers are torn down, git working tree is hard-reset to `origin/main`, and new containers are built before the fix begins. No cross-contamination between tickets.
-
 ### Start in tmux (survives SSH disconnect)
 
 ```bash
 tmux new -s claude-worker
-./claude-autonomous-worker.sh
+./claude-autonomous-worker.sh 2>&1 | tee /tmp/worker.log
 # Detach: Ctrl+B, then D
 # Reattach: tmux attach -t claude-worker
 ```
@@ -924,9 +470,8 @@ Restart=always
 RestartSec=30
 Environment=HOME=/home/gateway
 Environment=SONAR_HOST_URL=https://sonar.nuraly.io
-Environment=SONAR_TOKEN=squ_937c9517bb40a59478d4078d0588da88c1683cad
-# Note: Run 'claude login' as the gateway user first
-# Docker containers are managed per-iteration by the script itself
+# SONAR_TOKEN should be in the gateway user's environment, not hardcoded here
+# Run: echo 'export SONAR_TOKEN=<token>' >> ~/.bashrc
 
 [Install]
 WantedBy=multi-user.target
@@ -940,13 +485,70 @@ journalctl -u claude-worker -f  # watch logs
 
 ---
 
-## 7. Saving Transcripts
+## 7. Lifecycle of a Ticket
 
-Every ticket's Claude conversation is automatically saved to `~/transcripts/issue-N.log` and included in the PR body as a collapsible section. This lets you see exactly what Claude tried, what failed, and what worked during PR review.
+### Phase 1: New ticket
+
+```
+1. Worker polls Nuralyio/studio for "claude-fix" issues
+2. Finds issue #216: "Fix canvas drag behavior"
+3. Resolves repo → module: Nuralyio/studio → "studio"
+4. Locks: adds "claude-in-progress" label
+5. setup_fresh_env():
+   - docker compose down
+   - git checkout main && git reset --hard origin/main
+   - git submodule update --init --recursive
+   - git checkout -b fix/studio-issue-216
+   - Creates same branch in runtime and nuraly-ui (nested submodules)
+   - docker compose up -d
+6. run_fix_loop():
+   - Claude with Ralph Wiggum works on the fix
+   - Edits files, runs tests in Docker, commits
+7. save_context():
+   - Generates structured summary of the session
+8. Check commits across all nested repos
+9. push_and_create_prs():
+   - Pushes nuraly-ui → creates PR on Nuralyio/NuralyUI
+   - Pushes runtime → creates PR on Nuralyio/runtime
+   - Pushes studio → creates PR on Nuralyio/studio (linked to issue)
+   - Pushes stack → creates PR on Nuralyio/stack
+   - Comments branch map on the issue
+10. For each PR: wait for CI → check SonarQube
+11. Unlocks: adds "claude-done", removes "claude-in-progress"
+12. cleanup_env(): docker down, reset to main
+```
+
+### Phase 2: Continue ticket
+
+```
+1. Worker polls for "claude-continue" labeled issues
+2. Finds issue #216 with new comment: "Also fix the zoom behavior"
+3. Locks: adds "claude-in-progress", removes "claude-continue"
+4. setup_continue_env():
+   - Fetches and checks out existing fix/studio-issue-216 branch
+   - Same for nested submodules
+   - docker compose up -d
+5. load_context():
+   - Loads saved summary from previous session
+6. run_fix_loop() with extra context:
+   - Previous session context injected
+   - Follow-up instruction from comment
+7. save_context():
+   - Merges new session info with previous context
+8. Same push/CI/sonar flow as Phase 1
+```
 
 ---
 
-## 8. Success Rate Expectations
+## 8. Saving Transcripts
+
+Every ticket's Claude conversation is automatically saved to `~/transcripts/<repo>-<issue>.log`. The transcript is also included (last 100 lines) in the PR body as a collapsible section.
+
+Context summaries are saved separately in `~/.claude-contexts/<repo>-<issue>.md` for the continue flow. These accumulate knowledge across sessions.
+
+---
+
+## 9. Success Rate Expectations
 
 | Spec quality | Test coverage | Success rate |
 |---|---|---|
@@ -962,25 +564,13 @@ Every ticket's Claude conversation is automatically saved to `~/transcripts/issu
 - Single-service CRUD tasks
 - Flyway migration + entity changes (Java services)
 - Prisma schema changes + API route updates (api service)
+- CI/CD workflow additions (like SonarQube build.yml)
 
 ### Less suited for
 - Architectural redesigns
 - UI/UX bugs (Claude can't see the app)
 - Ambiguous tickets with no reproduction steps
-- Cross-service bugs spanning 3+ submodules (possible but lower success rate)
-- Knative/K8s infrastructure changes
-
----
-
-## 9. Cost Estimates
-
-| Item | Cost |
-|---|---|
-| API per simple issue (~5 iterations) | $2-5 |
-| API per medium issue (~10 iterations) | $5-10 |
-| API per complex issue (~15+ iterations) | $10-20 |
-| Local Hyper-V VM | Free |
-| SonarQube Community Edition | Free |
+- Cross-service bugs spanning 3+ unrelated submodules
 
 ---
 
@@ -991,10 +581,12 @@ Each ticket runs in a fully clean environment on this VM. No Hyper-V or separate
 ### What happens at the start of each ticket
 
 1. `docker compose down --remove-orphans` — tear down all containers from previous iteration
-2. `git reset --hard origin/main && git clean -fd` — discard all local changes
-3. `git submodule foreach 'git checkout . && git clean -fd'` — clean all submodules
-4. `git checkout -b fix/issue-N` — fresh branch
-5. `docker compose up -d --build` — rebuild and start all containers
+2. `git checkout main && git reset --hard origin/main && git clean -fd` — discard all local changes
+3. `git submodule update --init --recursive` — reset all submodules
+4. `git submodule foreach --recursive 'git checkout . && git clean -fd'` — clean all submodules
+5. `git checkout -b fix/<module>-issue-N` — fresh branch
+6. Create matching branch in all nested submodules
+7. `docker compose up -d` — start all containers (hot reload, no `--build` needed)
 
 ### What happens after each ticket
 
@@ -1004,8 +596,40 @@ Same cleanup: containers down, hard-reset to main, clean working tree.
 
 - Docker containers already provide process isolation
 - `git reset --hard` + `git clean -fd` guarantees no leftover files
-- Each ticket gets fresh containers with `--build`
-- No shared state between iterations (except the `.processed_issues` tracker)
+- Each ticket gets fresh containers with hot reload
+- No shared state between iterations (processed issues tracker and context files are outside the repo)
+
+---
+
+## 11. Troubleshooting
+
+### Common issues
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `Claude Code cannot be launched inside another Claude Code session` | `CLAUDECODE` env var set | Script has `unset CLAUDECODE` at top |
+| Transcript path error with `/` | Repo names like `Nuralyio/studio` create subdirectories | Script uses `${issue_repo//\//-}` to replace `/` with `-` |
+| `local: can only be used in a function` | `local` keyword used in main loop (inside `while read` subshell) | Use regular variables in main loop |
+| `get_submodule_repo` changes cwd | Bare `cd` inside function corrupts caller's directory | Use subshell: `$(cd ... && git remote ...)` |
+| SonarQube "project not found" | Project key has UUID suffix | Worker uses search API to resolve actual key |
+| Missing labels on service repo | Labels need to be created once per repo | Create all 4 labels manually |
+| `.processed_issues` lost after git reset | File was inside repo | Moved to `$HOME/.claude-processed-issues` |
+
+### Logs
+
+```bash
+# Worker output
+tail -f /tmp/worker.log
+
+# Transcript for a specific issue
+cat ~/transcripts/Nuralyio-studio-216.log
+
+# Saved context for an issue
+cat ~/.claude-contexts/Nuralyio-studio-216.md
+
+# Processed issues history
+cat ~/.claude-processed-issues
+```
 
 ---
 
@@ -1016,12 +640,12 @@ This VM (`/home/gateway/stack`) is already set up. For a new VM:
 1. [ ] Install Claude Code and Ralph Wiggum plugin
 2. [ ] Clone the stack repo: `git clone --recurse-submodules https://github.com/Nuralyio/stack.git`
 3. [ ] Copy `config/dev.env.example` to `config/dev.env` and configure
-4. [ ] Set environment variables: `SONAR_HOST_URL=https://sonar.nuraly.io`, `SONAR_TOKEN=<token>`
-5. [ ] Create `.claude/project-map.yml` in the repo (see Section 3)
-6. [ ] Create `CLAUDE.md` in repo root and each submodule
-7. [ ] Add GitHub issue template (`.github/ISSUE_TEMPLATE/claude-fix.yml`)
+4. [ ] Set environment variable: `export SONAR_TOKEN=<token>` in `~/.bashrc`
+5. [ ] Ensure `.claude/project-map.yml` exists in the repo (see Section 3)
+6. [ ] Ensure `CLAUDE.md` exists in repo root and each submodule
+7. [ ] Create required labels in each service repo (see Prerequisites)
 8. [ ] Run `claude login` (one time, no API key needed)
 9. [ ] Authenticate `gh` CLI: `gh auth login`
-10. [ ] Place `claude-autonomous-worker.sh` in the repo root
+10. [ ] Place `claude-autonomous-worker.sh` in the repo root and `chmod +x` it
 11. [ ] Start the worker in tmux or as systemd service
-12. [ ] Create your first issue, label it `claude-fix`, and watch the magic
+12. [ ] Create your first issue in a service repo, label it `claude-fix`, and watch
