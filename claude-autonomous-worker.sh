@@ -180,8 +180,8 @@ get_sonar_issues() {
 
   if [ -n "$actual_key" ]; then
     curl -s -u "$SONAR_TOKEN:" \
-      "$SONAR_URL/api/issues/search?projectKeys=$actual_key&statuses=OPEN" 2>/dev/null | \
-      jq -c '[.issues[]? | {rule, message, component, line}] | .[0:10]'
+      "$SONAR_URL/api/issues/search?componentKeys=$actual_key&statuses=OPEN&ps=10" 2>/dev/null | \
+      jq -c '[.issues[]? | {rule, message, component: (.component | split(":")[1] // .component), line}]'
   else
     echo ""
   fi
@@ -574,16 +574,28 @@ Say DONE when fixed.
 \" --completion-promise \"DONE\" --max-iterations 10
 " --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
 
-  # Push fixes
+  # Push fixes only if there are actual commits
+  local pushed=false
   for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
-    (cd "$repo_path" && git push origin "$branch" 2>/dev/null || true)
+    local has_commits=$(cd "$repo_path" && git diff --cached --quiet 2>/dev/null; git status --porcelain 2>/dev/null | head -1)
+    local unpushed=$(cd "$repo_path" && git log "origin/$branch..HEAD" --oneline 2>/dev/null | head -1)
+    if [ -n "$has_commits" ] || [ -n "$unpushed" ]; then
+      (cd "$repo_path" && git push origin "$branch" 2>/dev/null || true)
+      pushed=true
+    fi
   done
   cd "$PROJECT_DIR"
-  git add . && git commit -m "fix($module): CI build errors $issue_repo#$issue_number" 2>/dev/null || true
-  git push origin "$branch" 2>/dev/null
-
-  [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
-    --body "CI build errors fixed for **$module**. Waiting for re-run."
+  git add . && git commit -m "fix($module): CI build errors $issue_repo#$issue_number" 2>/dev/null && pushed=true || true
+  if $pushed; then
+    git push origin "$branch" 2>/dev/null
+    [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
+      --body "CI build errors fixed for **$module**. Waiting for re-run."
+    # Wait for GitHub to register new check runs before --watch
+    echo "  Waiting 60s for new check runs to register..."
+    sleep 60
+  else
+    echo "  No changes produced by CI fix attempt"
+  fi
 }
 
 # ============================================
@@ -621,16 +633,28 @@ Say DONE when fixed.
 \" --completion-promise \"DONE\" --max-iterations 10
 " --dangerously-skip-permissions 2>&1 | tee -a "$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
 
-  # Push fixes
+  # Push fixes only if there are actual commits
+  local pushed=false
   for repo_path in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
-    (cd "$repo_path" && git push origin "$branch" 2>/dev/null || true)
+    local has_commits=$(cd "$repo_path" && git diff --cached --quiet 2>/dev/null; git status --porcelain 2>/dev/null | head -1)
+    local unpushed=$(cd "$repo_path" && git log "origin/$branch..HEAD" --oneline 2>/dev/null | head -1)
+    if [ -n "$has_commits" ] || [ -n "$unpushed" ]; then
+      (cd "$repo_path" && git push origin "$branch" 2>/dev/null || true)
+      pushed=true
+    fi
   done
   cd "$PROJECT_DIR"
-  git add . && git commit -m "fix($module): sonarqube issues $issue_repo#$issue_number" 2>/dev/null || true
-  git push origin "$branch" 2>/dev/null
-
-  [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
-    --body "SonarQube issues fixed for **$module**. Waiting for re-scan."
+  git add . && git commit -m "fix($module): sonarqube issues $issue_repo#$issue_number" 2>/dev/null && pushed=true || true
+  if $pushed; then
+    git push origin "$branch" 2>/dev/null
+    [ -n "$pr_number" ] && gh pr comment "$pr_number" --repo "$issue_repo" \
+      --body "SonarQube issues fixed for **$module**. Waiting for re-scan."
+    # Wait for GitHub to register new check runs before --watch
+    echo "  Waiting 60s for new check runs to register..."
+    sleep 60
+  else
+    echo "  No changes produced by SonarQube fix attempt"
+  fi
 }
 
 # ============================================
