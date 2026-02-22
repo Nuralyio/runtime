@@ -81,7 +81,6 @@ services:
       - rabbitmq
     networks:
       - nuraly-network
-      - minikube
     restart: unless-stopped
 
   # Workflow Engine
@@ -528,5 +527,3 @@ volumes:
 networks:
   nuraly-network:
     driver: bridge
-  minikube:
-    external: true
