@@ -756,7 +756,11 @@ cleanup_env() {
   git checkout main
   git reset --hard origin/main
   git clean -fd
+  # Reset submodules to the exact commits tracked by main (detached HEAD)
+  git submodule update --init --recursive
   git submodule foreach --recursive 'git checkout . 2>/dev/null; git clean -fd 2>/dev/null; true'
+  # Delete old fix branches in stack repo
+  git branch | grep 'fix/' | xargs -r git branch -D 2>/dev/null || true
 }
 
 # ============================================
