@@ -375,6 +375,101 @@ Service PR: ${SERVICE_PR_URL:-pending}" \
 }
 
 # ============================================
+# Context persistence — save/load compact session summaries
+# ============================================
+CONTEXT_DIR="$HOME/.claude-contexts"
+mkdir -p "$CONTEXT_DIR"
+
+context_file_for() {
+  local issue_repo=$1
+  local issue_number=$2
+  echo "$CONTEXT_DIR/${issue_repo//\//-}-$issue_number.md"
+}
+
+# After a fix loop, ask Claude to summarize what was done
+save_context() {
+  local issue_repo=$1
+  local issue_number=$2
+  local module=$3
+  local transcript="$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
+  local ctx_file=$(context_file_for "$issue_repo" "$issue_number")
+
+  if [ ! -s "$transcript" ]; then
+    return
+  fi
+
+  # Also capture the git diff summary for concrete context
+  local mod_path=$(get_config "$module" "path")
+  local diff_summary=""
+  for rp in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
+    local rname=$(cd "$rp" && basename "$(git remote get-url origin 2>/dev/null | sed -E 's|.*github\.com[:/]||; s|\.git$||')" 2>/dev/null)
+    local commits=$(cd "$rp" && git log origin/main..HEAD --oneline 2>/dev/null)
+    local changed=$(cd "$rp" && git diff origin/main..HEAD --stat 2>/dev/null)
+    if [ -n "$commits" ]; then
+      diff_summary+="### $rname
+Commits:
+$commits
+
+Changed files:
+$changed
+
+"
+    fi
+  done
+
+  # Ask Claude to generate a compact context summary
+  claude -p "
+You are summarizing a coding session for future context. Be concise but complete.
+
+Here is the transcript of the session (last 200 lines):
+\`\`\`
+$(tail -200 "$transcript")
+\`\`\`
+
+Here are the actual git changes:
+$diff_summary
+
+Write a compact context summary in this EXACT format (no extra text):
+
+## Session Context for $issue_repo#$issue_number
+
+### What was done
+- (bullet list of concrete changes made, with file paths)
+
+### Files modified
+- (list each file path and what was changed in it)
+
+### Approaches tried
+- (what worked, what didn't)
+
+### Current state
+- (is the fix complete? partial? what's left?)
+
+### Key decisions
+- (any architectural or design decisions made)
+" --dangerously-skip-permissions 2>"$ctx_file.err" | head -100 > "$ctx_file"
+
+  if [ -s "$ctx_file" ]; then
+    echo "  Context saved to $ctx_file ($(wc -l < "$ctx_file") lines)"
+  else
+    rm -f "$ctx_file" "$ctx_file.err"
+  fi
+}
+
+# Load saved context for a continue session
+load_context() {
+  local issue_repo=$1
+  local issue_number=$2
+  local ctx_file=$(context_file_for "$issue_repo" "$issue_number")
+
+  if [ -f "$ctx_file" ]; then
+    echo "$(cat "$ctx_file")"
+  else
+    echo ""
+  fi
+}
+
+# ============================================
 # Run the fix loop
 # ============================================
 run_fix_loop() {
@@ -583,6 +678,9 @@ while true; do
       # FIX
       run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO"
 
+      # SAVE CONTEXT for future continue sessions
+      save_context "$ISSUE_REPO" "$N" "$MODULE"
+
       # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
       MOD_PATH=$(get_config "$MODULE" "path")
@@ -701,16 +799,26 @@ while true; do
       # RESUME ENV
       setup_continue_env "$BRANCH" "$MODULE"
 
-      # FIX with extra context
+      # LOAD PREVIOUS CONTEXT
+      PREV_CONTEXT=$(load_context "$ISSUE_REPO" "$N")
+
+      # FIX with extra context (previous session + new instruction)
       EXTRA_CONTEXT="
+## Previous session context
+${PREV_CONTEXT:-No previous context available. Review git log and changed files to understand prior work.}
+
 ## Follow-up instruction (from issue comment)
 $LATEST_COMMENT
 
 ## Important
 This is a CONTINUATION of previous work. The branch $BRANCH already has prior commits.
-Review what was already done before making changes.
+The previous session context above tells you what was already done — do NOT redo that work.
+Focus on the follow-up instruction.
 "
       run_fix_loop "$N" "$TITLE" "$BODY" "$MODULE" "$ISSUE_REPO" "$EXTRA_CONTEXT"
+
+      # SAVE UPDATED CONTEXT
+      save_context "$ISSUE_REPO" "$N" "$MODULE"
 
       # CHECK COMMITS (in any nested repo)
       cd "$PROJECT_DIR"
