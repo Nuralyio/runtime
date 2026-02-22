@@ -387,10 +387,12 @@ context_file_for() {
 }
 
 # After a fix loop, ask Claude to summarize what was done
+# Appends to existing context file — builds up memory across sessions
 save_context() {
   local issue_repo=$1
   local issue_number=$2
   local module=$3
+  local session_label="${4:-Session}"
   local transcript="$TRANSCRIPTS/${issue_repo//\//-}-$issue_number.log"
   local ctx_file=$(context_file_for "$issue_repo" "$issue_number")
 
@@ -398,7 +400,7 @@ save_context() {
     return
   fi
 
-  # Also capture the git diff summary for concrete context
+  # Capture git diff summary for concrete context
   local mod_path=$(get_config "$module" "path")
   local diff_summary=""
   for rp in $(find_nested_git_repos "$PROJECT_DIR/$mod_path"); do
@@ -417,42 +419,57 @@ $changed
     fi
   done
 
-  # Ask Claude to generate a compact context summary
-  claude -p "
-You are summarizing a coding session for future context. Be concise but complete.
+  # Load previous context if it exists (so Claude can build on it)
+  local prev_context=""
+  if [ -f "$ctx_file" ]; then
+    prev_context="
+Previous context (summarize and merge with new session):
+\`\`\`
+$(cat "$ctx_file")
+\`\`\`
+"
+  fi
 
-Here is the transcript of the session (last 200 lines):
+  local session_num=$(grep -c "^---" "$ctx_file" 2>/dev/null || echo "0")
+  session_num=$((session_num + 1))
+
+  # Ask Claude to generate a compact context summary (merging with previous)
+  local new_context
+  new_context=$(claude -p "
+You are summarizing coding sessions for future context. Be concise but complete.
+$prev_context
+
+Here is the transcript of the LATEST session (last 200 lines):
 \`\`\`
 $(tail -200 "$transcript")
 \`\`\`
 
-Here are the actual git changes:
+Here are the current git changes:
 $diff_summary
 
-Write a compact context summary in this EXACT format (no extra text):
+Write a compact MERGED context summary. Include ALL accumulated knowledge from previous sessions plus the new session. Use this EXACT format (no extra text):
 
-## Session Context for $issue_repo#$issue_number
+## Context for $issue_repo#$issue_number (Session $session_num)
 
-### What was done
-- (bullet list of concrete changes made, with file paths)
+### What has been done (all sessions)
+- (bullet list of ALL concrete changes made across all sessions, with file paths)
 
 ### Files modified
-- (list each file path and what was changed in it)
+- (list each file path and what was changed)
 
 ### Approaches tried
-- (what worked, what didn't)
+- (what worked, what didn't, across all sessions)
 
 ### Current state
 - (is the fix complete? partial? what's left?)
 
 ### Key decisions
 - (any architectural or design decisions made)
-" --dangerously-skip-permissions 2>"$ctx_file.err" | head -100 > "$ctx_file"
+" --dangerously-skip-permissions 2>/dev/null | head -100)
 
-  if [ -s "$ctx_file" ]; then
-    echo "  Context saved to $ctx_file ($(wc -l < "$ctx_file") lines)"
-  else
-    rm -f "$ctx_file" "$ctx_file.err"
+  if [ -n "$new_context" ]; then
+    echo "$new_context" > "$ctx_file"
+    echo "  Context saved to $ctx_file (session $session_num, $(wc -l < "$ctx_file") lines)"
   fi
 }
 
