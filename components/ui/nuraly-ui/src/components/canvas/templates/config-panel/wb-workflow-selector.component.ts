@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { LitElement, html, css, nothing } from 'lit';
+import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 interface WorkflowListItem {
