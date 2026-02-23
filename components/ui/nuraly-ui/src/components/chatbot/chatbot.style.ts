@@ -1197,11 +1197,23 @@ export default css`
 
   /* Responsive design */
   @media (max-width: 768px) {
+    :host {
+      min-width: 0;
+    }
+
+    .chatbot-container {
+      min-width: 0;
+    }
+
     .thread-sidebar {
       width: 200px;
     }
 
     .input-container {
+      min-width: 0;
+    }
+
+    .action-buttons-row {
       min-width: 0;
     }
 
