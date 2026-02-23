@@ -582,13 +582,40 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   }
 
   private handleCopyMessage(message: ChatbotMessage) {
-    if (navigator.clipboard && message.text) {
-      navigator.clipboard.writeText(message.text).then(() => {
-        this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
-          metadata: { messageId: message.id }
-        });
+    const text = message.text;
+    if (!text) return;
+
+    const onSuccess = () => {
+      this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
+        metadata: { messageId: message.id }
       });
+    };
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+        this.copyViaExecCommand(text, onSuccess);
+      });
+    } else {
+      this.copyViaExecCommand(text, onSuccess);
     }
+  }
+
+  private copyViaExecCommand(text: string, onSuccess: () => void) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      onSuccess();
+    } catch (_) {
+      // copy failed
+    }
+    document.body.removeChild(textarea);
   }
 
   private handleSuggestionClick(suggestion: ChatbotSuggestion) {
