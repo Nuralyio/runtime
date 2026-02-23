@@ -123,11 +123,12 @@ function renderFileUploadButton(
   handlers: InputBoxTemplateHandlers
 ): TemplateResult {
   return html`
-    <nr-dropdown 
+    <nr-dropdown
       .items=${data.fileUploadItems}
       trigger="click"
       placement="top-start"
       size="small"
+      auto-close
       ?disabled=${data.disabled}
       @nr-dropdown-item-click=${handlers.onFileDropdownClick}
     >
