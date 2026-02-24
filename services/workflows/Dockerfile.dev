@@ -1,5 +1,0 @@
-FROM maven:3.9-eclipse-temurin-21
-WORKDIR /app
-COPY . .
-EXPOSE 7002 5006
-CMD ["mvn", "quarkus:dev", "-Dquarkus.http.host=0.0.0.0", "-Dquarkus.http.port=7002", "-DskipTests", "-U"]

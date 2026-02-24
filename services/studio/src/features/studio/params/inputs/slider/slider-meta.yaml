@@ -1,8 +1,0 @@
-uuid: slider_blocks
-name: Parent Slider Container
-themeContainerId: slider_theme_container
-configKey: sliderFields
-
-children_ids:
-  - slider_fields_collapse_container
-  - size_collapse_container

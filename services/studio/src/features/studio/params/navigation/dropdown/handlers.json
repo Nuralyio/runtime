@@ -1,9 +1,0 @@
-{
-  "handlerPrefix": "studio_dropdown_handler",
-  "events": [
-    {
-      "name": "onItemClicked",
-      "label": "onItemClicked"
-    }
-  ]
-}

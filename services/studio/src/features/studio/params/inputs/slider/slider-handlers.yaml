@@ -1,8 +1,0 @@
-handlerPrefix: studio_slider_handler
-
-events:
-  - name: change
-    label: onChange
-
-  - name: afterChange
-    label: onAfterChange

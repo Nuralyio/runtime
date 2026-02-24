@@ -1,2 +1,0 @@
--- Initial data for workflows database
--- Add seed data here if needed
