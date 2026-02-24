@@ -1,0 +1,1 @@
+-- Initial data for journal service (empty - logs are created via API)
