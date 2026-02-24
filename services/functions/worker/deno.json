@@ -1,0 +1,19 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-net --allow-read=/tmp,. --allow-write=/tmp --allow-run=deno --allow-env src/main.ts",
+    "start": "deno run --allow-net --allow-read=/tmp,. --allow-write=/tmp --allow-run=deno --allow-env src/main.ts",
+    "test": "deno test --allow-net --allow-read --allow-write --allow-run --allow-env",
+    "check": "deno check src/main.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "amqp": "https://deno.land/x/amqp@v0.24.0/mod.ts",
+    "jsr:@std/io": "jsr:@std/io@0.224.9"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true
+  }
+}
