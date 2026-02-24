@@ -1,0 +1,27 @@
+/**
+ * Editor Theme - Dropdown Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  --nuraly-dropdown-background: #ffffff;
+  --nuraly-dropdown-border-color: #dee2e6;
+
+  /* Dropdown item */
+  --nuraly-dropdown-item-color: #333333;
+  --nuraly-dropdown-item-background: transparent;
+  --nuraly-dropdown-item-hover-color: #333333;
+  --nuraly-dropdown-item-hover-background: #f8f9fa;
+  --nuraly-dropdown-item-active-color: #4a90e2;
+  --nuraly-dropdown-item-active-background: #e8f2fd;
+  --nuraly-dropdown-item-disabled-color: #adb5bd;
+  --nuraly-dropdown-item-disabled-background: transparent;
+
+  /* Dropdown divider */
+  --nuraly-dropdown-divider-color: #dee2e6;
+
+  /* Dropdown header */
+  --nuraly-dropdown-header-color: #6c757d;
+  --nuraly-dropdown-header-font-size: 0.8125rem;
+  --nuraly-dropdown-header-font-weight: 600;
+}

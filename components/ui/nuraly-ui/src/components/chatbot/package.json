@@ -1,0 +1,69 @@
+{
+  "name": "@nuralyui/chatbot",
+  "version": "0.0.48",
+  "description": "Versatile chatbot component with message handling, suggestions, and typing indicators",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "MIT",
+  "dependencies": {
+    "dayjs": "^1.11.13"
+  },
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./bundle": {
+      "import": "./bundle.js"
+    },
+    "./react": {
+      "import": "./react.js"
+    },
+    "./core": {
+      "import": "./core/index.js"
+    },
+    "./providers": {
+      "import": "./providers/index.js"
+    },
+    "./plugins": {
+      "import": "./plugins/index.js"
+    },
+    "./storage": {
+      "import": "./storage/index.js"
+    },
+    "./controllers": {
+      "import": "./controllers/index.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "react.js",
+    "index.js",
+    "*.d.ts",
+    "*.js.map",
+    "core/",
+    "providers/",
+    "plugins/",
+    "storage/",
+    "controllers/",
+    "assets/",
+    "templates/",
+    "locales/",
+    "mixins/",
+    "shared/",
+    "constants.js",
+    "api-constant.js",
+    "chatbot.*.js"
+  ],
+  "keywords": [
+    "chatbot",
+    "chat",
+    "ui",
+    "web-components",
+    "lit-element",
+    "nuralyui"
+  ]
+}

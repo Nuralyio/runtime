@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  storybook-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: hybrid-ui-storybook-dev
+    ports:
+      - "6006:6006"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/packages/themes/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # Enable file watching in container
+    networks:
+      - storybook-network
+    stdin_open: true
+    tty: true
+
+networks:
+  storybook-network:
+    driver: bridge

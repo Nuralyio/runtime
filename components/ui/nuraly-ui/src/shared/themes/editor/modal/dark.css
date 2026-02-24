@@ -1,0 +1,29 @@
+/**
+ * Editor Theme - Modal Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  --nuraly-modal-background: #2b2d30;
+  --nuraly-modal-color: #e8e8e8;
+  
+  /* Modal header */
+  --nuraly-modal-header-background: #252729;
+  --nuraly-modal-header-color: #e8e8e8;
+  --nuraly-modal-header-border-color: #3e4144;
+  
+  /* Modal footer */
+  --nuraly-modal-footer-background: #252729;
+  --nuraly-modal-footer-color: #e8e8e8;
+  --nuraly-modal-footer-border-color: #3e4144;
+  
+  /* Modal body */
+  --nuraly-modal-body-background: #2b2d30;
+  --nuraly-modal-body-color: #e8e8e8;
+  
+  /* Backdrop */
+  --nuraly-modal-backdrop-background: rgba(0, 0, 0, 0.75);
+  
+  /* Close button */
+  --nuraly-modal-close-color: #abb2bf;
+  --nuraly-modal-close-hover-color: #ffffff;
+}

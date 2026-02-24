@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuraly UI - CDN Advanced Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-box {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .feature-box h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .tabs-container {
+            margin: 2rem 0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status-message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        
+        pre code {
+            background: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Nuraly UI - Advanced CDN Usage</h1>
+        <p>Dynamic imports, lazy loading, and modern JavaScript patterns</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>📦 Import Map Configuration</h2>
+            <p>Using Import Maps for cleaner module imports:</p>
+            <pre><code>&lt;script type="importmap"&gt;
+{
+  "imports": {
+    "@nuralyui/": "https://unpkg.com/@nuralyui/",
+    "lit": "https://cdn.jsdelivr.net/npm/lit@2/+esm"
+  }
+}
+&lt;/script&gt;</code></pre>
+        </div>
+
+        <div class="card">
+            <h2>🔄 Dynamic Component Loading</h2>
+            <p>Load components on-demand to optimize initial page load:</p>
+            
+            <div class="feature-box">
+                <h3>Click to Load Modal Component</h3>
+                <nr-button variant="primary" id="load-modal-btn">
+                    Load Modal Component
+                </nr-button>
+                <div id="modal-container"></div>
+                <div id="modal-status"></div>
+            </div>
+
+            <div class="feature-box">
+                <h3>Click to Load Datepicker</h3>
+                <nr-button variant="info" id="load-datepicker-btn">
+                    Load Datepicker Component
+                </nr-button>
+                <div id="datepicker-container"></div>
+                <div id="datepicker-status"></div>
+            </div>
+
+            <div class="feature-box">
+                <h3>Click to Load Table Component</h3>
+                <nr-button variant="success" id="load-table-btn">
+                    Load Table Component
+                </nr-button>
+                <div id="table-container"></div>
+                <div id="table-status"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Component Factory Pattern</h2>
+            <p>Programmatically create and manage components:</p>
+            
+            <div style="margin: 1rem 0;">
+                <nr-input 
+                    id="badge-text" 
+                    label="Badge Text" 
+                    placeholder="Enter text for badge">
+                </nr-input>
+                
+                <br><br>
+                
+                <nr-select id="badge-variant" label="Badge Variant">
+                    <option value="primary">Primary</option>
+                    <option value="secondary">Secondary</option>
+                    <option value="success">Success</option>
+                    <option value="danger">Danger</option>
+                    <option value="warning">Warning</option>
+                    <option value="info">Info</option>
+                </nr-select>
+                
+                <br><br>
+                
+                <nr-button variant="primary" id="create-badge-btn">
+                    Create Badge
+                </nr-button>
+                <nr-button variant="secondary" id="clear-badges-btn">
+                    Clear All
+                </nr-button>
+            </div>
+            
+            <div id="badges-container" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+        </div>
+
+        <div class="card">
+            <h2>⚡ Reactive Data Binding</h2>
+            <p>Demonstrate reactive updates and state management:</p>
+            
+            <div class="grid">
+                <div>
+                    <h3>Input Controls</h3>
+                    <nr-slider-input 
+                        id="value-slider"
+                        label="Value"
+                        min="0"
+                        max="100"
+                        value="50">
+                    </nr-slider-input>
+                    
+                    <br>
+                    
+                    <nr-input 
+                        id="value-input"
+                        type="number"
+                        label="Value (synced)"
+                        value="50">
+                    </nr-input>
+                </div>
+                
+                <div>
+                    <h3>Live Preview</h3>
+                    <div style="padding: 2rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 3rem; font-weight: bold; color: #667eea;" id="display-value">50</div>
+                        <div style="margin-top: 1rem;">
+                            <nr-badge variant="info" id="display-badge">Value: 50</nr-badge>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔌 Event Handling & Communication</h2>
+            <p>Handle custom events and component communication:</p>
+            
+            <div style="margin: 1rem 0;">
+                <nr-checkbox id="event-logger">Enable Event Logging</nr-checkbox>
+            </div>
+            
+            <div style="margin: 1rem 0;">
+                <nr-button variant="primary" id="event-btn-1">Button 1</nr-button>
+                <nr-button variant="secondary" id="event-btn-2">Button 2</nr-button>
+                <nr-button variant="success" id="event-btn-3">Button 3</nr-button>
+            </div>
+            
+            <div>
+                <h4>Event Log:</h4>
+                <div id="event-log" style="background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 6px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem;">
+                    <div style="color: #888;">Waiting for events...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Map for cleaner imports -->
+    <script type="importmap">
+    {
+        "imports": {
+            "@nuralyui/button": "https://unpkg.com/@nuralyui/button@latest/bundle.js",
+            "@nuralyui/input": "https://unpkg.com/@nuralyui/input@latest/bundle.js",
+            "@nuralyui/select": "https://unpkg.com/@nuralyui/select@latest/bundle.js",
+            "@nuralyui/badge": "https://unpkg.com/@nuralyui/badge@latest/bundle.js",
+            "@nuralyui/slider-input": "https://unpkg.com/@nuralyui/slider-input@latest/bundle.js",
+            "@nuralyui/checkbox": "https://unpkg.com/@nuralyui/checkbox@latest/bundle.js",
+            "@nuralyui/modal": "https://unpkg.com/@nuralyui/modal@latest/bundle.js",
+            "@nuralyui/datepicker": "https://unpkg.com/@nuralyui/datepicker@latest/bundle.js",
+            "@nuralyui/table": "https://unpkg.com/@nuralyui/table@latest/bundle.js"
+        }
+    }
+    </script>
+
+    <!-- Main Application Module -->
+    <script type="module">
+        // Import base components
+        import '@nuralyui/button';
+        import '@nuralyui/input';
+        import '@nuralyui/select';
+        import '@nuralyui/badge';
+        import '@nuralyui/slider-input';
+        import '@nuralyui/checkbox';
+
+        // Utility: Dynamic Component Loader
+        class ComponentLoader {
+            static loadedComponents = new Set();
+            
+            static async load(componentName, importPath) {
+                if (this.loadedComponents.has(componentName)) {
+                    return { success: true, message: `${componentName} already loaded`, cached: true };
+                }
+                
+                try {
+                    await import(importPath);
+                    this.loadedComponents.add(componentName);
+                    return { success: true, message: `${componentName} loaded successfully`, cached: false };
+                } catch (error) {
+                    return { success: false, message: `Failed to load ${componentName}: ${error.message}` };
+                }
+            }
+        }
+
+        // Utility: Show status message
+        function showStatus(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = `
+                    <div class="status-message ${type}">
+                        ${type === 'success' ? '✓' : '✗'} ${message}
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // Dynamic Modal Loading
+        document.getElementById('load-modal-btn')?.addEventListener('click', async () => {
+            const btn = document.getElementById('load-modal-btn');
+            const container = document.getElementById('modal-container');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            
+            const result = await ComponentLoader.load('nr-modal', '@nuralyui/modal');
+            
+            btn.disabled = false;
+            btn.textContent = 'Load Modal Component';
+            
+            if (result.success && !result.cached) {
+                container.innerHTML = `
+                    <nr-modal id="demo-modal" title="Dynamically Loaded Modal">
+                        <p>This modal component was loaded on-demand!</p>
+                        <p>This approach helps reduce initial bundle size.</p>
+                        <nr-button slot="footer" variant="primary" onclick="document.getElementById('demo-modal').close()">
+                            Close
+                        </nr-button>
+                    </nr-modal>
+                `;
+                
+                // Wait for component to be defined
+                await customElements.whenDefined('nr-modal');
+                document.getElementById('demo-modal')?.show();
+            }
+            
+            showStatus('modal-status', result.message, result.success ? 'success' : 'error');
+        });
+
+        // Dynamic Datepicker Loading
+        document.getElementById('load-datepicker-btn')?.addEventListener('click', async () => {
+            const btn = document.getElementById('load-datepicker-btn');
+            const container = document.getElementById('datepicker-container');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            
+            const result = await ComponentLoader.load('nr-datepicker', '@nuralyui/datepicker');
+            
+            btn.disabled = false;
+            btn.textContent = 'Load Datepicker Component';
+            
+            if (result.success && !result.cached) {
+                container.innerHTML = `
+                    <br>
+                    <nr-datepicker 
+                        label="Select Date" 
+                        placeholder="Choose a date">
+                    </nr-datepicker>
+                `;
+            }
+            
+            showStatus('datepicker-status', result.message, result.success ? 'success' : 'error');
+        });
+
+        // Dynamic Table Loading
+        document.getElementById('load-table-btn')?.addEventListener('click', async () => {
+            const btn = document.getElementById('load-table-btn');
+            const container = document.getElementById('table-container');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Loading...';
+            
+            const result = await ComponentLoader.load('nr-table', '@nuralyui/table');
+            
+            btn.disabled = false;
+            btn.textContent = 'Load Table Component';
+            
+            if (result.success && !result.cached) {
+                await customElements.whenDefined('nr-table');
+                
+                const table = document.createElement('nr-table');
+                table.columns = [
+                    { title: 'Name', dataIndex: 'name' },
+                    { title: 'Age', dataIndex: 'age' },
+                    { title: 'City', dataIndex: 'city' }
+                ];
+                table.data = [
+                    { name: 'John Doe', age: 30, city: 'New York' },
+                    { name: 'Jane Smith', age: 25, city: 'San Francisco' },
+                    { name: 'Bob Johnson', age: 35, city: 'Chicago' }
+                ];
+                
+                container.innerHTML = '<br>';
+                container.appendChild(table);
+            }
+            
+            showStatus('table-status', result.message, result.success ? 'success' : 'error');
+        });
+
+        // Component Factory Pattern - Badge Creator
+        let badgeCounter = 0;
+        
+        document.getElementById('create-badge-btn')?.addEventListener('click', () => {
+            const text = document.getElementById('badge-text').value || `Badge ${++badgeCounter}`;
+            const variant = document.getElementById('badge-variant').value || 'primary';
+            
+            const badge = document.createElement('nr-badge');
+            badge.setAttribute('variant', variant);
+            badge.textContent = text;
+            
+            document.getElementById('badges-container').appendChild(badge);
+            document.getElementById('badge-text').value = '';
+        });
+
+        document.getElementById('clear-badges-btn')?.addEventListener('click', () => {
+            document.getElementById('badges-container').innerHTML = '';
+            badgeCounter = 0;
+        });
+
+        // Reactive Data Binding
+        const slider = document.getElementById('value-slider');
+        const input = document.getElementById('value-input');
+        const display = document.getElementById('display-value');
+        const badge = document.getElementById('display-badge');
+
+        function updateValue(value) {
+            slider.value = value;
+            input.value = value;
+            display.textContent = value;
+            badge.textContent = `Value: ${value}`;
+        }
+
+        slider?.addEventListener('input', (e) => updateValue(e.target.value));
+        input?.addEventListener('input', (e) => updateValue(e.target.value));
+
+        // Event Handling & Communication
+        const eventLog = document.getElementById('event-log');
+        const eventLogger = document.getElementById('event-logger');
+        let logEnabled = false;
+
+        eventLogger?.addEventListener('change', (e) => {
+            logEnabled = e.target.checked;
+            if (!logEnabled) {
+                eventLog.innerHTML = '<div style="color: #888;">Event logging disabled</div>';
+            } else {
+                eventLog.innerHTML = '<div style="color: #888;">Event logging enabled. Click buttons to see events.</div>';
+            }
+        });
+
+        function logEvent(eventName, detail) {
+            if (!logEnabled) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.borderBottom = '1px solid #333';
+            logEntry.style.padding = '0.5rem 0';
+            logEntry.innerHTML = `
+                <span style="color: #6c9bcf;">[${timestamp}]</span>
+                <span style="color: #ce9178;">${eventName}</span>
+                ${detail ? `<span style="color: #9cdcfe;">: ${JSON.stringify(detail)}</span>` : ''}
+            `;
+            
+            if (eventLog.children.length > 0 && eventLog.children[0].textContent.includes('Waiting')) {
+                eventLog.innerHTML = '';
+            }
+            
+            eventLog.insertBefore(logEntry, eventLog.firstChild);
+            
+            // Limit to 10 entries
+            while (eventLog.children.length > 10) {
+                eventLog.removeChild(eventLog.lastChild);
+            }
+        }
+
+        // Add event listeners to buttons
+        ['event-btn-1', 'event-btn-2', 'event-btn-3'].forEach(btnId => {
+            document.getElementById(btnId)?.addEventListener('click', (e) => {
+                logEvent('Button Click', { 
+                    button: btnId, 
+                    text: e.target.textContent,
+                    timestamp: Date.now()
+                });
+            });
+        });
+
+        console.log('🎉 Nuraly UI Advanced Example Loaded!');
+        console.log('Components loaded:', Array.from(ComponentLoader.loadedComponents));
+    </script>
+</body>
+</html>

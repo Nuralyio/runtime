@@ -1,0 +1,29 @@
+/**
+ * Editor Theme Bundle
+ * -inspired professional editor theme
+ * 
+ * Features:
+ * - Dark panel editor aesthetic
+ * - Modern blue accent colors
+ * - Professional typography
+ * - Subtle shadows and borders
+ * - Light and dark mode support
+ * 
+ * Usage:
+ * @example
+ * ```html
+ * <link rel="stylesheet" href="path/to/themes/editor.css">
+ * 
+ * <!-- Light mode (default) -->
+ * <div>
+ *   <nr-button type="primary">Editor Button</nr-button>
+ * </div>
+ * 
+ * <!-- Dark mode -->
+ * <div data-theme="dark">
+ *   <nr-button type="primary">Editor Dark Button</nr-button>
+ * </div>
+ * ```
+ */
+
+@import './editor/index.css';

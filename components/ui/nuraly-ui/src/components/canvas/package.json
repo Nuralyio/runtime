@@ -1,0 +1,47 @@
+{
+  "name": "@nuralyui/canvas",
+  "version": "0.0.8",
+  "description": "Workflow canvas component for visual workflow editing",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./workflow-canvas": {
+      "import": "./workflow-canvas.component.js"
+    },
+    "./workflow-node": {
+      "import": "./workflow-node.component.js"
+    },
+    "./types": {
+      "import": "./workflow-canvas.types.js"
+    },
+    "./react": {
+      "import": "./react.js"
+    },
+    "./bundle": {
+      "import": "./bundle.js"
+    }
+  },
+  "files": [
+    "bundle.js",
+    "*.js",
+    "*.d.ts",
+    "*.js.map"
+  ],
+  "keywords": [
+    "workflow",
+    "canvas",
+    "visual-editor",
+    "lit",
+    "web-components",
+    "agent",
+    "ai"
+  ]
+}

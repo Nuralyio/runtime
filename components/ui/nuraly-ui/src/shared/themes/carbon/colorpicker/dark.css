@@ -1,0 +1,48 @@
+/**
+ * Carbon Design System Theme - Color Picker Component - Dark Variant
+ * Color picker-specific CSS variables for the Carbon Design System dark theme
+ * Based on official Carbon Design System G100 (dark) color tokens
+ */
+
+/* Use higher specificity and ensure proper cascade */
+[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"],
+body[data-theme="carbon-dark"],
+html[data-theme="carbon-dark"] *,
+body[data-theme="carbon-dark"] * {
+  /* ========================================
+   * COLORPICKER VARIABLES - CARBON DARK THEME
+   * Official Carbon Design System Colors - G100 Theme
+   * ======================================== */
+
+  /* Color picker surface colors - Carbon Gray 90 */
+  --nuraly-color-surface: #262626 !important;
+  --nuraly-color-surface-hover: #333333 !important;
+
+  /* Color picker border colors - Carbon Gray 60 */
+  --nuraly-color-border: #6f6f6f !important;
+  --nuraly-color-border-hover: #8d8d8d !important;
+
+  /* Color picker text colors - Carbon Gray 10 */
+  --nuraly-color-text: #f4f4f4 !important;
+  --nuraly-color-text-secondary: #c6c6c6 !important;
+
+  /* Color picker background - Carbon Gray 100 */
+  --nuraly-color-background: #161616 !important;
+  --nuraly-color-background-hover: #262626 !important;
+
+  /* Color picker dropdown background - Carbon UI 01 (dark) */
+  --nuraly-color-dropdown-background: #262626 !important;
+  --nuraly-color-dropdown-border: #6f6f6f !important;
+
+  /* Color holder border - Carbon UI Border (dark) */
+  --nuraly-color-colorholder-border: #525252 !important;
+  --nuraly-color-colorholder-border-hover: #8d8d8d !important;
+
+  /* Preset colors container */
+  --nuraly-color-preset-background: transparent !important;
+  --nuraly-color-preset-border: transparent !important;
+
+  /* Override shadows for dark theme */
+  --nuraly-shadow-dropdown: 0 2px 6px rgba(0, 0, 0, 0.8) !important;
+}

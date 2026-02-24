@@ -1,0 +1,29 @@
+/**
+ * Editor Theme - Modal Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Modal sizing */
+  --nuraly-modal-width-small: 400px;
+  --nuraly-modal-width-medium: 600px;
+  --nuraly-modal-width-large: 800px;
+  --nuraly-modal-max-width: 90vw;
+  --nuraly-modal-max-height: 90vh;
+
+  /* Modal spacing */
+  --nuraly-modal-padding: 24px;
+  --nuraly-modal-header-padding: 16px 24px;
+  --nuraly-modal-footer-padding: 16px 24px;
+  --nuraly-modal-body-padding: 24px;
+
+  /* Modal visual */
+  --nuraly-modal-border-radius: 6px;
+  --nuraly-modal-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  
+  /* Backdrop */
+  --nuraly-modal-backdrop-opacity: 0.6;
+  
+  /* Z-index */
+  --nuraly-modal-z-index: 1050;
+  --nuraly-modal-backdrop-z-index: 1040;
+}

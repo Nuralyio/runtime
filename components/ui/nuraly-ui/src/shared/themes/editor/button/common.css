@@ -1,0 +1,36 @@
+/**
+ * Editor Theme - Button Common Styles
+ * Shared button styles across light and dark modes
+ */
+
+[data-theme^="editor"] {
+  /* Button heights */
+  --nuraly-button-height-small: 28px;
+  --nuraly-button-height-medium: 32px;
+  --nuraly-button-height-large: 40px;
+
+  /* Button padding */
+  --nuraly-button-padding-small: 0 12px;
+  --nuraly-button-padding-medium: 0 16px;
+  --nuraly-button-padding-large: 0 20px;
+
+  /* Button font sizes */
+  --nuraly-button-font-size-small: 0.8125rem;
+  --nuraly-button-font-size-medium: 0.875rem;
+  --nuraly-button-font-size-large: 0.9375rem;
+
+  /* Button border radius */
+  --nuraly-button-border-radius: 4px;
+  
+  /* Button transitions */
+  --nuraly-button-transition: all 0.15s ease-in-out;
+  
+  /* Button shadows */
+  --nuraly-button-shadow: none;
+  --nuraly-button-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --nuraly-button-shadow-active: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+
+  /* Icon button sizing */
+  --nuraly-button-icon-gap: 6px;
+  --nuraly-button-icon-only-padding: 0;
+}

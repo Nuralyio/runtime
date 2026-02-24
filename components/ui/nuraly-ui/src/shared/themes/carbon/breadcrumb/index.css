@@ -1,0 +1,8 @@
+/**
+ * Carbon Design System - Breadcrumb Component
+ * Entry point for breadcrumb theme styles
+ */
+
+@import './common.css';
+@import './light.css';
+@import './dark.css';

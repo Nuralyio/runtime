@@ -1,0 +1,38 @@
+/**
+ * Default Theme - Toast Component - Dark Variant
+ * Toast-specific CSS variables for the default dark theme
+ */
+
+[data-theme="default-dark"] {
+  /* ========================================
+   * TOAST VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Default toast */
+  --nuraly-toast-default-background: #1f2937;
+  --nuraly-toast-default-border: #374151;
+  --nuraly-toast-default-text: #f9fafb;
+
+  /* Success toast */
+  --nuraly-toast-success-background: #064e3b;
+  --nuraly-toast-success-border: #34d399;
+  --nuraly-toast-success-text: #6ee7b7;
+
+  /* Error toast */
+  --nuraly-toast-error-background: #7f1d1d;
+  --nuraly-toast-error-border: #f87171;
+  --nuraly-toast-error-text: #fca5a5;
+
+  /* Warning toast */
+  --nuraly-toast-warning-background: #78350f;
+  --nuraly-toast-warning-border: #fbbf24;
+  --nuraly-toast-warning-text: #fcd34d;
+
+  /* Info toast */
+  --nuraly-toast-info-background: #1e3a8a;
+  --nuraly-toast-info-border: #60a5fa;
+  --nuraly-toast-info-text: #93c5fd;
+
+  /* Toast close button hover */
+  --nuraly-toast-close-hover-background: rgba(255, 255, 255, 0.1);
+}

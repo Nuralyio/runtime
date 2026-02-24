@@ -1,0 +1,60 @@
+/**
+ * Default Theme - Table Component - Dark Variant
+ * Table-specific CSS variables for the Default dark theme
+ */
+
+[data-theme="default-dark"],
+html[data-theme="default-dark"],
+body[data-theme="default-dark"],
+html[data-theme="default-dark"] *,
+body[data-theme="default-dark"] * {
+  /* ========================================
+   * TABLE VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Table background colors - Default warmer dark tones */
+  --nuraly-table-background: #1a1b1e !important; /* Dark 900 - Warm black */
+  --nuraly-table-header-background: #25262b !important; /* Dark 800 - Subtle header */
+  --nuraly-table-row-background: #1a1b1e !important;
+  --nuraly-table-row-hover-background: #2c2e33 !important; /* Dark 700 - Warmer hover */
+  --nuraly-table-row-selected-background: #1864ab !important; /* Blue 800 - Rich blue */
+  --nuraly-table-row-expanded-background: #25262b !important;
+  
+  /* Table text colors - Default softer contrast */
+  --nuraly-table-text-color: #c1c2c5 !important; /* Gray 400 - Softer white */
+  --nuraly-table-header-text-color: #e9ecef !important; /* Gray 200 - Gentle headers */
+  --nuraly-table-secondary-text-color: #909296 !important; /* Gray 600 */
+  
+  /* Table border colors - Default subtle borders */
+  --nuraly-table-border-color: #2c2e33 !important; /* Dark 700 - Very subtle */
+  --nuraly-table-header-border-color: #373a40 !important; /* Dark 600 - Gentle header */
+  --nuraly-table-row-border-color: #2c2e33 !important;
+  
+  /* Table action colors - Default warmer bright blue */
+  --nuraly-table-action-color: #339af0 !important; /* Blue 500 - Warmer blue */
+  --nuraly-table-action-hover-color: #4dabf7 !important; /* Blue 400 */
+  
+  /* Table sort indicator - Default softer */
+  --nuraly-table-sort-indicator-color: #adb5bd !important; /* Gray 500 - Softer */
+  --nuraly-table-sort-indicator-active-color: #339af0 !important; /* Blue 500 */
+  
+  /* Table selection colors - Default warmer */
+  --nuraly-table-checkbox-background: #25262b !important; /* Dark 800 */
+  --nuraly-table-checkbox-border: #868e96 !important; /* Gray 600 - Softer */
+  --nuraly-table-checkbox-checked: #339af0 !important; /* Blue 500 */
+  
+  /* Table filter/search - Default warm dark */
+  --nuraly-table-filter-background: #25262b !important; /* Dark 800 */
+  --nuraly-table-filter-border: #495057 !important; /* Dark 500 - Softer */
+  --nuraly-table-filter-text: #c1c2c5 !important;
+  
+  /* Table pagination - Default warm palette */
+  --nuraly-table-pagination-background: #25262b !important; /* Dark 800 */
+  --nuraly-table-pagination-text: #c1c2c5 !important;
+  --nuraly-table-pagination-button-background: #2c2e33 !important; /* Dark 700 - Subtle */
+  --nuraly-table-pagination-button-hover: #373a40 !important; /* Dark 600 */
+  --nuraly-table-pagination-button-active: #339af0 !important; /* Blue 500 */
+  
+  /* Table empty state */
+  --nuraly-table-empty-state-color: #909296 !important;
+}

@@ -1,0 +1,32 @@
+/* Default Dark Theme - Slider Input Colors */
+:root {
+  /* Colors - Track */
+  --nuraly-color-slider-input-track: #141414;
+  --nuraly-color-slider-input-track-filled: #1890ff;
+  --nuraly-color-slider-input-border: #434343;
+
+  /* Colors - Thumb */
+  --nuraly-color-slider-input-thumb: #1f1f1f;
+  --nuraly-color-slider-input-thumb-border: #1890ff;
+  --nuraly-color-slider-input-thumb-hover: #40a9ff;
+  --nuraly-color-slider-input-thumb-active: #096dd9;
+
+  /* Colors - Disabled states */
+  --nuraly-color-slider-input-disabled-track: #141414;
+  --nuraly-color-slider-input-disabled: #434343;
+  --nuraly-color-slider-input-disabled-thumb: #262626;
+  --nuraly-color-slider-input-disabled-border: #434343;
+
+  /* Colors - Status states */
+  --nuraly-color-slider-input-error: #ff7875;
+  --nuraly-color-slider-input-warning: #ffc53d;
+  --nuraly-color-slider-input-success: #73d13d;
+
+  /* Border radius - Rounded corners for Default */
+  --nuraly-border-slider-input-radius: 6px;
+  --nuraly-border-slider-input-thumb-radius: 50%;
+
+  /* Shadows */
+  --nuraly-shadow-slider-input-thumb: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --nuraly-shadow-slider-input-focus: 0 0 0 2px rgba(24, 144, 255, 0.35);
+}

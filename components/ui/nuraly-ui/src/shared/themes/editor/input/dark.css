@@ -1,0 +1,50 @@
+/**
+ * Editor Theme - Input Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  /* Input background */
+  --nuraly-color-input-background: #1e1e1e;
+  --nuraly-color-input-background-hover: #252729;
+  --nuraly-color-input-background-focus: #252729;
+  --nuraly-color-input-disabled-background: #2b2d30;
+
+  /* Input text color */
+  --nuraly-color-input-text: #e8e8e8;
+  --nuraly-color-input-disabled-text: #6c757d;
+  --nuraly-color-input-placeholder: #abb2bf;
+  --nuraly-color-input-disabled-placeholder: #6c757d;
+
+  /* Input border color */
+  --nuraly-color-input-border: #3e4144;
+  --nuraly-color-input-border-hover: #4e5154;
+  --nuraly-color-input-border-focus: #4a90e2;
+  --nuraly-color-input-border-disabled: #2b2d30;
+
+  /* Input states */
+  --nuraly-color-input-error-border: #dc3545;
+  --nuraly-color-input-error: #ff6b6b;
+  --nuraly-color-input-error-background: #2b1e1e;
+  
+  --nuraly-color-input-success-border: #28a745;
+  --nuraly-color-input-success: #51cf66;
+  --nuraly-color-input-success-background: #1e2b1e;
+  
+  --nuraly-color-input-warning-border: #ffc107;
+  --nuraly-color-input-warning: #ffd43b;
+  --nuraly-color-input-warning-background: #2b2a1e;
+
+  /* Input label */
+  --nuraly-color-input-label: #e8e8e8;
+  --nuraly-font-size-input-label: 0.875rem;
+  --nuraly-font-weight-input-label: 500;
+
+  /* Input help text */
+  --nuraly-color-input-help: #abb2bf;
+  --nuraly-font-size-input-help: 0.8125rem;
+  
+  /* Input addon */
+  --nuraly-input-addon-background-color: #2b2d30;
+  --nuraly-input-addon-color: #abb2bf;
+  --nuraly-input-addon-padding: 0 12px;
+}

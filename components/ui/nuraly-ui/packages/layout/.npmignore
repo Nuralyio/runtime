@@ -1,0 +1,21 @@
+# Source files
+src/
+scripts/
+
+# Development files
+*.ts
+!*.d.ts
+tsconfig.json
+
+# Version control
+.git
+.gitignore
+
+# IDE files
+.vscode/
+.DS_Store
+
+# Logs and tests
+*.log
+test/
+coverage/

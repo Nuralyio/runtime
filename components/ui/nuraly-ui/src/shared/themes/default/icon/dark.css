@@ -1,0 +1,41 @@
+/**
+ * Default Design System Theme - Icon Component - Dark Variant
+ * Icon-specific CSS variables based on Default Design System dark theme specifications
+ */
+
+[data-theme="default-dark"]{
+  /* ========================================
+   * ICON VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Base icon colors - Default Dark Design System */
+  --nuraly-color-icon: #f4f4f4;
+  --nuraly-color-icon-fallback: #f4f4f4;
+
+  /* Interactive states - Default Dark */
+  --nuraly-color-icon-hover: #60a5fa;
+  --nuraly-color-icon-hover-fallback: #60a5fa;
+  --nuraly-color-icon-active: #93c5fd;
+  --nuraly-color-icon-active-fallback: #93c5fd;
+
+  /* Disabled state - Default Dark */
+  --nuraly-color-icon-disabled: #6b7280;
+  --nuraly-color-icon-disabled-fallback: #6b7280;
+
+  /* Focus states - Default Dark */
+  --nuraly-color-icon-focus: #60a5fa;
+  --nuraly-icon-focus-outline: 2px solid #60a5fa;
+  --nuraly-icon-focus-outline-fallback: 2px solid #60a5fa;
+  --nuraly-icon-focus-background: rgba(96, 165, 250, 0.1);
+  --nuraly-icon-focus-background-fallback: rgba(96, 165, 250, 0.1);
+}
+
+/* Default Design System specific overrides */
+html[data-theme="default-dark"] nr-icon .svg-icon.clickable:focus,
+body[data-theme="default-dark"] nr-icon .svg-icon.clickable:focus,
+[data-theme="default-dark"] nr-icon .svg-icon.clickable:focus {
+  outline: 2px solid #60a5fa !important;
+  outline-offset: 2px !important;
+  background: rgba(96, 165, 250, 0.1) !important;
+  border-radius: 4px !important;
+}

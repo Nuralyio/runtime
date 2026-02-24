@@ -1,0 +1,54 @@
+/**
+ * Default Design System Theme - Timepicker Component - Dark Variant
+ * Timepicker-specific CSS variables for the Default Design System dark theme
+ */
+
+[data-theme="default-dark"] {
+  /* ========================================
+   * TIMEPICKER VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Background colors */
+  --nuraly-color-timepicker-background: #1f1f1f;
+  --nuraly-color-timepicker-dropdown-background: #1f1f1f;
+  --nuraly-color-timepicker-clock-background: #1f1f1f;
+  --nuraly-color-timepicker-hover-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-timepicker-active-background: rgba(255, 255, 255, 0.06);
+
+  /* Text colors */
+  --nuraly-color-timepicker-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-timepicker-selected-text: rgba(0, 0, 0, 0.88);
+  --nuraly-color-timepicker-clock-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-timepicker-clock-face: rgba(255, 255, 255, 0.45);
+
+  /* Border colors */
+  --nuraly-color-timepicker-border: #424242;
+  --nuraly-color-timepicker-clock-border: #303030;
+
+  /* Input field colors */
+  --nuraly-color-timepicker-input-background: #1f1f1f;
+  --nuraly-color-timepicker-input-border: #424242;
+  --nuraly-color-timepicker-input-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-timepicker-input-placeholder: rgba(255, 255, 255, 0.25);
+
+  /* Hover states */
+  --nuraly-color-timepicker-hover: #262626;
+
+  /* Item selection and control colors */
+  --nuraly-color-timepicker-item-hover: #262626;
+  --nuraly-color-timepicker-item-active: #111b26;
+  --nuraly-color-timepicker-item-selected: #1890ff;
+  --nuraly-color-timepicker-item-selected-text: rgba(0, 0, 0, 0.88);
+
+  /* Disabled states */
+  --nuraly-color-timepicker-disabled: #262626;
+  --nuraly-color-timepicker-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-timepicker-disabled-background: #1f1f1f;
+
+  /* Shadow color */
+  --nuraly-color-timepicker-shadow: rgba(0, 0, 0, 0.45);
+
+  /* States */
+  --nuraly-opacity-timepicker-disabled: 1;
+  --nuraly-opacity-timepicker-hover: 1;
+}

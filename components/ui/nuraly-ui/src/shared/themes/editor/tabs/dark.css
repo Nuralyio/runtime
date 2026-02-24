@@ -1,0 +1,28 @@
+/**
+ * Editor Theme - Tabs Dark Mode
+ */
+
+[data-theme="editor-dark"] {
+  --nuraly-tabs-background: transparent;
+  --nuraly-tabs-border-color: #3e4144;
+
+  /* Tab item */
+  --nuraly-tabs-item-color: #abb2bf;
+  --nuraly-tabs-item-background: transparent;
+  --nuraly-tabs-item-hover-color: #ffffff;
+  --nuraly-tabs-item-hover-background: #3a3d40;
+
+  /* Active tab */
+  --nuraly-tabs-active-color: #5fa3f5;
+  --nuraly-tabs-active-background: transparent;
+  --nuraly-tabs-active-border-color: #5fa3f5;
+  --nuraly-tabs-active-indicator-color: #5fa3f5;
+
+  /* Disabled tab */
+  --nuraly-tabs-disabled-color: #6c757d;
+  --nuraly-tabs-disabled-background: transparent;
+
+  /* Tab content */
+  --nuraly-tabs-content-background: transparent;
+  --nuraly-tabs-content-color: #e8e8e8;
+}

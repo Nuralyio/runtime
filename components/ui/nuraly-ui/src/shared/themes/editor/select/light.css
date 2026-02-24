@@ -1,0 +1,22 @@
+/**
+ * Editor Theme - Select Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  --nuraly-select-background: var(--nuraly-input-background);
+  --nuraly-select-color: var(--nuraly-input-color);
+  --nuraly-select-border-color: var(--nuraly-input-border-color);
+
+  /* Dropdown panel */
+  --nuraly-select-dropdown-background: #ffffff;
+  --nuraly-select-dropdown-border-color: #dee2e6;
+
+  /* Select option */
+  --nuraly-select-option-color: #333333;
+  --nuraly-select-option-hover-background: #f8f9fa;
+  --nuraly-select-option-hover-color: #333333;
+  --nuraly-select-option-selected-background: #e8f2fd;
+  --nuraly-select-option-selected-color: #4a90e2;
+  --nuraly-select-option-disabled-color: #adb5bd;
+}
