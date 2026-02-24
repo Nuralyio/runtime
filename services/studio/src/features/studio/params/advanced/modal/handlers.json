@@ -1,0 +1,21 @@
+{
+  "handlerPrefix": "studio_modal_handler",
+  "events": [
+    {
+      "name": "onModalOpen",
+      "label": "On Open"
+    },
+    {
+      "name": "onModalClose",
+      "label": "On Close"
+    },
+    {
+      "name": "onModalBeforeClose",
+      "label": "Before Close"
+    },
+    {
+      "name": "onModalAfterOpen",
+      "label": "After Open"
+    }
+  ]
+}

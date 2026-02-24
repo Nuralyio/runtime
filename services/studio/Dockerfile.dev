@@ -1,0 +1,27 @@
+FROM node:latest
+
+# Create a non-root user for security (use UID 1001 to avoid conflicts)
+RUN useradd -m -u 1001 nodeuser
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies with platform-specific optionalDependencies
+RUN npm install --force --ignore-scripts || npm install --ignore-scripts
+
+# Copy source code
+COPY . .
+
+# Change ownership of app directory to non-root user
+RUN chown -R nodeuser:nodeuser /app
+
+# Switch to non-root user
+USER nodeuser
+
+# Expose the dev server port
+EXPOSE 4321
+
+# Start development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

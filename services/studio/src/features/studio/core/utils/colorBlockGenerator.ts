@@ -1,0 +1,157 @@
+import { COMMON_ATTRIBUTES } from "../helpers/common_attributes.ts";
+import { InputBlockContainerTheme } from "./common-editor-theme.ts";
+
+export function generateComponents(containerUuid: string, cssVar: string, label: string) {
+  return [
+    {
+      uuid: `${containerUuid}`,
+      application_id: "1",
+      name: "select helper color block",
+      type: "container",
+      ...COMMON_ATTRIBUTES,
+      style: {
+        ...InputBlockContainerTheme
+      },
+      children_ids: [
+        `${containerUuid}_input_block`,
+        `${containerUuid}_handler_block`
+      ]
+    },
+    {
+      uuid: `${containerUuid}_input_block`,
+      application_id: "1",
+      name: "select helper color input block",
+      type: "container",
+      ...COMMON_ATTRIBUTES,
+      style: {
+        display: "flex",
+        "align-items": "center",
+        "justify-content": "space-between"
+      },
+      children_ids: [`${containerUuid}_label`]
+    },
+    {
+      uuid: `${containerUuid}_label`,
+      name: "select helper color label",
+      type: "text_label",
+      application_id: "1",
+      ...COMMON_ATTRIBUTES,
+      input: {
+        value: {
+          type: "handler",
+          value: /* js */ `
+                        const label = '${label}';
+                        return label;
+                    `
+        }
+      },
+      style: {
+        "width": "90px"
+      }
+    },
+    {
+      uuid: `${containerUuid}_input`,
+      name: "helper color input",
+      application_id: "1",
+      type: "color_picker",
+      event: {
+        valueChange: /* js */ `
+                    
+                        const selectedComponent = Utils.first($selectedComponents);
+                        if (selectedComponent) {
+                            updateStyle(selectedComponent, "${cssVar}", EventData.value);
+                        }
+                   
+                `
+      },
+      ...COMMON_ATTRIBUTES,
+      style: {
+        width: "33px",
+        display: "block"
+      },
+      input: {
+        value: {
+          type: "handler",
+          value: /* js */ `
+                        
+                            const selectedComponent = Utils.first($selectedComponents);
+                            if (true) {
+                                if (selectedComponent.style)
+                                    return selectedComponent.style['${cssVar}'];
+                            }
+                        
+                    `
+        },
+        state: {
+          type: "handler",
+          value: /* js */ `
+                        
+                            const selectedComponent = Utils.first($selectedComponents);
+                            if (true) {
+                                
+                                ;
+                                let state = 'enabled';
+                                if (selectedComponent?.style_handlers && selectedComponent?.style_handlers['${cssVar}']) {
+                                    state = 'disabled';
+                                    return state;
+                                }
+                            }
+                        
+                    `
+        }
+      }
+    },
+    {
+      uuid: `${containerUuid}_handler_block`,
+      application_id: "1",
+      name: "select helper color handler block",
+      type: "container",
+      ...COMMON_ATTRIBUTES,
+      style: {
+        display: "flex",
+        "justify-content": "space-between"
+      },
+      children_ids: [`${containerUuid}_input`, `${containerUuid}_handler`]
+    },
+    {
+      uuid: `${containerUuid}_handler`,
+      application_id: "1",
+      type: "event",
+      ...COMMON_ATTRIBUTES,
+      style_handlers: {},
+      name: "helper color handler",
+      style: {
+        display: "block",
+        width: "50px"
+      },
+      input: {
+        value: {
+          type: "handler",
+          value: /* js */ `
+                        const parameter = '${label}';
+                        let helperColorHandler = '';
+                        
+                            const selectedComponent = Utils.first($selectedComponents);
+                            if (true) {
+                                
+                                ;
+                                helperColorHandler = selectedComponent?.style_handlers && selectedComponent?.style_handlers['${cssVar}'] || '';
+                            }
+                        
+                        return [parameter, helperColorHandler];
+                    `
+        }
+      },
+      event: {
+        codeChange: /* js */ `
+                    
+                        const selectedComponent = Utils.first($selectedComponents);
+                        if (true) {
+                            updateStyleHandlers(selectedComponent, '${cssVar}', EventData.value);
+                        }
+                    
+                `
+      }
+    }
+  ];
+}

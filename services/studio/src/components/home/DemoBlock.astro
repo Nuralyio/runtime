@@ -1,0 +1,158 @@
+---
+/**
+ * DemoBlock Component
+ * Interactive demo loading a real micro app
+ */
+
+const demoAppUuid = "67c0d1b3-d03e-4a30-b19e-0a2a537072e8";
+// In dev mode (port 4321), API calls need to go through the gateway (port 80)
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || '';
+---
+
+<section class="demo-section" id="demo">
+  <div class="container">
+    <div class="demo-header" data-animate>
+      <h2>See it in action</h2>
+      <p class="demo-caption">This demo showcases a Retrieval-Augmented Generation (RAG) agent using the ReAct pattern for reasoning and tool use.</p>
+    </div>
+
+    <!-- Mobile banner - shown only on mobile -->
+    <div class="mobile-banner">
+      <div class="mobile-banner__icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="mobile-banner__text">
+        <div class="mobile-banner__title">Desktop Recommended</div>
+        <div class="mobile-banner__message">View workflow execution live on desktop for the best experience.</div>
+      </div>
+    </div>
+
+    <div class="demo-container" data-animate id="demo-micro-app-container">
+      <p style="text-align: center; color: #999; padding: 40px 0;">Loading...</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .demo-caption {
+    text-align: center;
+    font-size: 18px;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 12px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+
+  /* Mobile banner - hidden on desktop */
+  .mobile-banner {
+    display: none;
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+
+  .mobile-banner__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: #3b82f6;
+    border-radius: 50%;
+    color: white;
+  }
+
+  .mobile-banner__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-banner__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+  }
+
+  .mobile-banner__message {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 768px) {
+    .mobile-banner {
+      display: flex;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ demoAppUuid, apiBaseUrl }}>
+  window.__DEMO_APP_UUID__ = demoAppUuid;
+  window.__API_BASE_URL__ = apiBaseUrl;
+</script>
+
+<script>
+  import { MicroApp } from "../../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+  import "../../features/runtime/components";
+
+  void MicroApp;
+
+  async function initDemo() {
+    await customElements.whenDefined('micro-app');
+
+    const appUuid = (window as any).__DEMO_APP_UUID__;
+    const apiBaseUrl = (window as any).__API_BASE_URL__ || '';
+    if (!appUuid) return;
+
+    // Fetch pages to get the default page UUID
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/pages/application/${appUuid}`, {
+        credentials: 'include'
+      });
+      const pages = await response.json();
+
+      // Find default page or use first page
+      const defaultPage = pages.find((p: any) => p.is_default) || pages[0];
+      if (!defaultPage) {
+        console.error('No pages found for demo app');
+        return;
+      }
+
+      const microApp = document.createElement('micro-app') as any;
+      microApp.id = 'home-demo';
+      microApp.uuid = appUuid;
+      microApp.page_uuid = defaultPage.uuid;  // Set the page UUID
+      microApp.useIsolatedContext = false;
+      microApp.mode = "preview";
+      microApp.prod = true;
+
+      const container = document.getElementById('demo-micro-app-container');
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(microApp);
+      }
+    } catch (err) {
+      console.error('Failed to load demo app pages:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initDemo);
+  } else {
+    initDemo();
+  }
+</script>

@@ -1,0 +1,44 @@
+name: Build & Push to GHCR
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/nuralyio/studio
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=,format=short
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=studio
+          cache-to: type=gha,mode=max,scope=studio
+          build-args: |
+            DASHBOARD_APP_UUID=e5ea6ef3-f467-402c-bacf-199d68bdc63d
+            DASHBOARD_PAGE_UUID=f4cfcf9a-9439-4db2-aa60-9680d7c94acc
+            HOME_APP_UUID=862d84a4-0be4-4cd0-8255-77f270094ff8
+            HOME_PAGE_UUID=bc16eab3-9d6d-433a-8550-53f26897574c

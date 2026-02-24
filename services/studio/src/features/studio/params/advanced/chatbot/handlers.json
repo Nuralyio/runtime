@@ -1,0 +1,33 @@
+{
+  "handlerPrefix": "studio_chatbot_handler",
+  "events": [
+    {
+      "name": "onMessageSent",
+      "label": "On Message Sent"
+    },
+    {
+      "name": "onSuggestionClicked",
+      "label": "On Suggestion Clicked"
+    },
+    {
+      "name": "onInputChanged",
+      "label": "On Input Changed"
+    },
+    {
+      "name": "onChatbotClose",
+      "label": "On Close"
+    },
+    {
+      "name": "onChatbotMinimize",
+      "label": "On Minimize"
+    },
+    {
+      "name": "onPositionChanged",
+      "label": "On Position Changed"
+    },
+    {
+      "name": "onExecutionStart",
+      "label": "On Execution Start"
+    }
+  ]
+}

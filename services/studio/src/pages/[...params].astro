@@ -1,0 +1,33 @@
+---
+const { params } = Astro.params;
+
+// Don't render _index for /app/* routes - they have their own handlers
+if (params && params.startsWith('app/')) {
+  return Astro.redirect('/errors/not-found');
+}
+
+// Don't render _index for /view/* routes - they have their own handlers
+if (params && params.startsWith('view/')) {
+  return Astro.redirect('/errors/not-found');
+}
+
+// Don't render _index for static assets or well-known paths - just return 404
+// This prevents trying to load the home app for favicon, images, Chrome DevTools, etc.
+const staticExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.webp', '.css', '.js', '.woff', '.woff2', '.ttf', '.eot', '.json', '.xml', '.txt'];
+const excludedPaths = ['.well-known', '_astro', 'assets'];
+if (params && (
+  staticExtensions.some(ext => params.endsWith(ext)) ||
+  excludedPaths.some(path => params.startsWith(path))
+)) {
+  return new Response('Not found', { status: 404 });
+}
+
+const page_url = "segments[0]";
+import Index from './_index.astro';
+---
+<script define:vars={{ params }}>
+  window.__URL__ = params;
+
+</script>
+<Index page_url={params} param2={page_url} />
+

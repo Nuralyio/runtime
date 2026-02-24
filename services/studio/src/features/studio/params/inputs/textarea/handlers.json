@@ -1,0 +1,25 @@
+{
+  "handlerPrefix": "studio_textarea_handler",
+  "events": [
+    {
+      "name": "focus",
+      "label": "onFocus"
+    },
+    {
+      "name": "change",
+      "label": "onChange"
+    },
+    {
+      "name": "blur",
+      "label": "onBlur"
+    },
+    {
+      "name": "clear",
+      "label": "onClear"
+    },
+    {
+      "name": "resize",
+      "label": "onResize"
+    }
+  ]
+}

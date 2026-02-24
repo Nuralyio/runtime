@@ -1,0 +1,598 @@
+---
+import MakeLayout from "../../../_layouts/MakeLayout.astro";
+
+import "../../../../features/studio/panels/main-panel/EditorInteractivePanel";
+import { TabsPanel } from '../../../../features/studio/panels/main-panel/TabsPanel';
+import { TopbarPanelWrapper } from '../../../../features/studio/panels/top-bar/TopbarWrapper/TopbarWrapper';
+import { LeftPanel } from '../../../../features/studio/panels/layout/LeftPanel';
+import { RightPanel } from '../../../../features/studio/panels/layout/RightPanel';
+import { $pages } from '../../../../features/runtime/redux/store/page'
+import { $components } from '../../../../features/runtime/redux/store/component/store';
+import { $applications } from '../../../../features/runtime/redux/store/apps';
+import { processHeaders } from '../../../../features/runtime/utils/api-calls-utils';
+import { fetchAllApplications, fetchApplicationPagesById, fetchApplicationComponentById, fetchMyMembership } from '../../../../services';
+import { EditorSpinner } from '../../../../features/studio/panels/layout/EditorSpinner'
+import { ApplicationNotFound } from '../../../../services/applications/exceptions/ApplicationNotFound';
+const { title, uuid, urls = "" } = Astro.params;
+
+// Parse query parameters
+const url = Astro.url;
+const workflowIdParam = url.searchParams.get('workflow');
+
+// Parse URL to determine which tab to open
+// Supported patterns for editor:
+// - /app/studio/{uuid}/workflow - Opens workflow tab
+// - /app/studio/{uuid}/workflow?workflow={id} - Opens specific workflow
+// - /app/studio/{uuid}/database - Opens database tab
+// - /app/studio/{uuid}/pages/parent/child - Opens pages tab with nested page
+// - /app/studio/{uuid} - Default pages tab
+let tabType = "page"; // default to page editor
+let pageUrl = "";
+let workflowId = workflowIdParam || "";
+
+if (urls) {
+  const urlParts = urls.split("/");
+  const firstPart = urlParts[0]?.toLowerCase();
+
+  if (firstPart === "workflow" || firstPart === "workflows") {
+    tabType = "flow";
+    // Check if workflow ID is in the path (e.g., /workflows/{workflowId})
+    if (urlParts[1] && !workflowId) {
+      workflowId = urlParts[1];
+    }
+  } else if (firstPart === "database" || firstPart === "db") {
+    tabType = "database";
+    // Rest of path could be database-specific routing in future
+  } else if (firstPart === "journal" || firstPart === "logs") {
+    tabType = "journal";
+    // Rest of path could be journal-specific routing in future
+  } else if (firstPart === "pages" || firstPart === "page") {
+    tabType = "page";
+    // Everything after /pages/ is the nested page URL
+    pageUrl = urlParts.slice(1).join("/") || "";
+  } else {
+    // For backwards compatibility: treat as page URL directly
+    tabType = "page";
+    pageUrl = urls;
+  }
+}
+const functionAppUUID = process.env.FUNCTION_APP_UUID;
+const functionPageUUID = process.env.FUNCTION_PAGE_UUID;
+const files_modules_config = process.env.FILES_MODULES_CONFIG;
+let  FILES_MODULES_CONFIG = { files: {} };
+try{
+  if (files_modules_config) {
+     FILES_MODULES_CONFIG = JSON.parse(files_modules_config);
+  }
+} catch (error) {
+  console.error('Error parsing FILES_MODULES_CONFIG:', error);
+}
+const filesAppUUID = process.env.FILES_APP_UUID;
+const filesPageUUID = process.env.FILES_PAGE_UUID;
+const filesModulesConfig = FILES_MODULES_CONFIG;
+
+
+// TODO: handle error
+const processedHeaders = processHeaders(Astro.request.headers);
+
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
+
+// Fetch the current user's app membership role (if authenticated)
+if (currentUser && !currentUser.anonymous && uuid) {
+  try {
+    const membership = await fetchMyMembership(processedHeaders, uuid);
+    if (membership?.role) {
+      currentUser.appRole = membership.role;
+    }
+  } catch (error) {
+    console.error('Error fetching user membership:', error);
+  }
+}
+
+let pageData, componentData, applications, application;
+let occurredError = null;
+try {
+
+  // Load application pages, components, and applications in parallel
+  const [pageRequest, componentResponse, applicationsRequest] =
+    await Promise.all([
+    fetchApplicationPagesById(processedHeaders, uuid),
+    fetchApplicationComponentById(processedHeaders, uuid),
+    fetchAllApplications(processedHeaders)
+  ]);
+
+  // Handle page data
+  pageData = pageRequest.data;
+  $pages.set({ [uuid]: pageData });
+
+  // Handle component data
+  componentData = componentResponse.data.map((component) => component.component);
+  $components.set({ [uuid]: componentData });
+
+  // Handle applications data
+  applications = applicationsRequest.data;
+  $applications.set(applications);
+  application = applications.find((application) => application.uuid === uuid);
+
+} catch (error) {
+
+  if(error instanceof ApplicationNotFound) {
+    // Handle application not found here
+    console.error("Application not found:", error);
+    occurredError = "not-found";
+  }
+}
+---
+
+<head> <title>Nuraly - Editing {application?.name}</title> </head>
+<script is:inline define:vars={{ pageData, componentData, applications, application , functionAppUUID,functionPageUUID, filesAppUUID,filesPageUUID,filesModulesConfig, urls, currentUser, tabType, pageUrl, workflowId }}>
+  window.__INITIAL_PAGE_STATE__ = JSON.stringify(pageData);
+  window.__INITIAL_COMPONENT_STATE__ = JSON.stringify(componentData);
+  window.__INITIAL_APPLICATION_STATE__ = JSON.stringify(applications);
+  window.__INITIAL_CURRENT_APPLICATION_STATE__ = JSON.stringify(application);
+  window.__FUNCTION_APP_UUID__ = functionAppUUID;
+  window.__FUNCTION_PAGE_UUID__ = functionPageUUID;
+  window.__MODULES_CONFIG__ = filesModulesConfig;
+
+  window.__FILES_APP_UUID__ = filesAppUUID;
+  window.__FILES_PAGE_UUID__ = filesPageUUID;
+
+  // Tab routing for studio editor
+  window.__TAB_TYPE__ = tabType;  // "page", "flow", or "database"
+  window.__PAGE_URL__ = pageUrl;  // nested page URL (e.g., "blog/article1")
+  window.__WORKFLOW_ID__ = workflowId;  // specific workflow ID from query param or path
+  // Only set __URL__ for page selection when on pages tab
+  window.__URL__ = tabType === "page" ? pageUrl : "";
+  window.__CURRENT_USER__ = currentUser;
+</script>
+
+<script>
+  // Initialize studio components (client-side only)
+  import('../../../../features/studio/studio-bootstrap');
+</script>
+
+
+<MakeLayout title="Make Apps">
+  {(() => {
+    switch (occurredError) {
+      case "not-found":
+        return (
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">404</div>
+                <h1 class="error-title">Application Not Found</h1>
+                <p class="error-message">
+                  The application you're looking for doesn't exist or may have been removed.
+                  Please check the application ID or try again later.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="javascript:location.reload()" class="btn btn-secondary">TRY AGAIN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
+          </div>
+        );
+      case "authorization":
+        return (
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">403</div>
+                <h1 class="error-title">Unauthorized</h1>
+                <p class="error-message">
+                  You do not have permission to access this application.
+                  Please contact the application owner if you believe this is a mistake.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="/login" class="btn btn-secondary">SIGN IN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
+          </div>
+        );
+      case "unknown":
+        return (
+          <div class="error-page">
+            <main class="error-content">
+              <div class="error-inner fade-in">
+                <div class="error-code">500</div>
+                <h1 class="error-title">Unexpected Error</h1>
+                <p class="error-message">
+                  Something went wrong on our end. Our team has been notified.
+                  Please try again in a few moments.
+                </p>
+                <div class="error-actions">
+                  <a href="/" class="btn btn-primary">GO TO HOMEPAGE</a>
+                  <a href="javascript:location.reload()" class="btn btn-secondary">TRY AGAIN</a>
+                </div>
+              </div>
+            </main>
+            <footer class="error-footer">
+              <div class="error-footer-inner">
+                <span class="footer-brand">Nuraly</span>
+                <span class="footer-copyright">&copy; Nuraly</span>
+              </div>
+            </footer>
+          </div>
+        );
+      default:
+        return (
+          <div class="H-full flex flex-wrap" style="margin: 0; padding: 0;">
+            <TopbarPanelWrapper client:only="lit" />
+          </div>
+          <div class="flex flex-row text-gray-800" style="height: calc(100vh - 41px); max-height: calc(100vh - 41px); overflow: hidden;">
+            <LeftPanel client:only="lit" />
+            <main
+              class=""
+              style="height: 100%; overflow-y: auto; flex: 1; min-width: 0;"
+            >
+              <TabsPanel client:only="lit" />
+              <EditorSpinner client:only="lit" data=`${applications}`/>
+            </main>
+            <RightPanel client:only="lit" />
+          </div>
+        );
+    }
+  })()}
+</MakeLayout>
+
+
+<style>
+  /* Error Page Styles - Matching 502 nginx style */
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .error-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 24px 80px;
+  }
+
+  .error-inner {
+    text-align: center;
+    max-width: 560px;
+  }
+
+  .error-code {
+    font-size: clamp(100px, 15vw, 180px);
+    font-weight: 700;
+    color: #14144b;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .error-title {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 600;
+    color: #0f0f3c;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .error-message {
+    font-size: 16px;
+    color: #5c5c7a;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 150ms ease;
+    border: 2px solid transparent;
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, monospace;
+  }
+
+  .btn-primary {
+    background: #0f0f3c;
+    color: white;
+    border-color: #0f0f3c;
+  }
+
+  .btn-primary:hover {
+    background: #5c5c7a;
+    border-color: #5c5c7a;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #0f0f3c;
+    border-color: #0f0f3c;
+  }
+
+  .btn-secondary:hover {
+    background: #0f0f3c;
+    color: white;
+  }
+
+  .error-footer {
+    background: #0a0a32;
+    padding: 32px 24px;
+  }
+
+  .error-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .footer-copyright {
+    font-size: 14px;
+    color: #6666a0;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.6s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .error-footer-inner {
+      flex-direction: column;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .error-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .error-actions .btn {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+
+  /* Original styles below */
+  .flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.h-2 {
+  height: 0.5rem; /* 8px */
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.bg-slate-500 {
+  background-color: #64748b;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem;
+}
+
+.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1.5rem;
+}
+
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem;
+}
+
+.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-left: 1rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
+
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+.rounded-md {
+  border-radius: 0.375rem;
+}
+
+.shadow {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.border {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.border-blue-300 {
+  border-color: #93c5fd;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.m-4 {
+  margin: 1rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+.duration-150 {
+  transition-duration: 150ms;
+}
+
+.ease-in {
+  transition-timing-function: ease-in;
+}
+
+.md\:ml-0 {
+  /* for medium screens and above */
+  margin-left: 0;
+}
+
+.w-\[98vw\] {
+  width: 98vw;
+}
+
+.mt-\[4\%\] {
+  margin-top: 4%;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+html {
+    --nuraly-button-ghost-text-color: #525252;
+    height: 100vh;
+    overflow: hidden;
+}
+body{
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+</style>

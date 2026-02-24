@@ -1,0 +1,21 @@
+{
+  "handlerPrefix": "studio_grid_row_handler",
+  "events": [
+    {
+      "name": "onInit",
+      "label": "onInit"
+    },
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onMouseEnter",
+      "label": "onMouseEnter"
+    },
+    {
+      "name": "onMouseLeave",
+      "label": "onMouseLeave"
+    }
+  ]
+}

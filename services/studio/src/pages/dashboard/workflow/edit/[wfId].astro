@@ -1,0 +1,136 @@
+---
+/**
+ * Dashboard Workflow Edit Route
+ * /dashboard/workflow/edit/{wfId} - Direct workflow editing
+ * /dashboard/workflow/edit/{wfId}?readonly=true - View-only mode
+ */
+import { ViewTransitions } from 'astro:transitions';
+export const prerender = false;
+
+const { wfId } = Astro.params;
+const readonly = Astro.url.searchParams.get('readonly') === 'true';
+
+// Extract current user from X-USER header (set by gateway)
+let currentUser = null;
+try {
+  const xUserHeader = Astro.request.headers.get('x-user');
+  if (xUserHeader) {
+    currentUser = JSON.parse(xUserHeader);
+  }
+} catch (error) {
+  console.error('Error parsing X-USER header:', error);
+}
+
+if (!wfId) {
+  return Astro.redirect('/dashboard');
+}
+---
+
+<!doctype html>
+<html lang="en" data-theme="default-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workflow Editor - Nuraly</title>
+    <ViewTransitions />
+
+    <!-- Nuraly UI Theme CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
+
+    <style>
+      /* Nuraly Design System CSS Variables */
+      :root {
+        /* Primary brand colors */
+        --n-color-primary: #3b82f6;
+        --n-color-primary-dark: #2563eb;
+        --n-color-primary-light: #60a5fa;
+
+        /* Surface colors */
+        --n-color-surface: #ffffff;
+        --n-color-surface-secondary: #f9fafb;
+        --n-color-surface-hover: #f3f4f6;
+
+        /* Text colors */
+        --n-color-text: #111827;
+        --n-color-text-secondary: #6b7280;
+        --n-color-text-muted: #9ca3af;
+
+        /* Border colors */
+        --n-color-border: #e5e7eb;
+        --n-color-border-light: #f3f4f6;
+
+        /* Status colors */
+        --n-color-success: #22c55e;
+        --n-color-success-bg: #f0fdf4;
+        --n-color-warning: #f59e0b;
+        --n-color-warning-bg: #fffbeb;
+        --n-color-error: #ef4444;
+        --n-color-error-bg: #fef2f2;
+        --n-color-info: #3b82f6;
+        --n-color-info-bg: #eff6ff;
+
+        /* Disabled */
+        --n-color-disabled: #9ca3af;
+
+        /* Nuraly brand */
+        --nuraly-color-primary: #14144b;
+        --nuraly-color-primary-light: #1e1e6e;
+        --nuraly-color-primary-dark: #0a0a32;
+        --nuraly-color-text: #0f0f3c;
+        --nuraly-color-text-secondary: #5c5c7a;
+        --nuraly-color-border: #e8e8f0;
+        --nuraly-color-background: #f8fafc;
+        --nuraly-color-surface: #ffffff;
+        /* Button colors */
+        --nuraly-color-button-primary: var(--nuraly-color-primary);
+        --nuraly-color-button-primary-hover: var(--nuraly-color-primary-light);
+        --nuraly-color-button-primary-active: var(--nuraly-color-primary-dark);
+        --nuraly-color-text-on-color: #ffffff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background: var(--n-color-surface-secondary);
+        color: var(--n-color-text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      standalone-workflow-page {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <standalone-workflow-page
+      workflow-id={wfId}
+      ?readonly={readonly}
+    ></standalone-workflow-page>
+
+    <script is:inline define:vars={{ currentUser }}>
+      window.__CURRENT_USER__ = currentUser;
+    </script>
+    <script>
+      // Import the standalone workflow page component
+      import "../../../../features/standalone/StandaloneWorkflowPage";
+
+      // Import runtime components for workflow canvas
+      import "../../../../features/runtime/components";
+    </script>
+  </body>
+</html>

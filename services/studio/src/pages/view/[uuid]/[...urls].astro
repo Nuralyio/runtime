@@ -1,0 +1,83 @@
+---
+/**
+ * Public view route for end users: /view/{appId}
+ * Shows the PUBLISHED version of the application
+ *
+ * This is a shortcut for /app/view/{appId} for cleaner end-user URLs
+ */
+import View from "../../app/view/view.astro";
+import { processHeaders } from '../../../features/runtime/utils/api-calls-utils';
+import { fetchApplicationById } from '../../../services';
+
+const { uuid, urls = "" } = Astro.params;
+const processedHeaders = processHeaders(Astro.request.headers);
+
+let applicationResponse = null;
+
+if (uuid) {
+  try {
+    const result = await fetchApplicationById(processedHeaders, uuid);
+    if (result.data) {
+      applicationResponse = result.data;
+    }
+  } catch (error) {
+    console.error("Error fetching application:", error);
+  }
+}
+---
+
+<div>
+  {applicationResponse?.uuid && <View app={applicationResponse} />}
+  {!applicationResponse?.uuid && (
+    <div class="not-found">
+      <div class="not-found-content">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+        <h1>Application Not Found</h1>
+        <p>The application you're looking for doesn't exist or you don't have access to it.</p>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .not-found {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .not-found-content {
+    text-align: center;
+    padding: 48px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    max-width: 400px;
+  }
+
+  .not-found-content svg {
+    color: #9ca3af;
+    margin-bottom: 24px;
+  }
+
+  .not-found-content h1 {
+    margin: 0 0 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .not-found-content p {
+    margin: 0;
+    font-size: 16px;
+    color: #6b7280;
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+/**
+ * Standalone Workflow Route - Redirect
+ * /workflow/{workflowId} redirects to /dashboard/workflow/edit/{workflowId}
+ */
+export const prerender = false;
+
+const { workflowId } = Astro.params;
+const readonly = Astro.url.searchParams.get('readonly') === 'true';
+
+if (!workflowId) {
+  return Astro.redirect('/dashboard');
+}
+
+// Redirect to the new dashboard-based edit URL
+const redirectUrl = readonly
+  ? `/dashboard/workflow/edit/${workflowId}?readonly=true`
+  : `/dashboard/workflow/edit/${workflowId}`;
+return Astro.redirect(redirectUrl);
+---

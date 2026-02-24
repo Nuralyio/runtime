@@ -1,0 +1,9 @@
+{
+  "handlerPrefix": "studio_FileUpload_handler",
+  "events": [
+    {
+      "name": "onFilesChanged",
+      "label": "onFilesChanged"
+    }
+  ]
+}

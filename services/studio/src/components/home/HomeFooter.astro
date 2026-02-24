@@ -1,0 +1,148 @@
+---
+/**
+ * HomeFooter Component
+ * Minimal footer
+ */
+
+const links = {
+  product: {
+    title: "Product",
+    items: [
+      { label: "Features", href: "#features" },
+      { label: "Demo", href: "#demo" },
+    ]
+  },
+  developers: {
+    title: "Developers",
+    items: [
+      { label: "Documentation", href: "http://docs.nuraly.io/" },
+    ]
+  },
+  company: {
+    title: "Company",
+    items: [
+      { label: "Contact", href: "https://calendly.com/aymen-nuraly" },
+    ]
+  }
+};
+
+const year = new Date().getFullYear();
+---
+
+<footer class="home-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="home-logo" style="margin-bottom: 16px;">
+          <img src="/images/nuraly-logo-light.png" alt="Nuraly" height="32" style="filter: brightness(0) invert(1);" />
+        </a>
+        <p>The AI Agentic platform for building autonomous workflows and LLM-powered applications.</p>
+      </div>
+
+      {Object.values(links).map((section) => (
+        <div>
+          <p class="footer-heading">{section.title}</p>
+          <ul class="footer-links">
+            {section.items.map((item) => (
+              <li><a href={item.href}>{item.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} Nuraly</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .home-footer {
+    background: #0a0a32;
+    color: #8c8ca8;
+    padding: 64px 0 32px;
+  }
+
+  .home-footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .home-footer a {
+    color: #8888b0;
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .home-footer a:hover {
+    color: white;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+
+  .footer-brand p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6666a0;
+    max-width: 280px;
+  }
+
+  .footer-heading {
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer-links a {
+    font-size: 14px;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 32px;
+    border-top: 1px solid #1a1a4a;
+    font-size: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer-brand {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-brand {
+      grid-column: span 1;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+  }
+</style>

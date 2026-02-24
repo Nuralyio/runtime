@@ -1,0 +1,451 @@
+{
+  "theme": {
+    "modes": [
+      {
+        "name": "General",
+        "open": true,
+        "items": [
+          {
+            "label": "Font Family",
+            "cssVar": "--nuraly-font-family",
+            "type": "select",
+            "defaultValue": "system-ui, -apple-system, sans-serif",
+            "options": [
+              { "label": "System UI", "value": "system-ui, -apple-system, sans-serif", "htmlContent": "<span style=\"font-family: system-ui, -apple-system, sans-serif;\">System UI</span>" },
+              { "label": "Arial", "value": "Arial, sans-serif", "htmlContent": "<span style=\"font-family: Arial, sans-serif;\">Arial</span>" },
+              { "label": "Helvetica", "value": "Helvetica, Arial, sans-serif", "htmlContent": "<span style=\"font-family: Helvetica, Arial, sans-serif;\">Helvetica</span>" },
+              { "label": "Times New Roman", "value": "Times New Roman, serif", "htmlContent": "<span style=\"font-family: Times New Roman, serif;\">Times New Roman</span>" },
+              { "label": "Georgia", "value": "Georgia, serif", "htmlContent": "<span style=\"font-family: Georgia, serif;\">Georgia</span>" },
+              { "label": "Verdana", "value": "Verdana, sans-serif", "htmlContent": "<span style=\"font-family: Verdana, sans-serif;\">Verdana</span>" },
+              { "label": "Trebuchet MS", "value": "Trebuchet MS, sans-serif", "htmlContent": "<span style=\"font-family: Trebuchet MS, sans-serif;\">Trebuchet MS</span>" },
+              { "label": "Courier New", "value": "Courier New, monospace", "htmlContent": "<span style=\"font-family: Courier New, monospace;\">Courier New</span>" },
+              { "label": "Roboto", "value": "Roboto, sans-serif", "htmlContent": "<span style=\"font-family: Roboto, sans-serif;\">Roboto</span>" },
+              { "label": "Inter", "value": "Inter, sans-serif", "htmlContent": "<span style=\"font-family: Inter, sans-serif;\">Inter</span>" },
+              { "label": "Sans Serif (Generic)", "value": "sans-serif", "htmlContent": "<span style=\"font-family: sans-serif; font-style: italic; opacity: 0.8;\">sans-serif</span>" },
+              { "label": "Serif (Generic)", "value": "serif", "htmlContent": "<span style=\"font-family: serif; font-style: italic; opacity: 0.8;\">serif</span>" },
+              { "label": "Monospace (Generic)", "value": "monospace", "htmlContent": "<span style=\"font-family: monospace; font-style: italic; opacity: 0.8;\">monospace</span>" }
+            ]
+          },
+          {
+            "label": "Font Weight",
+            "cssVar": "--nuraly-font-weight-regular",
+            "type": "text",
+            "placeholder": "400",
+            "defaultValue": "400"
+          },
+          {
+            "label": "Font Size",
+            "cssVar": "--nuraly-font-size-button",
+            "type": "text",
+            "placeholder": "0.875rem",
+            "defaultValue": "0.875rem"
+          },
+          {
+            "label": "Border Radius",
+            "cssVar": "--nuraly-border-radius-button",
+            "type": "text",
+            "placeholder": "4px",
+            "defaultValue": "4px"
+          },
+          {
+            "label": "Transition Speed",
+            "cssVar": "--nuraly-transition-fast",
+            "type": "text",
+            "placeholder": "0.15s",
+            "defaultValue": "0.15s"
+          }
+        ]
+      },
+      {
+        "name": "Spacing",
+        "open": false,
+        "items": [
+          {
+            "label": "Spacing 1.5",
+            "cssVar": "--nuraly-spacing-1-5",
+            "type": "text",
+            "placeholder": "6px",
+            "defaultValue": "6px"
+          },
+          {
+            "label": "Spacing 2",
+            "cssVar": "--nuraly-spacing-2",
+            "type": "text",
+            "placeholder": "8px",
+            "defaultValue": "8px"
+          },
+          {
+            "label": "Spacing 3",
+            "cssVar": "--nuraly-spacing-3",
+            "type": "text",
+            "placeholder": "12px",
+            "defaultValue": "12px"
+          },
+          {
+            "label": "Spacing 4",
+            "cssVar": "--nuraly-spacing-4",
+            "type": "text",
+            "placeholder": "16px",
+            "defaultValue": "16px"
+          },
+          {
+            "label": "Icon Spacing",
+            "cssVar": "--nuraly-button-icon-spacing",
+            "type": "text",
+            "placeholder": "0.5rem",
+            "defaultValue": "0.5rem"
+          }
+        ]
+      },
+      {
+        "name": "Sizes",
+        "open": false,
+        "items": [
+          {
+            "label": "Small Size",
+            "cssVar": "--nuraly-size-sm",
+            "type": "text",
+            "placeholder": "32px",
+            "defaultValue": "32px"
+          },
+          {
+            "label": "Medium Size",
+            "cssVar": "--nuraly-size-md",
+            "type": "text",
+            "placeholder": "40px",
+            "defaultValue": "40px"
+          },
+          {
+            "label": "Large Size",
+            "cssVar": "--nuraly-size-lg",
+            "type": "text",
+            "placeholder": "48px",
+            "defaultValue": "48px"
+          },
+          {
+            "label": "Min Width",
+            "cssVar": "--nuraly-button-min-width",
+            "type": "text",
+            "placeholder": "5rem",
+            "defaultValue": "5rem"
+          },
+          {
+            "label": "Small Padding",
+            "cssVar": "--nuraly-button-padding-small",
+            "type": "text",
+            "placeholder": "6px 12px",
+            "defaultValue": "6px 12px"
+          },
+          {
+            "label": "Medium Padding",
+            "cssVar": "--nuraly-button-padding-medium",
+            "type": "text",
+            "placeholder": "8px 16px",
+            "defaultValue": "8px 16px"
+          },
+          {
+            "label": "Large Padding",
+            "cssVar": "--nuraly-button-padding-large",
+            "type": "text",
+            "placeholder": "12px 24px",
+            "defaultValue": "12px 24px"
+          }
+        ]
+      },
+      {
+        "name": "Icon",
+        "open": false,
+        "items": [
+          {
+            "label": "Icon Size",
+            "cssVar": "--nuraly-button-icon-size",
+            "type": "text",
+            "placeholder": "1rem",
+            "defaultValue": "1rem"
+          },
+          {
+            "label": "Icon Color",
+            "cssVar": "--nuraly-color-icon",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Default Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Background Color",
+            "cssVar": "--nuraly-color-background",
+            "type": "color"
+          },
+          {
+            "label": "Text Color",
+            "cssVar": "--nuraly-color-text",
+            "type": "color"
+          },
+          {
+            "label": "Border Color",
+            "cssVar": "--nuraly-color-border",
+            "type": "color"
+          },
+          {
+            "label": "Hover Background",
+            "cssVar": "--nuraly-color-background-hover",
+            "type": "color"
+          },
+          {
+            "label": "Hover Border",
+            "cssVar": "--nuraly-color-border-hover",
+            "type": "color"
+          },
+          {
+            "label": "Active Background",
+            "cssVar": "--nuraly-color-background-active",
+            "type": "color"
+          },
+          {
+            "label": "Active Border",
+            "cssVar": "--nuraly-color-border-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Primary Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Primary Color",
+            "cssVar": "--nuraly-color-button-primary",
+            "type": "color"
+          },
+          {
+            "label": "Primary Text Color",
+            "cssVar": "--nuraly-color-button-primary-text",
+            "type": "color"
+          },
+          {
+            "label": "Primary Hover",
+            "cssVar": "--nuraly-color-button-primary-hover",
+            "type": "color"
+          },
+          {
+            "label": "Primary Hover Text",
+            "cssVar": "--nuraly-color-button-primary-text-hover",
+            "type": "color"
+          },
+          {
+            "label": "Primary Active",
+            "cssVar": "--nuraly-color-button-primary-active",
+            "type": "color"
+          },
+          {
+            "label": "Primary Active Text",
+            "cssVar": "--nuraly-color-button-primary-text-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Secondary Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Secondary Color",
+            "cssVar": "--nuraly-color-button-secondary",
+            "type": "color"
+          },
+          {
+            "label": "Secondary Text Color",
+            "cssVar": "--nuraly-color-button-secondary-text",
+            "type": "color"
+          },
+          {
+            "label": "Secondary Hover",
+            "cssVar": "--nuraly-color-button-secondary-hover",
+            "type": "color"
+          },
+          {
+            "label": "Secondary Hover Text",
+            "cssVar": "--nuraly-color-button-secondary-text-hover",
+            "type": "color"
+          },
+          {
+            "label": "Secondary Active",
+            "cssVar": "--nuraly-color-button-secondary-active",
+            "type": "color"
+          },
+          {
+            "label": "Secondary Active Text",
+            "cssVar": "--nuraly-color-button-secondary-text-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Tertiary Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Tertiary Color",
+            "cssVar": "--nuraly-color-button-tertiary",
+            "type": "color"
+          },
+          {
+            "label": "Tertiary Hover",
+            "cssVar": "--nuraly-color-button-tertiary-hover",
+            "type": "color"
+          },
+          {
+            "label": "Tertiary Active",
+            "cssVar": "--nuraly-color-button-tertiary-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Danger Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Danger Color",
+            "cssVar": "--nuraly-color-button-danger",
+            "type": "color"
+          },
+          {
+            "label": "Danger Text Color",
+            "cssVar": "--nuraly-color-button-danger-text",
+            "type": "color"
+          },
+          {
+            "label": "Danger Hover",
+            "cssVar": "--nuraly-color-button-danger-hover",
+            "type": "color"
+          },
+          {
+            "label": "Danger Hover Text",
+            "cssVar": "--nuraly-color-button-danger-text-hover",
+            "type": "color"
+          },
+          {
+            "label": "Danger Active",
+            "cssVar": "--nuraly-color-button-danger-active",
+            "type": "color"
+          },
+          {
+            "label": "Danger Active Text",
+            "cssVar": "--nuraly-color-button-danger-text-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Outline Button",
+        "open": false,
+        "items": [
+          {
+            "label": "Outline Background",
+            "cssVar": "--nuraly-color-button-outline",
+            "type": "color"
+          },
+          {
+            "label": "Outline Border",
+            "cssVar": "--nuraly-color-button-outline-border",
+            "type": "color"
+          },
+          {
+            "label": "Outline Text",
+            "cssVar": "--nuraly-color-button-outline-text",
+            "type": "color"
+          },
+          {
+            "label": "Outline Hover Background",
+            "cssVar": "--nuraly-color-button-outline-hover",
+            "type": "color"
+          },
+          {
+            "label": "Outline Hover Border",
+            "cssVar": "--nuraly-color-button-outline-border-hover",
+            "type": "color"
+          },
+          {
+            "label": "Outline Hover Text",
+            "cssVar": "--nuraly-color-button-outline-text-hover",
+            "type": "color"
+          },
+          {
+            "label": "Outline Active Background",
+            "cssVar": "--nuraly-color-button-outline-active",
+            "type": "color"
+          },
+          {
+            "label": "Outline Active Border",
+            "cssVar": "--nuraly-color-button-outline-border-active",
+            "type": "color"
+          },
+          {
+            "label": "Outline Active Text",
+            "cssVar": "--nuraly-color-button-outline-text-active",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Disabled State",
+        "open": false,
+        "items": [
+          {
+            "label": "Disabled Background",
+            "cssVar": "--nuraly-color-button-disabled",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Text",
+            "cssVar": "--nuraly-color-button-disabled-text",
+            "type": "color"
+          },
+          {
+            "label": "Disabled Border",
+            "cssVar": "--nuraly-color-button-disabled-border",
+            "type": "color"
+          }
+        ]
+      },
+      {
+        "name": "Focus State",
+        "open": false,
+        "items": [
+          {
+            "label": "Focus Ring Color",
+            "cssVar": "--nuraly-color-button-focus-ring",
+            "type": "color"
+          },
+          {
+            "label": "Focus Outline Color",
+            "cssVar": "--nuraly-color-button-focus-outline",
+            "type": "color"
+          },
+          {
+            "label": "Focus Shadow",
+            "cssVar": "--nuraly-shadow-button-focus",
+            "type": "text",
+            "placeholder": "0 0 0 2px rgba(0,0,0,0.1)",
+            "defaultValue": "0 0 0 2px rgba(0,0,0,0.1)"
+          }
+        ]
+      },
+      {
+        "name": "Text On Color",
+        "open": false,
+        "items": [
+          {
+            "label": "Text On Color",
+            "cssVar": "--nuraly-color-text-on-color",
+            "type": "color"
+          }
+        ]
+      }
+    ]
+  }
+}

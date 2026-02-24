@@ -1,0 +1,72 @@
+import { html } from "lit";
+import { ComponentRegistry } from "../runtime/utils/component-registry";
+import { ComponentType } from "../runtime/redux/store/component/component.interface";
+
+// Studio-only component imports
+import "../runtime/components/ui/components/Event/EventValue/EventValue";
+import "../runtime/components/ui/components/utility/Border/Border";
+import "../runtime/components/ui/components/utility/BoxShadow/BoxShadow";
+import "../runtime/components/ui/components/display/BoxModel/BoxModel";
+import "../runtime/components/ui/components/inputs/IconPicker/IconPicker";
+import "../runtime/components/ui/components/inputs/UsersDropdown/UsersDropdown";
+import "../runtime/components/ui/components/inputs/InsertDropdown/InsertDropdown";
+import "./components/handlers/Handlers";
+import "./components/invoke-function/InvokeFunction";
+import "./components/export-import/Export-Import";
+import "../runtime/components/ui/components/utility/ValidationRules/ValidationRules";
+import "../runtime/components/ui/components/utility/BorderManager/BorderManager";
+import "./components/access-roles/AccessRoles";
+import "./components/share-modal/ShareModal";
+import "./components/kv-modal/KvModal";
+import "./components/revision-panel/RevisionPanel";
+import "./components/functions-panel/FunctionsPanel";
+import "../runtime/components/ui/components/wrappers/GenerikWrapper/GenerikWrapper";
+
+// i18n components
+import "./components/i18n/TranslationsInput";
+import "./components/i18n/TranslationsEditor";
+import "./components/i18n/PropertyTranslationCollapse";
+import "./components/i18n/TranslationToggle";
+
+export function registerStudioComponents(): void {
+  ComponentRegistry.register({ type: ComponentType.Event, tagName: "parameter-event-handler" });
+  ComponentRegistry.register({ type: ComponentType.BorderRadius, tagName: "attribute-border-value" });
+  ComponentRegistry.register({ type: ComponentType.BoxModel, tagName: "box-model-display" });
+  ComponentRegistry.register({ type: ComponentType.ShadowBox, tagName: "attribute-box-shadow-value" });
+  ComponentRegistry.register({ type: ComponentType.IconPicker, tagName: "icon-picker-block" });
+  ComponentRegistry.register({ type: ComponentType.UsersDropdown, tagName: "users-dropdown-block" });
+  ComponentRegistry.register({ type: ComponentType.InsertDropdown, tagName: "insert-dropdown-block" });
+  ComponentRegistry.register({ type: ComponentType.Handlers, tagName: "handler-block" });
+  ComponentRegistry.register({ type: ComponentType.ExportImport, tagName: "export-import-block" });
+  ComponentRegistry.register({ type: ComponentType.InvokeFunction, tagName: "invoke-function-block" });
+  ComponentRegistry.register({ type: ComponentType.ValidationRules, tagName: "validation-rules-display" });
+  ComponentRegistry.register({ type: ComponentType.BorderManager, tagName: "border-manager-display" });
+  ComponentRegistry.register({ type: ComponentType.AccessRoles, tagName: "access-roles-display" });
+  ComponentRegistry.register({ type: ComponentType.ShareModal, tagName: "share-modal" });
+  ComponentRegistry.register({ type: ComponentType.KvModal, tagName: "kv-modal" });
+  ComponentRegistry.register({ type: ComponentType.RevisionPanel, tagName: "revision-panel" });
+  ComponentRegistry.register({
+    type: ComponentType.FunctionsPanel,
+    tagName: "functions-panel",
+    template: () => html`<functions-panel></functions-panel>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.TranslationsEditor,
+    tagName: "translations-editor",
+    template: () => html`<translations-editor></translations-editor>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.PropertyTranslationCollapse,
+    tagName: "property-translation-collapse",
+    template: (props) => html`<property-translation-collapse
+      .component=${props.component}
+    ></property-translation-collapse>`,
+  });
+  ComponentRegistry.register({
+    type: ComponentType.TranslationToggle,
+    tagName: "translation-toggle",
+    template: (props) => html`<translation-toggle
+      .component=${props.component}
+    ></translation-toggle>`,
+  });
+}

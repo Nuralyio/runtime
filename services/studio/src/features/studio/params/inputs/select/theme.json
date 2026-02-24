@@ -1,0 +1,63 @@
+[
+  {
+    "name": "General",
+    "open": true,
+    "items": [
+      { "label": "Background Color", "cssVar": "--nuraly-color-background-panel" },
+      { "label": "Text Color", "cssVar": "--nuraly-color-text" },
+      { "label": "Placeholder Color", "cssVar": "--nuraly-color-text-secondary" }
+    ]
+  },
+  {
+    "name": "Border",
+    "open": false,
+    "items": [
+      { "label": "Border Color", "cssVar": "--nuraly-color-border" }
+    ]
+  },
+  {
+    "name": "Dropdown",
+    "open": false,
+    "items": [
+      { "label": "Dropdown Background Color", "cssVar": "--nuraly-select-dropdown-background" },
+      { "label": "Dropdown Border Color", "cssVar": "--nuraly-select-dropdown-border-color" }
+    ]
+  },
+  {
+    "name": "Options",
+    "open": false,
+    "items": [
+      { "label": "Option Text Color", "cssVar": "--nuraly-select-option-color" },
+      { "label": "Option Hover Background", "cssVar": "--nuraly-select-option-hover-background" },
+      { "label": "Selected Background", "cssVar": "--nuraly-select-option-selected-background" },
+      { "label": "Selected Text Color", "cssVar": "--nuraly-select-option-selected-color" }
+    ]
+  },
+  {
+    "name": "Tags (Multi-Select)",
+    "open": false,
+    "items": [
+      { "label": "Tag Background Color", "cssVar": "--nuraly-select-tag-background" },
+      { "label": "Tag Text Color", "cssVar": "--nuraly-select-tag-color" },
+      { "label": "Tag Close Icon Color", "cssVar": "--nuraly-select-tag-close-color" },
+      { "label": "Tag Close Hover Color", "cssVar": "--nuraly-select-tag-close-hover-color" }
+    ]
+  },
+  {
+    "name": "Icons",
+    "open": false,
+    "items": [
+      { "label": "Icon Color", "cssVar": "--nuraly-color-select-icon" },
+      { "label": "Icon Hover Color", "cssVar": "--nuraly-color-select-icon-hover" }
+    ]
+  },
+  {
+    "name": "Disabled State",
+    "open": false,
+    "items": [
+      { "label": "Disabled Background Color", "cssVar": "--nuraly-select-disabled-background" },
+      { "label": "Disabled Border Color", "cssVar": "--nuraly-select-disabled-border-color" },
+      { "label": "Disabled Text Color", "cssVar": "--nuraly-select-disabled-text-color" }
+    ]
+  }
+]

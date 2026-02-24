@@ -1,0 +1,25 @@
+{
+  "handlerPrefix": "studio_embed_handler",
+  "events": [
+    {
+      "name": "onLoad",
+      "label": "onLoad"
+    },
+    {
+      "name": "onError",
+      "label": "onError"
+    },
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onFocus",
+      "label": "onFocus"
+    },
+    {
+      "name": "onBlur",
+      "label": "onBlur"
+    }
+  ]
+}

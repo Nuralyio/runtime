@@ -1,0 +1,17 @@
+{
+    "handlerPrefix": "studio_button_handler",
+    "events": [
+        {
+        "name": "onClick",
+        "label": "onClick"
+        },
+        {
+        "name": "onButtonClicked",
+        "label": "onButtonClicked"
+        },
+        {
+        "name": "onLinkNavigation",
+        "label": "onLinkNavigation"
+        }
+    ]
+}
