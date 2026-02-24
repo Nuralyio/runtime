@@ -1,0 +1,35 @@
+FROM quay.io/keycloak/keycloak:22.0 as builder
+
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_DB=postgres
+
+COPY ./ktheme/theme/keywind /opt/keycloak/themes/keywind
+COPY ./cache-ispn.xml /opt/keycloak/conf/
+
+WORKDIR /opt/keycloak
+RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+RUN /opt/keycloak/bin/kc.sh build
+
+# Download envsubst binary in a small stage
+FROM alpine:3.19 as tools
+RUN apk add --no-cache curl &&     curl -sL https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-Linux-x86_64 -o /usr/local/bin/envsubst &&     chmod +x /usr/local/bin/envsubst
+
+FROM quay.io/keycloak/keycloak:22.0
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+COPY --from=tools /usr/local/bin/envsubst /usr/local/bin/envsubst
+
+USER root
+RUN mkdir -p /opt/keycloak/cache /opt/keycloak/data/import &&     chmod 777 /opt/keycloak/cache /opt/keycloak/data/import
+
+# Copy realm as template
+COPY ./Import/nuraly-realm-prod.json /opt/keycloak/data/import/nuraly-realm-prod.json.template
+RUN chmod 644 /opt/keycloak/data/import/nuraly-realm-prod.json.template
+
+# Copy entrypoint
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+USER 1000
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
