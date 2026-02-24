@@ -1,0 +1,57 @@
+/**
+ * Carbon Theme - Layout Component - Dark Variant
+ * Layout-specific CSS variables for the Carbon Design System dark theme
+ * Based on official Carbon Design System color tokens (Gray 10 theme)
+ */
+
+[data-theme="carbon-dark"] {
+  /* ========================================
+   * LAYOUT VARIABLES - CARBON DARK THEME
+   * Official Carbon Design System Colors
+   * ======================================== */
+
+  /* Layout background - Carbon Gray 100 */
+  --nuraly-layout-background: #161616;
+  
+  /* Header colors - Carbon Gray 90 */
+  --nuraly-layout-header-background: #262626;
+  --nuraly-layout-header-text: #f4f4f4;
+  --nuraly-layout-header-border: #393939;
+  
+  /* Footer colors - Carbon Gray 100 */
+  --nuraly-layout-footer-background: #161616;
+  --nuraly-layout-footer-text: #f4f4f4;
+  --nuraly-layout-footer-border: #393939;
+  
+  /* Content colors - Carbon Gray 90 */
+  --nuraly-layout-content-background: #262626;
+  --nuraly-layout-content-text: #f4f4f4;
+  
+  /* Sider colors - Dark theme (Carbon Gray 90) */
+  --nuraly-layout-sider-background: #262626;
+  --nuraly-layout-sider-text: #f4f4f4;
+  --nuraly-layout-sider-border: #393939;
+  
+  /* Sider light theme variant (Carbon Gray 80) */
+  --nuraly-layout-sider-light-background: #393939;
+  --nuraly-layout-sider-light-text: #f4f4f4;
+  --nuraly-layout-sider-light-border: #525252;
+  
+  /* Sider trigger - Dark (Carbon Gray 80) */
+  --nuraly-layout-trigger-background: #393939;
+  --nuraly-layout-trigger-text: #f4f4f4;
+  --nuraly-layout-trigger-background-hover: #525252;
+  --nuraly-layout-trigger-border: rgba(255, 255, 255, 0.1);
+  
+  /* Sider trigger - Light variant */
+  --nuraly-layout-trigger-light-background: #525252;
+  --nuraly-layout-trigger-light-text: #f4f4f4;
+  --nuraly-layout-trigger-light-background-hover: #636363;
+  --nuraly-layout-trigger-light-border: #636363;
+  
+  /* Zero-width trigger */
+  --nuraly-layout-zero-trigger-background: #262626;
+  --nuraly-layout-zero-trigger-text: #f4f4f4;
+  --nuraly-layout-zero-trigger-background-hover: #393939;
+  --nuraly-layout-zero-trigger-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}

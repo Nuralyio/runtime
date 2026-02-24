@@ -1,0 +1,25 @@
+/**
+ * Editor Theme - Card Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Card spacing */
+  --nuraly-card-padding: 16px;
+  --nuraly-card-header-padding: 12px 16px;
+  --nuraly-card-body-padding: 16px;
+  --nuraly-card-footer-padding: 12px 16px;
+
+  /* Card visual */
+  --nuraly-card-border-radius: 6px;
+  --nuraly-card-border-width: 1px;
+  --nuraly-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --nuraly-card-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  /* Card header */
+  --nuraly-card-header-font-size: 0.9375rem;
+  --nuraly-card-header-font-weight: 600;
+
+  /* Card title */
+  --nuraly-card-title-font-size: 1rem;
+  --nuraly-card-title-font-weight: 600;
+}

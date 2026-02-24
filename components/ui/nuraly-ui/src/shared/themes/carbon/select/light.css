@@ -1,0 +1,58 @@
+/**
+ * Carbon Design System Theme - Select Component - Light Variant
+ * Select-specific CSS variables based on IBM Carbon Design System specifications
+ */
+
+[data-theme="carbon-light"] {
+  /* ========================================
+   * SELECT VARIABLES - CARBON DESIGN SYSTEM LIGHT THEME
+   * ======================================== */
+
+  /* Base select styling - Carbon Design System style */
+  --nuraly-select-background-color: #ffffff;
+  --nuraly-select-text-color: #161616;
+  --nuraly-select-placeholder-color: #6f6f6f;
+
+  /* Select borders - Carbon Design System */
+  --nuraly-select-border-color: #8d8d8d;
+  --nuraly-select-border-focus: #0f62fe;
+  --nuraly-select-border-hover: #0f62fe;
+
+  /* Dropdown styling - Carbon Design System */
+  --nuraly-select-dropdown-background: #ffffff;
+  --nuraly-select-dropdown-border-color: #e0e0e0;
+  --nuraly-select-dropdown-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
+
+  /* Option styling - Carbon Design System */
+  --nuraly-select-option-hover-background: #e8e8e8;
+  --nuraly-select-option-selected-background: #e0e0e0;
+  --nuraly-select-option-selected-color: #0f62fe;
+  --nuraly-select-option-text-color: #161616;
+
+  /* Error states - Carbon Design System */
+  --nuraly-select-error-border-color: #da1e28;
+  --nuraly-select-error-text-color: #da1e28;
+
+  /* Success states - Carbon Design System */
+  --nuraly-select-success-border-color: #24a148;
+  --nuraly-select-success-text-color: #24a148;
+
+  /* Disabled states - Carbon Design System */
+  --nuraly-select-disabled-background: #f4f4f4;
+  --nuraly-select-disabled-border-color: #c6c6c6;
+  --nuraly-select-disabled-text-color: #c6c6c6;
+
+  /* Icon styling - Carbon Design System */
+  --nuraly-select-icon-color: #6f6f6f;
+  --nuraly-select-icon-hover-color: #0f62fe;
+
+  /* Multi-select tags - Carbon Design System */
+  --nuraly-select-tag-background: #e8e8e8;
+  --nuraly-select-tag-color: #161616;
+  --nuraly-select-tag-close-color: #6f6f6f;
+  --nuraly-select-tag-close-hover-color: #da1e28;
+
+  /* Focus and interaction - Carbon Design System */
+  --nuraly-select-focus-outline: rgba(15, 98, 254, 0.4);
+  --nuraly-select-hover-ring: rgba(15, 98, 254, 0.1);
+}

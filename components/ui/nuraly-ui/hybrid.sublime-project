@@ -1,0 +1,22 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+		}
+	],
+	"debugger_configurations":
+	[
+		{
+			"name": "Launch Program",
+			"program": "${folder}/app.js",
+			"request": "launch",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
+		},
+
+	],
+	""
+}

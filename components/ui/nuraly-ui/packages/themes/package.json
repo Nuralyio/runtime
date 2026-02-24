@@ -1,0 +1,58 @@
+{
+  "name": "@nuralyui/themes",
+  "version": "0.1.12",
+  "description": "Theme collection for Nuraly Hybrid UI Library",
+  "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./carbon": {
+      "import": "./dist/carbon.css",
+      "require": "./dist/carbon.css"
+    },
+    "./polaris": {
+      "import": "./dist/polaris.css",
+      "require": "./dist/polaris.css"
+    },
+    "./default": {
+      "import": "./dist/default.css",
+      "require": "./dist/default.css"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js --watch",
+    "clean": "rm -rf dist/*"
+  },
+  "keywords": [
+    "themes",
+    "css",
+    "ui",
+    "design-system",
+    "hybrid-ui"
+  ],
+  "author": "Nuraly",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nuralyio/NuralyUI.git",
+    "directory": "packages/themes"
+  },
+  "bugs": {
+    "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "homepage": "https://github.com/Nuralyio/NuralyUI#readme",
+  "devDependencies": {
+    "fs-extra": "^11.1.1",
+    "chokidar": "^3.5.3"
+  },
+  "peerDependencies": {}
+}

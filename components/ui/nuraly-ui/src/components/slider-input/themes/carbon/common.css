@@ -1,0 +1,34 @@
+/* Common Slider Input Variables */
+:root {
+  /* Component dimensions */
+  --nuraly-size-slider-input-width: 100%;
+  --nuraly-size-slider-input-track-height: 8px;
+  --nuraly-size-slider-input-thumb-diameter: 20px;
+  --nuraly-border-slider-input-width: 1px;
+
+  /* Size variants */
+  --nuraly-size-slider-input-small-height: 6px;
+  --nuraly-size-slider-input-small-thumb-diameter: 16px;
+  --nuraly-size-slider-input-large-height: 10px;
+  --nuraly-size-slider-input-large-thumb-diameter: 24px;
+
+  /* Typography */
+  --nuraly-typography-slider-input-font-family: var(--nuraly-font-family-base, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
+  --nuraly-typography-slider-input-font-size: var(--nuraly-font-size-base, 14px);
+  --nuraly-typography-slider-input-font-weight: var(--nuraly-font-weight-normal, 400);
+
+  /* Border radius */
+  --nuraly-border-slider-input-radius: var(--nuraly-border-radius-base, 6px);
+  --nuraly-border-slider-input-thumb-radius: var(--nuraly-border-radius-round, 50%);
+
+  /* Shadows */
+  --nuraly-shadow-slider-input-thumb: var(--nuraly-shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  --nuraly-shadow-slider-input-focus: var(--nuraly-shadow-focus, 0 0 0 3px rgba(59, 130, 246, 0.15));
+
+  /* Elevation */
+  --nuraly-elevation-slider-input-z-index: var(--nuraly-z-index-base, 1);
+
+  /* Transitions */
+  --nuraly-transition-slider-input-duration: var(--nuraly-transition-duration-base, 150ms);
+  --nuraly-transition-slider-input-timing: var(--nuraly-transition-timing-ease, ease);
+}

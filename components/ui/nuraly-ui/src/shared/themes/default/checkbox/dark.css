@@ -1,0 +1,43 @@
+/**
+ * Default Theme - Checkbox Component - Dark Variant
+ * Checkbox-specific CSS variables for the Default Design System dark theme
+ */
+
+/* Use higher specificity and ensure proper cascade */
+[data-theme="default-dark"],
+html[data-theme="default-dark"],
+body[data-theme="default-dark"],
+html[data-theme="default-dark"] *,
+body[data-theme="default-dark"] * {
+  /* ========================================
+   * CHECKBOX VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Base checkbox styling */
+  --nuraly-color-checkbox-background: #1f1f1f;
+  --nuraly-color-checkbox-text: rgba(255, 255, 255, 0.85);
+  --nuraly-color-checkbox-label: rgba(255, 255, 255, 0.85);
+
+  /* Checkbox borders */
+  --nuraly-color-checkbox-border: #434343;
+  --nuraly-color-checkbox-border-focus: #8c8c8c;
+  --nuraly-color-checkbox-border-hover: #737373;
+
+  /* Checkbox states - Gray theme for dark mode */
+  --nuraly-color-checkbox-checked-background: #8c8c8c;
+  --nuraly-color-checkbox-checked-border: #8c8c8c;
+  --nuraly-color-checkbox-indeterminate-background: #8c8c8c;
+
+  /* Disabled states */
+  --nuraly-color-checkbox-disabled-background: #262626;
+  --nuraly-color-checkbox-disabled-border: #434343;
+  --nuraly-color-checkbox-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-checkbox-disabled-checkmark: rgba(255, 255, 255, 0.25);
+
+  /* Focus states for dark theme - gray tones */
+  --nuraly-color-checkbox-focus-outline: rgba(140, 140, 140, 0.3);
+
+  /* Background adjustments for better contrast in dark mode */
+  --nuraly-color-checkbox-background: transparent;
+}
+

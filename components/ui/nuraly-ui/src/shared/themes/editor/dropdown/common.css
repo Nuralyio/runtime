@@ -1,0 +1,26 @@
+/**
+ * Editor Theme - Dropdown Common Styles
+ */
+
+[data-theme^="editor"] {
+  /* Dropdown panel */
+  --nuraly-dropdown-min-width: 120px;
+  --nuraly-dropdown-max-height: 300px;
+  --nuraly-dropdown-border-radius: 4px;
+  --nuraly-dropdown-border-width: 1px;
+  --nuraly-dropdown-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  --nuraly-dropdown-padding: 4px 0;
+
+  /* Dropdown item */
+  --nuraly-dropdown-item-padding: 6px 12px;
+  --nuraly-dropdown-item-min-height: 32px;
+  --nuraly-dropdown-item-font-size: 0.875rem;
+  --nuraly-dropdown-item-border-radius: 0;
+
+  /* Dropdown divider */
+  --nuraly-dropdown-divider-margin: 4px 0;
+  --nuraly-dropdown-divider-height: 1px;
+
+  /* Dropdown transition */
+  --nuraly-dropdown-transition: all 0.15s ease-in-out;
+}

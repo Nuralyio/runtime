@@ -1,0 +1,30 @@
+/**
+ * Editor Theme - Modal Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  --nuraly-modal-background: #ffffff;
+  --nuraly-modal-color: #333333;
+  
+  /* Modal header */
+  --nuraly-modal-header-background: #f8f9fa;
+  --nuraly-modal-header-color: #333333;
+  --nuraly-modal-header-border-color: #dee2e6;
+  
+  /* Modal footer */
+  --nuraly-modal-footer-background: #f8f9fa;
+  --nuraly-modal-footer-color: #333333;
+  --nuraly-modal-footer-border-color: #dee2e6;
+  
+  /* Modal body */
+  --nuraly-modal-body-background: #ffffff;
+  --nuraly-modal-body-color: #333333;
+  
+  /* Backdrop */
+  --nuraly-modal-backdrop-background: rgba(0, 0, 0, 0.6);
+  
+  /* Close button */
+  --nuraly-modal-close-color: #6c757d;
+  --nuraly-modal-close-hover-color: #333333;
+}

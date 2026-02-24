@@ -1,0 +1,89 @@
+/**
+ * Editor Theme - Button Light Mode
+ */
+
+:root,
+[data-theme="editor-light"] {
+  /* Primary button */
+  --nuraly-button-primary-background: #4a90e2;
+  --nuraly-button-primary-color: #ffffff;
+  --nuraly-button-primary-border: #4a90e2;
+  --nuraly-button-primary-hover-background: #5fa3f5;
+  --nuraly-button-primary-hover-color: #ffffff;
+  --nuraly-button-primary-hover-border: #5fa3f5;
+  --nuraly-button-primary-active-background: #3680d8;
+  --nuraly-button-primary-active-color: #ffffff;
+  --nuraly-button-primary-active-border: #3680d8;
+
+  /* Secondary button */
+  --nuraly-button-secondary-background: #6c757d;
+  --nuraly-button-secondary-color: #ffffff;
+  --nuraly-button-secondary-border: #6c757d;
+  --nuraly-button-secondary-hover-background: #7c858e;
+  --nuraly-button-secondary-hover-color: #ffffff;
+  --nuraly-button-secondary-hover-border: #7c858e;
+  --nuraly-button-secondary-active-background: #5a6268;
+  --nuraly-button-secondary-active-color: #ffffff;
+  --nuraly-button-secondary-active-border: #5a6268;
+
+  /* Default button */
+  --nuraly-button-default-background: #ffffff;
+  --nuraly-button-default-color: #333333;
+  --nuraly-button-default-border: #dee2e6;
+  --nuraly-button-default-hover-background: #f8f9fa;
+  --nuraly-button-default-hover-color: #333333;
+  --nuraly-button-default-hover-border: #c8cdd1;
+  --nuraly-button-default-active-background: #e9ecef;
+  --nuraly-button-default-active-color: #333333;
+  --nuraly-button-default-active-border: #adb5bd;
+
+  /* Success button */
+  --nuraly-button-success-background: #28a745;
+  --nuraly-button-success-color: #ffffff;
+  --nuraly-button-success-border: #28a745;
+  --nuraly-button-success-hover-background: #34ce57;
+  --nuraly-button-success-hover-color: #ffffff;
+  --nuraly-button-success-hover-border: #34ce57;
+  --nuraly-button-success-active-background: #218838;
+  --nuraly-button-success-active-color: #ffffff;
+  --nuraly-button-success-active-border: #218838;
+
+  /* Danger button */
+  --nuraly-button-danger-background: #dc3545;
+  --nuraly-button-danger-color: #ffffff;
+  --nuraly-button-danger-border: #dc3545;
+  --nuraly-button-danger-hover-background: #e4606d;
+  --nuraly-button-danger-hover-color: #ffffff;
+  --nuraly-button-danger-hover-border: #e4606d;
+  --nuraly-button-danger-active-background: #bd2130;
+  --nuraly-button-danger-active-color: #ffffff;
+  --nuraly-button-danger-active-border: #bd2130;
+
+  /* Warning button */
+  --nuraly-button-warning-background: #ffc107;
+  --nuraly-button-warning-color: #212529;
+  --nuraly-button-warning-border: #ffc107;
+  --nuraly-button-warning-hover-background: #ffcd39;
+  --nuraly-button-warning-hover-color: #212529;
+  --nuraly-button-warning-hover-border: #ffcd39;
+  --nuraly-button-warning-active-background: #e0a800;
+  --nuraly-button-warning-active-color: #212529;
+  --nuraly-button-warning-active-border: #e0a800;
+
+  /* Text button */
+  --nuraly-button-text-background: transparent;
+  --nuraly-button-text-color: #4a90e2;
+  --nuraly-button-text-border: transparent;
+  --nuraly-button-text-hover-background: rgba(74, 144, 226, 0.1);
+  --nuraly-button-text-hover-color: #5fa3f5;
+  --nuraly-button-text-hover-border: transparent;
+  --nuraly-button-text-active-background: rgba(74, 144, 226, 0.15);
+  --nuraly-button-text-active-color: #3680d8;
+  --nuraly-button-text-active-border: transparent;
+
+  /* Disabled button */
+  --nuraly-button-disabled-background: #e9ecef;
+  --nuraly-button-disabled-color: #adb5bd;
+  --nuraly-button-disabled-border: #dee2e6;
+  --nuraly-button-disabled-opacity: 0.65;
+}

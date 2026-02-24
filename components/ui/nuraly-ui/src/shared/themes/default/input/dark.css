@@ -1,0 +1,106 @@
+/**
+ * Default Theme - Input Component - Dark Variant
+ * Input-specific CSS variables
+ */
+
+[data-theme="default-dark"]{
+  /* ========================================
+   * INPUT VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Base input styling */
+  --nuraly-color-input-background: #374151;
+  --nuraly-color-input-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-label: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-helper-text: rgba(255, 255, 255, 0.45);
+
+  /* Input borders - Default Design System dark outlined style (dark specific) */
+  --nuraly-color-input-border: #374151;
+  --nuraly-color-input-border-bottom: #374151;
+
+  /* Input states */
+  --nuraly-color-input-disabled-background: rgba(255, 255, 255, 0.08);
+  --nuraly-color-input-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-label: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-helper-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-border: #434343;
+
+  /* Error states */
+  --nuraly-color-input-error-border: #ff4d4f;
+  --nuraly-color-input-error-text: #ff4d4f;
+  --nuraly-color-input-error-icon: #ff4d4f;
+  --nuraly-color-input-error-background: #2a1215;
+
+  /* Warning states */
+  --nuraly-color-input-warning-border: #faad14;
+  --nuraly-color-input-warning-text: #faad14;
+  --nuraly-color-input-warning-icon: #faad14;
+  --nuraly-color-input-warning-background: #2b2111;
+
+/**
+ * Default Design System Theme - Input Component - Dark Variant
+ * Input-specific CSS variables based on Default Design System dark theme specifications
+ */
+
+[data-theme="default-dark"]{
+  /* ========================================
+   * INPUT VARIABLES - DEFAULT DARK THEME
+   * ======================================== */
+
+  /* Base input styling - Default Design System dark style */
+  --nuraly-color-input-background: #374151;
+  --nuraly-color-input-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-label: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-helper-text: rgba(255, 255, 255, 0.45);
+
+  /* Input borders - Default Design System dark outlined style (dark specific) */
+  --nuraly-color-input-border: #374151;
+  --nuraly-color-input-border-bottom: #374151;
+
+  /* Input states - Default Design System dark */
+  --nuraly-color-input-disabled-background: rgba(255, 255, 255, 0.08);
+  --nuraly-color-input-disabled-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-placeholder: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-label: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-helper-text: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-disabled-border: #434343;
+
+  /* Error states - Default Design System dark error red */
+  --nuraly-color-input-error-border: #ff4d4f;
+  --nuraly-color-input-error-text: #ff4d4f;
+  --nuraly-color-input-error-icon: #ff4d4f;
+  --nuraly-color-input-error-background: #2a1215;
+
+  /* Warning states - Default Design System dark warning orange */
+  --nuraly-color-input-warning-border: #faad14;
+  --nuraly-color-input-warning-text: #faad14;
+  --nuraly-color-input-warning-icon: #faad14;
+  --nuraly-color-input-warning-background: #2b2111;
+
+  /* Input icons - Default Design System dark */
+  --nuraly-color-input-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-icon-hover: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-password-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-calendar-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-copy-icon: rgba(255, 255, 255, 0.45);
+  --nuraly-color-input-clear-icon: rgba(255, 255, 255, 0.25);
+  --nuraly-color-input-number-icons: rgba(255, 255, 255, 0.45);
+
+  /* Addons and prefix/suffix - Default Design System dark */
+  --nuraly-color-input-addon-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-input-addon-text: rgba(255, 255, 255, 0.88);
+  --nuraly-color-input-addon-border: #434343;
+  --nuraly-color-input-prefix-text: rgba(255, 255, 255, 0.65);
+  --nuraly-color-input-suffix-text: rgba(255, 255, 255, 0.65);
+
+  /* Input variants - dark */
+  --nuraly-color-input-outlined-border: #434343;
+  --nuraly-color-input-outlined-background: #141414;
+  --nuraly-color-input-filled-background: rgba(255, 255, 255, 0.04);
+  --nuraly-color-input-filled-border: #434343;
+  --nuraly-color-input-filled-border-bottom: #434343;
+}
+}

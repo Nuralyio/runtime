@@ -1,0 +1,9 @@
+/**
+ * Carbon Design System - Popconfirm Component - Theme Index
+ * Main entry point for popconfirm component theming
+ */
+
+@import './common.css';
+
+/* Note: Popconfirm relies primarily on dropdown and button theme variables */
+/* Light and dark variants are handled through those component themes */
