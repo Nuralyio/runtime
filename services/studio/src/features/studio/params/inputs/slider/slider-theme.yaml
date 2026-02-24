@@ -1,0 +1,32 @@
+- name: Slider Theme
+  open: true
+  items:
+    - name: General
+      items:
+        - label: Track Color
+          cssVar: --slider-track-color
+          type: color
+
+        - label: Fill Color
+          cssVar: --slider-fill-color
+          type: color
+
+        - label: Handle Color
+          cssVar: --slider-handle-color
+          type: color
+
+    - name: Hover State
+      items:
+        - label: Handle Hover Color
+          cssVar: --slider-handle-hover-color
+          type: color
+
+    - name: Disabled State
+      items:
+        - label: Disabled Track Color
+          cssVar: --slider-disabled-track-color
+          type: color
+
+        - label: Disabled Handle Color
+          cssVar: --slider-disabled-handle-color
+          type: color

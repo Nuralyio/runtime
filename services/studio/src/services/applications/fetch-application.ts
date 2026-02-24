@@ -1,0 +1,37 @@
+import { APIS_URL } from "../constants";
+
+/**
+ * Fetch application by ID
+ *
+ * @param headers - The headers to include in the request
+ * @param id - The ID of the application to fetch
+ * @returns A promise that resolves to an object containing the status and data or error
+ */
+export async function fetchApplicationById(headers: Record<string, string>, id: string): Promise<{
+  status: string;
+  data?: any;
+  error?: any
+}> {
+  try {
+    const response = await fetch(APIS_URL.getApplication(id), {
+      headers: {
+        ...headers
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch application: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return {
+      status: "OK",
+      data
+    };
+  } catch (error) {
+    return {
+      status: "ERROR",
+      error
+    };
+  }
+}

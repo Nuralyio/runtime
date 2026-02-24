@@ -1,0 +1,424 @@
+---
+/**
+ * Agents Showcase Page
+ * Pre-built AI agent templates users can clone and customize
+ */
+
+import HomeHeader from '../../components/home/HomeHeader.astro';
+import HomeFooter from '../../components/home/HomeFooter.astro';
+import '../../styles/showcase-common.css';
+
+export const prerender = false;
+
+const agents = [
+  {
+    id: 'customer-support',
+    title: 'Customer Support Agent',
+    description: 'Handle customer inquiries, answer FAQs, and escalate complex issues. Integrates with your knowledge base.',
+    category: 'Support',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <circle cx="9" cy="10" r="1" fill="currentColor"/>
+      <circle cx="12" cy="10" r="1" fill="currentColor"/>
+      <circle cx="15" cy="10" r="1" fill="currentColor"/>
+    </svg>`,
+    features: ['Knowledge Base RAG', 'Multi-language', 'Ticket Creation'],
+    comingSoon: true,
+  },
+  {
+    id: 'data-analyst',
+    title: 'Data Analyst Agent',
+    description: 'Query databases, generate reports, and visualize data insights using natural language.',
+    category: 'Analytics',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M3 3v18h18"/>
+      <path d="M18 17V9"/>
+      <path d="M13 17V5"/>
+      <path d="M8 17v-3"/>
+    </svg>`,
+    features: ['SQL Generation', 'Chart Creation', 'Scheduled Reports'],
+    comingSoon: true,
+  },
+  {
+    id: 'code-assistant',
+    title: 'Code Assistant',
+    description: 'Review code, suggest improvements, generate documentation, and help debug issues.',
+    category: 'Development',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <polyline points="16 18 22 12 16 6"/>
+      <polyline points="8 6 2 12 8 18"/>
+    </svg>`,
+    features: ['Code Review', 'Documentation', 'Bug Detection'],
+    comingSoon: true,
+  },
+  {
+    id: 'research-agent',
+    title: 'Research Agent',
+    description: 'Search the web, summarize articles, and compile research reports on any topic.',
+    category: 'Research',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="11" cy="11" r="8"/>
+      <path d="M21 21l-4.35-4.35"/>
+    </svg>`,
+    features: ['Web Search', 'Summarization', 'Citation Tracking'],
+    comingSoon: true,
+  },
+  {
+    id: 'sales-assistant',
+    title: 'Sales Assistant',
+    description: 'Qualify leads, draft personalized outreach, and schedule meetings automatically.',
+    category: 'Sales',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>`,
+    features: ['Lead Scoring', 'Email Drafting', 'CRM Sync'],
+    comingSoon: true,
+  },
+  {
+    id: 'content-writer',
+    title: 'Content Writer',
+    description: 'Generate blog posts, social media content, and marketing copy with your brand voice.',
+    category: 'Marketing',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+      <path d="M2 2l7.586 7.586"/>
+    </svg>`,
+    features: ['SEO Optimization', 'Brand Voice', 'Multi-format'],
+    comingSoon: true,
+  },
+  {
+    id: 'document-processor',
+    title: 'Document Processor',
+    description: 'Extract data from PDFs, invoices, and forms. Automate document workflows.',
+    category: 'Operations',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>`,
+    features: ['OCR Extraction', 'Data Validation', 'Auto-routing'],
+    comingSoon: true,
+  },
+  {
+    id: 'meeting-assistant',
+    title: 'Meeting Assistant',
+    description: 'Transcribe meetings, generate summaries, extract action items, and send follow-ups.',
+    category: 'Productivity',
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>`,
+    features: ['Transcription', 'Action Items', 'Calendar Sync'],
+    comingSoon: true,
+  },
+];
+
+const categories = [...new Set(agents.map(a => a.category))];
+---
+
+<!doctype html>
+<html lang="en" data-theme="default-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Agent Templates - Nuraly</title>
+    <meta name="description" content="Pre-built AI agent templates for customer support, data analysis, code review, and more. Clone and customize in minutes." />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@nuralyui/themes@latest/dist/default.css">
+
+    <style is:global>
+      :root {
+        --color-border-dashed: #d8d8e4;
+        --color-primary-dark: #0a0a32;
+        --color-accent: #14144b;
+      }
+
+      /* Agent-specific overrides */
+      .filter-bar { padding: 24px 0; }
+      .filter-tab { padding: 8px 16px; font-size: 13px; }
+
+      /* Agent Grid */
+      .agents-section {
+        padding: 60px 0;
+      }
+
+      .agents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 24px;
+      }
+
+      .agent-card {
+        background: #ffffff;
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 28px;
+        transition: all var(--transition);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .agent-card:hover {
+        border-color: var(--color-primary);
+        box-shadow: 0 4px 12px rgba(20, 20, 75, 0.08);
+      }
+
+      .agent-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .agent-icon {
+        width: 48px;
+        height: 48px;
+        color: var(--color-primary);
+        background: var(--color-primary-bg);
+        padding: 12px;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+
+      .agent-meta {
+        flex: 1;
+      }
+
+      .agent-category {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+
+      .agent-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .agent-description {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex: 1;
+      }
+
+      .agent-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .agent-feature {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        background: var(--color-bg-secondary);
+        padding: 4px 10px;
+        border-radius: 4px;
+      }
+
+      .agent-actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 6px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all var(--transition);
+        border: 1px solid transparent;
+      }
+
+      .btn-primary {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+      }
+
+      .btn-primary:hover {
+        background: var(--color-primary-light);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--color-text);
+        border-color: var(--color-border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--color-text);
+      }
+
+      /* Gradient Blur Overlay - Medium style */
+      .agents-section {
+        position: relative;
+      }
+
+      .agents-section.has-coming-soon::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(248, 250, 252, 0.15) 0%,
+          rgba(248, 250, 252, 0.4) 25%,
+          rgba(248, 250, 252, 0.65) 50%,
+          rgba(248, 250, 252, 0.85) 75%,
+          rgba(248, 250, 252, 0.98) 100%
+        );
+        pointer-events: all;
+        z-index: 5;
+        cursor: default;
+      }
+
+      .agents-section.has-coming-soon .agents-grid {
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .coming-soon-cta {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 32px 48px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(20, 20, 75, 0.15);
+      }
+
+      .coming-soon-badge {
+        display: block;
+        color: var(--color-primary);
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+
+      .coming-soon-text {
+        font-size: 15px;
+        color: var(--color-text-secondary);
+      }
+
+      .agent-card-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .agents-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <HomeHeader />
+
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <h1>AI Agent Templates</h1>
+          <p>Pre-built agents ready to deploy. Clone, customize, and launch in minutes.</p>
+        </div>
+      </section>
+
+      <section class="filter-bar">
+        <div class="container">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Agents</button>
+            {categories.map((cat) => (
+              <button class="filter-tab" data-filter={cat}>{cat}</button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="agents-section has-coming-soon">
+        <div class="container">
+          <div class="agents-grid">
+            {agents.map((agent) => (
+              <div class="agent-card" data-category={agent.category}>
+                <div class="agent-card-content">
+                  <div class="agent-header">
+                    <div class="agent-icon" set:html={agent.icon} />
+                    <div class="agent-meta">
+                      <div class="agent-category">{agent.category}</div>
+                      <h3 class="agent-title">{agent.title}</h3>
+                    </div>
+                  </div>
+                  <p class="agent-description">{agent.description}</p>
+                  <div class="agent-features">
+                    {agent.features.map((feature) => (
+                      <span class="agent-feature">{feature}</span>
+                    ))}
+                  </div>
+                  <div class="agent-actions">
+                    <a href={`/app/studio/new?template=agent-${agent.id}`} class="btn btn-primary">Use Template</a>
+                    <a href={`/showcase/agents/${agent.id}`} class="btn btn-secondary">Preview</a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="coming-soon-cta">
+          <div class="coming-soon-badge">Coming Soon</div>
+          <p class="coming-soon-text">Agent templates are currently in development.</p>
+        </div>
+      </section>
+    </main>
+
+    <HomeFooter />
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.filter-tab');
+        const cards = document.querySelectorAll('.agent-card');
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            const filter = tab.dataset.filter;
+
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            cards.forEach(card => {
+              if (filter === 'all' || card.dataset.category === filter) {
+                card.style.display = 'flex';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

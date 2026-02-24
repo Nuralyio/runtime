@@ -1,0 +1,120 @@
+{
+  "typographyInputs": {
+    "container": {
+      "uuid": "typography_collapse_container",
+      "name": "Typography Container",
+      "style": {}
+    },
+    "collapse": {
+      "uuid": "typography_collapse",
+      "title": "Typography",
+      "style": {
+        "--hy-collapse-content-small-size-padding": "5px",
+        "--hy-collapse-font-weight": "normal",
+        "--hy-collapse-border-radius": "0px",
+        "--hy-collapse-width": "292px",
+        "--hy-collapse-border": "none",
+        "--hy-collapse-border-bottom": "1px solid #ccc",
+        "--hy-collapse-local-header-background-color": "#3d3d3d"
+      }
+    },
+    "properties": [
+      {
+        "name": "fontSize",
+        "label": "Font size",
+        "type": "number",
+        "default": "16px",
+        "unit": "px",
+        "min": 8,
+        "max": 72,
+        "step": 1
+      },
+      {
+        "name": "fontFamily",
+        "label": "Font family",
+        "type": "select",
+        "default": "inherit",
+        "options": [
+          { "value": "inherit", "label": "Inherit" },
+          { "value": "Arial, sans-serif", "label": "Arial" },
+          { "value": "Georgia, serif", "label": "Georgia" },
+          { "value": "Times New Roman, serif", "label": "Times New Roman" },
+          { "value": "Courier New, monospace", "label": "Courier New" },
+          { "value": "Verdana, sans-serif", "label": "Verdana" }
+        ]
+      },
+      {
+        "name": "fontWeight",
+        "label": "Font weight",
+        "type": "select",
+        "default": "normal",
+        "options": [
+          { "value": "100", "label": "Thin (100)" },
+          { "value": "200", "label": "Extra Light (200)" },
+          { "value": "300", "label": "Light (300)" },
+          { "value": "400", "label": "Normal (400)" },
+          { "value": "500", "label": "Medium (500)" },
+          { "value": "600", "label": "Semi Bold (600)" },
+          { "value": "700", "label": "Bold (700)" },
+          { "value": "800", "label": "Extra Bold (800)" },
+          { "value": "900", "label": "Black (900)" }
+        ]
+      },
+      {
+        "name": "fontStyle",
+        "label": "Font style",
+        "type": "select",
+        "default": "normal",
+        "options": [
+          { "value": "normal", "label": "Normal" },
+          { "value": "italic", "label": "Italic" },
+          { "value": "oblique", "label": "Oblique" }
+        ]
+      },
+      {
+        "name": "letterSpacing",
+        "label": "Letter spacing",
+        "type": "number",
+        "default": "auto",
+        "unit": "px",
+        "min": 0,
+        "max": 10,
+        "step": 0.5
+      },
+      {
+        "name": "lineHeight",
+        "label": "Line height",
+        "type": "number",
+        "default": "normal",
+        "unit": "px",
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "name": "textAlign",
+        "label": "Text align",
+        "type": "select",
+        "default": "left",
+        "options": [
+          { "value": "left", "label": "Left" },
+          { "value": "center", "label": "Center" },
+          { "value": "right", "label": "Right" },
+          { "value": "justify", "label": "Justify" }
+        ]
+      },
+      {
+        "name": "textDecoration",
+        "label": "Text decoration",
+        "type": "select",
+        "default": "none",
+        "options": [
+          { "value": "none", "label": "None" },
+          { "value": "underline", "label": "Underline" },
+          { "value": "overline", "label": "Overline" },
+          { "value": "line-through", "label": "Line Through" }
+        ]
+      }
+    ]
+  }
+}

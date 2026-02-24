@@ -1,0 +1,17 @@
+{
+  "handlerPrefix": "studio_menu_handler",
+  "events": [
+    {
+      "name": "onChange",
+      "label": "onChange"
+    },
+    {
+      "name": "onSelect",
+      "label": "onSelect"
+    },
+    {
+      "name": "onActionClick",
+      "label": "onActionClick"
+    }
+  ]
+}

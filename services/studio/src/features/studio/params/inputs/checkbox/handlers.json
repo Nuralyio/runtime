@@ -1,0 +1,9 @@
+{
+    "handlerPrefix": "studio_checkbox_handler",
+    "events": [
+        {
+        "name": "onChange",
+        "label": "onChange"
+        }
+    ]
+}

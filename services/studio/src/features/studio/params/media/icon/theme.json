@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Dark Mode",
+    "open": true,
+    "items": [
+      {
+        "name": "General",
+        "items": [
+          { "label": "Icon Color", "cssVar": "--nuraly-icon-color" }
+        ],
+        "open": true
+      }
+    ]
+  },
+  {
+    "name": "Light Mode",
+    "items": [
+      {
+        "name": "General",
+        "items": [
+          { "label": "Icon Color", "cssVar": "--nuraly-icon-color" }
+        ]
+      }
+    ]
+  }
+]

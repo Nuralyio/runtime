@@ -1,0 +1,37 @@
+{
+  "handlerPrefix": "studio_video_handler",
+  "events": [
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onPlay",
+      "label": "onPlay"
+    },
+    {
+      "name": "onPause",
+      "label": "onPause"
+    },
+    {
+      "name": "onEnded",
+      "label": "onEnded"
+    },
+    {
+      "name": "onLoad",
+      "label": "onLoad"
+    },
+    {
+      "name": "onError",
+      "label": "onError"
+    },
+    {
+      "name": "onTimeUpdate",
+      "label": "onTimeUpdate"
+    },
+    {
+      "name": "onVolumeChange",
+      "label": "onVolumeChange"
+    }
+  ]
+}

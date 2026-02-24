@@ -1,0 +1,21 @@
+{
+  "handlerPrefix": "studio_code_handler",
+  "events": [
+    {
+      "name": "onChange",
+      "label": "onChange"
+    },
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onKeyDown",
+      "label": "onKeyDown"
+    },
+    {
+      "name": "onKeyUp",
+      "label": "onKeyUp"
+    }
+  ]
+}

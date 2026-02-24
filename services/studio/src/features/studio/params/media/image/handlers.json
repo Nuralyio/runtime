@@ -1,0 +1,25 @@
+{
+  "handlerPrefix": "studio_image_handler",
+  "events": [
+    {
+      "name": "onClick",
+      "label": "onClick"
+    },
+    {
+      "name": "onLoad",
+      "label": "onLoad"
+    },
+    {
+      "name": "onError",
+      "label": "onError"
+    },
+    {
+      "name": "onPreviewOpen",
+      "label": "onPreviewOpen"
+    },
+    {
+      "name": "onPreviewClose",
+      "label": "onPreviewClose"
+    }
+  ]
+}

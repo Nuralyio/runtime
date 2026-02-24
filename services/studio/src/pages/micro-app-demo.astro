@@ -1,0 +1,298 @@
+---
+/**
+ * Micro App Demo Page
+ *
+ * This page demonstrates how to use the MicroApp component with pre-loaded JSON data.
+ * The micro app uses the new isolated architecture with variable scoping.
+ */
+
+// Sample application data
+const appId = "demo-app-001";
+
+// Disable server-side rendering for this page since it uses client-side web components
+export const prerender = false;
+
+// Sample page data
+const appPages = [
+  {
+    uuid: "page-001",
+    application_id: appId,
+    name: "Home",
+    url: "/home",
+    description: "Demo home page",
+    is_default: true,
+    style: {
+      backgroundColor: "#f5f5f5",
+      padding: "20px",
+    },
+  },
+];
+
+// Sample component data
+const appComponents = [
+  // Root Container
+  {
+    uuid: "comp-001",
+    name: "Main Container",
+    type: "container",
+    application_id: appId,
+    pageId: "page-001",
+    root: true,
+    childrenIds: ["comp-002", "comp-003", "comp-004"],
+    style: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "20px",
+      padding: "40px",
+      maxWidth: "800px",
+      margin: "0 auto",
+      backgroundColor: "white",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {},
+  },
+  // Title Text Label
+  {
+    uuid: "comp-002",
+    name: "Title",
+    type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    style: {
+      fontSize: "32px",
+      fontWeight: "bold",
+      color: "#1a1a1a",
+      marginBottom: "10px",
+    },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+       value: {
+        type: "string",
+        value:
+         "Welcome to Micro App Demo"
+      },
+    },
+  },
+  // Description Text Label
+  {
+    uuid: "comp-003",
+    name: "Description",
+    type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+      value: {
+        type: "string",
+        value:
+          "This micro app is loaded from JSON data with the new isolated architecture. It demonstrates variable scoping (LOCAL, APP, GLOBAL) and isolated runtime context.",
+      },
+    },
+  },
+  // Button
+  {
+    uuid: "comp-004",
+    name: "Demo Button",
+    type: "button_input",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+
+    event: {
+      onClick: /* js */ `
+        // Use Vars for reactive state that triggers UI updates
+        // Variables support scope: local (default), app, or global
+
+        // Local scope (isolated to this micro-app instance)
+        $clickCount = ($clickCount || 0) + 1;
+
+        // Or explicitly: Vars['local.clickCount'] = ...
+        // App scope: Vars['app.sharedData'] = ...
+        // Global scope: Vars['global.theme'] = ...
+
+        const message = 'Button clicked ' + $clickCount + ' times!';
+        console.log('[MicroApp Demo] ' + message);
+
+        // Example: Instance is for component-scoped non-reactive state
+        Instance.lastClickTime = Date.now();
+        console.log('[MicroApp Demo] Last click at:', new Date(Instance.lastClickTime).toLocaleTimeString());
+      `,
+    },
+    input: {
+      label: {
+        type: "string",
+        value: "Click Me",
+      }
+    },
+  },
+  // Counter Display
+  {
+    uuid: "comp-005",
+    name: "Counter Display",
+    type: "text_label",
+    application_id: appId,
+    pageId: "page-001",
+    root: false,
+    style: {
+      fontSize: "14px",
+      color: "#888",
+      marginTop: "10px",
+      fontStyle: "italic",
+    },
+    styleHandlers: {},
+    inputHandlers: {},
+    input: {
+      value: {
+        type: "handler",
+        value: `
+          return "Click the button to see the counter in action" + ($clickCount ? ": " + $clickCount : "");
+        `,
+      },
+    },
+  },
+];
+
+// Add the counter display to the container's children
+appComponents[0].childrenIds.push("comp-005");
+---
+
+<!doctype html>
+<html lang="en" data-theme="default-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro App Demo - Nuraly Studio</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f9fafb;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .demo-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .demo-header {
+        margin-bottom: 24px;
+      }
+
+      .demo-header h1 {
+        font-size: 24px;
+        color: #111827;
+        margin-bottom: 4px;
+      }
+
+      .demo-header p {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .micro-app-wrapper {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      micro-app {
+        display: block;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-container">
+      <div class="demo-header">
+        <h1>Micro App Demo</h1>
+        <p>Isolated runtime with variable scoping (loaded from source)</p>
+      </div>
+
+      <div class="micro-app-wrapper" id="micro-app-container">
+        <!-- MicroApp will be created dynamically after properties are ready -->
+      </div>
+    </div>
+
+    <script is:inline define:vars={{ appId, appComponents, appPages }}>
+      // This script has access to the server-side variables via define:vars
+      window.__DEMO_APP_DATA__ = {
+        appId,
+        appComponents,
+        appPages,
+      };
+    </script>
+
+    <script>
+      // Import MicroApp directly to prevent tree-shaking in production
+      import { MicroApp } from "../features/runtime/components/ui/components/runtime/MicroApp/MicroApp";
+      // Import all runtime components for child components
+      import "../features/runtime/components";
+
+      // Ensure MicroApp is not tree-shaken (side effect)
+      void MicroApp;
+
+      async function initializeMicroApp() {
+        // Wait for the custom element to be defined
+        await customElements.whenDefined('micro-app');
+
+        const data = (window as any).__DEMO_APP_DATA__;
+
+        if (!data || !data.appId) {
+          console.error('[Micro App Demo] Missing required data:', data);
+          return;
+        }
+
+        // Create the micro-app element
+        const microApp = document.createElement('micro-app') as any;
+        microApp.id = 'demo-micro-app';
+
+        // Set properties BEFORE adding to DOM
+        microApp.uuid = data.appId;
+        microApp.page_uuid = "page-001";
+        microApp.useIsolatedContext = true;
+        microApp.appComponents = data.appComponents;
+        microApp.appPages = data.appPages;
+        microApp.mode = "preview";
+        microApp.prod = true;
+
+        console.log('[Micro App Demo] MicroApp properties set:', {
+          uuid: microApp.uuid,
+          componentsCount: microApp.appComponents?.length,
+        });
+
+        // Add to DOM - this triggers connectedCallback
+        const container = document.getElementById('micro-app-container');
+        if (container) {
+          container.appendChild(microApp);
+          console.log('[Micro App Demo] MicroApp element added to DOM');
+        } else {
+          console.error('[Micro App Demo] Container not found!');
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener("DOMContentLoaded", initializeMicroApp);
+      } else {
+        // DOM already loaded
+        initializeMicroApp();
+      }
+    </script>
+  </body>
+</html>

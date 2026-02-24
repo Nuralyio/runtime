@@ -1,0 +1,13 @@
+{
+  "handlerPrefix": "studio_tag_handler",
+  "events": [
+    {
+      "name": "close",
+      "label": "onClose"
+    },
+    {
+      "name": "click",
+      "label": "onClick"
+    }
+  ]
+}
