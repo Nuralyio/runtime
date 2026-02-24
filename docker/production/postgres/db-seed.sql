@@ -1,2 +1,0 @@
--- Production seed file
--- Add any required seed data below

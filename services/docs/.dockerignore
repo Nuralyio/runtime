@@ -1,7 +1,0 @@
-node_modules
-.docusaurus
-build
-.cache
-.git
-.gitignore
-README.md

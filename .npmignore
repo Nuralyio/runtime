@@ -1,0 +1,37 @@
+# Development files
+node_modules/
+.vscode/
+.idea/
+*.log
+*.swp
+*.swo
+*~
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/__tests__/
+**/test/
+**/tests/
+
+# Build files to exclude
+vite.config.ts
+tsconfig.json
+.eslintrc*
+.prettierrc*
+
+# Git files
+.git/
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Keep dist folder (we want to publish the bundle)
+!dist/
