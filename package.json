@@ -194,11 +194,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Nuralyio/stack.git",
+    "url": "https://github.com/Nuralyio/nuraly.git",
     "directory": "services/studio/src/features/runtime"
   },
   "bugs": {
-    "url": "https://github.com/Nuralyio/stack/issues"
+    "url": "https://github.com/Nuralyio/nuraly/issues"
   },
-  "homepage": "https://github.com/Nuralyio/stack#readme"
+  "homepage": "https://github.com/Nuralyio/nuraly#readme"
 }
