@@ -1,7 +1,7 @@
 # Build output
 dist/
 
-# Compiled artifacts from submodule builds (tsc output alongside source)
+# Compiled artifacts (tsc output alongside source)
 redux/store/**/*.js
 redux/store/**/*.js.map
 redux/store/**/*.d.ts
