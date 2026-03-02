@@ -62,3 +62,43 @@ const LANG_DISPLAY_NAMES: Record<string, string> = {
 export function getLangDisplayName(lang: string): string {
   return LANG_DISPLAY_NAMES[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
 }
+
+/**
+ * Render a subset of Markdown to HTML.
+ *
+ * Supports: code blocks, inline code, headings (h1-h3), bold, italic,
+ * links, unordered lists, and paragraph wrapping.  The input is HTML-escaped
+ * first so the result is safe for innerHTML.
+ */
+export function renderMarkdown(text: string): string {
+  let t = escapeHtml(text);
+
+  // Code blocks ```...```
+  t = t.replaceAll(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
+
+  // Inline code `...`
+  t = t.replaceAll(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
+
+  // Headings (anchored to line start — negated class prevents backtracking)
+  t = t.replaceAll(/^###[^\S\n]+(.+)$/gm, '<h3>$1</h3>');
+  t = t.replaceAll(/^##[^\S\n]+(.+)$/gm, '<h2>$1</h2>');
+  t = t.replaceAll(/^#[^\S\n]+(.+)$/gm, '<h1>$1</h1>');
+
+  // Bold / Italic (negated class prevents backtracking)
+  t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
+
+  // Links (negated classes prevent backtracking)
+  t = t.replaceAll(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  // Unordered lists
+  t = t.replaceAll(/(?:^|\n)-\s+(.+)(?=\n|$)/g, (_m, item) => `\n<ul><li>${item}</li></ul>`);
+  t = t.replaceAll(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>\n<ul>/g, '<ul><li>$1</li>');
+
+  // Paragraphs: wrap text blocks that are not block elements
+  t = t.split(/\n\n+/)
+    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replaceAll('\n', '<br/>')}</p>`)
+    .join('\n');
+
+  return t;
+}

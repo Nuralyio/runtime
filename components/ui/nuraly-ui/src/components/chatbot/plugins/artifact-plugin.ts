@@ -8,7 +8,7 @@ import type { ChatbotPlugin } from '../core/types.js';
 import type { ChatbotMessage, ChatbotArtifact } from '../chatbot.types.js';
 import { ChatbotSender } from '../chatbot.types.js';
 import { ChatPluginBase } from './chat-plugin.js';
-import { escapeHtml, getLangDisplayName } from '../utils/index.js';
+import { escapeHtml, getLangDisplayName, renderMarkdown } from '../utils/index.js';
 
 /**
  * Artifact Plugin - extracts fenced code blocks from bot messages and replaces
@@ -127,8 +127,8 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
       return `\x00ARTIFACT_CARD_${artifact.id}\x00`;
     });
 
-    // Render basic markdown on the surrounding text
-    transformed = this.renderBasicMarkdown(transformed);
+    // Render markdown on the surrounding prose
+    transformed = renderMarkdown(transformed);
 
     // Swap the tokens back to actual card HTML
     for (const artifact of extracted) {
@@ -173,27 +173,6 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
   }
 
   // ── Private helpers ────────────────────────────────────────────────
-
-  /** Minimal markdown → HTML (same transforms as MarkdownPlugin) */
-  private renderBasicMarkdown(text: string): string {
-    let t = text;
-
-    // Escape HTML (but preserve our \x00 tokens)
-    t = t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-
-    // Inline code
-    t = t.replaceAll(/`([^`]+)`/g, '<code style="background:rgba(27,31,35,.05);padding:0 4px;border-radius:4px;">$1</code>');
-
-    // Bold / Italic
-    t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
-
-    // Paragraphs: convert double newlines to <br/><br/>
-    t = t.replaceAll(/\n\n+/g, '<br/><br/>');
-    t = t.replaceAll('\n', '<br/>');
-
-    return t;
-  }
 
   /**
    * Try to extract a meaningful title from the first comment line of the code.

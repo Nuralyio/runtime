@@ -7,7 +7,7 @@
 import { html, nothing, TemplateResult } from 'lit';
 import { msg } from '@lit/localize';
 import type { ChatbotArtifact } from '../chatbot.types.js';
-import { escapeHtml, getLangDisplayName } from '../utils/index.js';
+import { getLangDisplayName, renderMarkdown } from '../utils/index.js';
 
 export interface ArtifactPanelTemplateData {
   artifact: ChatbotArtifact | null;
@@ -19,31 +19,6 @@ export interface ArtifactPanelTemplateData {
 export interface ArtifactPanelTemplateHandlers {
   onClose: () => void;
   onCopy: (artifact: ChatbotArtifact) => void;
-}
-
-/** Minimal markdown to HTML (reuses same transforms as MarkdownPlugin) */
-function renderSimpleMarkdown(text: string): string {
-  let t = escapeHtml(text);
-
-  // Code blocks
-  t = t.replaceAll(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
-  // Inline code
-  t = t.replaceAll(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
-  // Headings (anchored to line start — no backtracking risk)
-  t = t.replaceAll(/^###[^\S\n]+(.+)$/gm, '<h3>$1</h3>');
-  t = t.replaceAll(/^##[^\S\n]+(.+)$/gm, '<h2>$1</h2>');
-  t = t.replaceAll(/^#[^\S\n]+(.+)$/gm, '<h1>$1</h1>');
-  // Bold / Italic (negated class prevents backtracking)
-  t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
-  // Links (negated classes prevent backtracking)
-  t = t.replaceAll(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-  // Paragraphs
-  t = t.split(/\n\n+/)
-    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replaceAll('\n', '<br/>')}</p>`)
-    .join('\n');
-
-  return t;
 }
 
 /** Render the content area based on language */
@@ -63,7 +38,7 @@ function renderArtifactContent(artifact: ChatbotArtifact): TemplateResult {
 
   // Markdown: render as HTML
   if (lang === 'md' || lang === 'markdown') {
-    const rendered = renderSimpleMarkdown(artifact.content);
+    const rendered = renderMarkdown(artifact.content);
     return html`<div class="artifact-panel__rendered-md" .innerHTML=${rendered}></div>`;
   }
 
