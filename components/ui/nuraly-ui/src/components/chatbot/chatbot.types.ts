@@ -234,7 +234,8 @@ export type ArtifactLanguage =
   | 'markdown' | 'md'
   | 'bash' | 'shell' | 'sh' | 'zsh'
   | 'dockerfile' | 'makefile'
-  | string;
+  | 'text'
+  | (string & Record<never, never>);
 
 /**
  * Interface for extracted code artifacts

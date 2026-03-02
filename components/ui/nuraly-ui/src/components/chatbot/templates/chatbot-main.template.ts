@@ -91,6 +91,77 @@ export interface ChatbotMainTemplateHandlers {
 }
 
 /**
+ * Renders the thread header bar with toggle and new-conversation buttons.
+ */
+function renderThreadHeader(
+  data: ChatbotMainTemplateData,
+  handlers: ChatbotMainTemplateHandlers
+): TemplateResult | typeof nothing {
+  if (!data.enableThreads) return nothing;
+
+  return html`
+    <div class="chatbot-header" part="chatbot-header">
+      <nr-button
+        type="text"
+        size="small"
+        .icon=${['panel-left']}
+        @click=${handlers.onToggleThreadSidebar}
+        title="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
+        aria-label="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
+      ></nr-button>
+      ${data.enableThreadCreation && data.messages.length > 0 ? html`
+        <nr-button
+          type="text"
+          size="small"
+          .icon=${['square-pen']}
+          @click=${handlers.threadSidebar?.onCreateNew}
+          title="${msg('New conversation')}"
+          aria-label="${msg('New conversation')}"
+        ></nr-button>
+      ` : ''}
+    </div>
+  `;
+}
+
+/**
+ * Renders the messages area or, in input-only mode, the inline suggestions.
+ */
+function renderContentArea(
+  data: ChatbotMainTemplateData,
+  handlers: ChatbotMainTemplateHandlers
+): TemplateResult | typeof nothing {
+  if (data.showMessages !== false) {
+    return html`
+      <div class="chatbot-content" part="content">
+        ${renderMessages(
+          data.messages,
+          renderSuggestions(data.chatStarted, data.suggestions, handlers.suggestion),
+          data.isTyping
+            ? renderBotTypingIndicator(
+                data.isTyping,
+                data.loadingIndicator || ChatbotLoadingType.Spinner
+              )
+            : nothing,
+          handlers.message
+        )}
+        <slot name="messages"></slot>
+      </div>
+    `;
+  }
+
+  // Input-only mode: render suggestions above input
+  if (data.suggestions && data.suggestions.length > 0) {
+    return html`
+      <div class="input-only-suggestions" part="input-only-suggestions">
+        ${renderSuggestions(false, data.suggestions, handlers.suggestion)}
+      </div>
+    `;
+  }
+
+  return nothing;
+}
+
+/**
  * Main chatbot template that orchestrates all sub-templates
  */
 export function renderChatbotMain(
@@ -104,63 +175,20 @@ export function renderChatbotMain(
       'chatbot-container--with-sidebar': data.enableThreads && data.isThreadSidebarOpen,
       'chatbot-container--with-artifact-panel': !!isArtifactPanelOpen
     })}" part="container">
-      
+
       ${data.enableThreads && data.isThreadSidebarOpen && data.threadSidebar && handlers.threadSidebar
         ? renderThreadSidebar(data.threadSidebar, handlers.threadSidebar)
         : ''}
-      
+
       <div class="chatbot-main" part="main">
-        ${data.enableThreads ? html`
-          <div class="chatbot-header" part="chatbot-header">
-            <nr-button
-              type="text"
-              size="small"
-              .icon=${['panel-left']}
-              @click=${handlers.onToggleThreadSidebar}
-              title="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
-              aria-label="${msg(data.isThreadSidebarOpen ? 'Hide threads' : 'Show threads')}"
-            ></nr-button>
-            ${data.enableThreadCreation && data.messages.length > 0 ? html`
-              <nr-button
-                type="text"
-                size="small"
-                .icon=${['square-pen']}
-                @click=${handlers.threadSidebar?.onCreateNew}
-                title="${msg('New conversation')}"
-                aria-label="${msg('New conversation')}"
-              ></nr-button>
-            ` : ''}
-          </div>
-        ` : ''}
-        
+        ${renderThreadHeader(data, handlers)}
+
         <slot name="header"></slot>
-        
-        ${data.showMessages !== false ? html`
-          <div class="chatbot-content" part="content">
-            ${renderMessages(
-              data.messages,
-              renderSuggestions(data.chatStarted, data.suggestions, handlers.suggestion),
-              data.isTyping
-                ? renderBotTypingIndicator(
-                    data.isTyping,
-                    data.loadingIndicator || ChatbotLoadingType.Spinner
-                  )
-                : nothing,
-              handlers.message
-            )}
-            <slot name="messages"></slot>
-          </div>
-        ` : html`
-          <!-- Input-only mode: render suggestions above input -->
-          ${data.suggestions && data.suggestions.length > 0 ? html`
-            <div class="input-only-suggestions" part="input-only-suggestions">
-              ${renderSuggestions(false, data.suggestions, handlers.suggestion)}
-            </div>
-          ` : nothing}
-        `}
-        
+
+        ${renderContentArea(data, handlers)}
+
         ${renderInputBox(data.inputBox, handlers.inputBox)}
-        
+
         <slot name="footer"></slot>
       </div>
 
@@ -168,17 +196,17 @@ export function renderChatbotMain(
         ? renderArtifactPanel(data.artifactPanel, handlers.artifactPanel)
         : ''}
 
-      ${data.isDragging 
+      ${data.isDragging
         ? renderFileUploadArea(
             { isDragging: data.isDragging },
             handlers.fileUploadArea
           )
         : ''}
-      
+
       ${data.urlModal && handlers.urlModal
         ? renderUrlModal(data.urlModal, handlers.urlModal)
         : ''}
-      
+
       <slot></slot>
     </div>
   `;

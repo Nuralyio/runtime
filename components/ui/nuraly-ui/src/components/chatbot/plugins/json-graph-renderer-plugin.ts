@@ -166,14 +166,15 @@ export class JsonGraphRendererPlugin extends ChatPluginBase {
   private formatValue(val: unknown): string {
     if (val === null) return 'null';
     if (typeof val === 'string') return `"${val}"`;
+    if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
   }
 
   private escapeHtml(text: string): string {
     return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
   }
 }

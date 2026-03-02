@@ -41,6 +41,7 @@ import '../tag/tag.component.js';
 import '../modal/modal.component.js';
 import '../document/document.component.js';
 import './chatbot.component.js';
+import type { NrChatbotElement } from './chatbot.component.js';
 
 const meta: Meta = {
   title: 'Components/Chatbot',
@@ -3017,7 +3018,7 @@ const artifactMessages: ChatbotMessage[] = [
   {
     id: 'art-msg-4',
     sender: ChatbotSender.Bot,
-    text: 'Here\'s the Python version:\n\n```python\n# Python factorial with type hints\ndef factorial(n: int) -> int:\n    \"\"\"Calculate factorial of n.\"\"\"\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))   # 120\nprint(factorial(10))  # 3628800\n```\n\nAnd here\'s a sample JSON configuration:\n\n```json\n{\n  "name": "factorial-service",\n  "version": "1.0.0",\n  "settings": {\n    "maxInput": 170,\n    "cache": true,\n    "timeout": 5000\n  },\n  "endpoints": [\n    { "path": "/factorial", "method": "GET" },\n    { "path": "/batch", "method": "POST" }\n  ]\n}\n```\n\nThe Python version uses type hints for better documentation. The JSON config could be used for a microservice that exposes the factorial function as an API.',
+    text: 'Here\'s the Python version:\n\n```python\n# Python factorial with type hints\ndef factorial(n: int) -> int:\n    """Calculate factorial of n."""\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))   # 120\nprint(factorial(10))  # 3628800\n```\n\nAnd here\'s a sample JSON configuration:\n\n```json\n{\n  "name": "factorial-service",\n  "version": "1.0.0",\n  "settings": {\n    "maxInput": 170,\n    "cache": true,\n    "timeout": 5000\n  },\n  "endpoints": [\n    { "path": "/factorial", "method": "GET" },\n    { "path": "/batch", "method": "POST" }\n  ]\n}\n```\n\nThe Python version uses type hints for better documentation. The JSON config could be used for a microservice that exposes the factorial function as an API.',
     timestamp: new Date().toISOString()
   }
 ];
@@ -3033,7 +3034,7 @@ export const ArtifactMode: Story = {
   },
   render: (args) => {
     setTimeout(() => {
-      const chatbot = document.querySelector('#artifact-chatbot') as any;
+      const chatbot = document.querySelector('#artifact-chatbot') as NrChatbotElement | null;
       if (chatbot && !chatbot.controller) {
         const artifactPlugin = new ArtifactPlugin();
 
@@ -3108,7 +3109,7 @@ export const ArtifactModeCustomRenderer: Story = {
   },
   render: (args) => {
     setTimeout(() => {
-      const chatbot = document.querySelector('#artifact-custom-chatbot') as any;
+      const chatbot = document.querySelector('#artifact-custom-chatbot') as NrChatbotElement | null;
       if (chatbot && !chatbot.controller) {
         const controller = new ChatbotCoreController({
           provider: new MockProvider({

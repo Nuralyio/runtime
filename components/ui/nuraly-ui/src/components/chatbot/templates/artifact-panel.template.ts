@@ -38,10 +38,10 @@ function getLangDisplayName(lang: string): string {
 /** Escape HTML entities */
 function escapeHtml(text: string): string {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
 }
 
 /** Minimal markdown to HTML (reuses same transforms as MarkdownPlugin) */
@@ -49,21 +49,21 @@ function renderSimpleMarkdown(text: string): string {
   let t = escapeHtml(text);
 
   // Code blocks
-  t = t.replace(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
+  t = t.replaceAll(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
   // Inline code
-  t = t.replace(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
+  t = t.replaceAll(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
   // Headings
-  t = t.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
-  t = t.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
-  t = t.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+  t = t.replaceAll(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  t = t.replaceAll(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  t = t.replaceAll(/^#\s+(.+)$/gm, '<h1>$1</h1>');
   // Bold / Italic
-  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
   // Links
-  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  t = t.replaceAll(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   // Paragraphs
   t = t.split(/\n\n+/)
-    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replace(/\n/g, '<br/>')}</p>`)
+    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replaceAll('\n', '<br/>')}</p>`)
     .join('\n');
 
   return t;
@@ -138,7 +138,7 @@ export function renderArtifactPanel(
         </div>
       </div>
       <div class="artifact-panel__content">
-        ${(data.renderContent && data.renderContent(artifact)) || renderArtifactContent(artifact)}
+        ${data.renderContent?.(artifact) || renderArtifactContent(artifact)}
       </div>
     </div>
   `;

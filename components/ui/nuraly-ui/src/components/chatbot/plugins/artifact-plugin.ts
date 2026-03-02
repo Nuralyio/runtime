@@ -35,7 +35,7 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
   readonly version = '1.0.0';
 
   /** All extracted artifacts keyed by their id */
-  private artifacts = new Map<string, ChatbotArtifact>();
+  private readonly artifacts = new Map<string, ChatbotArtifact>();
 
   /** Reference to the core controller (set via onInit) */
   private controller: any;
@@ -119,7 +119,7 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
     // MarkdownPlugin may not run for addMessage()-based messages).
     let transformed = rawText;
     let cardIndex = 0;
-    transformed = transformed.replace(fenceRegex, () => {
+    transformed = transformed.replaceAll(fenceRegex, () => {
       const artifact = extracted[cardIndex++];
       // Temporarily mark card positions with a unique token so they survive
       // the markdown pass unscathed.
@@ -145,7 +145,7 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
       this.controller.updateMessage(message.id, {
         text: styleTag + transformed,
         metadata: {
-          ...(message.metadata || {}),
+          ...message.metadata,
           renderAsHtml: true,
           hasArtifacts: true,
           artifactIds: extracted.map(a => a.id)
@@ -178,18 +178,18 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
     let t = text;
 
     // Escape HTML (but preserve our \x00 tokens)
-    t = t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    t = t.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
     // Inline code
-    t = t.replace(/`([^`]+)`/g, '<code style="background:rgba(27,31,35,.05);padding:0 4px;border-radius:4px;">$1</code>');
+    t = t.replaceAll(/`([^`]+)`/g, '<code style="background:rgba(27,31,35,.05);padding:0 4px;border-radius:4px;">$1</code>');
 
     // Bold / Italic
-    t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
 
     // Paragraphs: convert double newlines to <br/><br/>
-    t = t.replace(/\n\n+/g, '<br/><br/>');
-    t = t.replace(/\n/g, '<br/>');
+    t = t.replaceAll(/\n\n+/g, '<br/><br/>');
+    t = t.replaceAll('\n', '<br/>');
 
     return t;
   }
@@ -211,8 +211,8 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
     ];
 
     for (const pattern of commentPatterns) {
-      const m = firstLine.match(pattern);
-      if (m && m[1]) {
+      const m = pattern.exec(firstLine);
+      if (m?.[1]) {
         const title = m[1].trim();
         if (title.length > 0 && title.length <= 60) return title;
       }
@@ -241,10 +241,10 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
   /** Escape HTML entities for safe insertion */
   private escapeHtml(text: string): string {
     return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
   }
 
   /** Render a compact clickable placeholder card for an artifact */
