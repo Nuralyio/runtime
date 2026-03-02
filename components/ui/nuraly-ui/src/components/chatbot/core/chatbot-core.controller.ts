@@ -238,6 +238,30 @@ export class ChatbotCoreController {
   }
 
   /**
+   * Run onMessageReceived hooks on all bot messages currently in state.
+   * This ensures plugins like ArtifactPlugin can post-process restored
+   * or externally-loaded messages (not just streamed/added ones).
+   */
+  protected processRestoredMessagesForPlugins(): void {
+    const state = this.stateHandler.getState();
+    if (!state.messages || state.messages.length === 0) return;
+
+    for (const msg of state.messages) {
+      if (msg.sender === 'bot') {
+        this.plugins.forEach(plugin => {
+          if (plugin.onMessageReceived) {
+            try {
+              plugin.onMessageReceived(msg);
+            } catch {
+              // best-effort
+            }
+          }
+        });
+      }
+    }
+  }
+
+  /**
    * Setup lifecycle hooks - override to add custom setup logic
    */
   protected setupLifecycleHooks(): void {
@@ -270,10 +294,14 @@ export class ChatbotCoreController {
       this.logError('Error initializing suggestions from initial messages:', e);
     }
 
+    // Run onMessageReceived on initial/restored bot messages so plugins
+    // like ArtifactPlugin can post-process them (extract code fences, etc.)
+    this.processRestoredMessagesForPlugins();
+
     if (this.ui.onStateChange) {
       this.ui.onStateChange(this.getState());
     }
-    
+
     this.emit('ready', this.stateHandler.getState());
   }
 
@@ -722,6 +750,9 @@ export class ChatbotCoreController {
     if (state.messages && state.messages.length > 0) {
       const processedMessages = state.messages.map(msg => this.processMessageThroughPlugins(msg));
       this.stateHandler.updateState({ messages: processedMessages });
+
+      // Run onMessageReceived so plugins like ArtifactPlugin can post-process
+      this.processRestoredMessagesForPlugins();
     }
   }
 
@@ -767,8 +798,13 @@ export class ChatbotCoreController {
         messages: thread.messages.map(msg => this.processMessageThroughPlugins(msg))
       }));
     }
-    
+
     this.updateState(updates);
+
+    // Run onMessageReceived so plugins like ArtifactPlugin can post-process
+    if (updates.messages) {
+      this.processRestoredMessagesForPlugins();
+    }
   }
 
   /**
@@ -781,11 +817,14 @@ export class ChatbotCoreController {
       messages: thread.messages.map(msg => this.processMessageThroughPlugins(msg))
     }));
     
-    this.updateState({ 
+    this.updateState({
       threads: processedThreads,
       currentThreadId: processedThreads.length > 0 ? processedThreads[0].id : undefined,
       messages: processedThreads.length > 0 ? processedThreads[0].messages : []
     });
+
+    // Run onMessageReceived so plugins like ArtifactPlugin can post-process
+    this.processRestoredMessagesForPlugins();
   }
 
   /**
