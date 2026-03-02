@@ -23,7 +23,7 @@ interface WorkflowListItem {
  */
 @customElement('wb-workflow-selector')
 export class WbWorkflowSelectorElement extends LitElement {
-  static override styles = css`
+  static override readonly styles = css`
     :host {
       display: block;
       font-family: var(--nuraly-font-family, system-ui, sans-serif);
