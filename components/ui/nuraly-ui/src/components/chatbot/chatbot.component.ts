@@ -242,9 +242,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   override firstUpdated(): void {
     // Event delegation for artifact card clicks (injected via unsafeHTML)
     this.shadowRoot?.addEventListener('click', (e: Event) => {
-      const target = (e.target as HTMLElement).closest?.('[data-artifact-id]') as HTMLElement | null;
+      const target = (e.target as HTMLElement).closest?.('[data-artifact-id]');
       if (target) {
-        const artifactId = target.getAttribute('data-artifact-id');
+        const artifactId = (target as HTMLElement).dataset.artifactId;
         if (artifactId) this.handleArtifactClick(artifactId);
       }
     });
@@ -253,10 +253,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     this.shadowRoot?.addEventListener('keydown', (e: Event) => {
       const ke = e as KeyboardEvent;
       if (ke.key !== 'Enter' && ke.key !== ' ') return;
-      const target = (ke.target as HTMLElement).closest?.('[data-artifact-id]') as HTMLElement | null;
+      const target = (ke.target as HTMLElement).closest?.('[data-artifact-id]');
       if (target) {
         ke.preventDefault();
-        const artifactId = target.getAttribute('data-artifact-id');
+        const artifactId = (target as HTMLElement).dataset.artifactId;
         if (artifactId) this.handleArtifactClick(artifactId);
       }
     });
