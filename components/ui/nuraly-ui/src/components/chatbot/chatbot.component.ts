@@ -585,13 +585,43 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     const text = message.text;
     if (!text) return;
 
-    navigator.clipboard.writeText(text).then(() => {
+    const onSuccess = () => {
       this.dispatchEventWithMetadata('nr-chatbot-message-copied', {
         metadata: { messageId: message.id }
       });
-    }).catch((err) => {
-      console.warn('[Chatbot] Copy to clipboard failed:', err);
-    });
+    };
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+        this.copyViaFallback(text, onSuccess);
+      });
+    } else {
+      // Fallback for non-secure contexts (e.g. localhost, local domains without HTTPS)
+      this.copyViaFallback(text, onSuccess);
+    }
+  }
+
+  /**
+   * Fallback copy method for non-secure contexts where navigator.clipboard is unavailable.
+   * Uses a hidden textarea + execCommand('copy') which, while deprecated, is the only
+   * option when the Clipboard API is not available (HTTP origins, older browsers).
+   */
+  private copyViaFallback(text: string, onSuccess: () => void) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('copy'); // NOSONAR: required fallback for non-secure contexts
+      onSuccess();
+    } catch {
+      // copy failed silently
+    }
+    document.body.removeChild(textarea);
   }
 
   private handleSuggestionClick(suggestion: ChatbotSuggestion) {
