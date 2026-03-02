@@ -821,10 +821,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).catch(() => {
-        this.copyViaExecCommand(text, () => {});
+        this.copyViaFallback(text, () => {});
       });
     } else {
-      this.copyViaExecCommand(text, () => {});
+      this.copyViaFallback(text, () => {});
     }
   }
 

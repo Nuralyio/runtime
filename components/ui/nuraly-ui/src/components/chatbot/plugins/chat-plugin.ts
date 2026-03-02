@@ -62,7 +62,7 @@ export abstract class ChatPluginBase implements ChatbotPlugin {
     }
   }
 
-  onInit?(): void;
+  onInit?(controller?: any): void;
   onDestroy?(): void;
   onMessageSent?(message: any): void | Promise<void>;
   onMessageReceived?(message: any): void | Promise<void>;
