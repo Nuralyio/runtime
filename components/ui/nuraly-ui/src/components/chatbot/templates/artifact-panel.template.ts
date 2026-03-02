@@ -23,32 +23,24 @@ export interface ArtifactPanelTemplateHandlers {
 
 /** Render the content area based on language */
 function renderArtifactContent(artifact: ChatbotArtifact): TemplateResult {
-  const lang = artifact.language;
-
-  // JSON: pretty-print
-  if (lang === 'json') {
-    let prettyContent: string;
-    try {
-      prettyContent = JSON.stringify(JSON.parse(artifact.content), null, 2);
-    } catch {
-      prettyContent = artifact.content;
+  switch (artifact.language) {
+    case 'json': {
+      let prettyContent: string;
+      try {
+        prettyContent = JSON.stringify(JSON.parse(artifact.content), null, 2);
+      } catch {
+        prettyContent = artifact.content;
+      }
+      return html`<pre class="artifact-panel__code"><code>${prettyContent}</code></pre>`;
     }
-    return html`<pre class="artifact-panel__code"><code>${prettyContent}</code></pre>`;
+    case 'md':
+    case 'markdown':
+      return html`<div class="artifact-panel__rendered-md" .innerHTML=${renderMarkdown(artifact.content)}></div>`;
+    case 'html':
+      return html`<div class="artifact-panel__rendered-html" .innerHTML=${artifact.content}></div>`;
+    default:
+      return html`<pre class="artifact-panel__code"><code>${artifact.content}</code></pre>`;
   }
-
-  // Markdown: render as HTML
-  if (lang === 'md' || lang === 'markdown') {
-    const rendered = renderMarkdown(artifact.content);
-    return html`<div class="artifact-panel__rendered-md" .innerHTML=${rendered}></div>`;
-  }
-
-  // HTML: render in a contained div
-  if (lang === 'html') {
-    return html`<div class="artifact-panel__rendered-html" .innerHTML=${artifact.content}></div>`;
-  }
-
-  // Everything else: monospace code with language label
-  return html`<pre class="artifact-panel__code"><code>${artifact.content}</code></pre>`;
 }
 
 /**
