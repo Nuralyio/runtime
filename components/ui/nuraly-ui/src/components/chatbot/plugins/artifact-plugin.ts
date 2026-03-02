@@ -8,6 +8,7 @@ import type { ChatbotPlugin } from '../core/types.js';
 import type { ChatbotMessage, ChatbotArtifact } from '../chatbot.types.js';
 import { ChatbotSender } from '../chatbot.types.js';
 import { ChatPluginBase } from './chat-plugin.js';
+import { escapeHtml, getLangDisplayName } from '../utils/index.js';
 
 /**
  * Artifact Plugin - extracts fenced code blocks from bot messages and replaces
@@ -203,11 +204,11 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
 
     // Single-line comment patterns: // ..., # ..., -- ..., /* ... */
     const commentPatterns = [
-      /^\/\/\s*(.+)/,         // // comment
-      /^#\s*(.+)/,            // # comment
-      /^--\s*(.+)/,           // -- comment (SQL)
-      /^\/\*\s*(.+?)\s*\*\//, // /* comment */
-      /^<!--\s*(.+?)\s*-->/   // <!-- comment -->
+      /^\/\/\s*(.+)/,      // // comment
+      /^#\s*(.+)/,         // # comment
+      /^--\s*(.+)/,        // -- comment (SQL)
+      /^\/\*\s*(.*?)\*\//,  // /* comment */ (no trailing \s* — trim in code)
+      /^<!--\s*(.*?)-->/    // <!-- comment --> (no trailing \s* — trim in code)
     ];
 
     for (const pattern of commentPatterns) {
@@ -219,38 +220,14 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
     }
 
     // Fallback: use language + index
-    const langLabel = this.getLangDisplayName(language);
+    const langLabel = getLangDisplayName(language);
     return `${langLabel} Snippet ${index + 1}`;
-  }
-
-  /** Map language identifier to a nice display name */
-  private getLangDisplayName(lang: string): string {
-    const map: Record<string, string> = {
-      javascript: 'JavaScript', typescript: 'TypeScript', python: 'Python',
-      java: 'Java', go: 'Go', rust: 'Rust', c: 'C', cpp: 'C++',
-      csharp: 'C#', ruby: 'Ruby', php: 'PHP', swift: 'Swift',
-      kotlin: 'Kotlin', html: 'HTML', css: 'CSS', scss: 'SCSS',
-      sql: 'SQL', graphql: 'GraphQL', json: 'JSON', yaml: 'YAML',
-      xml: 'XML', toml: 'TOML', markdown: 'Markdown', md: 'Markdown',
-      bash: 'Bash', shell: 'Shell', sh: 'Shell', zsh: 'Zsh',
-      dockerfile: 'Dockerfile', makefile: 'Makefile', text: 'Text'
-    };
-    return map[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
-  }
-
-  /** Escape HTML entities for safe insertion */
-  private escapeHtml(text: string): string {
-    return text
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;');
   }
 
   /** Render a compact clickable placeholder card for an artifact */
   private renderPlaceholderCard(artifact: ChatbotArtifact): string {
-    const langLabel = this.getLangDisplayName(artifact.language);
-    const title = this.escapeHtml(artifact.title);
+    const langLabel = getLangDisplayName(artifact.language);
+    const title = escapeHtml(artifact.title);
 
     return `<div class="nr-artifact-card" data-artifact-id="${artifact.id}" role="button" tabindex="0" aria-label="View ${title}">
   <nr-icon name="code" size="small" class="nr-artifact-card__icon"></nr-icon>

@@ -6,6 +6,7 @@
 
 import type { ChatbotArtifact } from '../chatbot.types.js';
 import { ChatPluginBase } from './chat-plugin.js';
+import { escapeHtml } from '../utils/index.js';
 
 /**
  * JSON Graph Renderer Plugin — renders JSON artifacts as a visual node graph
@@ -99,13 +100,13 @@ export class JsonGraphRendererPlugin extends ChatPluginBase {
             background:${this.typeColor(value)};flex-shrink:0;
           "></span>
           <span style="font-weight:600;font-size:13px;color:#334155;">
-            ${this.escapeHtml(key)}
+            ${escapeHtml(key)}
           </span>
           <span style="
             font-size:13px;padding:2px 8px;border-radius:4px;
             background:${this.typeBg(value)};color:${this.typeColor(value)};
             border:1px solid ${this.typeColor(value)}20;
-          ">${this.escapeHtml(this.formatValue(value))}</span>
+          ">${escapeHtml(this.formatValue(value))}</span>
         </div>
       `;
     }
@@ -129,7 +130,7 @@ export class JsonGraphRendererPlugin extends ChatPluginBase {
             border:1px solid ${badgeClr}30;
           ">${badgeIcon}</span>
           <span style="font-weight:600;font-size:13px;color:#334155;">
-            ${this.escapeHtml(key)}
+            ${escapeHtml(key)}
           </span>
           <span style="
             font-size:11px;padding:1px 6px;border-radius:10px;
@@ -170,11 +171,4 @@ export class JsonGraphRendererPlugin extends ChatPluginBase {
     return String(val);
   }
 
-  private escapeHtml(text: string): string {
-    return text
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;');
-  }
 }
