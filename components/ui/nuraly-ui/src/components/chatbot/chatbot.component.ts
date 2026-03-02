@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { html, LitElement, nothing } from 'lit';
+import { html, LitElement, nothing, TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { localized, msg } from '@lit/localize';
 
 import styles from './chatbot.style.js';
@@ -23,6 +24,7 @@ import {
   ChatbotModule,
   ChatbotFile,
   ChatbotAction,
+  ChatbotArtifact,
   EMPTY_STRING
 } from './chatbot.types.js';
 
@@ -36,6 +38,7 @@ import {
 } from './templates/index.js';
 
 import { ChatbotCoreController } from './core/chatbot-core.controller.js';
+import { ArtifactPlugin } from './plugins/artifact-plugin.js';
 
 /**
  * Enhanced chatbot component powered by ChatbotCoreController.
@@ -186,7 +189,15 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: String})
   moduleSelectionLabel = msg('Select Modules');
 
-  /** 
+  /** Enable artifact mode: code blocks collapse into cards with a preview panel */
+  @property({type: Boolean})
+  enableArtifacts = false;
+
+  /** Optional custom renderer for artifact panel content area. Header remains default. */
+  @property({type: Function})
+  renderArtifactContent?: (artifact: ChatbotArtifact) => TemplateResult;
+
+  /**
    * ChatbotCoreController instance (REQUIRED).
    * The component delegates all business logic to this controller.
    */
@@ -194,6 +205,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   controller!: ChatbotCoreController;
 
   @state() private focused = false;
+  @state() private isArtifactPanelOpen = false;
+  @state() private selectedArtifact: ChatbotArtifact | null = null;
   @state() private isThreadSidebarOpen = true;
   @state() private isUrlModalOpen = false;
   @state() private urlInput = '';
@@ -224,6 +237,29 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     if (this.controller) {
       this.setupControllerIntegration();
     }
+  }
+
+  override firstUpdated(): void {
+    // Event delegation for artifact card clicks (injected via unsafeHTML)
+    this.shadowRoot?.addEventListener('click', (e: Event) => {
+      const target = (e.target as HTMLElement).closest?.('[data-artifact-id]') as HTMLElement | null;
+      if (target) {
+        const artifactId = target.getAttribute('data-artifact-id');
+        if (artifactId) this.handleArtifactClick(artifactId);
+      }
+    });
+
+    // Keyboard support for artifact cards
+    this.shadowRoot?.addEventListener('keydown', (e: Event) => {
+      const ke = e as KeyboardEvent;
+      if (ke.key !== 'Enter' && ke.key !== ' ') return;
+      const target = (ke.target as HTMLElement).closest?.('[data-artifact-id]') as HTMLElement | null;
+      if (target) {
+        ke.preventDefault();
+        const artifactId = target.getAttribute('data-artifact-id');
+        if (artifactId) this.handleArtifactClick(artifactId);
+      }
+    });
   }
 
   override disconnectedCallback(): void {
@@ -381,6 +417,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         activeThreadId: this.activeThreadId
       } : undefined,
       isDragging: false,
+      enableArtifacts: this.enableArtifacts,
+      artifactPanel: this.enableArtifacts ? {
+        artifact: this.selectedArtifact,
+        isOpen: this.isArtifactPanelOpen,
+        renderContent: this.renderArtifactContent ?? this.getPluginArtifactRenderer()
+      } : undefined,
       urlModal: this.isUrlModalOpen ? {
         isOpen: this.isUrlModalOpen,
         urlInput: this.urlInput,
@@ -430,6 +472,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         onUrlInputKeydown: this.handleUrlInputKeydown.bind(this),
         onConfirm: this.handleUrlConfirm.bind(this),
         onAttachFile: this.handleUrlAttachFile.bind(this)
+      } : undefined,
+      artifactPanel: this.enableArtifacts ? {
+        onClose: this.handleArtifactPanelClose.bind(this),
+        onCopy: this.handleArtifactCopy.bind(this)
       } : undefined,
       onToggleThreadSidebar: this.showThreads ? this.toggleThreadSidebar.bind(this) : undefined
     };
@@ -742,6 +788,78 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   private handleFilePreview(file: ChatbotFile) {
     this.previewFile = file;
     this.isFilePreviewModalOpen = true;
+  }
+
+  private handleArtifactClick(artifactId: string) {
+    if (!this.enableArtifacts || !this.controller) return;
+
+    // Find the ArtifactPlugin instance on the controller
+    const plugin = this.getArtifactPlugin();
+    if (!plugin) return;
+
+    const artifact = plugin.getArtifact(artifactId);
+    if (artifact) {
+      this.selectedArtifact = artifact;
+      this.isArtifactPanelOpen = true;
+    }
+  }
+
+  private handleArtifactPanelClose() {
+    this.isArtifactPanelOpen = false;
+    this.selectedArtifact = null;
+  }
+
+  private handleArtifactCopy(artifact: ChatbotArtifact) {
+    const text = artifact.content;
+    if (!text) return;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {
+        this.copyViaExecCommand(text, () => {});
+      });
+    } else {
+      this.copyViaExecCommand(text, () => {});
+    }
+  }
+
+  private getArtifactPlugin(): ArtifactPlugin | undefined {
+    // Controller stores plugins as Map<string, ChatbotPlugin> in protected field
+    try {
+      const pluginsMap = (this.controller as any)?.plugins as Map<string, any> | undefined;
+      if (pluginsMap && typeof pluginsMap.get === 'function') {
+        return pluginsMap.get('artifact') as ArtifactPlugin | undefined;
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Look through registered plugins for one that provides renderArtifactContent.
+   * Returns a TemplateResult wrapper if found, undefined otherwise.
+   * The wrapper returns undefined for artifacts the plugin doesn't handle,
+   * so the template falls back to the default renderer.
+   */
+  private getPluginArtifactRenderer(): ((artifact: ChatbotArtifact) => TemplateResult | undefined) | undefined {
+    try {
+      const pluginsMap = (this.controller as any)?.plugins as Map<string, any> | undefined;
+      if (!pluginsMap || typeof pluginsMap.values !== 'function') return undefined;
+
+      for (const plugin of pluginsMap.values()) {
+        if (typeof plugin.renderArtifactContent === 'function') {
+          return (artifact: ChatbotArtifact) => {
+            const htmlStr = plugin.renderArtifactContent(artifact);
+            // Empty string → plugin doesn't handle this artifact → fall back to default
+            if (!htmlStr) return undefined;
+            return html`${unsafeHTML(htmlStr)}`;
+          };
+        }
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   private handleFilePreviewModalClose() {

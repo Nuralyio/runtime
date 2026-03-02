@@ -11,4 +11,6 @@ export { MarkdownPlugin } from './markdown-plugin.js';
 export { ChatPluginBase } from './chat-plugin.js';
 export { FlightCardPlugin, type FlightInfo } from './flight-card-plugin.js';
 export { PrintJobCardPlugin, type PrintJobData } from './print-job-card-plugin.js';
+export { ArtifactPlugin } from './artifact-plugin.js';
+export { JsonGraphRendererPlugin } from './json-graph-renderer-plugin.js';
 
