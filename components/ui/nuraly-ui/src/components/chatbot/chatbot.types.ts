@@ -224,6 +224,37 @@ export interface ChatbotModule {
 }
 
 /**
+ * Common artifact language types
+ */
+export type ArtifactLanguage =
+  | 'javascript' | 'typescript' | 'python' | 'java' | 'go' | 'rust'
+  | 'c' | 'cpp' | 'csharp' | 'ruby' | 'php' | 'swift' | 'kotlin'
+  | 'html' | 'css' | 'scss' | 'sql' | 'graphql'
+  | 'json' | 'yaml' | 'xml' | 'toml'
+  | 'markdown' | 'md'
+  | 'bash' | 'shell' | 'sh' | 'zsh'
+  | 'dockerfile' | 'makefile'
+  | string;
+
+/**
+ * Interface for extracted code artifacts
+ */
+export interface ChatbotArtifact {
+  /** Unique artifact identifier */
+  id: string;
+  /** Programming language (from fenced code block) */
+  language: ArtifactLanguage;
+  /** Raw code content */
+  content: string;
+  /** Display title (extracted from first comment line or generated) */
+  title: string;
+  /** ID of the message this artifact belongs to */
+  messageId: string;
+  /** Index of this artifact within its message (0-based) */
+  index: number;
+}
+
+/**
  * Constants
  */
 export const EMPTY_STRING = '';

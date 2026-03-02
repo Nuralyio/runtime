@@ -73,4 +73,7 @@ export abstract class ChatPluginBase implements ChatbotPlugin {
   // HTML-like block streaming support
   htmlTags?: Array<{ name: string; open: string; close: string }>;
   renderHtmlBlock?(name: string, content: string): string;
+
+  // Artifact panel content rendering
+  renderArtifactContent?(artifact: any): string;
 }

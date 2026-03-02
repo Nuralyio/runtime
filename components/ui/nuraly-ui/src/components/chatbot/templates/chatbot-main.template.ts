@@ -35,6 +35,11 @@ import {
   UrlModalTemplateData,
   UrlModalTemplateHandlers
 } from './url-modal.template.js';
+import {
+  renderArtifactPanel,
+  ArtifactPanelTemplateData,
+  ArtifactPanelTemplateHandlers
+} from './artifact-panel.template.js';
 import { ChatbotMessage, ChatbotSuggestion, ChatbotLoadingType } from '../chatbot.types.js';
 
 export interface ChatbotMainTemplateData {
@@ -68,6 +73,10 @@ export interface ChatbotMainTemplateData {
   
   // URL modal
   urlModal?: UrlModalTemplateData;
+
+  // Artifact panel
+  enableArtifacts?: boolean;
+  artifactPanel?: ArtifactPanelTemplateData;
 }
 
 export interface ChatbotMainTemplateHandlers {
@@ -77,6 +86,7 @@ export interface ChatbotMainTemplateHandlers {
   threadSidebar?: ThreadSidebarTemplateHandlers;
   fileUploadArea: FileUploadAreaTemplateHandlers;
   urlModal?: UrlModalTemplateHandlers;
+  artifactPanel?: ArtifactPanelTemplateHandlers;
   onToggleThreadSidebar?: () => void;
 }
 
@@ -87,9 +97,12 @@ export function renderChatbotMain(
   data: ChatbotMainTemplateData,
   handlers: ChatbotMainTemplateHandlers
 ): TemplateResult {
+  const isArtifactPanelOpen = data.enableArtifacts && data.artifactPanel?.isOpen;
+
   return html`
     <div class="chatbot-container ${classMap({
-      'chatbot-container--with-sidebar': data.enableThreads && data.isThreadSidebarOpen
+      'chatbot-container--with-sidebar': data.enableThreads && data.isThreadSidebarOpen,
+      'chatbot-container--with-artifact-panel': !!isArtifactPanelOpen
     })}" part="container">
       
       ${data.enableThreads && data.isThreadSidebarOpen && data.threadSidebar && handlers.threadSidebar
@@ -150,7 +163,11 @@ export function renderChatbotMain(
         
         <slot name="footer"></slot>
       </div>
-      
+
+      ${isArtifactPanelOpen && data.artifactPanel && handlers.artifactPanel
+        ? renderArtifactPanel(data.artifactPanel, handlers.artifactPanel)
+        : ''}
+
       ${data.isDragging 
         ? renderFileUploadArea(
             { isDragging: data.isDragging },

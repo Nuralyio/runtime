@@ -25,6 +25,11 @@ import { MockProvider } from './providers/mock-provider.js';
 // Import storage implementations
 import { MemoryStorage, LocalStorageAdapter, IndexedDBStorage } from './storage/index.js';
 
+// Import plugins
+import { MarkdownPlugin } from './plugins/markdown-plugin.js';
+import { ArtifactPlugin } from './plugins/artifact-plugin.js';
+import { JsonGraphRendererPlugin } from './plugins/json-graph-renderer-plugin.js';
+
 // Note: Theme CSS is imported globally in .storybook/preview.ts
 // No need to import themes here to avoid conflicts
 import '../input/input.component.js';
@@ -2983,6 +2988,180 @@ export const CustomCSSTheming: Story = {
   /* ... more variables */
 "&gt;&lt;/nr-chatbot&gt;</pre>
         </div>
+      </div>
+    `;
+  }
+};
+
+// ===== ARTIFACT MODE =====
+
+const artifactMessages: ChatbotMessage[] = [
+  {
+    id: 'art-msg-1',
+    sender: ChatbotSender.User,
+    text: 'Can you show me a JavaScript function to calculate factorial?',
+    timestamp: new Date(Date.now() - 120000).toISOString()
+  },
+  {
+    id: 'art-msg-2',
+    sender: ChatbotSender.Bot,
+    text: 'Sure! Here\'s a recursive factorial function:\n\n```javascript\n// Factorial calculator\nfunction factorial(n) {\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}\n\nconsole.log(factorial(5)); // 120\nconsole.log(factorial(10)); // 3628800\n```\n\nAnd here\'s an iterative version for comparison:\n\n```javascript\n// Iterative factorial\nfunction factorialIterative(n) {\n  let result = 1;\n  for (let i = 2; i <= n; i++) {\n    result *= i;\n  }\n  return result;\n}\n```\n\nBoth approaches produce the same results. The recursive version is cleaner but the iterative version avoids stack overflow for very large numbers.',
+    timestamp: new Date(Date.now() - 60000).toISOString()
+  },
+  {
+    id: 'art-msg-3',
+    sender: ChatbotSender.User,
+    text: 'Now show me the same in Python and a JSON config example',
+    timestamp: new Date(Date.now() - 30000).toISOString()
+  },
+  {
+    id: 'art-msg-4',
+    sender: ChatbotSender.Bot,
+    text: 'Here\'s the Python version:\n\n```python\n# Python factorial with type hints\ndef factorial(n: int) -> int:\n    \"\"\"Calculate factorial of n.\"\"\"\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))   # 120\nprint(factorial(10))  # 3628800\n```\n\nAnd here\'s a sample JSON configuration:\n\n```json\n{\n  "name": "factorial-service",\n  "version": "1.0.0",\n  "settings": {\n    "maxInput": 170,\n    "cache": true,\n    "timeout": 5000\n  },\n  "endpoints": [\n    { "path": "/factorial", "method": "GET" },\n    { "path": "/batch", "method": "POST" }\n  ]\n}\n```\n\nThe Python version uses type hints for better documentation. The JSON config could be used for a microservice that exposes the factorial function as an API.',
+    timestamp: new Date().toISOString()
+  }
+];
+
+/**
+ * Artifact Mode - Code blocks collapse into clickable cards with a right-side preview panel.
+ * Click any code card to open the artifact panel.
+ */
+export const ArtifactMode: Story = {
+  args: {
+    ...Default.args,
+    enableArtifacts: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#artifact-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const artifactPlugin = new ArtifactPlugin();
+
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 600,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 25,
+            contextualResponses: true
+          }),
+          plugins: [
+            new MarkdownPlugin(),
+            artifactPlugin
+          ],
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            }
+          }
+        });
+
+        chatbot.controller = controller;
+        chatbot.enableArtifacts = true;
+
+        // Add messages via controller.addMessage() so plugin hooks fire
+        // (initialMessages only processes htmlTags, not onMessageReceived)
+        for (const msg of artifactMessages) {
+          controller.addMessage(msg);
+        }
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 900px; height: 700px;">
+        <nr-chatbot
+          id="artifact-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+          .enableArtifacts=${true}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Artifact Mode with Custom Renderer Plugin - JSON artifacts render as a visual
+ * node graph via the JsonGraphRendererPlugin; other languages fall back to the
+ * default panel rendering. No explicit renderArtifactContent property needed —
+ * the chatbot picks up the renderer from the plugin automatically.
+ */
+export const ArtifactModeCustomRenderer: Story = {
+  args: {
+    ...Default.args,
+    enableArtifacts: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#artifact-custom-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 600,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 25,
+            contextualResponses: true
+          }),
+          plugins: [
+            new MarkdownPlugin(),
+            new ArtifactPlugin(),
+            new JsonGraphRendererPlugin()   // ← renders JSON artifacts as a graph
+          ],
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => {
+              chatbot.isBotTyping = true;
+            },
+            onTypingEnd: () => {
+              chatbot.isBotTyping = false;
+            }
+          }
+        });
+
+        chatbot.controller = controller;
+        chatbot.enableArtifacts = true;
+
+        for (const msg of artifactMessages) {
+          controller.addMessage(msg);
+        }
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 900px; height: 700px;">
+        <nr-chatbot
+          id="artifact-custom-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+          .enableArtifacts=${true}
+        ></nr-chatbot>
       </div>
     `;
   }

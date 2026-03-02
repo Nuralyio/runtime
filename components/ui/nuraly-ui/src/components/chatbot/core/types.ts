@@ -10,7 +10,8 @@ import type {
   ChatbotModule,
   ChatbotFile,
   ChatbotSuggestion,
-  ChatbotValidationRule
+  ChatbotValidationRule,
+  ChatbotArtifact
 } from '../chatbot.types.js';
 
 /**
@@ -431,6 +432,14 @@ export interface ChatbotPlugin {
    * Should return a trusted HTML string (plugin is responsible for safety) or empty string to skip.
    */
   renderHtmlBlock?(name: string, content: string): string;
+
+  /**
+   * Optional custom renderer for the artifact panel content area.
+   * When provided, replaces the default content rendering (code, JSON pretty-print, etc.)
+   * while the header (language badge, title, copy/close) remains default.
+   * Should return a trusted HTML string.
+   */
+  renderArtifactContent?(artifact: ChatbotArtifact): string;
 }
 
 /**
