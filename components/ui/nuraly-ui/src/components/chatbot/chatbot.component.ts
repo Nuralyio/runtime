@@ -639,14 +639,20 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
-        this.copyViaExecCommand(text, onSuccess);
+        this.copyViaFallback(text, onSuccess);
       });
     } else {
-      this.copyViaExecCommand(text, onSuccess);
+      // Fallback for non-secure contexts (e.g. localhost, local domains without HTTPS)
+      this.copyViaFallback(text, onSuccess);
     }
   }
 
-  private copyViaExecCommand(text: string, onSuccess: () => void) {
+  /**
+   * Fallback copy method for non-secure contexts where navigator.clipboard is unavailable.
+   * Uses a hidden textarea + execCommand('copy') which, while deprecated, is the only
+   * option when the Clipboard API is not available (HTTP origins, older browsers).
+   */
+  private copyViaFallback(text: string, onSuccess: () => void) {
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
@@ -656,10 +662,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     textarea.focus();
     textarea.select();
     try {
-      document.execCommand('copy');
+      document.execCommand('copy'); // NOSONAR: required fallback for non-secure contexts
       onSuccess();
-    } catch (_) {
-      // copy failed
+    } catch {
+      // copy failed silently
     }
     document.body.removeChild(textarea);
   }
