@@ -165,10 +165,10 @@ export class JsonGraphRendererPlugin extends ChatPluginBase {
   }
 
   private formatValue(val: unknown): string {
-    if (val === null) return 'null';
+    if (val === null || val === undefined) return 'null';
     if (typeof val === 'string') return `"${val}"`;
-    if (typeof val === 'object') return JSON.stringify(val);
-    return String(val);
+    if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+    return JSON.stringify(val);
   }
 
 }
