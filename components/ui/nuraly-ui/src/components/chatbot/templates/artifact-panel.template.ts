@@ -7,6 +7,7 @@
 import { html, nothing, TemplateResult } from 'lit';
 import { msg } from '@lit/localize';
 import type { ChatbotArtifact } from '../chatbot.types.js';
+import { escapeHtml, getLangDisplayName } from '../utils/index.js';
 
 export interface ArtifactPanelTemplateData {
   artifact: ChatbotArtifact | null;
@@ -20,30 +21,6 @@ export interface ArtifactPanelTemplateHandlers {
   onCopy: (artifact: ChatbotArtifact) => void;
 }
 
-/** Map language identifier to display name */
-function getLangDisplayName(lang: string): string {
-  const map: Record<string, string> = {
-    javascript: 'JavaScript', typescript: 'TypeScript', python: 'Python',
-    java: 'Java', go: 'Go', rust: 'Rust', c: 'C', cpp: 'C++',
-    csharp: 'C#', ruby: 'Ruby', php: 'PHP', swift: 'Swift',
-    kotlin: 'Kotlin', html: 'HTML', css: 'CSS', scss: 'SCSS',
-    sql: 'SQL', graphql: 'GraphQL', json: 'JSON', yaml: 'YAML',
-    xml: 'XML', toml: 'TOML', markdown: 'Markdown', md: 'Markdown',
-    bash: 'Bash', shell: 'Shell', sh: 'Shell', zsh: 'Zsh',
-    dockerfile: 'Dockerfile', makefile: 'Makefile', text: 'Text'
-  };
-  return map[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
-}
-
-/** Escape HTML entities */
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
-}
-
 /** Minimal markdown to HTML (reuses same transforms as MarkdownPlugin) */
 function renderSimpleMarkdown(text: string): string {
   let t = escapeHtml(text);
@@ -52,14 +29,14 @@ function renderSimpleMarkdown(text: string): string {
   t = t.replaceAll(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
   // Inline code
   t = t.replaceAll(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
-  // Headings
-  t = t.replaceAll(/^###\s+(.+)$/gm, '<h3>$1</h3>');
-  t = t.replaceAll(/^##\s+(.+)$/gm, '<h2>$1</h2>');
-  t = t.replaceAll(/^#\s+(.+)$/gm, '<h1>$1</h1>');
-  // Bold / Italic
+  // Headings (anchored to line start — no backtracking risk)
+  t = t.replaceAll(/^###[^\S\n]+(.+)$/gm, '<h3>$1</h3>');
+  t = t.replaceAll(/^##[^\S\n]+(.+)$/gm, '<h2>$1</h2>');
+  t = t.replaceAll(/^#[^\S\n]+(.+)$/gm, '<h1>$1</h1>');
+  // Bold / Italic (negated class prevents backtracking)
   t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
-  // Links
+  // Links (negated classes prevent backtracking)
   t = t.replaceAll(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   // Paragraphs
   t = t.split(/\n\n+/)

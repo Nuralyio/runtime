@@ -3023,6 +3023,63 @@ const artifactMessages: ChatbotMessage[] = [
   }
 ];
 
+/** Shared render function for artifact stories to avoid code duplication */
+function renderArtifactStory(
+  elementId: string,
+  plugins: ConstructorParameters<typeof ChatbotCoreController>[0]['plugins'],
+  args: Record<string, unknown>
+) {
+  setTimeout(() => {
+    const chatbot = document.querySelector(`#${elementId}`) as NrChatbotElement | null;
+    if (chatbot && !chatbot.controller) {
+      const controller = new ChatbotCoreController({
+        provider: new MockProvider({
+          delay: 600,
+          streaming: true,
+          streamingSpeed: 4,
+          streamingInterval: 25,
+          contextualResponses: true
+        }),
+        plugins,
+        ui: {
+          onStateChange: (state) => {
+            chatbot.messages = state.messages;
+            chatbot.threads = state.threads;
+            chatbot.isBotTyping = state.isTyping;
+            chatbot.chatStarted = state.messages.length > 0;
+          },
+          onTypingStart: () => { chatbot.isBotTyping = true; },
+          onTypingEnd: () => { chatbot.isBotTyping = false; }
+        }
+      });
+
+      chatbot.controller = controller;
+      chatbot.enableArtifacts = true;
+
+      for (const msg of artifactMessages) {
+        controller.addMessage(msg);
+      }
+    }
+  }, 0);
+
+  return html`
+    <div style="width: 900px; height: 700px;">
+      <nr-chatbot
+        id="${elementId}"
+        .size=${args.size}
+        .variant=${args.variant}
+        .isRTL=${args.isRTL}
+        .disabled=${args.disabled}
+        .showSendButton=${args.showSendButton}
+        .autoScroll=${args.autoScroll}
+        .showThreads=${args.showThreads}
+        .boxed=${args.boxed}
+        .enableArtifacts=${true}
+      ></nr-chatbot>
+    </div>
+  `;
+}
+
 /**
  * Artifact Mode - Code blocks collapse into clickable cards with a right-side preview panel.
  * Click any code card to open the artifact panel.
@@ -3032,68 +3089,11 @@ export const ArtifactMode: Story = {
     ...Default.args,
     enableArtifacts: true
   },
-  render: (args) => {
-    setTimeout(() => {
-      const chatbot = document.querySelector('#artifact-chatbot') as NrChatbotElement | null;
-      if (chatbot && !chatbot.controller) {
-        const artifactPlugin = new ArtifactPlugin();
-
-        const controller = new ChatbotCoreController({
-          provider: new MockProvider({
-            delay: 600,
-            streaming: true,
-            streamingSpeed: 4,
-            streamingInterval: 25,
-            contextualResponses: true
-          }),
-          plugins: [
-            new MarkdownPlugin(),
-            artifactPlugin
-          ],
-          ui: {
-            onStateChange: (state) => {
-              chatbot.messages = state.messages;
-              chatbot.threads = state.threads;
-              chatbot.isBotTyping = state.isTyping;
-              chatbot.chatStarted = state.messages.length > 0;
-            },
-            onTypingStart: () => {
-              chatbot.isBotTyping = true;
-            },
-            onTypingEnd: () => {
-              chatbot.isBotTyping = false;
-            }
-          }
-        });
-
-        chatbot.controller = controller;
-        chatbot.enableArtifacts = true;
-
-        // Add messages via controller.addMessage() so plugin hooks fire
-        // (initialMessages only processes htmlTags, not onMessageReceived)
-        for (const msg of artifactMessages) {
-          controller.addMessage(msg);
-        }
-      }
-    }, 0);
-
-    return html`
-      <div style="width: 900px; height: 700px;">
-        <nr-chatbot
-          id="artifact-chatbot"
-          .size=${args.size}
-          .variant=${args.variant}
-          .isRTL=${args.isRTL}
-          .disabled=${args.disabled}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .showThreads=${args.showThreads}
-          .boxed=${args.boxed}
-          .enableArtifacts=${true}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
+  render: (args) => renderArtifactStory(
+    'artifact-chatbot',
+    [new MarkdownPlugin(), new ArtifactPlugin()],
+    args
+  )
 };
 
 /**
@@ -3107,63 +3107,9 @@ export const ArtifactModeCustomRenderer: Story = {
     ...Default.args,
     enableArtifacts: true
   },
-  render: (args) => {
-    setTimeout(() => {
-      const chatbot = document.querySelector('#artifact-custom-chatbot') as NrChatbotElement | null;
-      if (chatbot && !chatbot.controller) {
-        const controller = new ChatbotCoreController({
-          provider: new MockProvider({
-            delay: 600,
-            streaming: true,
-            streamingSpeed: 4,
-            streamingInterval: 25,
-            contextualResponses: true
-          }),
-          plugins: [
-            new MarkdownPlugin(),
-            new ArtifactPlugin(),
-            new JsonGraphRendererPlugin()   // ← renders JSON artifacts as a graph
-          ],
-          ui: {
-            onStateChange: (state) => {
-              chatbot.messages = state.messages;
-              chatbot.threads = state.threads;
-              chatbot.isBotTyping = state.isTyping;
-              chatbot.chatStarted = state.messages.length > 0;
-            },
-            onTypingStart: () => {
-              chatbot.isBotTyping = true;
-            },
-            onTypingEnd: () => {
-              chatbot.isBotTyping = false;
-            }
-          }
-        });
-
-        chatbot.controller = controller;
-        chatbot.enableArtifacts = true;
-
-        for (const msg of artifactMessages) {
-          controller.addMessage(msg);
-        }
-      }
-    }, 0);
-
-    return html`
-      <div style="width: 900px; height: 700px;">
-        <nr-chatbot
-          id="artifact-custom-chatbot"
-          .size=${args.size}
-          .variant=${args.variant}
-          .isRTL=${args.isRTL}
-          .disabled=${args.disabled}
-          .showSendButton=${args.showSendButton}
-          .autoScroll=${args.autoScroll}
-          .showThreads=${args.showThreads}
-          .boxed=${args.boxed}
-          .enableArtifacts=${true}
-        ></nr-chatbot>
-      </div>
-    `;
-  }
+  render: (args) => renderArtifactStory(
+    'artifact-custom-chatbot',
+    [new MarkdownPlugin(), new ArtifactPlugin(), new JsonGraphRendererPlugin()],
+    args
+  )
 };
