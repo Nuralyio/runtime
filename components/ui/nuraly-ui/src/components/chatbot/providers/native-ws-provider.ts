@@ -272,77 +272,68 @@ export class NativeWebSocketProvider implements ChatbotProvider {
   protected handleMessage(event: MessageEvent): void {
     if (!this.config) return;
 
-    let data: any;
-    try {
-      data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-    } catch {
-      console.warn('[NativeWebSocketProvider] Non-JSON message received:', event.data);
-      return;
-    }
+    const data = this.parseMessageData(event.data);
+    if (!data) return;
 
     const typeField = this.config.typeField!;
     const messageType = data[typeField];
     const types = this.config.messageTypes as Required<NativeWebSocketMessageTypes>;
 
-    // Handle heartbeat pong
-    if (messageType === types.pong) {
-      this.handlePong();
-      return;
+    if (messageType === types.pong) { this.handlePong(); return; }
+    if (messageType === types.ping) { this.send(types.pong, { timestamp: Date.now() }); return; }
+
+    this.dispatchToListeners(messageType, data);
+
+    if (messageType === types.response) { this.handleResponseMessage(data); return; }
+    if (messageType === types.stream) { this.handleStreamMessage(data); return; }
+    if (messageType === types.error) { this.handleErrorMessage(data); }
+  }
+
+  private parseMessageData(rawData: any): any {
+    try {
+      return typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+    } catch {
+      console.warn('[NativeWebSocketProvider] Non-JSON message received:', rawData);
+      return null;
     }
+  }
 
-    // Handle heartbeat ping from server (respond with pong)
-    if (messageType === types.ping) {
-      this.send(types.pong, { timestamp: Date.now() });
-      return;
+  private dispatchToListeners(messageType: string, data: any): void {
+    if (!messageType) return;
+    const listeners = this.messageListeners.get(messageType);
+    if (!listeners) return;
+    for (const cb of listeners) {
+      try { cb(data); } catch (e) { console.error('[NativeWebSocketProvider] Listener error:', e); }
     }
+  }
 
-    // Dispatch to registered listeners
-    if (messageType) {
-      const listeners = this.messageListeners.get(messageType);
-      if (listeners) {
-        for (const cb of listeners) {
-          try { cb(data); } catch (e) { console.error('[NativeWebSocketProvider] Listener error:', e); }
-        }
-      }
+  private handleResponseMessage(data: any): void {
+    const messageId = this.extractMessageId(data);
+    const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
+    if (resolver) {
+      const message = this.extractMessageContent(data);
+      resolver.resolve(message);
+      this.responseResolvers.delete(messageId);
     }
+  }
 
-    // Handle response (complete message)
-    if (messageType === types.response) {
-      const messageId = this.extractMessageId(data);
-      const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
-
-      if (resolver) {
-        const message = this.extractMessageContent(data);
-        resolver.resolve(message);
-        this.responseResolvers.delete(messageId);
-      }
-      return;
+  private handleStreamMessage(data: any): void {
+    const messageId = this.extractMessageId(data);
+    const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
+    if (resolver) {
+      resolver.isStreaming = true;
+      const chunk = this.extractMessageContent(data);
+      resolver.chunks.push(chunk);
     }
+  }
 
-    // Handle stream chunk
-    if (messageType === types.stream) {
-      const messageId = this.extractMessageId(data);
-      const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
-
-      if (resolver) {
-        resolver.isStreaming = true;
-        const chunk = this.extractMessageContent(data);
-        resolver.chunks.push(chunk);
-      }
-      return;
-    }
-
-    // Handle error
-    if (messageType === types.error) {
-      const messageId = this.extractMessageId(data);
-      const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
-
-      if (resolver) {
-        const errorMsg = data.error || data.message || 'Unknown error';
-        resolver.reject(new Error(errorMsg));
-        this.responseResolvers.delete(messageId);
-      }
-      return;
+  private handleErrorMessage(data: any): void {
+    const messageId = this.extractMessageId(data);
+    const resolver = this.responseResolvers.get(messageId) || this.getLatestResolver();
+    if (resolver) {
+      const errorMsg = data.error || data.message || 'Unknown error';
+      resolver.reject(new Error(errorMsg));
+      this.responseResolvers.delete(messageId);
     }
   }
 
