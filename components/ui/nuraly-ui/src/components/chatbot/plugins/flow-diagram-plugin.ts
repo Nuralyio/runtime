@@ -76,7 +76,6 @@ class FlowDiagramEditorElement extends HTMLElement {
     let workflow: WorkflowDefinition | null = null;
     try {
       workflow = JSON.parse(json);
-      this._lastValidWorkflow = workflow;
     } catch {
       // will show error state
     }
