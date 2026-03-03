@@ -82,7 +82,7 @@ class FlowDiagramEditorElement extends HTMLElement {
       ${this.renderHeader(workflow)}
       <div class="split">
         <div class="editor-pane">
-          <nr-code-editor language="json"></nr-code-editor>
+          <textarea class="editor-textarea" spellcheck="false"></textarea>
         </div>
         <div class="resize-handle"><div class="resize-handle-bar"></div></div>
         <div class="diagram-pane">
@@ -92,14 +92,8 @@ class FlowDiagramEditorElement extends HTMLElement {
       <div class="error-bar" style="display:none;"></div>
     `;
 
-    // Configure the Monaco-backed code editor via properties (not attributes)
-    const codeEditor = shadow.querySelector('nr-code-editor') as any;
-    codeEditor.code          = pretty;
-    codeEditor.language      = 'json';
-    codeEditor.theme         = 'vs';
-    codeEditor.minimap       = false;
-    codeEditor.aiCompletions = false;
-    codeEditor.fontSize      = 12;
+    const textarea = shadow.querySelector('.editor-textarea') as HTMLTextAreaElement;
+    textarea.value = pretty;
 
     // Restore saved editor pane split width
     const savedSplitWidth = localStorage.getItem(LS_SPLIT_WIDTH);
@@ -116,11 +110,9 @@ class FlowDiagramEditorElement extends HTMLElement {
     const diagramPane = shadow.querySelector('.diagram-pane')!;
     const errorBar    = shadow.querySelector('.error-bar') as HTMLElement;
 
-    // Re-render diagram on every change from the code editor
-    codeEditor.addEventListener('nr-change', (e: CustomEvent<{ value: string }>) => {
-      const value = e.detail?.value ?? '';
+    textarea.addEventListener('input', () => {
       try {
-        const parsed = JSON.parse(value) as WorkflowDefinition;
+        const parsed = JSON.parse(textarea.value) as WorkflowDefinition;
         if (parsed.Steps && parsed.Transitions) {
           diagramPane.innerHTML = this.renderDiagram(parsed);
           const header = shadow.querySelector('.header');
@@ -374,11 +366,21 @@ class FlowDiagramEditorElement extends HTMLElement {
         display: flex;
         overflow: hidden;
       }
-      .editor-pane nr-code-editor {
+      .editor-textarea {
         flex: 1;
-        display: block;
         width: 100%;
         height: 100%;
+        border: none;
+        outline: none;
+        resize: none;
+        padding: 12px;
+        font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #1e293b;
+        background: #ffffff;
+        box-sizing: border-box;
+        tab-size: 2;
       }
 
       /* ── Resize handle ──────────────────────────────── */
