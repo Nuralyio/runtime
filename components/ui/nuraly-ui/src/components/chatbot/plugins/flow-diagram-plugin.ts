@@ -8,9 +8,6 @@ import type { ChatbotArtifact } from '../chatbot.types.js';
 import { ChatPluginBase } from './chat-plugin.js';
 import { escapeHtml } from '../utils/index.js';
 
-// Side-effect import: registers <nr-code-editor> custom element
-import '../../code-editor/code-editor.component.js';
-
 // ── Types ──────────────────────────────────────────────────────────
 
 interface WorkflowEvent {
