@@ -189,11 +189,16 @@ export class NativeWebSocketProvider implements ChatbotProvider {
 
   protected createConnection(): Promise<void> {
     return new Promise((resolve, reject) => {
+      const config = this.config;
+      if (!config) {
+        reject(new Error('Provider not configured'));
+        return;
+      }
       const url = this.buildUrl();
 
       try {
-        this.ws = this.config!.protocols
-          ? new WebSocket(url, this.config!.protocols)
+        this.ws = config.protocols
+          ? new WebSocket(url, config.protocols)
           : new WebSocket(url);
       } catch (error) {
         reject(new Error(`Failed to create WebSocket: ${error instanceof Error ? error.message : String(error)}`));
@@ -205,7 +210,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
           this.ws.close();
           reject(new Error('WebSocket connection timeout'));
         }
-      }, this.config!.connectionTimeout);
+      }, config.connectionTimeout);
 
       this.ws.onopen = () => {
         clearTimeout(timeout);
@@ -257,8 +262,10 @@ export class NativeWebSocketProvider implements ChatbotProvider {
   }
 
   protected buildUrl(): string {
-    let url = this.config!.url;
-    const params = this.config!.queryParams;
+    const config = this.config;
+    if (!config) return '';
+    let url = config.url;
+    const params = config.queryParams;
     if (params && Object.keys(params).length > 0) {
       const separator = url.includes('?') ? '&' : '?';
       const query = Object.entries(params)
@@ -275,7 +282,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
     const data = this.parseMessageData(event.data);
     if (!data) return;
 
-    const typeField = this.config.typeField!;
+    const typeField = this.config.typeField ?? 'type';
     const messageType = data[typeField];
     const types = this.config.messageTypes as Required<NativeWebSocketMessageTypes>;
 
@@ -340,7 +347,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
   protected getLatestResolver() {
     const keys = Array.from(this.responseResolvers.keys());
     if (keys.length > 0) {
-      return this.responseResolvers.get(keys[keys.length - 1]);
+      return this.responseResolvers.get(keys.at(-1) as string);
     }
     return null;
   }
@@ -381,7 +388,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
         this.pongTimer = setTimeout(() => {
           console.warn('[NativeWebSocketProvider] Heartbeat timeout — closing connection');
           this.ws?.close(4000, 'Heartbeat timeout');
-        }, this.config!.heartbeatTimeout);
+        }, this.config?.heartbeatTimeout ?? 10000);
       }
     }, this.config.heartbeatInterval);
   }
@@ -408,18 +415,19 @@ export class NativeWebSocketProvider implements ChatbotProvider {
 
   protected attemptReconnect(): void {
     if (!this.config?.autoReconnect) return;
-    if (this.reconnectAttempt >= this.config.maxReconnectAttempts!) {
+    const maxAttempts = this.config.maxReconnectAttempts ?? 5;
+    if (this.reconnectAttempt >= maxAttempts) {
       console.error('[NativeWebSocketProvider] Max reconnection attempts reached');
       return;
     }
 
     this.reconnectAttempt++;
-    const base = this.config.reconnectBaseDelay!;
-    const max = this.config.reconnectMaxDelay!;
+    const base = this.config.reconnectBaseDelay ?? 1000;
+    const max = this.config.reconnectMaxDelay ?? 30000;
     const delay = Math.min(base * Math.pow(2, this.reconnectAttempt - 1) + Math.random() * base, max);
 
-    console.log(`[NativeWebSocketProvider] Reconnecting in ${Math.round(delay)}ms (attempt ${this.reconnectAttempt}/${this.config.maxReconnectAttempts})`);
-    this.config.onReconnectAttempt?.(this.reconnectAttempt, this.config.maxReconnectAttempts!);
+    console.log(`[NativeWebSocketProvider] Reconnecting in ${Math.round(delay)}ms (attempt ${this.reconnectAttempt}/${maxAttempts})`);
+    this.config.onReconnectAttempt?.(this.reconnectAttempt, maxAttempts);
 
     this.reconnectTimer = setTimeout(async () => {
       try {
@@ -486,7 +494,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
             }
             this.responseResolvers.delete(messageId);
           }
-        }, this.config!.responseTimeout);
+        }, this.config?.responseTimeout ?? 30000);
       });
 
       // Send the message
@@ -530,7 +538,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
    */
   send(type: string, payload?: Record<string, any>): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN && this.config) {
-      const typeField = this.config.typeField!;
+      const typeField = this.config.typeField ?? 'type';
       const message = { [typeField]: type, ...payload };
       this.ws.send(JSON.stringify(message));
     }
@@ -543,7 +551,7 @@ export class NativeWebSocketProvider implements ChatbotProvider {
     if (!this.messageListeners.has(type)) {
       this.messageListeners.set(type, new Set());
     }
-    this.messageListeners.get(type)!.add(callback);
+    this.messageListeners.get(type)?.add(callback);
 
     return () => {
       const listeners = this.messageListeners.get(type);

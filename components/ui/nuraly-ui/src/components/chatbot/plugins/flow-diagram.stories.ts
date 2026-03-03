@@ -416,10 +416,10 @@ export const IsolatedCustomElement: Story = {
     plugin.onInit?.();
 
     const escaped = batchWorkflowJson
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
 
     return html`
       <div style="padding: 40px; max-width: 1000px; margin: 0 auto;">

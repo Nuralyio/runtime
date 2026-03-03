@@ -19,8 +19,8 @@ export function renderWhiteboardWorkflowFields(
   config: NodeConfiguration,
   onUpdate: (key: string, value: unknown) => void
 ): TemplateResult {
-  const workflowId = (config.workflowId as string) || '';
-  const workflowName = (config.workflowName as string) || '';
+  const workflowId = typeof config.workflowId === 'string' ? config.workflowId : '';
+  const workflowName = typeof config.workflowName === 'string' ? config.workflowName : '';
   const steps = (config.workflowSteps as Array<{ name: string; type: string }>) || [];
 
   const handleWorkflowSelect = (e: CustomEvent) => {

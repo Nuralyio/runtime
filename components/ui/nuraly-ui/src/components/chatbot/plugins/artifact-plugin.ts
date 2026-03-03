@@ -120,7 +120,7 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
     // MarkdownPlugin may not run for addMessage()-based messages).
     let transformed = rawText;
     let cardIndex = 0;
-    transformed = transformed.replace(fenceRegex, () => {
+    transformed = transformed.replaceAll(fenceRegex, () => {
       const artifact = extracted[cardIndex++];
       // Temporarily mark card positions with a unique token so they survive
       // the markdown pass unscathed.

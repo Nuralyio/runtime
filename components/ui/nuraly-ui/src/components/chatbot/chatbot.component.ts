@@ -676,7 +676,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     } catch {
       // copy failed silently
     }
-    document.body.removeChild(textarea);
+    textarea.remove();
   }
 
   private handleSuggestionClick(suggestion: ChatbotSuggestion) {
@@ -850,7 +850,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       const dx = e.clientX - startX;
       const container = panel.parentElement;
       const maxWidth = container ? container.getBoundingClientRect().width * 0.85 : 1200;
-      const minWidth = parseInt(getComputedStyle(panel).minWidth, 10) || 300;
+      const minWidth = Number.parseInt(getComputedStyle(panel).minWidth, 10) || 300;
       const newWidth = Math.max(minWidth, Math.min(startWidth - dx, maxWidth));
       panel.style.width = `${newWidth}px`;
     };
