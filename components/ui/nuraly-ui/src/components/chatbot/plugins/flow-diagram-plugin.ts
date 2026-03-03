@@ -504,7 +504,7 @@ class FlowDiagramEditorElement extends HTMLElement {
         font-size: 12px;
         flex-shrink: 0;
       }
-      .error-bar::before { content: '\26A0'; }
+      .error-bar::before { content: '⚠'; }
     `;
   }
 }
