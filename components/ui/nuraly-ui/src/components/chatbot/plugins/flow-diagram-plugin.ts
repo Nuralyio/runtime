@@ -52,7 +52,6 @@ const DEFAULT_PANEL_WIDTH = 500;
 const ELEMENT_TAG = 'nr-flow-diagram-editor';
 
 class FlowDiagramEditorElement extends HTMLElement {
-  private _lastValidWorkflow: WorkflowDefinition | null = null;
   private _panelObserver?: ResizeObserver;
 
   connectedCallback() {
@@ -127,7 +126,6 @@ class FlowDiagramEditorElement extends HTMLElement {
       try {
         const parsed = JSON.parse(value) as WorkflowDefinition;
         if (parsed.Steps && parsed.Transitions) {
-          this._lastValidWorkflow = parsed;
           diagramPane.innerHTML = this.renderDiagram(parsed);
           const header = shadow.querySelector('.header');
           if (header) {
@@ -288,7 +286,7 @@ class FlowDiagramEditorElement extends HTMLElement {
     while (current && wf.Steps[current] && !visited.has(current)) {
       visited.add(current);
       result.push({ type: 'step', name: current, step: wf.Steps[current] });
-      const next = sourceToTransition[current];
+      const next: WorkflowTransition | undefined = sourceToTransition[current];
       if (!next || next.Target === 'EndEvent') break;
       current = next.Target;
     }
