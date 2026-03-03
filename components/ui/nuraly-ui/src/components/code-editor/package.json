@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/code-editor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Monaco-backed code editor web component for Nuraly UI",
   "main": "index.js",
   "type": "module",
@@ -18,8 +18,11 @@
     }
   },
   "files": [
+    "bundle.js",
+    "bundle.js.gz",
     "index.js",
     "index.d.ts",
+    "*.js.map",
     "code-editor.component.js",
     "code-editor.component.d.ts",
     "code-editor.style.js",
