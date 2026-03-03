@@ -1,0 +1,41 @@
+{
+  "name": "@nuralyui/code-editor",
+  "version": "0.0.1",
+  "description": "Monaco-backed code editor web component for Nuraly UI",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Labidi Aymen",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    },
+    "./code-editor.component.js": {
+      "import": "./code-editor.component.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "code-editor.component.js",
+    "code-editor.component.d.ts",
+    "code-editor.style.js",
+    "code-editor.style.d.ts",
+    "code-editor.types.js",
+    "code-editor.types.d.ts"
+  ],
+  "keywords": [
+    "code-editor",
+    "monaco",
+    "web-components",
+    "lit-element",
+    "nuralyui"
+  ],
+  "peerDependencies": {
+    "lit": "^3.0.0",
+    "monaco-editor": "^0.55.0"
+  }
+}
