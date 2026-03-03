@@ -13,4 +13,5 @@ export { FlightCardPlugin, type FlightInfo } from './flight-card-plugin.js';
 export { PrintJobCardPlugin, type PrintJobData } from './print-job-card-plugin.js';
 export { ArtifactPlugin } from './artifact-plugin.js';
 export { JsonGraphRendererPlugin } from './json-graph-renderer-plugin.js';
+export { FlowDiagramPlugin } from './flow-diagram-plugin.js';
 

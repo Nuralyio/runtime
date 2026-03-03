@@ -219,6 +219,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   // Keep track of controller event unsubscriptions
   private controllerUnsubscribes: Array<() => void> = [];
 
+  // Artifact panel resize state
+  private _artifactResizeBound = false;
+  private _artifactResizeCleanup?: () => void;
+
   /** Convert modules to select options */
   private get moduleSelectOptions(): SelectOption[] {
     return this.modules.map(module => ({
@@ -264,10 +268,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    
+
     if (this.controller) {
       this.cleanupControllerIntegration();
     }
+    this._artifactResizeCleanup?.();
+    this._artifactResizeBound = false;
   }
 
   override updated(changedProperties: Map<string, any>): void {
@@ -310,6 +316,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     if (changedProperties.has('messages') && this.autoScroll && this.messages.length > 0) {
       this.scrollToLatestMessage();
     }
+
+    // Attach/detach artifact panel resize handle
+    this.updateArtifactPanelResize();
   }
 
   /**
@@ -813,6 +822,67 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   private handleArtifactPanelClose() {
     this.isArtifactPanelOpen = false;
     this.selectedArtifact = null;
+  }
+
+  /** Attach drag-to-resize on the artifact panel's left edge handle. */
+  private updateArtifactPanelResize(): void {
+    const handle = this.shadowRoot?.querySelector('.artifact-panel__resize-handle') as HTMLElement | null;
+    const panel = this.shadowRoot?.querySelector('.artifact-panel') as HTMLElement | null;
+
+    // Panel gone → clean up
+    if (!handle || !panel) {
+      this._artifactResizeCleanup?.();
+      this._artifactResizeBound = false;
+      return;
+    }
+
+    // Already wired to this handle → skip
+    if (this._artifactResizeBound) return;
+    this._artifactResizeBound = true;
+
+    let dragging = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!dragging) return;
+      // Dragging left makes the panel wider (negative dx → wider)
+      const dx = e.clientX - startX;
+      const container = panel.parentElement;
+      const maxWidth = container ? container.getBoundingClientRect().width * 0.85 : 1200;
+      const minWidth = parseInt(getComputedStyle(panel).minWidth, 10) || 300;
+      const newWidth = Math.max(minWidth, Math.min(startWidth - dx, maxWidth));
+      panel.style.width = `${newWidth}px`;
+    };
+
+    const onMouseUp = () => {
+      if (!dragging) return;
+      dragging = false;
+      handle.classList.remove('artifact-panel__resize-handle--active');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    const onMouseDown = (e: MouseEvent) => {
+      e.preventDefault();
+      dragging = true;
+      startX = e.clientX;
+      startWidth = panel.getBoundingClientRect().width;
+      handle.classList.add('artifact-panel__resize-handle--active');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    };
+
+    handle.addEventListener('mousedown', onMouseDown);
+
+    this._artifactResizeCleanup = () => {
+      handle.removeEventListener('mousedown', onMouseDown);
+      onMouseUp(); // release any in-flight drag
+    };
   }
 
   private handleArtifactCopy(artifact: ChatbotArtifact) {
