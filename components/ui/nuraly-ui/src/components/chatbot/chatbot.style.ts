@@ -1199,11 +1199,48 @@ export default css`
   /* Artifact panel */
   .artifact-panel {
     width: var(--nuraly-size-chatbot-artifact-panel-width, 400px);
+    min-width: var(--nuraly-size-chatbot-artifact-panel-min-width, 300px);
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
-    border-left: 1px solid var(--nuraly-color-chatbot-border, #e0e0e0);
+    flex-direction: row;
     background-color: var(--nuraly-color-chatbot-background, #ffffff);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .artifact-panel__resize-handle {
+    flex-shrink: 0;
+    width: 8px;
+    cursor: col-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--nuraly-color-chatbot-border, #e0e0e0);
+    transition: background 0.15s;
+    z-index: 1;
+  }
+  .artifact-panel__resize-handle:hover,
+  .artifact-panel__resize-handle--active {
+    background: var(--nuraly-color-chatbot-text-secondary, #9ca3af);
+  }
+  .artifact-panel__resize-bar {
+    width: 2px;
+    height: 24px;
+    border-radius: 1px;
+    background: var(--nuraly-color-chatbot-text-secondary, #9ca3af);
+    transition: background 0.15s;
+  }
+  .artifact-panel__resize-handle:hover .artifact-panel__resize-bar,
+  .artifact-panel__resize-handle--active .artifact-panel__resize-bar {
+    background: var(--nuraly-color-chatbot-text-primary, #1f2937);
+  }
+
+  .artifact-panel__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    border-left: 1px solid var(--nuraly-color-chatbot-border, #e0e0e0);
     overflow: hidden;
   }
 
@@ -1321,9 +1358,14 @@ export default css`
       top: 0;
       right: 0;
       bottom: 0;
-      width: 100%;
+      width: 100% !important;
+      min-width: 0;
       z-index: 20;
       box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .artifact-panel__resize-handle {
+      display: none;
     }
 
     .thread-sidebar {

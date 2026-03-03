@@ -29,6 +29,7 @@ import { MemoryStorage, LocalStorageAdapter, IndexedDBStorage } from './storage/
 import { MarkdownPlugin } from './plugins/markdown-plugin.js';
 import { ArtifactPlugin } from './plugins/artifact-plugin.js';
 import { JsonGraphRendererPlugin } from './plugins/json-graph-renderer-plugin.js';
+import { FlowDiagramPlugin } from './plugins/flow-diagram-plugin.js';
 
 // Note: Theme CSS is imported globally in .storybook/preview.ts
 // No need to import themes here to avoid conflicts
@@ -3112,4 +3113,163 @@ export const ArtifactModeCustomRenderer: Story = {
     [new MarkdownPlugin(), new ArtifactPlugin(), new JsonGraphRendererPlugin()],
     args
   )
+};
+
+// ===== FLOW DIAGRAM MODE =====
+
+const flowDiagramWorkflowJson = `{
+  "Name": "BatchCreateDocumentIf",
+  "DocflowTags": ["Batch"],
+  "CorrelationId": "BatchCreateDocument \${system:datetime:now:format(dd-MM-yyyy):cultureinfo(en-US)}",
+  "JobName": "BatchCreateDocument \${system:datetime:now:format(D):cultureinfo(fr-FR)}",
+  "MetaData": {
+    "SingleDocumentFormat": {
+      "Description": "SingleDocumentFormat",
+      "Values": ["Pdf"],
+      "ValueType": "ProductionFormat"
+    }
+  },
+  "Configuration": {},
+  "Events": {
+    "StartEvent": { "Name": "Start", "Type": "Start" },
+    "EndEvent": { "Name": "End", "Type": "End" }
+  },
+  "Steps": {
+    "Parsing": {
+      "Description": "XML parsing and document separation",
+      "StepType": "Worker",
+      "WorkerStepType": "Parsing",
+      "Type": "Parsing",
+      "Configuration": {
+        "@type": "type.googleapis.com/bdoc.prod.common.workflow.design.ParsingStepConfiguration",
+        "DatastreamFormat": "XML",
+        "DocumentSeparatorPath": "/ROOT/CONTENT",
+        "TemplateName": "N_PAGES"
+      }
+    },
+    "Assembly": {
+      "Description": "Document assembly",
+      "StepType": "Worker",
+      "WorkerStepType": "Assembly",
+      "Type": "assembly",
+      "Configuration": {
+        "@type": "type.googleapis.com/bdoc.prod.common.workflow.design.AssemblyStepConfiguration",
+        "IndexFileMode": "SINGLE"
+      }
+    },
+    "IfConversionStep": {
+      "Description": "FO to IF conversion step",
+      "StepType": "Worker",
+      "WorkerStepType": "FoToIf",
+      "Type": "conversion",
+      "Configuration": {
+        "@type": "type.googleapis.com/bdoc.prod.common.workflow.design.FoToIfStepConfiguration"
+      }
+    },
+    "DocumentIfCreationStep": {
+      "Description": "Document IF creation step",
+      "StepType": "System",
+      "SystemTaskType": "DocumentIfCreation",
+      "Configuration": {
+        "@type": "type.googleapis.com/bdoc.prod.common.workflow.design.DocumentIfCreationStepConfiguration"
+      }
+    },
+    "IfToSingleDocument": {
+      "Description": "IF to single document conversion",
+      "StepType": "Worker",
+      "WorkerStepType": "IfToSingleDocument",
+      "Type": "Conversion",
+      "Configuration": {
+        "@type": "type.googleapis.com/bdoc.prod.common.workflow.design.IfToSingleDocumentStepConfiguration",
+        "ProductionFormatOverride": "PDF"
+      }
+    }
+  },
+  "Transitions": {
+    "Start": { "Source": "StartEvent", "Target": "Parsing" },
+    "Parsing": { "Source": "Parsing", "Target": "Assembly" },
+    "Assembly": { "Source": "Assembly", "Target": "IfConversionStep" },
+    "IfConversionStep": { "Source": "IfConversionStep", "Target": "DocumentIfCreationStep" },
+    "DocumentIfCreationStep": { "Source": "DocumentIfCreationStep", "Target": "IfToSingleDocument" },
+    "IfToSingleDocument": { "Source": "IfToSingleDocument", "Target": "EndEvent" }
+  }
+}`;
+
+const flowDiagramMessages: ChatbotMessage[] = [
+  {
+    id: 'flow-msg-1',
+    sender: ChatbotSender.User,
+    text: 'Show me the BatchCreateDocumentIf workflow definition',
+    timestamp: new Date(Date.now() - 60000).toISOString()
+  },
+  {
+    id: 'flow-msg-2',
+    sender: ChatbotSender.Bot,
+    text: `Here is the workflow definition for **BatchCreateDocumentIf**:\n\n\`\`\`json\n${flowDiagramWorkflowJson}\n\`\`\`\n\nThis workflow processes XML input through parsing, assembly, FO-to-IF conversion, IF document creation, and finally converts to a single PDF document.`,
+    timestamp: new Date().toISOString()
+  }
+];
+
+/**
+ * Flow Diagram Mode - Workflow JSON artifacts render as an interactive split
+ * view: editable JSON editor on the left, live-updating vertical flow diagram
+ * on the right. Non-workflow JSON falls back to the default artifact panel.
+ */
+export const FlowDiagramMode: Story = {
+  args: {
+    ...Default.args,
+    enableArtifacts: true
+  },
+  render: (args) => {
+    const elementId = 'flow-diagram-chatbot';
+    setTimeout(() => {
+      const chatbot = document.querySelector(`#${elementId}`) as NrChatbotElement | null;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 600,
+            streaming: true,
+            streamingSpeed: 4,
+            streamingInterval: 25,
+            contextualResponses: true
+          }),
+          plugins: [new MarkdownPlugin(), new ArtifactPlugin(), new FlowDiagramPlugin()],
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; }
+          }
+        });
+
+        chatbot.controller = controller;
+        chatbot.enableArtifacts = true;
+
+        for (const msg of flowDiagramMessages) {
+          controller.addMessage(msg);
+        }
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 900px; height: 700px;">
+        <nr-chatbot
+          id="${elementId}"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${args.boxed}
+          .enableArtifacts=${true}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
 };

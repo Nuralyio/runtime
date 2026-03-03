@@ -57,32 +57,37 @@ export function renderArtifactPanel(
 
   return html`
     <div class="artifact-panel" part="artifact-panel">
-      <div class="artifact-panel__header">
-        <div class="artifact-panel__header-info">
-          <nr-tag size="small" class="artifact-panel__lang-badge">${langLabel}</nr-tag>
-          <span class="artifact-panel__title">${artifact.title}</span>
-        </div>
-        <div class="artifact-panel__actions">
-          <nr-button
-            type="text"
-            size="small"
-            .icon=${['copy']}
-            @click=${() => handlers.onCopy(artifact)}
-            title="${msg('Copy code')}"
-            aria-label="${msg('Copy code')}"
-          ></nr-button>
-          <nr-button
-            type="text"
-            size="small"
-            .icon=${['x']}
-            @click=${handlers.onClose}
-            title="${msg('Close panel')}"
-            aria-label="${msg('Close panel')}"
-          ></nr-button>
-        </div>
+      <div class="artifact-panel__resize-handle" part="artifact-panel-resize-handle">
+        <div class="artifact-panel__resize-bar"></div>
       </div>
-      <div class="artifact-panel__content">
-        ${data.renderContent?.(artifact) || renderArtifactContent(artifact)}
+      <div class="artifact-panel__body">
+        <div class="artifact-panel__header">
+          <div class="artifact-panel__header-info">
+            <nr-tag size="small" class="artifact-panel__lang-badge">${langLabel}</nr-tag>
+            <span class="artifact-panel__title">${artifact.title}</span>
+          </div>
+          <div class="artifact-panel__actions">
+            <nr-button
+              type="text"
+              size="small"
+              .icon=${['copy']}
+              @click=${() => handlers.onCopy(artifact)}
+              title="${msg('Copy code')}"
+              aria-label="${msg('Copy code')}"
+            ></nr-button>
+            <nr-button
+              type="text"
+              size="small"
+              .icon=${['x']}
+              @click=${handlers.onClose}
+              title="${msg('Close panel')}"
+              aria-label="${msg('Close panel')}"
+            ></nr-button>
+          </div>
+        </div>
+        <div class="artifact-panel__content">
+          ${data.renderContent?.(artifact) || renderArtifactContent(artifact)}
+        </div>
       </div>
     </div>
   `;
