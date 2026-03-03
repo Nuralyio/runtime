@@ -40,10 +40,10 @@ export function formatTimestamp(timestamp: Date | string | undefined): string {
 /** Escape HTML entities for safe insertion into innerHTML */
 export function escapeHtml(text: string): string {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
 }
 
 /** Language display-name map shared by artifact plugin and panel template */
@@ -74,30 +74,30 @@ export function renderMarkdown(text: string): string {
   let t = escapeHtml(text);
 
   // Code blocks ```...```
-  t = t.replace(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
+  t = t.replaceAll(/```([\s\S]*?)```/g, '<pre class="md-code"><code>$1</code></pre>');
 
   // Inline code `...`
-  t = t.replace(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
+  t = t.replaceAll(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
 
   // Headings (anchored to line start — negated class prevents backtracking)
-  t = t.replace(/^###[^\S\n]+(.+)$/gm, '<h3>$1</h3>');
-  t = t.replace(/^##[^\S\n]+(.+)$/gm, '<h2>$1</h2>');
-  t = t.replace(/^#[^\S\n]+(.+)$/gm, '<h1>$1</h1>');
+  t = t.replaceAll(/^###[^\S\n]+(.+)$/gm, '<h3>$1</h3>');
+  t = t.replaceAll(/^##[^\S\n]+(.+)$/gm, '<h2>$1</h2>');
+  t = t.replaceAll(/^#[^\S\n]+(.+)$/gm, '<h1>$1</h1>');
 
   // Bold / Italic (negated class prevents backtracking)
-  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  t = t.replaceAll(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  t = t.replaceAll(/\*([^*]+)\*/g, '<em>$1</em>');
 
   // Links (negated classes prevent backtracking)
-  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  t = t.replaceAll(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
   // Unordered lists
-  t = t.replace(/(?:^|\n)-\s+(.+)(?=\n|$)/g, (_m: string, item: string) => `\n<ul><li>${item}</li></ul>`);
-  t = t.replace(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>\n<ul>/g, '<ul><li>$1</li>');
+  t = t.replaceAll(/(?:^|\n)-\s+(.+)(?=\n|$)/g, (_m: string, item: string) => `\n<ul><li>${item}</li></ul>`);
+  t = t.replaceAll(/<ul>\s*<li>([\s\S]*?)<\/li>\s*<\/ul>\n<ul>/g, '<ul><li>$1</li>');
 
   // Paragraphs: wrap text blocks that are not block elements
   t = t.split(/\n\n+/)
-    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replace(/\n/g, '<br/>')}</p>`)
+    .map(block => /^(<h\d|<pre|<ul|<ol|<blockquote)/.test(block.trim()) ? block : `<p>${block.replaceAll('\n', '<br/>')}</p>`)
     .join('\n');
 
   return t;

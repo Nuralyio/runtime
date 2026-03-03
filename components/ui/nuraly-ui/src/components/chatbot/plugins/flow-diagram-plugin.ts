@@ -99,7 +99,7 @@ class FlowDiagramEditorElement extends HTMLElement {
     const savedSplitWidth = localStorage.getItem(LS_SPLIT_WIDTH);
     if (savedSplitWidth) {
       requestAnimationFrame(() => {
-        const editorPane = shadow.querySelector('.editor-pane') as HTMLElement;
+        const editorPane = shadow.querySelector<HTMLElement>('.editor-pane');
         if (editorPane) {
           editorPane.style.flex = 'none';
           editorPane.style.width = `${savedSplitWidth}px`;
@@ -107,8 +107,9 @@ class FlowDiagramEditorElement extends HTMLElement {
       });
     }
 
-    const diagramPane = shadow.querySelector('.diagram-pane')!;
-    const errorBar    = shadow.querySelector('.error-bar') as HTMLElement;
+    const diagramPane = shadow.querySelector('.diagram-pane');
+    const errorBar    = shadow.querySelector<HTMLElement>('.error-bar');
+    if (!diagramPane || !errorBar) return;
 
     textarea.addEventListener('input', () => {
       try {
@@ -119,7 +120,8 @@ class FlowDiagramEditorElement extends HTMLElement {
           if (header) {
             const tpl = document.createElement('template');
             tpl.innerHTML = this.renderHeader(parsed).trim();
-            header.replaceWith(tpl.content.firstElementChild!);
+            const newHeader = tpl.content.firstElementChild;
+            if (newHeader) header.replaceWith(newHeader);
           }
         }
         errorBar.style.display = 'none';
@@ -142,14 +144,14 @@ class FlowDiagramEditorElement extends HTMLElement {
 
   private loadPanelWidth(): number {
     const saved = localStorage.getItem(LS_PANEL_WIDTH);
-    return saved ? Math.max(300, parseInt(saved, 10)) : DEFAULT_PANEL_WIDTH;
+    return saved ? Math.max(300, Number.parseInt(saved, 10)) : DEFAULT_PANEL_WIDTH;
   }
 
   // ── DOM helpers ───────────────────────────────────────────────────
 
   /** Walk up the DOM (crossing shadow boundaries) to find .artifact-panel */
   private closestPanel(): HTMLElement | null {
-    let node: Node | null = this;
+    let node: Node | null = this.parentElement ?? (this.getRootNode() as ShadowRoot).host ?? null;
     while (node) {
       if (node instanceof HTMLElement && node.classList.contains('artifact-panel')) {
         return node;
@@ -162,9 +164,9 @@ class FlowDiagramEditorElement extends HTMLElement {
   // ── Resizable split ───────────────────────────────────────────────
 
   private initResize(shadow: ShadowRoot): void {
-    const split      = shadow.querySelector('.split') as HTMLElement;
-    const editorPane = shadow.querySelector('.editor-pane') as HTMLElement;
-    const handle     = shadow.querySelector('.resize-handle') as HTMLElement;
+    const split      = shadow.querySelector<HTMLElement>('.split');
+    const editorPane = shadow.querySelector<HTMLElement>('.editor-pane');
+    const handle     = shadow.querySelector<HTMLElement>('.resize-handle');
     if (!split || !editorPane || !handle) return;
 
     let dragging = false;
@@ -244,8 +246,8 @@ class FlowDiagramEditorElement extends HTMLElement {
       const item = ordered[i];
       nodes.push(
         item.type === 'event'
-          ? this.renderEventNode(item.name, item.eventType!)
-          : this.renderStepNode(item.name, item.step!)
+          ? this.renderEventNode(item.name, item.eventType ?? '')
+          : this.renderStepNode(item.name, item.step ?? {})
       );
       if (i < ordered.length - 1) nodes.push(this.renderConnector());
     }
@@ -502,7 +504,7 @@ class FlowDiagramEditorElement extends HTMLElement {
         font-size: 12px;
         flex-shrink: 0;
       }
-      .error-bar::before { content: '\\26A0'; }
+      .error-bar::before { content: '\26A0'; }
     `;
   }
 }
