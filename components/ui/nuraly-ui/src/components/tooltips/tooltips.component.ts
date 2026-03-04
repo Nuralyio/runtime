@@ -79,7 +79,7 @@ export class TooltipElement extends LitElement {
     this.initStyles();
 
     this.style.width = `${this.clientWidth}px`;
-    if (this.position == TooltipPosition.Bottom || this.position == TooltipPosition.Top) {
+    if (this.position === TooltipPosition.Bottom || this.position === TooltipPosition.Top) {
       this.calculateYposition();
       this.calculateYalignement();
     } else {
@@ -96,7 +96,7 @@ export class TooltipElement extends LitElement {
     const isAvailableBottomSpace = tooltipHeight + this.verticalOffset < totalViewPortHeight - targetWithTopSpaceHeight;
     const isAvailableTopSpace = tooltipHeight + this.verticalOffset < topAvailableSpace;
 
-    if (this.position == TooltipPosition.Bottom) {
+    if (this.position === TooltipPosition.Bottom) {
       if (isAvailableBottomSpace || !isAvailableTopSpace) {
         this.classList.add('bottom-position');
         this.style.top = `${targetWithTopSpaceHeight + this.verticalOffset}px`;
@@ -124,7 +124,7 @@ export class TooltipElement extends LitElement {
     const totalViewPortWidth = window.visualViewport!.width;
     const rightSpaceAndHalfOfTargetWidth = totalViewPortWidth - leftSpaceAndTargetWidth + targetWidth / 2;
 
-    if (this.alignement == TooltipAlignment.Start) {
+    if (this.alignement === TooltipAlignment.Start) {
       const canBeAtStart = tooltipWidth + leftSpace < totalViewPortWidth;
       if (canBeAtStart) {
         this.classList.add('alignement-start');
@@ -133,7 +133,7 @@ export class TooltipElement extends LitElement {
         this.classList.add('alignement-end');
         this.style.left = `${leftSpace - tooltipWidth + this.horizontalOffset}px`;
       }
-    } else if (this.alignement == TooltipAlignment.End) {
+    } else if (this.alignement === TooltipAlignment.End) {
       const canBeAtEnd = tooltipWidth < leftSpace;
       if (canBeAtEnd) {
         this.classList.add('alignement-end');
@@ -168,7 +168,7 @@ export class TooltipElement extends LitElement {
     const isAvailableRightSpace = tooltipWidth + this.horizontalOffset < totalViewPortWidth - leftSpaceAndTargetWidth;
     const isAvailableLeftSpace = tooltipWidth + this.horizontalOffset < leftSpace;
 
-    if (this.position == TooltipPosition.Right) {
+    if (this.position === TooltipPosition.Right) {
       if (isAvailableRightSpace || !isAvailableLeftSpace) {
         this.classList.add('right-position');
         this.style.left = `${leftSpaceAndTargetWidth + this.horizontalOffset}px`;
@@ -195,7 +195,7 @@ export class TooltipElement extends LitElement {
     const totalViewPortHeight = window.visualViewport!.height;
     const bottomSpace = totalViewPortHeight - targetWithTopSpaceHeight;
 
-    if (this.alignement == TooltipAlignment.End) {
+    if (this.alignement === TooltipAlignment.End) {
       const canBeAtEnd = tooltipHeight < topSpace;
       if (canBeAtEnd) {
         this.classList.add('alignement-end');
@@ -204,7 +204,7 @@ export class TooltipElement extends LitElement {
         this.classList.add('alignement-start');
         this.style.top = `${topSpace - targetHeight / 4}px`;
       }
-    } else if (this.alignement == TooltipAlignment.Start) {
+    } else if (this.alignement === TooltipAlignment.Start) {
       const canBeAtStart = tooltipHeight < totalViewPortHeight - targetWithTopSpaceHeight;
       if (canBeAtStart) {
         this.classList.add('alignement-start');

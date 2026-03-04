@@ -188,7 +188,7 @@ function toolbar(
         const parentTagName = parentNode?.tagName?.toLowerCase()?.trim();
         if (parentTagName) tags.push(parentTagName);
       };
-      while (parentNode != null) {
+      while (parentNode !== null && parentNode !== undefined) {
         checkNode();
         parentNode = parentNode?.parentNode;
       }
@@ -264,7 +264,7 @@ function toolbar(
           icon: "add_link",
           command: () => {
             const newLink = prompt("Write the URL here", "http://");
-            if (newLink && newLink != "" && newLink != "http://") {
+            if (newLink && newLink !== "" && newLink !== "http://") {
               command("createlink", newLink);
             }
           },

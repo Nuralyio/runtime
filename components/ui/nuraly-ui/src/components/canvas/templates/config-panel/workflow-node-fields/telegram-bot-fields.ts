@@ -59,6 +59,70 @@ function getStatusDisplay(state?: TriggerConnectionState): { label: string; cssC
 }
 
 /**
+ * Render the trigger stats row (messages received, last message time)
+ */
+function renderTriggerStats(triggerInfo: TriggerInfo): TemplateResult {
+  return html`
+    <div class="trigger-stats-row">
+      <span class="trigger-stat">
+        <nr-icon name="message-square" size="small"></nr-icon>
+        ${triggerInfo.messagesReceived} message${triggerInfo.messagesReceived === 1 ? '' : 's'} received
+      </span>
+      ${triggerInfo.lastMessageAt ? html`
+        <span class="trigger-stat trigger-stat--secondary">
+          Last: ${formatRelativeTime(triggerInfo.lastMessageAt)}
+        </span>
+      ` : nothing}
+    </div>
+  `;
+}
+
+/**
+ * Render the action button based on trigger state
+ */
+function renderActionButton(
+  hasTrigger: boolean,
+  isActive: boolean,
+  triggerInfo: TriggerInfo | undefined,
+  triggerActions: TriggerActions,
+  nodeType: string,
+  config: NodeConfiguration,
+): TemplateResult {
+  if (!hasTrigger) {
+    return html`
+      <button
+        class="trigger-action-btn trigger-action-btn--primary"
+        @click=${() => triggerActions.onCreateAndActivate(nodeType, config)}
+      >
+        <nr-icon name="play" size="small"></nr-icon>
+        Activate Bot
+      </button>
+    `;
+  }
+  const triggerId = triggerInfo?.triggerId ?? '';
+  if (isActive) {
+    return html`
+      <button
+        class="trigger-action-btn trigger-action-btn--danger"
+        @click=${() => triggerActions.onDeactivate(triggerId)}
+      >
+        <nr-icon name="square" size="small"></nr-icon>
+        Deactivate
+      </button>
+    `;
+  }
+  return html`
+    <button
+      class="trigger-action-btn trigger-action-btn--primary"
+      @click=${() => triggerActions.onActivate(triggerId)}
+    >
+      <nr-icon name="play" size="small"></nr-icon>
+      Activate
+    </button>
+  `;
+}
+
+/**
  * Render the trigger status section at the top of the config panel
  */
 function renderTriggerStatusSection(
@@ -71,6 +135,7 @@ function renderTriggerStatusSection(
   const statusDisplay = getStatusDisplay(triggerInfo?.status);
   const isActive = triggerInfo?.status === TriggerConnectionState.CONNECTED
     || triggerInfo?.status === TriggerConnectionState.CONNECTING;
+  const showStats = isActive && triggerInfo?.messagesReceived != null;
 
   return html`
     <div class="config-section">
@@ -94,19 +159,7 @@ function renderTriggerStatusSection(
           <div class="trigger-status-reason">${triggerInfo.stateReason}</div>
         ` : nothing}
 
-        ${isActive && triggerInfo?.messagesReceived != null ? html`
-          <div class="trigger-stats-row">
-            <span class="trigger-stat">
-              <nr-icon name="message-square" size="small"></nr-icon>
-              ${triggerInfo.messagesReceived} message${triggerInfo.messagesReceived !== 1 ? 's' : ''} received
-            </span>
-            ${triggerInfo.lastMessageAt ? html`
-              <span class="trigger-stat trigger-stat--secondary">
-                Last: ${formatRelativeTime(triggerInfo.lastMessageAt)}
-              </span>
-            ` : nothing}
-          </div>
-        ` : nothing}
+        ${showStats && triggerInfo ? renderTriggerStats(triggerInfo) : nothing}
 
         ${triggerInfo?.inDevMode ? html`
           <div class="trigger-dev-mode-badge">
@@ -131,31 +184,7 @@ function renderTriggerStatusSection(
 
       ${triggerActions ? html`
         <div class="trigger-actions">
-          ${!hasTrigger ? html`
-            <button
-              class="trigger-action-btn trigger-action-btn--primary"
-              @click=${() => triggerActions.onCreateAndActivate(nodeType, config)}
-            >
-              <nr-icon name="play" size="small"></nr-icon>
-              Activate Bot
-            </button>
-          ` : isActive ? html`
-            <button
-              class="trigger-action-btn trigger-action-btn--danger"
-              @click=${() => triggerActions.onDeactivate(triggerInfo!.triggerId!)}
-            >
-              <nr-icon name="square" size="small"></nr-icon>
-              Deactivate
-            </button>
-          ` : html`
-            <button
-              class="trigger-action-btn trigger-action-btn--primary"
-              @click=${() => triggerActions.onActivate(triggerInfo!.triggerId!)}
-            >
-              <nr-icon name="play" size="small"></nr-icon>
-              Activate
-            </button>
-          `}
+          ${renderActionButton(hasTrigger, isActive, triggerInfo, triggerActions, nodeType, config)}
 
           ${hasTrigger ? html`
             <label class="trigger-dev-toggle">

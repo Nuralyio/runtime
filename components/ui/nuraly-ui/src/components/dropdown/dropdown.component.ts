@@ -9,6 +9,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styles } from './dropdown.style';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { NrDropdownController } from './controllers/dropdown.controller.js';
 
@@ -230,6 +231,44 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
     this.dropdownController.toggle();
   }
 
+  private renderCustomContent(item: DropdownItem): unknown {
+    if (typeof item.customContent === 'string') {
+      return html`<div>${unsafeHTML(item.customContent)}</div>`;
+    }
+    return item.customContent;
+  }
+
+  private renderSubmenuContent(item: DropdownItem): unknown {
+    if (item.customContent) {
+      return html`
+        <div class="dropdown__custom-content">
+          ${this.renderCustomContent(item)}
+        </div>
+      `;
+    }
+    return html`
+      <div class="dropdown__items">
+        ${(item.options || []).map(subItem => {
+          if (subItem.divider) {
+            return html`<div class="dropdown__divider"></div>`;
+          }
+          return html`
+            <button
+              class="dropdown__item ${classMap({
+                'dropdown__item--disabled': !!subItem.disabled
+              })}"
+              ?disabled="${subItem.disabled}"
+              @click="${(e: MouseEvent) => this.handleItemClick(subItem, e)}"
+            >
+              ${subItem.icon ? html`<nr-icon name="${subItem.icon}" class="dropdown__item-icon"></nr-icon>` : nothing}
+              <span class="dropdown__item-label">${subItem.label}</span>
+            </button>
+          `;
+        })}
+      </div>
+    `;
+  }
+
   private renderItems(): unknown {
     if (!this.items.length) return nothing;
 
@@ -269,35 +308,7 @@ export class NrDropdownElement extends NuralyUIBaseMixin(LitElement) {
                 })}"
                 @mouseenter="${() => this.handleSubmenuEnter(item.id)}"
                 @mouseleave="${() => this.handleSubmenuLeave(item.id)}">
-                  ${item.customContent ? html`
-                    <div class="dropdown__custom-content">
-                      ${typeof item.customContent === 'string' 
-                        ? html`<div .innerHTML="${item.customContent}"></div>`
-                        : item.customContent
-                      }
-                    </div>
-                  ` : html`
-                    <div class="dropdown__items">
-                      ${item.options!.map(subItem => {
-                        if (subItem.divider) {
-                          return html`<div class="dropdown__divider"></div>`;
-                        }
-                        
-                        return html`
-                          <button
-                            class="dropdown__item ${classMap({
-                              'dropdown__item--disabled': !!subItem.disabled
-                            })}"
-                            ?disabled="${subItem.disabled}"
-                            @click="${(e: MouseEvent) => this.handleItemClick(subItem, e)}"
-                          >
-                            ${subItem.icon ? html`<nr-icon name="${subItem.icon}" class="dropdown__item-icon"></nr-icon>` : nothing}
-                            <span class="dropdown__item-label">${subItem.label}</span>
-                          </button>
-                        `;
-                      })}
-                    </div>
-                  `}
+                  ${this.renderSubmenuContent(item)}
                 </div>
               ` : nothing}
             </div>

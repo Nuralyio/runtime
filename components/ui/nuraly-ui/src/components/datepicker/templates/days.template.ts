@@ -26,7 +26,7 @@ export const renderDays = (
 
   const dayContainer = (day: IDayPresentation) => {
     const active = todayIsTheDay(day, dateRawObject, isRange) && day.valid;
-    const isToday = currentYear == day.year && currentMonth == day.month + 1 && currentDay == day.date;
+    const isToday = currentYear === day.year && currentMonth === day.month + 1 && currentDay === day.date;
 
     return html`<div
       class="day-cell ${classMap({
