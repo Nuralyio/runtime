@@ -18,7 +18,7 @@ export class CarouselComponent extends LitElement {
 
   override firstUpdated() {
     this.displayedElements = this.slideElements.map((element, index) => {
-      if (index != this.currentIndex) {
+      if (index !== this.currentIndex) {
         element.classList.add('carousel-item-hidden');
       }
       return element;
@@ -43,7 +43,7 @@ export class CarouselComponent extends LitElement {
 
   next() {
     this.displayedElements[this.currentIndex].classList.add('carousel-item-hidden');
-    if (this.displayedElements.length - 1 == this.currentIndex) {
+    if (this.displayedElements.length - 1 === this.currentIndex) {
       this.currentIndex = 0;
     } else {
       this.currentIndex++;
@@ -53,7 +53,7 @@ export class CarouselComponent extends LitElement {
 
   prev() {
     this.displayedElements[this.currentIndex].classList.add('carousel-item-hidden');
-    if (this.currentIndex == 0) {
+    if (this.currentIndex === 0) {
       this.currentIndex = this.displayedElements.length - 1;
     } else {
       this.currentIndex--;

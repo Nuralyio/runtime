@@ -5,6 +5,7 @@
  */
 
 import { html, nothing, TemplateResult } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { msg } from '@lit/localize';
 import type { ChatbotArtifact } from '../chatbot.types.js';
 import { getLangDisplayName, renderMarkdown } from '../utils/index.js';
@@ -35,9 +36,9 @@ function renderArtifactContent(artifact: ChatbotArtifact): TemplateResult {
     }
     case 'md':
     case 'markdown':
-      return html`<div class="artifact-panel__rendered-md" .innerHTML=${renderMarkdown(artifact.content)}></div>`;
+      return html`<div class="artifact-panel__rendered-md">${unsafeHTML(renderMarkdown(artifact.content))}</div>`;
     case 'html':
-      return html`<div class="artifact-panel__rendered-html" .innerHTML=${artifact.content}></div>`;
+      return html`<div class="artifact-panel__rendered-html">${unsafeHTML(artifact.content)}</div>`;
     default:
       return html`<pre class="artifact-panel__code"><code>${artifact.content}</code></pre>`;
   }

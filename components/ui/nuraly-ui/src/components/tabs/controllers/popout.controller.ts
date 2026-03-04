@@ -385,7 +385,7 @@ export class TabsPopOutController implements ReactiveController {
           render(poppedOutTab.tab.content, container);
         } catch (error) {
           console.warn('[TabsPopOutController] Could not render template content:', error);
-          container.innerHTML = 'Content could not be rendered';
+          container.textContent = 'Content could not be rendered';
         }
       }
     }

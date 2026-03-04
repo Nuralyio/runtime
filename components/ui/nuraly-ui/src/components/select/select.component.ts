@@ -11,6 +11,7 @@ import { map } from 'lit/directives/map.js';
 import { choose } from 'lit/directives/choose.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { NuralyUIBaseMixin } from '@nuralyui/common/mixins';
 import { renderValidationMessage as sharedRenderValidationMessage } from '@nuralyui/common/utils';
 
@@ -802,7 +803,7 @@ export class HySelectComponent extends NuralyUIBaseMixin(LitElement) implements 
           <div class="option-content">
             ${option.icon ? html`<nr-icon name="${option.icon}" size="${this.size}" class="option-icon"></nr-icon>` : nothing}
             <div class="option-text">
-              ${option.htmlContent ? html`<div .innerHTML=${option.htmlContent}></div>` : option.label}
+              ${option.htmlContent ? html`<div>${unsafeHTML(option.htmlContent)}</div>` : option.label}
               ${option.description ? html`<div class="option-description">${option.description}</div>` : nothing}
             </div>
           </div>

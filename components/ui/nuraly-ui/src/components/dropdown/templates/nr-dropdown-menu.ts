@@ -43,7 +43,7 @@ export class HyDropdownMenu extends LitElement {
       ${this.icon ? html`<nr-icon name=${this.icon}></nr-icon>` : nothing}
       <nr-label class="menu-label"> ${this.label}</nr-label>
       <nr-icon
-        name="${this.direction == DropDownDirection.Right ? 'caret-right' : 'caret-left'}"
+        name="${this.direction === DropDownDirection.Right ? 'caret-right' : 'caret-left'}"
         id="caret-icon"
       ></nr-icon>
       <slot style="display:${this.showChildren ? 'block' : 'none'}"></slot>

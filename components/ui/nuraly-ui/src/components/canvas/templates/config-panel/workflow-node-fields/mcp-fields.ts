@@ -69,7 +69,7 @@ function renderTriggerStatusSection(
         ${triggerInfo?.stateReason ? html`
           <div class="trigger-status-reason">${triggerInfo.stateReason}</div>
         ` : nothing}
-        ${isActive && triggerInfo?.messagesReceived != null ? html`
+        ${isActive && triggerInfo?.messagesReceived !== undefined && triggerInfo?.messagesReceived !== null ? html`
           <div class="trigger-stats-row">
             <span class="trigger-stat">
               <nr-icon name="tool" size="small"></nr-icon>
