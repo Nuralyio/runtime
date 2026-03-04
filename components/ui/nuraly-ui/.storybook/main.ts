@@ -19,8 +19,10 @@ const config: StorybookConfig = {
     disableTelemetry: true,
   },
   viteFinal: async (config) => {
+    const base = process.env.STORYBOOK_BASE || '/';
     return {
       ...config,
+      base,
       define: {
         ...config.define,
         global: 'globalThis',
