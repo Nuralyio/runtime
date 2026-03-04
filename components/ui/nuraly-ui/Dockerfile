@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for NuralyUI Storybook
-FROM node:22-alpine AS base
+FROM node:latest AS base
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN npm run build
 # Development stage — runs Storybook dev server with hot reload
 FROM base AS development
 EXPOSE 6006
-CMD ["npx", "storybook", "dev", "-p", "6006", "--host", "0.0.0.0"]
+CMD ["npx", "storybook", "dev", "-p", "6006", "--host", "0.0.0.0", "--no-open"]
 
 # Production build stage
 FROM base AS build
