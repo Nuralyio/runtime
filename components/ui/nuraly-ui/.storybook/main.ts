@@ -23,6 +23,10 @@ const config: StorybookConfig = {
     return {
       ...config,
       base,
+      server: {
+        ...config.server,
+        allowedHosts: true,
+      },
       define: {
         ...config.define,
         global: 'globalThis',
