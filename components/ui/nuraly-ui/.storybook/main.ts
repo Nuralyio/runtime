@@ -23,6 +23,21 @@ const config: StorybookConfig = {
     return {
       ...config,
       base,
+      plugins: [
+        ...(config.plugins || []),
+        // Fix Storybook bug: it generates /@id/ paths without the base prefix
+        ...(base !== '/'
+          ? [
+              {
+                name: 'fix-storybook-base-path',
+                enforce: 'post' as const,
+                transformIndexHtml(html: string) {
+                  return html.replace('src="/@id/__x00__', `src="${base}@id/__x00__`);
+                },
+              },
+            ]
+          : []),
+      ],
       server: {
         ...config.server,
         allowedHosts: true,
