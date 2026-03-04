@@ -20,7 +20,7 @@ function openMermaidModal(config: NodeConfiguration, onUpdate: (key: string, val
     modalId: 'mermaid-code-modal',
     title: 'Edit Mermaid Diagram',
     language: 'markdown',
-    initialCode: config.textContent || DEFAULT_MERMAID,
+    initialCode: (config.textContent as string) || DEFAULT_MERMAID,
     onCodeChange: (value) => onUpdate('textContent', value),
   });
 }
@@ -43,7 +43,7 @@ export function renderMermaidFields(
         <label>Mermaid Code</label>
         ${renderCodeEditorField({
           language: 'markdown',
-          code: config.textContent || DEFAULT_MERMAID,
+          code: (config.textContent as string) || DEFAULT_MERMAID,
           onCodeChange: (e) => onUpdate('textContent', e.detail.value),
           onFullscreen: () => openMermaidModal(config, onUpdate),
         })}

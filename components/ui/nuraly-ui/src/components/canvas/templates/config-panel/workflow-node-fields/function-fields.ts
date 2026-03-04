@@ -16,7 +16,7 @@ function openCodeModal(config: NodeConfiguration, defaultCode: string, onUpdate:
     modalId: 'function-code-modal',
     title: 'Edit Function Code',
     language: 'javascript',
-    initialCode: config.code || defaultCode,
+    initialCode: (config.code as string) || defaultCode,
     onCodeChange: (value) => onUpdate('code', value),
   });
 }
@@ -50,7 +50,7 @@ return {
         <label>Code</label>
         ${renderCodeEditorField({
           language: 'javascript',
-          code: config.code || defaultCode,
+          code: (config.code as string) || defaultCode,
           onCodeChange: (e) => onUpdate('code', e.detail.value),
           onFullscreen: () => openCodeModal(config, defaultCode, onUpdate),
         })}
