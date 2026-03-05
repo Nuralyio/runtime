@@ -468,6 +468,23 @@ function checkDeclaration(property, value, fileLine, relPath, violations, tokenM
   checkFallbacks(value, property, fileLine, relPath, violations);
 }
 
+function processBlockLine(rawLine, fileLine, commentState, blockState, relPath, violations, tokenMap) {
+  const line = stripComments(rawLine, commentState);
+  if (!line) return;
+  if (updateBlockState(line, blockState)) return;
+
+  const declarationLines = extractDeclarations(line);
+  if (!declarationLines) return;
+
+  for (const declLine of declarationLines) {
+    const propMatch = declLine.match(PROPERTY_RE);
+    if (!propMatch) continue;
+    const property = propMatch[1].toLowerCase();
+    const value = propMatch[2];
+    checkDeclaration(property, value, fileLine, relPath, violations, tokenMap, blockState.inMediaQuery);
+  }
+}
+
 function detectViolations(cssBlocks, filePath, tokenMap) {
   const violations = [];
   const relPath = relative(join(ROOT, 'src/components'), filePath);
@@ -480,22 +497,7 @@ function detectViolations(cssBlocks, filePath, tokenMap) {
     };
 
     for (const { text: rawLine, fileLine } of block.lines) {
-      const line = stripComments(rawLine, commentState);
-      if (!line) continue;
-
-      if (updateBlockState(line, blockState)) continue;
-
-      const declarationLines = extractDeclarations(line);
-      if (!declarationLines) continue;
-
-      for (const declLine of declarationLines) {
-        const propMatch = declLine.match(PROPERTY_RE);
-        if (!propMatch) continue;
-
-        const property = propMatch[1].toLowerCase();
-        const value = propMatch[2];
-        checkDeclaration(property, value, fileLine, relPath, violations, tokenMap, blockState.inMediaQuery);
-      }
+      processBlockLine(rawLine, fileLine, commentState, blockState, relPath, violations, tokenMap);
     }
   }
 
@@ -712,12 +714,13 @@ function formatReport(allViolations, coverageGaps, format) {
 
   for (const file of [...byFile.keys()].sort()) {
     const fileViolations = byFile.get(file);
-    lines.push(...formatSeverityBlock('ERROR', fileViolations, file));
-    lines.push(...formatSeverityBlock('WARNING', fileViolations, file));
+    lines.push(
+      ...formatSeverityBlock('ERROR', fileViolations, file),
+      ...formatSeverityBlock('WARNING', fileViolations, file)
+    );
   }
 
-  lines.push(...formatCoverageGaps(coverageGaps));
-  lines.push(formatSummary(allViolations));
+  lines.push(...formatCoverageGaps(coverageGaps), formatSummary(allViolations));
 
   return lines.join('\n');
 }
