@@ -299,7 +299,7 @@ const HSL_RE = /\bhsla?\s*\(/i;
 const DIMENSION_RE = /\b\d+(?:\.\d+)?(?:px|rem|em)\b/;
 const VAR_RE = /var\s*\(/;
 const CSS_SELECTOR_RE = /^\s*[.#:&[\]@>~+*]/;
-const PROPERTY_RE = /^\s*([\w-]+)\s*:\s*(.+?)\s*;?\s*$/;
+const PROPERTY_RE = /^[\t ]*([\w-]+)[\t ]*:[\t ]*(.+?)[\t ]*;?[\t ]*$/;
 
 /**
  * Strip comments from a CSS line and update the comment tracking state.
@@ -322,7 +322,8 @@ function stripComments(rawLine, commentState) {
   }
 
   // Remove // comments (not standard CSS but used in tagged templates)
-  line = line.replace(/\/\/.*$/, '');
+  const slashIdx = line.indexOf('//');
+  if (slashIdx !== -1) line = line.substring(0, slashIdx);
 
   return line.trim() || null;
 }
@@ -364,7 +365,11 @@ function updateBlockState(line, blockState) {
  */
 function extractDeclarations(line) {
   if (CSS_SELECTOR_RE.test(line)) {
-    const braceContent = line.match(/\{([^}]+)\}/);
+    const openIdx = line.indexOf('{');
+    const closeIdx = line.indexOf('}', openIdx + 1);
+    const braceContent = openIdx !== -1 && closeIdx !== -1
+      ? [null, line.substring(openIdx + 1, closeIdx)]
+      : null;
     if (!braceContent) return null;
     const decls = braceContent[1].split(';').filter(d => d.trim());
     return decls.length > 0 ? decls.map(d => d.trim()) : null;
@@ -600,7 +605,7 @@ function checkBareDimensions(value, property, line, file, violations, inMedia) {
 
 function checkFallbacks(value, property, line, file, violations) {
   // Match var(--token, fallback) patterns
-  const varWithFallback = /var\(\s*--[\w-]+\s*,\s*([^)]+)\)/g;
+  const varWithFallback = /var\([\t ]*--[\w-]+[\t ]*,[\t ]*([^)]+)\)/g;
   let match;
   while ((match = varWithFallback.exec(value)) !== null) {
     const fallback = match[1].trim();
