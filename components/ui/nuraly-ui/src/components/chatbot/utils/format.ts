@@ -12,7 +12,7 @@ export function formatTimestamp(timestamp: Date | string | undefined): string {
   if (!timestamp) return '';
 
   const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
-  if (isNaN(date.getTime())) return '';
+  if (Number.isNaN(date.getTime())) return '';
 
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();

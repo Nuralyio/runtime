@@ -105,7 +105,8 @@ export class ChatbotCoreController {
     );
 
     if (config.provider) {
-      void this.initializeProvider(config.provider);
+      const provider = config.provider;
+      queueMicrotask(() => { void this.initializeProvider(provider); });
     }
 
     this.setupLifecycleHooks();

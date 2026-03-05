@@ -129,7 +129,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 					 .value=${this.horizontalValue} 				
 					 .disabled=${isDisabled}
 					 @valueChange=${(e) => {
-      if (e.detail.value && !isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
+      if (e.detail.value && !Number.isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
         this.horizontalValue = e.detail.value;
         this.boxShadow();
       }
@@ -160,7 +160,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 					 .value=${this.verticalValue} 					  
 					 .disabled=${isDisabled}
 					 @valueChange=${(e) => {
-      if (e.detail.value && !isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
+      if (e.detail.value && !Number.isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
         this.verticalValue = e.detail.value;
         this.boxShadow();
       }
@@ -193,7 +193,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 					 .disabled=${isDisabled}
 					 .value=${this.blurValue} 
 					 @valueChange=${(e) => {
-      if (e.detail.value && !isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
+      if (e.detail.value && !Number.isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
         this.blurValue = e.detail.value;
         this.boxShadow();
       }
@@ -224,7 +224,7 @@ export class AttributeBoxShadowValue extends BaseElementBlock {
 					 .disabled=${isDisabled}
 					 .value=${this.spreadValue}
 					 @valueChange=${(e) => {
-      if (e.detail.value && !isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
+      if (e.detail.value && !Number.isNaN(e.detail.value) && +e.detail.value >= -50 && +e.detail.value <= 50) {
         this.spreadValue = e.detail.value;
         this.boxShadow();
       }

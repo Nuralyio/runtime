@@ -338,10 +338,10 @@ export class TabsPopOutController implements ReactiveController {
       
       console.log('[TabsPopOutController] Parsed widthNum:', widthNum);
       console.log('[TabsPopOutController] Parsed heightNum:', heightNum);
-      console.log('[TabsPopOutController] widthNum isNaN:', isNaN(widthNum));
-      console.log('[TabsPopOutController] heightNum isNaN:', isNaN(heightNum));
+      console.log('[TabsPopOutController] widthNum isNaN:', Number.isNaN(widthNum));
+      console.log('[TabsPopOutController] heightNum isNaN:', Number.isNaN(heightNum));
       
-      if (!isNaN(widthNum) && !isNaN(heightNum)) {
+      if (!Number.isNaN(widthNum) && !Number.isNaN(heightNum)) {
         panel.panelWidth = widthNum;
         panel.panelHeight = heightNum;
         console.log('[TabsPopOutController] ✓ Set panel.panelWidth:', panel.panelWidth);

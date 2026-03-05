@@ -21,13 +21,13 @@ export class InputValidationUtils {
     step?: string
   ): void {
     if (type === INPUT_TYPE.NUMBER) {
-      if (min && isNaN(Number(min))) {
+      if (min && Number.isNaN(Number(min))) {
         console.warn(`Invalid min value: "${min}" is not a valid number`);
       }
-      if (max && isNaN(Number(max))) {
+      if (max && Number.isNaN(Number(max))) {
         console.warn(`Invalid max value: "${max}" is not a valid number`);
       }
-      if (step && isNaN(Number(step))) {
+      if (step && Number.isNaN(Number(step))) {
         console.warn(`Invalid step value: "${step}" is not a valid number`);
       }
       if (min && max && Number(min) >= Number(max)) {
@@ -114,7 +114,7 @@ export class InputValidationUtils {
 
     const numericValue = Number(value);
     
-    if (isNaN(numericValue)) {
+    if (Number.isNaN(numericValue)) {
       return { 
         isValid: false, 
         warnings: [`Invalid numeric value: "${value}"`] 

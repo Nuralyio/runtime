@@ -597,12 +597,12 @@ export class InputValidationController extends BaseValidationController<InputVal
       case 'number':
       case 'integer':
         return {
-          isValid: !isNaN(Number(value)) && (type === 'number' || Number.isInteger(Number(value))),
+          isValid: !Number.isNaN(Number(value)) && (type === 'number' || Number.isInteger(Number(value))),
           message: `Please enter a valid ${type}`
         };
       case 'float':
         return {
-          isValid: !isNaN(Number.parseFloat(value)),
+          isValid: !Number.isNaN(Number.parseFloat(value)),
           message: 'Please enter a valid number'
         };
       default:
