@@ -292,7 +292,7 @@ export function getDynamicVariablesFromOutput(
     basePath = `variables.${nodeConfig.outputVariable}`;
   } else {
     // Default - use node name as variable
-    const safeName = nodeName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const safeName = nodeName.toLowerCase().replaceAll(/[^a-z0-9]/g, '_');
     basePath = `variables.${safeName}`;
   }
 

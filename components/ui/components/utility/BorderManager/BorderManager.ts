@@ -132,7 +132,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
       const parts = borderStr.split(' ');
       const widthMatch = parts[0]?.match(/^(\d+)(px|em|rem|%)?$/);
       return {
-        width: widthMatch ? parseInt(widthMatch[1]) : 0,
+        width: widthMatch ? Number.parseInt(widthMatch[1]) : 0,
         style: parts[1] || 'solid',
         color: parts[2] || '#000000',
         unit: widthMatch?.[2] || 'px'
@@ -142,7 +142,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
     const parseRadius = (radiusStr: string): number => {
       if (!radiusStr) return 0;
       const match = radiusStr.match(/^(\d+)/);
-      return match ? parseInt(match[1]) : 0;
+      return match ? Number.parseInt(match[1]) : 0;
     };
 
     // Determine active sides
@@ -357,7 +357,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                 type="number"
                 size="small"
                 .value=${String(config.width)}
-                @nr-input=${(e: CustomEvent) => this.updateConfig('width', parseInt(e.detail?.value) || 0)}
+                @nr-input=${(e: CustomEvent) => this.updateConfig('width', Number.parseInt(e.detail?.value) || 0)}
               ></nr-input>
               <span style="font-size: 10px; color: #888;">px</span>
             </div>
@@ -421,7 +421,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                   type="number"
                   size="small"
                   .value=${String(radius.topLeft)}
-                  @nr-input=${(e: CustomEvent) => this.updateRadius('topLeft', parseInt(e.detail?.value) || 0)}
+                  @nr-input=${(e: CustomEvent) => this.updateRadius('topLeft', Number.parseInt(e.detail?.value) || 0)}
                 ></nr-input>
                 <span style="font-size: 10px; color: #888;">px</span>
               </div>
@@ -435,7 +435,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                   type="number"
                   size="small"
                   .value=${String(radius.topLeft)}
-                  @nr-input=${(e: CustomEvent) => this.updateRadius('topLeft', parseInt(e.detail?.value) || 0)}
+                  @nr-input=${(e: CustomEvent) => this.updateRadius('topLeft', Number.parseInt(e.detail?.value) || 0)}
                 ></nr-input>
               </div>
               <div class="radius-item">
@@ -445,7 +445,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                   type="number"
                   size="small"
                   .value=${String(radius.topRight)}
-                  @nr-input=${(e: CustomEvent) => this.updateRadius('topRight', parseInt(e.detail?.value) || 0)}
+                  @nr-input=${(e: CustomEvent) => this.updateRadius('topRight', Number.parseInt(e.detail?.value) || 0)}
                 ></nr-input>
               </div>
               <div class="radius-item">
@@ -455,7 +455,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                   type="number"
                   size="small"
                   .value=${String(radius.bottomLeft)}
-                  @nr-input=${(e: CustomEvent) => this.updateRadius('bottomLeft', parseInt(e.detail?.value) || 0)}
+                  @nr-input=${(e: CustomEvent) => this.updateRadius('bottomLeft', Number.parseInt(e.detail?.value) || 0)}
                 ></nr-input>
               </div>
               <div class="radius-item">
@@ -465,7 +465,7 @@ export class BorderManagerDisplay extends BaseElementBlock {
                   type="number"
                   size="small"
                   .value=${String(radius.bottomRight)}
-                  @nr-input=${(e: CustomEvent) => this.updateRadius('bottomRight', parseInt(e.detail?.value) || 0)}
+                  @nr-input=${(e: CustomEvent) => this.updateRadius('bottomRight', Number.parseInt(e.detail?.value) || 0)}
                 ></nr-input>
               </div>
             </div>

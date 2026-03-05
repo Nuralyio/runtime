@@ -318,7 +318,7 @@ export class ValidationRulesDisplay extends BaseElementBlock {
   }
 
   private handleValueChange(index: number, key: string, value: string, type: 'number' | 'text') {
-    const parsedValue = type === 'number' ? (value ? parseInt(value, 10) : 0) : value;
+    const parsedValue = type === 'number' ? (value ? Number.parseInt(value, 10) : 0) : value;
     this.updateRule(index, { [key]: parsedValue });
   }
 

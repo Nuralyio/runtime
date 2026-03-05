@@ -116,7 +116,7 @@ export class VariableNameInputComponent extends NuralyUIBaseMixin(LitElement) {
 
   private handleInput(e: CustomEvent) {
     // Only allow valid variable names (alphanumeric and underscore)
-    const sanitized = e.detail.value.replace(/[^a-zA-Z0-9_]/g, '');
+    const sanitized = e.detail.value.replaceAll(/[^a-zA-Z0-9_]/g, '');
     this.value = sanitized;
     this.dispatchEvent(new CustomEvent('value-change', {
       detail: { value: this.value },

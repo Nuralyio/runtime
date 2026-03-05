@@ -98,7 +98,7 @@ export function renderMessage(
           ? renderErrorMessage(message.text?.trim() ?? '')
           : message?.metadata?.renderAsHtml
             ? unsafeHTML(message.text?.trim() ?? '')
-            : unsafeHTML((message.text?.trim() ?? '').replace(/\n/g, '<br>'))
+            : unsafeHTML((message.text?.trim() ?? '').replaceAll('\n', '<br>'))
         }
       </div>
       ${message.files && message.files.length > 0 ? html`

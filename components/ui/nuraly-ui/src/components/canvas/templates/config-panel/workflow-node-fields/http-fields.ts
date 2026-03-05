@@ -97,7 +97,7 @@ export function renderHttpStartFields(
         <nr-input
           type="number"
           value=${String(config.httpRateLimit || 100)}
-          @nr-input=${(e: CustomEvent) => onUpdate('httpRateLimit', parseInt(e.detail.value))}
+          @nr-input=${(e: CustomEvent) => onUpdate('httpRateLimit', Number.parseInt(e.detail.value))}
         ></nr-input>
       </div>
     </div>
@@ -117,7 +117,7 @@ export function renderHttpEndFields(
       <nr-input
         type="number"
         value=${String(config.httpStatusCode || 200)}
-        @nr-input=${(e: CustomEvent) => onUpdate('httpStatusCode', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('httpStatusCode', Number.parseInt(e.detail.value))}
       ></nr-input>
     </div>
     <div class="config-field">
@@ -169,7 +169,7 @@ export function renderHttpFields(
       <nr-input
         type="number"
         value=${String(config.timeout || 30000)}
-        @nr-input=${(e: CustomEvent) => onUpdate('timeout', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('timeout', Number.parseInt(e.detail.value))}
       ></nr-input>
     </div>
   `;

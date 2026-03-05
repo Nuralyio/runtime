@@ -49,7 +49,7 @@ export function renderMemoryFields(
           value=${String(config.maxMessages || 50)}
           min="1"
           max="200"
-          @nr-input=${(e: CustomEvent) => onUpdate('maxMessages', parseInt(e.detail.value) || 50)}
+          @nr-input=${(e: CustomEvent) => onUpdate('maxMessages', Number.parseInt(e.detail.value) || 50)}
         ></nr-input>
         <span class="field-description">Maximum number of messages to retain in context</span>
       </div>
@@ -62,7 +62,7 @@ export function renderMemoryFields(
           min="100"
           max="128000"
           step="100"
-          @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', parseInt(e.detail.value) || 4000)}
+          @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', Number.parseInt(e.detail.value) || 4000)}
         ></nr-input>
         <span class="field-description">Maximum tokens to retain in context (estimated)</span>
       </div>

@@ -479,7 +479,7 @@ export const ColumnFiltersMixedTypes: Story = {
     ],
     rows: Array.from({length: 35}, (_, i) => ({
       orderId: 1000 + i,
-      customer: `Customer ${String.fromCharCode(65 + (i % 26))}`,
+      customer: `Customer ${String.fromCodePoint(65 + (i % 26))}`,
       product: `Product ${['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'][i % 5]}`,
       priority: ['High', 'Medium', 'Low'][i % 3],
     })),

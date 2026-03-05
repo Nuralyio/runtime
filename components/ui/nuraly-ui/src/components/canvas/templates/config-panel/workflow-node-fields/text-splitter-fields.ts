@@ -35,7 +35,7 @@ export function renderTextSplitterFields(
         value=${config.chunkSize || 1000}
         min="100"
         max="10000"
-        @nr-input=${(e: CustomEvent) => onUpdate('chunkSize', parseInt(e.detail.value) || 1000)}
+        @nr-input=${(e: CustomEvent) => onUpdate('chunkSize', Number.parseInt(e.detail.value) || 1000)}
       ></nr-input>
       <small class="field-hint">Target size for each chunk</small>
     </div>
@@ -47,7 +47,7 @@ export function renderTextSplitterFields(
         value=${config.chunkOverlap || 200}
         min="0"
         max="1000"
-        @nr-input=${(e: CustomEvent) => onUpdate('chunkOverlap', parseInt(e.detail.value) || 200)}
+        @nr-input=${(e: CustomEvent) => onUpdate('chunkOverlap', Number.parseInt(e.detail.value) || 200)}
       ></nr-input>
       <small class="field-hint">Overlap between chunks for context continuity</small>
     </div>

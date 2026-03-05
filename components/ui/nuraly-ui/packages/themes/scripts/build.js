@@ -248,10 +248,10 @@ async function bundleTheme(themeName, config) {
       
       // Process content - remove @import statements since we're bundling
       const processedContent = content
-        .replace(/@import\s+['"][^'"]*['"];?\s*/g, '') // Remove @import statements
-        .replace(/\/\*\*[\s\S]*?\*\//g, '') // Remove doc comments to reduce size
-        .replace(/\/\*(?!\*)[\s\S]*?\*\//g, '') // Remove regular comments but keep /** doc comments for first pass
-        .replace(/\n\s*\n\s*\n/g, '\n\n') // Reduce multiple empty lines
+        .replaceAll(/@import\s+['"][^'"]*['"];?\s*/g, '') // Remove @import statements
+        .replaceAll(/\/\*\*[\s\S]*?\*\//g, '') // Remove doc comments to reduce size
+        .replaceAll(/\/\*(?!\*)[\s\S]*?\*\//g, '') // Remove regular comments but keep /** doc comments for first pass
+        .replaceAll(/\n\s*\n\s*\n/g, '\n\n') // Reduce multiple empty lines
         .trim();
       
       if (processedContent) {
@@ -327,7 +327,7 @@ export default {
   await fs.writeFile(path.join(DIST_DIR, 'index.js'), indexContent);
   
   // Also create a CommonJS version
-  const cjsContent = indexContent.replace(/export/g, 'module.exports =').replace(/import/g, 'require');
+  const cjsContent = indexContent.replaceAll('export', 'module.exports =').replaceAll('import', 'require');
   await fs.writeFile(path.join(DIST_DIR, 'index.cjs'), cjsContent);
   
   console.log('  ✅ index.js and index.cjs created');

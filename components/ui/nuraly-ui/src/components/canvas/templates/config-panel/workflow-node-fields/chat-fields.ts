@@ -60,7 +60,7 @@ export function renderChatStartFields(
             type="number"
             .value=${String((config.maxFileSize as number) || 10)}
             placeholder="10"
-            @nr-input=${(e: CustomEvent) => onUpdate('maxFileSize', parseInt(e.detail.value) || 10)}
+            @nr-input=${(e: CustomEvent) => onUpdate('maxFileSize', Number.parseInt(e.detail.value) || 10)}
           ></nr-input>
         </div>
 
@@ -70,7 +70,7 @@ export function renderChatStartFields(
             type="number"
             .value=${String((config.maxFiles as number) || 5)}
             placeholder="5"
-            @nr-input=${(e: CustomEvent) => onUpdate('maxFiles', parseInt(e.detail.value) || 5)}
+            @nr-input=${(e: CustomEvent) => onUpdate('maxFiles', Number.parseInt(e.detail.value) || 5)}
           ></nr-input>
         </div>
 

@@ -32,7 +32,7 @@ export function renderWebCrawlFields(
         value=${config.maxDepth ?? 1}
         min="0"
         max="10"
-        @nr-input=${(e: CustomEvent) => onUpdate('maxDepth', parseInt(e.detail.value) || 1)}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxDepth', Number.parseInt(e.detail.value) || 1)}
       ></nr-input>
       <small class="field-hint">How many links deep to follow (0 = only starting URLs)</small>
     </div>
@@ -44,7 +44,7 @@ export function renderWebCrawlFields(
         value=${config.maxPages || 10}
         min="1"
         max="100"
-        @nr-input=${(e: CustomEvent) => onUpdate('maxPages', parseInt(e.detail.value) || 10)}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxPages', Number.parseInt(e.detail.value) || 10)}
       ></nr-input>
       <small class="field-hint">Maximum total pages to crawl</small>
     </div>

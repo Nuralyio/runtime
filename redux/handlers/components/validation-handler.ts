@@ -34,11 +34,10 @@ export const validateAndEmitErrors = (component: any) => {
 
     console.error("Handler validation failed:", validationResult.errors);
     
-    return Promise.reject({
-      type: "validation_error",
-      message: errorMessage,
-      errors: validationResult.errors
-    });
+    const error = new Error(errorMessage);
+    (error as any).type = "validation_error";
+    (error as any).errors = validationResult.errors;
+    return Promise.reject(error);
   }
 
   return null;

@@ -333,8 +333,8 @@ export class TabsPopOutController implements ReactiveController {
     
     // For embedded panels that will be maximized, set numeric dimensions BEFORE appending
     if (isHostEmbedded) {
-      const widthNum = parseInt(originalWidth);
-      const heightNum = parseInt(originalHeight);
+      const widthNum = Number.parseInt(originalWidth);
+      const heightNum = Number.parseInt(originalHeight);
       
       console.log('[TabsPopOutController] Parsed widthNum:', widthNum);
       console.log('[TabsPopOutController] Parsed heightNum:', heightNum);

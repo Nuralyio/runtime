@@ -20,7 +20,7 @@ export function renderDelayFields(
       <nr-input
         type="number"
         value=${String(config.duration || 1000)}
-        @nr-input=${(e: CustomEvent) => onUpdate('duration', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('duration', Number.parseInt(e.detail.value))}
       ></nr-input>
     </div>
     <div class="config-field">

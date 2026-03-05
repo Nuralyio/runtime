@@ -436,7 +436,7 @@ export class NrDbConnectionSelect extends LitElement {
               type="number"
               .value=${String(this.newPort)}
               placeholder="${this.newPort}"
-              @nr-input=${(e: CustomEvent) => this.newPort = parseInt(e.detail?.value) || this.newPort}
+              @nr-input=${(e: CustomEvent) => this.newPort = Number.parseInt(e.detail?.value) || this.newPort}
             ></nr-input>
           </div>
         </div>

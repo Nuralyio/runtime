@@ -88,7 +88,7 @@ export function renderDocumentLoaderFields(
           value=${config.timeout || 30000}
           min="1000"
           max="120000"
-          @nr-input=${(e: CustomEvent) => onUpdate('timeout', parseInt(e.detail.value) || 30000)}
+          @nr-input=${(e: CustomEvent) => onUpdate('timeout', Number.parseInt(e.detail.value) || 30000)}
         ></nr-input>
       </div>
     ` : html`

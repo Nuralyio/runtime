@@ -195,7 +195,7 @@ export function formatCodeWithErrorHighlight(code, error, options :any= {} ) {
       
       // For position-based errors, convert to line/column
       if (match && match[0].includes('position') && !match[2]) {
-        const position = parseInt(match[1], 10);
+        const position = Number.parseInt(match[1], 10);
         let posCount = 0;
         let errorLine = 0;
         let errorColumn = 0;
@@ -218,8 +218,8 @@ export function formatCodeWithErrorHighlight(code, error, options :any= {} ) {
       // If we found line and column information
       if (match && match[1]) {
         // Apply the line offset if provided (to adjust for differences between browser and editor line numbers)
-        const lineNumber = parseInt(match[1], 10) + lineOffset;
-        const columnNumber = parseInt(match[2] || '1', 10);
+        const lineNumber = Number.parseInt(match[1], 10) + lineOffset;
+        const columnNumber = Number.parseInt(match[2] || '1', 10);
         
         // Show context around the error (5 lines before and after)
         const contextRange = 5;

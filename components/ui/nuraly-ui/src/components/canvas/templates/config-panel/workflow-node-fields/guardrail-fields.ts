@@ -254,7 +254,7 @@ function renderCheckFields(
               size="small"
               type="number"
               value=${check.minLength || 1}
-              @nr-input=${(e: CustomEvent) => updateCheck(index, 'minLength', parseInt(e.detail.value) || 1)}
+              @nr-input=${(e: CustomEvent) => updateCheck(index, 'minLength', Number.parseInt(e.detail.value) || 1)}
             ></nr-input>
           </div>
           <div class="config-field" style="flex: 1;">
@@ -263,7 +263,7 @@ function renderCheckFields(
               size="small"
               type="number"
               value=${check.maxLength || 10000}
-              @nr-input=${(e: CustomEvent) => updateCheck(index, 'maxLength', parseInt(e.detail.value) || 10000)}
+              @nr-input=${(e: CustomEvent) => updateCheck(index, 'maxLength', Number.parseInt(e.detail.value) || 10000)}
             ></nr-input>
           </div>
         </div>
@@ -323,7 +323,7 @@ function renderCheckFields(
               min="0"
               max="1"
               step="0.05"
-              @nr-input=${(e: CustomEvent) => updateCheck(index, 'threshold', parseFloat(e.detail.value) || 0.75)}
+              @nr-input=${(e: CustomEvent) => updateCheck(index, 'threshold', Number.parseFloat(e.detail.value) || 0.75)}
             ></nr-input>
           </div>
         ` : nothing}

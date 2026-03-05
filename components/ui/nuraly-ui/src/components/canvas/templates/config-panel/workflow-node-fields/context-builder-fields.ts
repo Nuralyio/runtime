@@ -52,7 +52,7 @@ export function renderContextBuilderFields(
         value=${config.maxTokens || 4000}
         min="100"
         max="32000"
-        @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', parseInt(e.detail.value) || 4000)}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', Number.parseInt(e.detail.value) || 4000)}
       ></nr-input>
       <small class="field-hint">Approximate max tokens for context (stops adding docs when exceeded)</small>
     </div>
@@ -64,7 +64,7 @@ export function renderContextBuilderFields(
         value=${config.maxDocuments || 10}
         min="1"
         max="50"
-        @nr-input=${(e: CustomEvent) => onUpdate('maxDocuments', parseInt(e.detail.value) || 10)}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxDocuments', Number.parseInt(e.detail.value) || 10)}
       ></nr-input>
     </div>
 

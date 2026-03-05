@@ -72,7 +72,7 @@ export class TabsDragDropController extends BaseTabsController implements DragDr
       const target = event.currentTarget as HTMLElement;
       const tabIndex = target.dataset.index || '';
       
-      if (!this.isValidTabIndex(parseInt(tabIndex))) return;
+      if (!this.isValidTabIndex(Number.parseInt(tabIndex))) return;
       
       event.dataTransfer.setData('text/plain', tabIndex);
       event.dataTransfer.effectAllowed = 'move';
@@ -82,8 +82,8 @@ export class TabsDragDropController extends BaseTabsController implements DragDr
       this.dispatchEvent(
         new CustomEvent('tabs-drag-start', {
           detail: {
-            tabIndex: parseInt(tabIndex),
-            tab: this.host.tabs[parseInt(tabIndex)],
+            tabIndex: Number.parseInt(tabIndex),
+            tab: this.host.tabs[Number.parseInt(tabIndex)],
             timestamp: Date.now()
           },
           bubbles: true,
@@ -160,8 +160,8 @@ export class TabsDragDropController extends BaseTabsController implements DragDr
       if (!event.dataTransfer) return;
       
       const target = event.currentTarget as HTMLElement;
-      const sourceIndex = parseInt(event.dataTransfer.getData('text/plain'));
-      const targetIndex = parseInt(target.dataset.index || '0');
+      const sourceIndex = Number.parseInt(event.dataTransfer.getData('text/plain'));
+      const targetIndex = Number.parseInt(target.dataset.index || '0');
       
       if (this.isValidTabReorder(sourceIndex, targetIndex)) {
         this.performTabReorder(sourceIndex, targetIndex);

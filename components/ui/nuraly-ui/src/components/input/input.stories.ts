@@ -1368,7 +1368,7 @@ export const AdvancedValidation: Story = {
                   if (!value) return Promise.resolve();
                   
                   // Remove spaces and hyphens
-                  const cleaned = value.replace(/[\s-]/g, '');
+                  const cleaned = value.replaceAll(/[\s-]/g, '');
                   
                   // Check if it's all digits
                   if (!/^\d+$/.test(cleaned)) {
@@ -1384,7 +1384,7 @@ export const AdvancedValidation: Story = {
                   let sum = 0;
                   let isEven = false;
                   for (let i = cleaned.length - 1; i >= 0; i--) {
-                    let digit = parseInt(cleaned[i]);
+                    let digit = Number.parseInt(cleaned[i]);
                     if (isEven) {
                       digit *= 2;
                       if (digit > 9) digit -= 9;

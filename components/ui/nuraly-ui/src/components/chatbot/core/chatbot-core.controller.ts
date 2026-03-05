@@ -105,23 +105,21 @@ export class ChatbotCoreController {
     );
 
     if (config.provider) {
-      // Only connect if not already connected
-      if (!config.provider.isConnected()) {
-        config.provider.connect({}).then(async () => {
-          // Auto-load conversations if provider supports it
-          await this.autoLoadConversations(config.provider);
-        }).catch(error => {
-          this.logError('Failed to connect provider:', error);
-        });
-      } else {
-        // Provider already connected, just auto-load conversations
-        this.autoLoadConversations(config.provider).catch(error => {
-          this.logError('Failed to auto-load conversations:', error);
-        });
-      }
+      void this.initializeProvider(config.provider);
     }
 
     this.setupLifecycleHooks();
+  }
+
+  private async initializeProvider(provider: any): Promise<void> {
+    try {
+      if (!provider.isConnected()) {
+        await provider.connect({});
+      }
+      await this.autoLoadConversations(provider);
+    } catch (error) {
+      this.logError('Failed to connect provider:', error);
+    }
   }
 
   // ===== LIFECYCLE HOOKS (Override Points) =====

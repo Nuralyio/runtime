@@ -36,7 +36,7 @@ export function renderLoopFields(
       <nr-input
         type="number"
         value=${String(config.maxIterations || 100)}
-        @nr-input=${(e: CustomEvent) => onUpdate('maxIterations', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxIterations', Number.parseInt(e.detail.value))}
       ></nr-input>
     </div>
   `;

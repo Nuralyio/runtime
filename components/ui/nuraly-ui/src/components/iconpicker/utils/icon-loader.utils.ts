@@ -57,8 +57,8 @@ export class IconLoaderUtils {
   private static generateKeywords(iconName: string): string[] {
     // Split camelCase or kebab-case into words
     const words = iconName
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .replace(/-/g, ' ')
+      .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
+      .replaceAll('-', ' ')
       .toLowerCase()
       .split(' ')
       .filter(Boolean);
