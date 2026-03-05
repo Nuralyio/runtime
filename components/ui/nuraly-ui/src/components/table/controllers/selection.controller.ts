@@ -15,7 +15,7 @@ export class TableSelectionController extends BaseTableController {
    */
   initSelection(): void {
     if (this.host.selectionMode) {
-      this.host.selectedItems = Array(this.host.rows.length).fill(false);
+      this.host.selectedItems = new Array(this.host.rows.length).fill(false);
     }
   }
 

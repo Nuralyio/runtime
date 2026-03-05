@@ -200,7 +200,7 @@ export class CollapseKeyboardController extends BaseCollapseController {
    */
   private getSectionIndex(headerElement: Element): number {
     const indexAttr = headerElement.getAttribute('data-section-index');
-    return indexAttr ? parseInt(indexAttr, 10) : -1;
+    return indexAttr ? Number.parseInt(indexAttr, 10) : -1;
   }
 
   /**

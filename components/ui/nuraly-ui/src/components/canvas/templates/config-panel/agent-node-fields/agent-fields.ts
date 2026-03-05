@@ -59,7 +59,7 @@ export function renderAgentFields(
         <nr-input
           type="number"
           value=${String(config.maxIterations || 10)}
-          @nr-input=${(e: CustomEvent) => onUpdate('maxIterations', parseInt(e.detail.value))}
+          @nr-input=${(e: CustomEvent) => onUpdate('maxIterations', Number.parseInt(e.detail.value))}
         ></nr-input>
         <span class="field-description">Maximum tool call loops before stopping</span>
       </div>

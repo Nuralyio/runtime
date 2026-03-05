@@ -46,7 +46,7 @@ export function renderVectorSearchFields(
         value=${config.topK || 5}
         min="1"
         max="100"
-        @nr-input=${(e: CustomEvent) => onUpdate('topK', parseInt(e.detail.value) || 5)}
+        @nr-input=${(e: CustomEvent) => onUpdate('topK', Number.parseInt(e.detail.value) || 5)}
       ></nr-input>
       <small class="field-hint">Number of results to return</small>
     </div>
@@ -59,7 +59,7 @@ export function renderVectorSearchFields(
         min="0"
         max="1"
         step="0.1"
-        @nr-input=${(e: CustomEvent) => onUpdate('minScore', parseFloat(e.detail.value) || 0)}
+        @nr-input=${(e: CustomEvent) => onUpdate('minScore', Number.parseFloat(e.detail.value) || 0)}
       ></nr-input>
       <small class="field-hint">Filter out results below this similarity score (0-1)</small>
     </div>

@@ -128,7 +128,7 @@ export class RadioRippleController implements RippleController {
     const match = duration.match(/^([\d.]+)(s|ms)$/);
     if (!match) return 300;
     
-    const value = parseFloat(match[1]);
+    const value = Number.parseFloat(match[1]);
     const unit = match[2];
     
     return unit === 's' ? value * 1000 : value;

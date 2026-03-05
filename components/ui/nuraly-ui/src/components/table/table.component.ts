@@ -144,7 +144,7 @@ export class HyTable extends NuralyUIBaseMixin(LitElement) implements TableHost 
 
   override willUpdate(_changedProperties: PropertyValueMap<this>) {
     if (_changedProperties.has('rows')) {
-      this.expand = Array(this.rows.length).fill(false);
+      this.expand = new Array(this.rows.length).fill(false);
     }
 
     // Server-side pagination: rows are already paginated from backend

@@ -94,7 +94,7 @@ export function renderEmbeddingFields(
         value=${config.batchSize || 100}
         min="1"
         max="1000"
-        @nr-input=${(e: CustomEvent) => onUpdate('batchSize', parseInt(e.detail.value) || 100)}
+        @nr-input=${(e: CustomEvent) => onUpdate('batchSize', Number.parseInt(e.detail.value) || 100)}
       ></nr-input>
       <small class="field-hint">Max texts per API call for batch embedding</small>
     </div>

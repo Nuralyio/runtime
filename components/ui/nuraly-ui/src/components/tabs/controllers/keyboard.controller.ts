@@ -70,7 +70,7 @@ export class TabsKeyboardController extends BaseTabsController implements Keyboa
       
       if (!tabElement) return;
       
-      const tabIndex = parseInt(tabElement.getAttribute('data-index') || '0');
+      const tabIndex = Number.parseInt(tabElement.getAttribute('data-index') || '0');
       
       if (!this.isValidTabIndex(tabIndex)) return;
       

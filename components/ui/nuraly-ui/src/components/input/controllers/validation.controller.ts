@@ -602,7 +602,7 @@ export class InputValidationController extends BaseValidationController<InputVal
         };
       case 'float':
         return {
-          isValid: !isNaN(parseFloat(value)),
+          isValid: !isNaN(Number.parseFloat(value)),
           message: 'Please enter a valid number'
         };
       default:

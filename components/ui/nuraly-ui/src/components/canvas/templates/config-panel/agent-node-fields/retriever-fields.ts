@@ -28,7 +28,7 @@ export function renderRetrieverFields(
       <nr-input
         type="number"
         value=${String((config as any).topK || 5)}
-        @nr-input=${(e: CustomEvent) => onUpdate('topK', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('topK', Number.parseInt(e.detail.value))}
       ></nr-input>
     </div>
   `;

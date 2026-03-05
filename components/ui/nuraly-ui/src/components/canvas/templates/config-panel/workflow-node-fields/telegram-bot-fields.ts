@@ -296,7 +296,7 @@ export function renderTelegramBotFields(
               <nr-input
                 type="number"
                 value=${String((config as any).pollingTimeout || 30)}
-                @nr-input=${(e: CustomEvent) => onUpdate('pollingTimeout', parseInt(e.detail.value))}
+                @nr-input=${(e: CustomEvent) => onUpdate('pollingTimeout', Number.parseInt(e.detail.value))}
               ></nr-input>
               <span class="field-description">Long-polling timeout (1-60 seconds)</span>
             </div>

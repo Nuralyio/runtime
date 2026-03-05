@@ -5,7 +5,7 @@ const isServer = typeof window === "undefined";
 
 export type UpdateType = "style" | "event" | "input" | "values" | "style_handlers" | "inputHandlers";
 
-export let clipboardComponent: ComponentElement | null = null;
+export const clipboardComponent: ComponentElement | null = null;
 
 // Re-export all component actions from the component folder
 export { addComponentAction } from './component/addComponentAction';

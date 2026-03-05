@@ -404,12 +404,12 @@ export class HyDatePickerElement extends NuralyUIBaseMixin(LitElement) implement
 
   // Navigation methods - delegates to controllers
   handleMonthChange = (event: CustomEvent) => {
-    const selectedMonth = parseInt(event.detail.value, 10);
+    const selectedMonth = Number.parseInt(event.detail.value, 10);
     this.handleMonthSelection(selectedMonth);
   };
 
   handleYearChange = (event: CustomEvent) => {
-    const selectedYear = parseInt(event.detail.value, 10);
+    const selectedYear = Number.parseInt(event.detail.value, 10);
     this.handleYearSelection(selectedYear);
   };
 

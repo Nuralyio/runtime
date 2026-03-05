@@ -210,7 +210,7 @@ export class BoxModelDisplay extends BaseElementBlock {
     const value = div.textContent?.trim() || "0";
 
     // Only allow numbers
-    const numericValue = value.replace(/[^0-9]/g, '');
+    const numericValue = value.replaceAll(/[^0-9]/g, '');
 
     if (value !== numericValue) {
       div.textContent = numericValue;
@@ -230,7 +230,7 @@ export class BoxModelDisplay extends BaseElementBlock {
 
     if (event.key === "ArrowUp" || event.key === "ArrowDown") {
       event.preventDefault();
-      const currentValue = parseFloat(div.textContent || "0") || 0;
+      const currentValue = Number.parseFloat(div.textContent || "0") || 0;
       const step = event.shiftKey ? 10 : 1;
       const newValue = event.key === "ArrowUp" ? currentValue + step : currentValue - step;
       const finalValue = Math.max(0, newValue);
@@ -252,7 +252,7 @@ export class BoxModelDisplay extends BaseElementBlock {
   private handlePaste(event: ClipboardEvent) {
     event.preventDefault();
     const text = event.clipboardData?.getData('text/plain') || '';
-    const numericValue = text.replace(/[^0-9]/g, '');
+    const numericValue = text.replaceAll(/[^0-9]/g, '');
 
     if (numericValue) {
       const selection = window.getSelection();
@@ -277,7 +277,7 @@ export class BoxModelDisplay extends BaseElementBlock {
     // Allow pasting values with units (e.g., "100px", "50%", "auto")
     const match = text.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
     const isAuto = text.toLowerCase() === "auto";
-    const pasteValue = isAuto ? "auto" : (match ? text : text.replace(/[^0-9.]/g, ''));
+    const pasteValue = isAuto ? "auto" : (match ? text : text.replaceAll(/[^0-9.]/g, ''));
 
     if (pasteValue) {
       const selection = window.getSelection();
@@ -311,7 +311,7 @@ export class BoxModelDisplay extends BaseElementBlock {
     const value = div.textContent?.trim() || "0";
 
     // Ensure we have a valid number
-    const numericValue = value.replace(/[^0-9]/g, '') || "0";
+    const numericValue = value.replaceAll(/[^0-9]/g, '') || "0";
 
     if (div.textContent !== numericValue) {
       div.textContent = numericValue;
@@ -348,7 +348,7 @@ export class BoxModelDisplay extends BaseElementBlock {
       // Valid input, don't modify
     } else if (value !== '') {
       // Invalid input - extract just the number part
-      const numericPart = value.replace(/[^0-9.]/g, '');
+      const numericPart = value.replaceAll(/[^0-9.]/g, '');
       if (numericPart) {
         div.textContent = numericPart;
         this.moveCursorToEnd(div);
@@ -380,7 +380,7 @@ export class BoxModelDisplay extends BaseElementBlock {
 
       // Extract number and unit from current value
       const match = currentText.match(/^(\d*\.?\d+)(px|%|em|rem|vw|vh)?$/i);
-      const currentValue = match ? parseFloat(match[1]) : 0;
+      const currentValue = match ? Number.parseFloat(match[1]) : 0;
       const unit = match?.[2] || 'px';
 
       const step = event.shiftKey ? 10 : 1;
@@ -414,7 +414,7 @@ export class BoxModelDisplay extends BaseElementBlock {
         const unit = match[2] || 'px';
         div.textContent = `${num}${unit}`;
       } else {
-        const numericValue = value.replace(/[^0-9.]/g, '');
+        const numericValue = value.replaceAll(/[^0-9.]/g, '');
         div.textContent = numericValue ? `${numericValue}px` : "auto";
       }
     }

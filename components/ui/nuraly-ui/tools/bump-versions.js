@@ -32,7 +32,7 @@ function bumpVersion(version) {
   }
   
   // Increment patch version
-  parts[2] = (parseInt(parts[2]) + 1).toString();
+  parts[2] = (Number.parseInt(parts[2]) + 1).toString();
   return parts.join('.');
 }
 

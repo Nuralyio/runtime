@@ -475,7 +475,7 @@ export class NrDataNodeConfig extends LitElement {
               type="number"
               .value=${String(this.config.limit || '')}
               placeholder="No limit"
-              @nr-input=${(e: CustomEvent) => this.onUpdate('limit', e.detail.value ? parseInt(e.detail.value) : null)}
+              @nr-input=${(e: CustomEvent) => this.onUpdate('limit', e.detail.value ? Number.parseInt(e.detail.value) : null)}
             ></nr-input>
             <span class="field-description">Maximum records to return</span>
           </div>
@@ -485,7 +485,7 @@ export class NrDataNodeConfig extends LitElement {
               type="number"
               .value=${String(this.config.offset || '')}
               placeholder="0"
-              @nr-input=${(e: CustomEvent) => this.onUpdate('offset', e.detail.value ? parseInt(e.detail.value) : null)}
+              @nr-input=${(e: CustomEvent) => this.onUpdate('offset', e.detail.value ? Number.parseInt(e.detail.value) : null)}
             ></nr-input>
             <span class="field-description">Number of records to skip</span>
           </div>

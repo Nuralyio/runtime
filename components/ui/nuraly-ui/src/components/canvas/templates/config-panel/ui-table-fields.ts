@@ -122,7 +122,7 @@ export function renderUiTableFields(
         <nr-input
           type="number"
           value=${String(config.tablePageSize ?? 10)}
-          @nr-input=${(e: CustomEvent) => onUpdate('tablePageSize', parseInt(e.detail.value) || 10)}
+          @nr-input=${(e: CustomEvent) => onUpdate('tablePageSize', Number.parseInt(e.detail.value) || 10)}
         ></nr-input>
       </div>
 

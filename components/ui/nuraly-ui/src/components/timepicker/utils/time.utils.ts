@@ -50,9 +50,9 @@ export class TimeUtils {
       return null;
     }
 
-    const hours = parseInt(match[1], 10);
-    const minutes = parseInt(match[2], 10);
-    const seconds = match[3] ? parseInt(match[3], 10) : 0;
+    const hours = Number.parseInt(match[1], 10);
+    const minutes = Number.parseInt(match[2], 10);
+    const seconds = match[3] ? Number.parseInt(match[3], 10) : 0;
 
     if (!this.isValidTime24(hours, minutes, seconds)) {
       return null;
@@ -71,9 +71,9 @@ export class TimeUtils {
       return null;
     }
 
-    let hours = parseInt(match[1], 10);
-    const minutes = parseInt(match[2], 10);
-    const seconds = match[3] ? parseInt(match[3], 10) : 0;
+    let hours = Number.parseInt(match[1], 10);
+    const minutes = Number.parseInt(match[2], 10);
+    const seconds = match[3] ? Number.parseInt(match[3], 10) : 0;
     const period = match[4] as TimePeriod;
 
     if (!this.isValidTime12(hours, minutes, seconds)) {

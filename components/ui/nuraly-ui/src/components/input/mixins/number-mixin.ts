@@ -157,7 +157,7 @@ export const NumberMixin = <T extends Constructor<LitElement>>(superClass: T) =>
 
     isValidStep(step: string | undefined): boolean {
       if (!step) return true;
-      const stepValue = parseFloat(step);
+      const stepValue = Number.parseFloat(step);
       return !isNaN(stepValue) && stepValue > 0;
     }
   }

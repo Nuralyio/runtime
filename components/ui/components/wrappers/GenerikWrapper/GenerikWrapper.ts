@@ -18,7 +18,7 @@ import { setHoveredComponentAction } from '../../../../../redux/actions/componen
 import { setContextMenuEvent } from '../../../../../redux/actions/page/setContextMenuEvent.ts';
 
 function safeParseInt(value) {
-  const result = parseInt(value, 10);
+  const result = Number.parseInt(value, 10);
   return isNaN(result) ? 0 : result;
 }
 

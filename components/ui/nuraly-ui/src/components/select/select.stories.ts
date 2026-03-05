@@ -790,7 +790,7 @@ export const LargeDataset: Story = {
             'Ukraine', 'United Kingdom', 'United States', 'Vietnam', 'Zimbabwe'
           ].map(country => ({ 
             label: country, 
-            value: country.toLowerCase().replace(/\s+/g, '-'),
+            value: country.toLowerCase().replaceAll(/\s+/g, '-'),
             description: `Country: ${country}`
           }))}
           placeholder=${args.placeholder}

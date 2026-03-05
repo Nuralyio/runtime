@@ -310,7 +310,7 @@ function detectViolations(cssBlocks, filePath, tokenMap) {
       }
 
       // Remove single-line comments
-      line = line.replace(/\/\*.*?\*\//g, '');
+      line = line.replaceAll(/\/\*.*?\*\//g, '');
       if (line.includes('/*')) {
         inComment = true;
         line = line.substring(0, line.indexOf('/*'));
@@ -413,7 +413,7 @@ function detectViolations(cssBlocks, filePath, tokenMap) {
       // --- Check z-index ---
       if (property === 'z-index') {
         const zVal = value.trim();
-        if (/^\d+$/.test(zVal) && parseInt(zVal) > 1 && !VAR_RE.test(value)) {
+        if (/^\d+$/.test(zVal) && Number.parseInt(zVal) > 1 && !VAR_RE.test(value)) {
           violations.push({
             severity: 'ERROR',
             type: 'HARD_CODED_VALUE',
@@ -606,7 +606,7 @@ function stripVarCalls(value) {
   // Iteratively remove var() calls (handles nested)
   while (result !== prev) {
     prev = result;
-    result = result.replace(/var\([^()]*\)/g, '');
+    result = result.replaceAll(/var\([^()]*\)/g, '');
   }
   return result;
 }

@@ -22,7 +22,7 @@ function calculateFixedColumnLeft(headers: IHeader[], currentIndex: number, hasS
   for (let i = 0; i < currentIndex; i++) {
     if (headers[i].fixed === 'left') {
       const width = headers[i].width;
-      left += typeof width === 'number' ? width : parseInt(String(width)) || 150;
+      left += typeof width === 'number' ? width : Number.parseInt(String(width)) || 150;
     }
   }
   

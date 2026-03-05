@@ -418,7 +418,7 @@ export const $databaseViewports = atom<Record<string, DatabaseCanvasViewport>>({
  */
 function buildViewportKeyPath(connectionPath: string): string {
   // Encode connection path to be URL-safe
-  const encodedPath = connectionPath.replace(/\//g, '__');
+  const encodedPath = connectionPath.replaceAll('/', '__');
   return `_user_prefs/db_viewport/${encodedPath}`;
 }
 
@@ -500,8 +500,8 @@ export const $databaseTablePositions = atom<Record<string, TablePositions>>({});
  * Build KV key path for table positions
  */
 function buildTablePositionsKeyPath(connectionPath: string, schemaName: string): string {
-  const encodedPath = connectionPath.replace(/\//g, '__');
-  const encodedSchema = schemaName.replace(/\//g, '__');
+  const encodedPath = connectionPath.replaceAll('/', '__');
+  const encodedSchema = schemaName.replaceAll('/', '__');
   return `_user_prefs/db_positions/${encodedPath}/${encodedSchema}`;
 }
 

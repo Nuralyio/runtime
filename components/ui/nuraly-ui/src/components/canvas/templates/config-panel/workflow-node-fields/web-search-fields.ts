@@ -58,7 +58,7 @@ export function renderWebSearchFields(
         value=${config.numResults || 10}
         min="1"
         max="50"
-        @nr-input=${(e: CustomEvent) => onUpdate('numResults', parseInt(e.detail.value) || 10)}
+        @nr-input=${(e: CustomEvent) => onUpdate('numResults', Number.parseInt(e.detail.value) || 10)}
       ></nr-input>
     </div>
 
@@ -99,7 +99,7 @@ export function renderWebSearchFields(
         value=${config.timeout || 30000}
         min="1000"
         max="120000"
-        @nr-input=${(e: CustomEvent) => onUpdate('timeout', parseInt(e.detail.value) || 30000)}
+        @nr-input=${(e: CustomEvent) => onUpdate('timeout', Number.parseInt(e.detail.value) || 30000)}
       ></nr-input>
     </div>
   `;

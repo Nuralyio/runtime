@@ -1261,7 +1261,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
       triggerActions = {
         onActivate: (triggerId) => { void this.activateTrigger(triggerId); },
         onDeactivate: (triggerId) => { void this.deactivateTrigger(triggerId); },
-        onCreateAndActivate: (nodeType, config) => { void this.createAndActivateTrigger(nodeType, config); },
+        onCreateAndActivate: (nodeType, config) => this.createAndActivateTrigger(nodeType, config),
         onToggleDevMode: (triggerId, enable) => { void this.toggleDevMode(triggerId, enable); },
       };
     }

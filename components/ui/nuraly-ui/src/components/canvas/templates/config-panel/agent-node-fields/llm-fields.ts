@@ -145,7 +145,7 @@ export function renderLlmFields(
         min="0"
         max="2"
         step="0.1"
-        @nr-input=${(e: CustomEvent) => onUpdate('temperature', parseFloat(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('temperature', Number.parseFloat(e.detail.value))}
       ></nr-input>
       <span class="field-description">Controls randomness (0 = deterministic, 2 = very random)</span>
     </div>
@@ -157,7 +157,7 @@ export function renderLlmFields(
         type="number"
         value=${String(config.maxTokens ?? providerConfig.defaultMaxTokens)}
         min="1"
-        @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', parseInt(e.detail.value))}
+        @nr-input=${(e: CustomEvent) => onUpdate('maxTokens', Number.parseInt(e.detail.value))}
       ></nr-input>
       <span class="field-description">Maximum number of tokens in the response</span>
     </div>

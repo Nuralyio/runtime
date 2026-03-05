@@ -196,7 +196,7 @@ export class NrColElement extends NuralyUIBaseMixin(LitElement) {
     const parent = this.closest('nr-row');
     if (parent) {
       const gutter = parent.getAttribute('data-gutter');
-      return gutter ? parseInt(gutter, 10) : 0;
+      return gutter ? Number.parseInt(gutter, 10) : 0;
     }
     return 0;
   }

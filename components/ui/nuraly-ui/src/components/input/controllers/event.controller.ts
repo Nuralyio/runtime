@@ -384,7 +384,7 @@ export class InputEventController extends BaseInputController implements EventCo
 
   private restoreCursorPosition(input: HTMLInputElement): void {
     if (input.dataset.restoreCursor) {
-      const position = parseInt(input.dataset.restoreCursor, 10);
+      const position = Number.parseInt(input.dataset.restoreCursor, 10);
       if (!isNaN(position)) {
         input.setSelectionRange(position, position);
       }
