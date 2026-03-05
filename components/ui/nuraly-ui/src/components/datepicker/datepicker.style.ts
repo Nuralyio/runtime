@@ -442,14 +442,12 @@ export const styles = css`
   /* Select component styling - Override the default 300px width */
   .month-select {
     --nuraly-select-width: 110px !important;
-    --nuraly-select-local-width: 110px !important;
     width: 110px !important;
     max-width: 110px !important;
   }
 
   .year-select {
     --nuraly-select-width: 80px !important;
-    --nuraly-select-local-width: 80px !important;  
     width: 80px !important;
     max-width: 80px !important;
   }

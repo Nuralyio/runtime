@@ -44,6 +44,8 @@
     "storybook": "npm run build && storybook dev -p 6006",
     "build-storybook": "npm run build && storybook build",
     "test:prod:watch": "MODE=prod wtr --watch",
+    "validate:tokens": "node tools/validate-tokens.js",
+    "validate:tokens:json": "node tools/validate-tokens.js --format json",
     "roll": "rollup -c ; ",
     "link": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/src/components/' + dir + ' && npm link', { stdio: 'inherit' }));\"",
     "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/src/components/' + dir + ' && npm unlink @nuralyui/' + dir, { stdio: 'inherit' }));\""

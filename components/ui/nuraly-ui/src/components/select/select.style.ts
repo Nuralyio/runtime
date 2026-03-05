@@ -2,72 +2,12 @@ import { css } from 'lit';
 
 export const styles = css`
   :host {
-    /* Layout and sizing */
-    --nuraly-select-local-min-height: 40px;
-    --nuraly-select-local-padding-top: 8px;
-    --nuraly-select-local-padding-bottom: 8px;
-    --nuraly-select-local-padding-left: 12px;
-    --nuraly-select-local-padding-right: 12px;
-    --nuraly-select-local-wrapper-margin: 0;
-    --nuraly-select-local-border-radius: 6px;
-    --nuraly-select-local-border-width: 1px;
-    
-    /* Dropdown settings */
-    --nuraly-select-local-dropdown-z-index: 9999;
-    --nuraly-select-local-dropdown-max-height: auto;
-    --nuraly-select-local-dropdown-width: max-content;
-    --nuraly-select-local-placeholder-font-size: 14px;
-    --nuraly-select-local-option-font-size: 14px;
-    
-    /* Search input container settings */
-    --nuraly-select-local-input-container-max-width: var(--nuraly-select-width);
-    
-    /* Size tokens - small */
-    --nuraly-select-local-small-height: 24px;
-    --nuraly-select-local-small-font-size: 12px;
-    --nuraly-select-local-small-padding: 2px 8px;
-    --nuraly-select-local-small-icon-size: 14px;
-    
-    /* Size tokens - medium */
-    --nuraly-select-local-medium-height: 40px;
-    --nuraly-select-local-medium-font-size: 14px;
-    --nuraly-select-local-medium-padding: 8px 12px;
-    --nuraly-select-local-medium-icon-size: 16px;
-    
-    /* Size tokens - large */
-    --nuraly-select-local-large-height: 48px;
-    --nuraly-select-local-large-font-size: 16px;
-    --nuraly-select-local-large-padding: 12px 16px;
-    --nuraly-select-local-large-icon-size: 20px;
-    
-    /* Animation and transitions */
-    --nuraly-select-local-dropdown-animation-duration: 0.15s;
-    --nuraly-select-local-transition-duration: 0.2s;
-    
-    /* Multi-select specific */
-    --nuraly-select-local-tag-border-radius: 4px;
-    --nuraly-select-local-tag-padding: 2px 6px;
-    --nuraly-select-local-tag-margin: 2px;
-    
-    /* Icon sizes */
-    --nuraly-select-local-icon-size: 16px;
-    --nuraly-select-local-arrow-icon-size: 16px;
-    
-    /* Validation message */
-    --nuraly-select-local-message-font-size: 12px;
-    --nuraly-select-local-message-margin-top: 4px;
-    
-    /* Font settings */
-    --nuraly-select-local-font-size: 14px;
-  }
-
-  :host {
     width: fit-content;
     display: block;
-    font-family: var(--nuraly-select-font-family, Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif);
-    font-size: var(--nuraly-select-font-size, 14px);
-    line-height: var(--nuraly-select-line-height, 1.5);
-    margin: var(--nuraly-select-margin, var(--nuraly-select-local-wrapper-margin));
+    font-family: var(--nuraly-select-font-family, var(--nuraly-font-family));
+    font-size: var(--nuraly-select-font-size, var(--nuraly-font-size-sm));
+    line-height: var(--nuraly-select-line-height, var(--nuraly-line-height-normal));
+    margin: var(--nuraly-select-margin, 0);
   }
 
   /* Host attribute selectors for configuration */
@@ -85,79 +25,79 @@ export const styles = css`
 
   /* Size variants */
   :host([size='small']) .wrapper {
-    height: var(--nuraly-select-small-height, var(--nuraly-select-local-small-height));
-    min-height: var(--nuraly-select-small-height, var(--nuraly-select-local-small-height));
-    font-size: var(--nuraly-select-small-font-size, var(--nuraly-select-local-small-font-size));
+    height: var(--nuraly-select-small-height, var(--nuraly-size-sm));
+    min-height: var(--nuraly-select-small-height, var(--nuraly-size-sm));
+    font-size: var(--nuraly-select-small-font-size, var(--nuraly-font-size-xs));
   }
 
   :host([size='small']) .select-trigger {
-    padding: var(--nuraly-select-small-padding, var(--nuraly-select-local-small-padding));
-    padding-right: calc(var(--nuraly-select-small-icon-size, var(--nuraly-select-local-small-icon-size)) + 20px);
+    padding: var(--nuraly-select-small-padding, var(--nuraly-spacing-1) var(--nuraly-spacing-2));
+    padding-right: calc(var(--nuraly-select-small-icon-size, var(--nuraly-font-size-sm)) + var(--nuraly-spacing-5));
   }
 
   :host([size='small']) .icons-container nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-small-icon-size, var(--nuraly-select-local-small-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-small-icon-size, var(--nuraly-font-size-sm));
   }
 
   :host([size='small']) .option {
-    padding: var(--nuraly-select-small-padding, var(--nuraly-select-local-small-padding));
-    font-size: var(--nuraly-select-small-font-size, var(--nuraly-select-local-small-font-size));
-    min-height: var(--nuraly-select-small-height, var(--nuraly-select-local-small-height));
+    padding: var(--nuraly-select-small-padding, var(--nuraly-spacing-1) var(--nuraly-spacing-2));
+    font-size: var(--nuraly-select-small-font-size, var(--nuraly-font-size-xs));
+    min-height: var(--nuraly-select-small-height, var(--nuraly-size-sm));
   }
 
   :host([size='small']) .option-icon,
   :host([size='small']) .option nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-small-icon-size, var(--nuraly-select-local-small-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-small-icon-size, var(--nuraly-font-size-sm));
   }
 
   :host([size='medium']) .wrapper {
-    min-height: var(--nuraly-select-medium-height, var(--nuraly-select-local-medium-height));
-    font-size: var(--nuraly-select-medium-font-size, var(--nuraly-select-local-medium-font-size));
+    min-height: var(--nuraly-select-medium-height, var(--nuraly-size-lg));
+    font-size: var(--nuraly-select-medium-font-size, var(--nuraly-font-size-sm));
   }
 
   :host([size='medium']) .select-trigger {
-    padding: var(--nuraly-select-medium-padding, var(--nuraly-select-local-medium-padding));
-    padding-right: calc(var(--nuraly-select-medium-icon-size, var(--nuraly-select-local-medium-icon-size)) + 20px);
+    padding: var(--nuraly-select-medium-padding, var(--nuraly-spacing-2) var(--nuraly-spacing-3));
+    padding-right: calc(var(--nuraly-select-medium-icon-size, var(--nuraly-font-size-base)) + var(--nuraly-spacing-5));
   }
 
   :host([size='medium']) .icons-container nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-medium-icon-size, var(--nuraly-select-local-medium-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-medium-icon-size, var(--nuraly-font-size-base));
   }
 
   :host([size='medium']) .option {
-    padding: var(--nuraly-select-medium-padding, var(--nuraly-select-local-medium-padding));
-    font-size: var(--nuraly-select-medium-font-size, var(--nuraly-select-local-medium-font-size));
-    min-height: var(--nuraly-select-medium-height, var(--nuraly-select-local-medium-height));
+    padding: var(--nuraly-select-medium-padding, var(--nuraly-spacing-2) var(--nuraly-spacing-3));
+    font-size: var(--nuraly-select-medium-font-size, var(--nuraly-font-size-sm));
+    min-height: var(--nuraly-select-medium-height, var(--nuraly-size-lg));
   }
 
   :host([size='medium']) .option-icon,
   :host([size='medium']) .option nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-medium-icon-size, var(--nuraly-select-local-medium-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-medium-icon-size, var(--nuraly-font-size-base));
   }
 
   :host([size='large']) .wrapper {
-    min-height: var(--nuraly-select-large-height, var(--nuraly-select-local-large-height));
-    font-size: var(--nuraly-select-large-font-size, var(--nuraly-select-local-large-font-size));
+    min-height: var(--nuraly-select-large-height, var(--nuraly-size-xl));
+    font-size: var(--nuraly-select-large-font-size, var(--nuraly-font-size-lg));
   }
 
   :host([size='large']) .select-trigger {
-    padding: var(--nuraly-select-large-padding, var(--nuraly-select-local-large-padding));
-    padding-right: calc(var(--nuraly-select-large-icon-size, var(--nuraly-select-local-large-icon-size)) + 20px);
+    padding: var(--nuraly-select-large-padding, var(--nuraly-spacing-3) var(--nuraly-spacing-4));
+    padding-right: calc(var(--nuraly-select-large-icon-size, var(--nuraly-font-size-xl)) + var(--nuraly-spacing-5));
   }
 
   :host([size='large']) .icons-container nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-large-icon-size, var(--nuraly-select-local-large-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-large-icon-size, var(--nuraly-font-size-xl));
   }
 
   :host([size='large']) .option {
-    padding: var(--nuraly-select-large-padding, var(--nuraly-select-local-large-padding));
-    font-size: var(--nuraly-select-large-font-size, var(--nuraly-select-local-large-font-size));
-    min-height: var(--nuraly-select-large-height, var(--nuraly-select-local-large-height));
+    padding: var(--nuraly-select-large-padding, var(--nuraly-spacing-3) var(--nuraly-spacing-4));
+    font-size: var(--nuraly-select-large-font-size, var(--nuraly-font-size-lg));
+    min-height: var(--nuraly-select-large-height, var(--nuraly-size-xl));
   }
 
   :host([size='large']) .option-icon,
   :host([size='large']) .option nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-large-icon-size, var(--nuraly-select-local-large-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-large-icon-size, var(--nuraly-font-size-xl));
   }
 
   /* Status variants */
@@ -177,7 +117,7 @@ export const styles = css`
   :host([type='inline']) {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--nuraly-spacing-2);
   }
 
   :host([type='inline']) .wrapper {
@@ -203,15 +143,15 @@ export const styles = css`
     position: relative;
     width: var(--nuraly-select-width, fit-content);
     background-color: var(--nuraly-select-background, var(--nuraly-color-background-panel));
-    border: var(--nuraly-select-border-width, var(--nuraly-select-local-border-width)) solid 
+    border: var(--nuraly-select-border-width, var(--nuraly-border-width-1)) solid
             var(--nuraly-select-border-color, var(--nuraly-color-border));
-    border-radius: var(--nuraly-select-border-radius, var(--nuraly-select-local-border-radius));
-    transition: all var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration)) 
+    border-radius: var(--nuraly-select-border-radius, var(--nuraly-border-radius-md));
+    transition: all var(--nuraly-select-transition-duration, var(--nuraly-transition-fast))
                 var(--nuraly-select-transition-timing, ease-in-out);
     cursor: pointer;
     outline: none;
     margin: var(--nuraly-select-wrapper-margin, 0);
-    min-height: var(--nuraly-select-min-height, var(--nuraly-select-local-min-height));
+    min-height: var(--nuraly-select-min-height, var(--nuraly-size-lg));
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -226,7 +166,7 @@ export const styles = css`
   .wrapper:focus,
   .wrapper:focus-within {
     border-color: var(--nuraly-select-border-focus, var(--nuraly-color-primary));
-    box-shadow: 0 0 0 2px var(--nuraly-color-primary-light);
+    box-shadow: var(--nuraly-focus-ring);
   }
 
   /* Select container */
@@ -239,10 +179,10 @@ export const styles = css`
   .select-trigger {
     display: flex;
     align-items: center;
-    padding: var(--nuraly-select-padding-top, var(--nuraly-select-local-padding-top)) 
-             calc(var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size)) + 20px) 
-             var(--nuraly-select-padding-bottom, var(--nuraly-select-local-padding-bottom)) 
-             var(--nuraly-select-padding-left, var(--nuraly-select-local-padding-left));
+    padding: var(--nuraly-select-padding-top, var(--nuraly-spacing-2))
+             calc(var(--nuraly-select-icon-size, var(--nuraly-font-size-base)) + var(--nuraly-spacing-5))
+             var(--nuraly-select-padding-bottom, var(--nuraly-spacing-2))
+             var(--nuraly-select-padding-left, var(--nuraly-spacing-3));
     color: var(--nuraly-select-color, var(--nuraly-color-text));
     font-size: inherit;
     line-height: inherit;
@@ -250,26 +190,26 @@ export const styles = css`
     flex: 1;
     min-height: 0;
     flex-wrap: wrap;
-    gap: var(--nuraly-select-tag-margin, var(--nuraly-select-local-tag-margin));
+    gap: var(--nuraly-select-tag-margin, var(--nuraly-spacing-1));
     box-sizing: border-box;
   }
 
   .select-trigger:empty:before {
     content: attr(data-placeholder);
     color: var(--nuraly-select-placeholder-color, var(--nuraly-color-text-secondary));
-    font-size: var(--nuraly-select-placeholder-font-size, var(--nuraly-select-local-placeholder-font-size));
+    font-size: var(--nuraly-select-placeholder-font-size, var(--nuraly-font-size-sm));
   }
 
   /* Multi-select tags */
   .tag {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--nuraly-spacing-1);
     background-color: var(--nuraly-select-tag-background, var(--nuraly-color-background-active));
     color: var(--nuraly-select-tag-color, var(--nuraly-color-text));
-    padding: var(--nuraly-select-tag-padding, var(--nuraly-select-local-tag-padding));
-    border-radius: var(--nuraly-select-tag-border-radius, var(--nuraly-select-local-tag-border-radius));
-    font-size: calc(var(--nuraly-select-font-size, var(--nuraly-select-local-font-size)) - 1px);
+    padding: var(--nuraly-select-tag-padding, var(--nuraly-spacing-1) var(--nuraly-spacing-2));
+    border-radius: var(--nuraly-select-tag-border-radius, var(--nuraly-border-radius-xs));
+    font-size: calc(var(--nuraly-select-font-size, var(--nuraly-font-size-sm)) - 1px);
     max-width: 100%;
   }
 
@@ -285,10 +225,10 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
-    height: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
-    border-radius: 50%;
-    transition: color var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration));
+    width: var(--nuraly-select-icon-size, var(--nuraly-font-size-base));
+    height: var(--nuraly-select-icon-size, var(--nuraly-font-size-base));
+    border-radius: var(--nuraly-border-radius-full);
+    transition: color var(--nuraly-select-transition-duration, var(--nuraly-transition-fast));
   }
 
   .tag-close:hover {
@@ -299,20 +239,20 @@ export const styles = css`
   .icons-container {
     position: absolute;
     top: 50%;
-    right: 12px;
+    right: var(--nuraly-spacing-3);
     transform: translateY(-50%);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--nuraly-spacing-1);
     pointer-events: none;
   }
 
   .icons-container nr-icon {
-    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-font-size-base));
     --nuraly-icon-color: var(--nuraly-color-select-icon, var(--nuraly-color-text-secondary));
     pointer-events: auto;
     cursor: pointer;
-    transition: color var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration));
+    transition: color var(--nuraly-select-transition-duration, var(--nuraly-transition-fast));
   }
 
   .icons-container nr-icon:hover {
@@ -320,8 +260,8 @@ export const styles = css`
   }
 
   .arrow-icon {
-    --nuraly-icon-width: var(--nuraly-select-arrow-icon-size, var(--nuraly-select-local-arrow-icon-size));
-    transition: transform var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration));
+    --nuraly-icon-width: var(--nuraly-select-arrow-icon-size, var(--nuraly-font-size-base));
+    transition: transform var(--nuraly-select-transition-duration, var(--nuraly-transition-fast));
     pointer-events: none !important;
   }
 
@@ -335,23 +275,23 @@ export const styles = css`
     position: fixed;
     /* top/left will be set by controller */
     background-color: var(--nuraly-select-dropdown-background, var(--nuraly-color-background-panel));
-    border: var(--nuraly-select-dropdown-border-width, var(--nuraly-select-border-width, var(--nuraly-select-local-border-width))) solid
+    border: var(--nuraly-select-dropdown-border-width, var(--nuraly-select-border-width, var(--nuraly-border-width-1))) solid
             var(--nuraly-select-dropdown-border-color, var(--nuraly-color-border));
-    border-radius: var(--nuraly-select-dropdown-border-radius, var(--nuraly-select-border-radius, var(--nuraly-select-local-border-radius)));
-    box-shadow: var(--nuraly-select-dropdown-shadow, 0 6px 16px 0 rgba(0, 0, 0, 0.08));
-    z-index: var(--nuraly-select-dropdown-z-index, var(--nuraly-select-local-dropdown-z-index));
-    max-height: var(--nuraly-select-dropdown-max-height, var(--nuraly-select-local-dropdown-max-height, auto));
+    border-radius: var(--nuraly-select-dropdown-border-radius, var(--nuraly-select-border-radius, var(--nuraly-border-radius-md)));
+    box-shadow: var(--nuraly-select-dropdown-shadow, var(--nuraly-shadow-lg));
+    z-index: var(--nuraly-select-dropdown-z-index, var(--nuraly-z-dropdown));
+    max-height: var(--nuraly-select-dropdown-max-height, auto);
     overflow-y: auto;
     overflow-x: hidden;
     display: none;
     flex-direction: column;
-    animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, var(--nuraly-select-local-dropdown-animation-duration)) ease-out;
+    animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, var(--nuraly-transition-fast)) ease-out;
     /* Ensure proper containment and exact wrapper width */
     box-sizing: border-box;
     /* Allow overriding width via either of these custom props */
     width: var(
       --nuraly-select-dropdown-width,
-      var(--select-dropdown-width, var(--nuraly-select-local-dropdown-width))
+      var(--select-dropdown-width, max-content)
     );
     /* Create new stacking context to prevent layering issues */
     isolation: isolate;
@@ -367,11 +307,11 @@ export const styles = css`
   }
 
   .options.placement-top {
-    animation: dropdown-enter-top var(--nuraly-select-dropdown-animation-duration, var(--nuraly-select-local-dropdown-animation-duration)) ease-out;
+    animation: dropdown-enter-top var(--nuraly-select-dropdown-animation-duration, var(--nuraly-transition-fast)) ease-out;
   }
 
   .options.placement-bottom {
-    animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, var(--nuraly-select-local-dropdown-animation-duration)) ease-out;
+    animation: dropdown-enter var(--nuraly-select-dropdown-animation-duration, var(--nuraly-transition-fast)) ease-out;
   }
 
   @keyframes dropdown-enter {
@@ -400,11 +340,11 @@ export const styles = css`
   .search-container {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: var(--nuraly-z-sticky);
     background-color: var(--nuraly-select-dropdown-background, var(--nuraly-color-background-panel));
-    border-bottom: var(--nuraly-select-border-width, var(--nuraly-select-local-border-width)) solid 
+    border-bottom: var(--nuraly-select-border-width, var(--nuraly-border-width-1)) solid
                    var(--nuraly-select-dropdown-border-color, var(--nuraly-color-border));
-    padding: 8px;
+    padding: var(--nuraly-spacing-2);
     margin: 0;
     /* Ensure it stays above options during scroll */
     backdrop-filter: blur(8px);
@@ -417,8 +357,8 @@ export const styles = css`
   /* Search input styling */
   .search-container .search-input {
     width: 100%;
-    max-width: var(--nuraly-select-input-container-max-width, var(--nuraly-select-local-input-container-max-width));
-    --nuraly-input-border-radius: var(--nuraly-select-border-radius, var(--nuraly-select-local-border-radius));
+    max-width: var(--nuraly-select-input-container-max-width, var(--nuraly-select-width));
+    --nuraly-input-border-radius: var(--nuraly-select-border-radius, var(--nuraly-border-radius-md));
     --nuraly-input-background-color: var(--nuraly-select-background, var(--nuraly-color-background-panel));
     --nuraly-input-border-color: var(--nuraly-select-border-color, var(--nuraly-color-border));
     --nuraly-input-text-color: var(--nuraly-select-color, var(--nuraly-color-text));
@@ -440,13 +380,13 @@ export const styles = css`
   .option {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: var(--nuraly-select-option-padding, 8px 12px);
+    gap: var(--nuraly-spacing-2);
+    padding: var(--nuraly-select-option-padding, var(--nuraly-spacing-2) var(--nuraly-spacing-3));
     min-height: var(--nuraly-select-option-min-height, auto);
     color: var(--nuraly-select-option-color, var(--nuraly-color-text));
-    font-size: var(--nuraly-select-option-font-size, var(--nuraly-select-local-option-font-size));
+    font-size: var(--nuraly-select-option-font-size, var(--nuraly-font-size-sm));
     cursor: pointer;
-    transition: background-color var(--nuraly-select-transition-duration, var(--nuraly-select-local-transition-duration));
+    transition: background-color var(--nuraly-select-transition-duration, var(--nuraly-transition-fast));
     position: relative;
   }
 
@@ -461,7 +401,7 @@ export const styles = css`
 
   .option.selected {
     background-color: var(--nuraly-select-option-selected-background, var(--nuraly-color-primary));
-    color: var(--nuraly-select-option-selected-color, #fff);
+    color: var(--nuraly-select-option-selected-color, var(--nuraly-color-text-on-color));
   }
 
   .option.focused {
@@ -471,7 +411,7 @@ export const styles = css`
   }
 
   .option.disabled {
-    opacity: var(--nuraly-select-disabled-opacity, var(--nuraly-select-local-disabled-opacity));
+    opacity: var(--nuraly-select-disabled-opacity, 0.5);
     cursor: not-allowed;
   }
 
@@ -479,11 +419,11 @@ export const styles = css`
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--nuraly-spacing-2);
   }
 
   .option-icon {
-    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
+    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-font-size-base));
     --nuraly-icon-color: currentColor;
   }
 
@@ -495,23 +435,23 @@ export const styles = css`
   }
 
   .option-description {
-    font-size: calc(var(--nuraly-select-option-font-size, var(--nuraly-select-local-option-font-size)) - 1px);
+    font-size: calc(var(--nuraly-select-option-font-size, var(--nuraly-font-size-sm)) - 1px);
     opacity: 0.7;
-    margin-top: 2px;
+    margin-top: var(--nuraly-spacing-1);
   }
 
   .check-icon {
-    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-select-local-icon-size));
-    --nuraly-icon-color: var(--nuraly-select-option-selected-color, #fff);
+    --nuraly-icon-width: var(--nuraly-select-icon-size, var(--nuraly-font-size-base));
+    --nuraly-icon-color: var(--nuraly-select-option-selected-color, var(--nuraly-color-text-on-color));
   }
 
   .no-options {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--select-no-options-padding, 24px 16px);
+    padding: var(--select-no-options-padding, var(--nuraly-spacing-6) var(--nuraly-spacing-4));
     color: var(--select-no-options-color, var(--nuraly-color-text-secondary));
-    font-size: var(--nuraly-select-option-font-size, var(--nuraly-select-local-option-font-size));
+    font-size: var(--nuraly-select-option-font-size, var(--nuraly-font-size-sm));
     cursor: default;
     user-select: none;
   }
@@ -520,18 +460,18 @@ export const styles = css`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--select-no-options-gap, 8px);
+    gap: var(--select-no-options-gap, var(--nuraly-spacing-2));
     text-align: center;
   }
 
   .no-options-icon {
-    --nuraly-icon-width: 24px;
+    --nuraly-icon-width: var(--nuraly-spacing-6);
     --nuraly-icon-color: var(--select-no-options-icon-color, var(--nuraly-color-border));
     opacity: 0.8;
   }
 
   .no-options-text {
-    font-size: var(--nuraly-select-option-font-size, var(--nuraly-select-local-option-font-size));
+    font-size: var(--nuraly-select-option-font-size, var(--nuraly-font-size-sm));
     color: var(--select-no-options-color, var(--nuraly-color-text-secondary));
     line-height: 1.4;
   }
@@ -539,8 +479,8 @@ export const styles = css`
   /* Validation message */
   .validation-message {
     display: block;
-    margin-top: var(--nuraly-select-message-margin-top, var(--nuraly-select-local-message-margin-top));
-    font-size: var(--nuraly-select-message-font-size, var(--nuraly-select-local-message-font-size));
+    margin-top: var(--nuraly-select-message-margin-top, var(--nuraly-spacing-1));
+    font-size: var(--nuraly-select-message-font-size, var(--nuraly-font-size-xs));
     color: var(--nuraly-select-error-message-color, var(--nuraly-color-danger));
   }
 
@@ -555,15 +495,15 @@ export const styles = css`
   /* Slotted content styles */
   ::slotted([slot='label']) {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: var(--nuraly-spacing-1);
     font-weight: 500;
     color: var(--nuraly-select-color, var(--nuraly-color-text));
   }
 
   ::slotted([slot='helper-text']) {
     display: block;
-    margin-top: var(--nuraly-select-message-margin-top, var(--nuraly-select-local-message-margin-top));
-    font-size: var(--nuraly-select-message-font-size, var(--nuraly-select-local-message-font-size));
+    margin-top: var(--nuraly-select-message-margin-top, var(--nuraly-spacing-1));
+    font-size: var(--nuraly-select-message-font-size, var(--nuraly-font-size-xs));
     color: var(--nuraly-select-placeholder-color, var(--nuraly-color-text-secondary));
   }
 
