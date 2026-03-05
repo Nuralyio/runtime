@@ -92,8 +92,8 @@ class FlowDiagramEditorElement extends HTMLElement {
       <div class="error-bar" style="display:none;"></div>
     `;
 
-    const textarea = shadow.querySelector('.editor-textarea') as HTMLTextAreaElement;
-    textarea.value = pretty;
+    const textarea = shadow.querySelector<HTMLTextAreaElement>('.editor-textarea');
+    if (textarea) textarea.value = pretty;
 
     // Restore saved editor pane split width
     const savedSplitWidth = localStorage.getItem(LS_SPLIT_WIDTH);
@@ -109,7 +109,7 @@ class FlowDiagramEditorElement extends HTMLElement {
 
     const diagramPane = shadow.querySelector('.diagram-pane');
     const errorBar    = shadow.querySelector<HTMLElement>('.error-bar');
-    if (!diagramPane || !errorBar) return;
+    if (!textarea || !diagramPane || !errorBar) return;
 
     textarea.addEventListener('input', () => {
       try {

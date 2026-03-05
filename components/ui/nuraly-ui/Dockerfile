@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for NuralyUI Storybook
-FROM node:latest AS base
+FROM node:22-slim AS base
 
 WORKDIR /app
 
