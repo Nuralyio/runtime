@@ -75,7 +75,7 @@ export class GridCol extends BaseElementBlock {
   private parseNumeric(value: any, defaultValue?: number): number | undefined {
     if (value === undefined || value === null || value === '') return defaultValue;
     const num = Number(value);
-    return isNaN(num) ? defaultValue : num;
+    return Number.isNaN(num) ? defaultValue : num;
   }
 
   /**
@@ -85,7 +85,7 @@ export class GridCol extends BaseElementBlock {
   private parseBreakpoint(value: any): number | object | undefined {
     if (value === undefined || value === null || value === '') return undefined;
     if (typeof value === 'number') return value;
-    if (typeof value === 'string' && !isNaN(Number(value))) return Number(value);
+    if (typeof value === 'string' && !Number.isNaN(Number(value))) return Number(value);
     if (typeof value === 'object') return value;
     return undefined;
   }

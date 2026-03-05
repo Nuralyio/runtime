@@ -19,7 +19,7 @@ import { setContextMenuEvent } from '../../../../../redux/actions/page/setContex
 
 function safeParseInt(value) {
   const result = Number.parseInt(value, 10);
-  return isNaN(result) ? 0 : result;
+  return Number.isNaN(result) ? 0 : result;
 }
 
 @customElement("generik-component-wrapper")

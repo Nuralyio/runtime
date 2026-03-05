@@ -67,7 +67,7 @@ export class GridRow extends BaseElementBlock {
   private parseGutter(gutter: any): number | number[] | object {
     if (!gutter) return 0;
     if (typeof gutter === 'number' || Array.isArray(gutter)) return gutter;
-    if (typeof gutter === 'string' && !isNaN(Number(gutter))) return Number(gutter);
+    if (typeof gutter === 'string' && !Number.isNaN(Number(gutter))) return Number(gutter);
     return gutter;
   }
 
