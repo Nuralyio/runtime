@@ -17,9 +17,9 @@
  *   node tools/validate-tokens.js --help
  */
 
-import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
-import { join, relative, basename, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { join, relative, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -113,76 +113,93 @@ function findStyleFiles() {
   return files;
 }
 
+/**
+ * Parse a line inside a CSS block, tracking backtick depth for nested templates.
+ * Returns { lineContent, closed } where closed indicates the block ended.
+ */
+function parseCSSBlockLine(line, state) {
+  let escaped = false;
+  let lineContent = '';
+  for (const ch of line) {
+    if (escaped) {
+      escaped = false;
+      lineContent += ch;
+      continue;
+    }
+    if (ch === '\\') {
+      escaped = true;
+      lineContent += ch;
+      continue;
+    }
+    if (ch === '`') {
+      state.depth--;
+      if (state.depth === 0) {
+        return { lineContent, closed: true };
+      }
+    }
+    lineContent += ch;
+  }
+  return { lineContent, closed: false };
+}
+
+/**
+ * Check if a line starts a css`` tagged template. If so, update state and
+ * return the content after the opening backtick; otherwise return null.
+ */
+function tryCSSBlockStart(line, state) {
+  const cssStart = line.match(/css\s*`/);
+  if (!cssStart) return null;
+
+  state.depth = 1;
+  const afterBacktick = line.substring(line.indexOf('`', cssStart.index) + 1);
+
+  // Check for closing backtick on the same line
+  for (const ch of afterBacktick) {
+    if (ch === '`') {
+      state.depth--;
+      if (state.depth === 0) {
+        return { afterBacktick, closedImmediately: true };
+      }
+    }
+  }
+  return { afterBacktick, closedImmediately: false };
+}
+
 function extractCSS(filePath) {
   const content = readFileSync(filePath, 'utf8');
   const lines = content.split('\n');
 
-  // Find css`...` tagged template literal
-  // We need to track backtick depth for nested templates
   const blocks = [];
   let inCSSBlock = false;
   let cssLines = [];
   let startLine = 0;
-  let depth = 0;
+  const state = { depth: 0 };
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    if (!inCSSBlock) {
-      // Look for css` start (handles `= css``, `export ... css``, etc.)
-      const cssStart = line.match(/css\s*`/);
-      if (cssStart) {
-        inCSSBlock = true;
-        startLine = i + 1; // 1-indexed
-        depth = 1;
-        // Get content after opening backtick on same line
-        const afterBacktick = line.substring(line.indexOf('`', cssStart.index) + 1);
-        // Count any nested backticks or closing backtick on same line
-        for (const ch of afterBacktick) {
-          if (ch === '`') {
-            depth--;
-            if (depth === 0) {
-              inCSSBlock = false;
-              break;
-            }
-          }
-        }
-        if (inCSSBlock) {
-          cssLines.push({ text: afterBacktick, fileLine: i + 1 });
-        }
-      }
-    } else {
-      // Inside css block - look for closing backtick
-      let escaped = false;
-      let lineContent = '';
-      for (let j = 0; j < line.length; j++) {
-        const ch = line[j];
-        if (escaped) {
-          escaped = false;
-          lineContent += ch;
-          continue;
-        }
-        if (ch === '\\') {
-          escaped = true;
-          lineContent += ch;
-          continue;
-        }
-        if (ch === '`') {
-          depth--;
-          if (depth === 0) {
-            inCSSBlock = false;
-            cssLines.push({ text: lineContent, fileLine: i + 1 });
-            blocks.push({ lines: cssLines, startLine });
-            cssLines = [];
-            break;
-          }
-        }
-        lineContent += ch;
-      }
-      if (inCSSBlock) {
+    if (inCSSBlock) {
+      const { lineContent, closed } = parseCSSBlockLine(line, state);
+      if (closed) {
+        inCSSBlock = false;
+        cssLines.push({ text: lineContent, fileLine: i + 1 });
+        blocks.push({ lines: cssLines, startLine });
+        cssLines = [];
+      } else {
         cssLines.push({ text: line, fileLine: i + 1 });
       }
+      continue;
     }
+
+    // Look for css` start
+    const startResult = tryCSSBlockStart(line, state);
+    if (!startResult) continue;
+
+    startLine = i + 1;
+    if (startResult.closedImmediately) continue;
+
+    inCSSBlock = true;
+    cssLines.push({ text: startResult.afterBacktick, fileLine: i + 1 });
   }
 
   if (cssLines.length > 0) {
@@ -281,190 +298,204 @@ const RGB_RE = /\brgba?\s*\(/i;
 const HSL_RE = /\bhsla?\s*\(/i;
 const DIMENSION_RE = /\b\d+(?:\.\d+)?(?:px|rem|em)\b/;
 const VAR_RE = /var\s*\(/;
-const CSS_SELECTOR_RE = /^\s*[.#:&\[\]@>~+*]/;
+const CSS_SELECTOR_RE = /^\s*[.#:&[\]@>~+*]/;
 const PROPERTY_RE = /^\s*([\w-]+)\s*:\s*(.+?)\s*;?\s*$/;
+
+/**
+ * Strip comments from a CSS line and update the comment tracking state.
+ * Returns null if the entire line is inside a comment (should be skipped).
+ */
+function stripComments(rawLine, commentState) {
+  let line = rawLine;
+
+  if (commentState.inComment) {
+    if (!line.includes('*/')) return null;
+    line = line.substring(line.indexOf('*/') + 2);
+    commentState.inComment = false;
+  }
+
+  // Remove single-line block comments
+  line = line.replaceAll(/\/\*.*?\*\//g, '');
+  if (line.includes('/*')) {
+    commentState.inComment = true;
+    line = line.substring(0, line.indexOf('/*'));
+  }
+
+  // Remove // comments (not standard CSS but used in tagged templates)
+  line = line.replace(/\/\/.*$/, '');
+
+  return line.trim() || null;
+}
+
+/**
+ * Update block-level tracking state (keyframes, media queries, brace depth).
+ * Returns true if the line should be skipped (inside keyframes or is just a brace).
+ */
+function updateBlockState(line, blockState) {
+  if (/@keyframes\b/.test(line)) {
+    blockState.inKeyframes = true;
+    blockState.keyframeDepth = blockState.braceDepth;
+  }
+  if (/@media\b/.test(line)) {
+    blockState.inMediaQuery = true;
+    blockState.mediaDepth = blockState.braceDepth;
+  }
+
+  const opens = (line.match(/{/g) || []).length;
+  const closes = (line.match(/}/g) || []).length;
+  blockState.braceDepth += opens - closes;
+
+  if (blockState.inKeyframes && blockState.braceDepth <= blockState.keyframeDepth) {
+    blockState.inKeyframes = false;
+  }
+  if (blockState.inMediaQuery && blockState.braceDepth <= blockState.mediaDepth) {
+    blockState.inMediaQuery = false;
+  }
+
+  if (blockState.inKeyframes) return true;
+  if (line === '{' || line === '}') return true;
+  return false;
+}
+
+/**
+ * Extract CSS declaration strings from a line, handling selector lines
+ * with inline declarations like ".foo { color: red; }".
+ * Returns an array of declaration strings, or null if the line should be skipped.
+ */
+function extractDeclarations(line) {
+  if (CSS_SELECTOR_RE.test(line)) {
+    const braceContent = line.match(/\{([^}]+)\}/);
+    if (!braceContent) return null;
+    const decls = braceContent[1].split(';').filter(d => d.trim());
+    return decls.length > 0 ? decls.map(d => d.trim()) : null;
+  }
+  if (line.startsWith('}')) return null;
+  return [line];
+}
+
+/** Check a custom property definition for non-standard naming. */
+function checkCustomPropertyNaming(property, value, fileLine, relPath, violations) {
+  if (/^--nuraly-.*-local-/.test(property)) {
+    violations.push({
+      severity: 'WARNING',
+      type: 'NON_STANDARD_TOKEN',
+      file: relPath,
+      line: fileLine,
+      property,
+      value,
+      message: `Non-standard local token naming "${property}" — use --nuraly-{component}-{property} pattern`,
+    });
+  }
+}
+
+/** Check for hard-coded z-index values. */
+function checkZIndex(value, property, fileLine, relPath, violations) {
+  const zVal = value.trim();
+  if (/^\d+$/.test(zVal) && Number.parseInt(zVal) > 1 && !VAR_RE.test(value)) {
+    violations.push({
+      severity: 'ERROR',
+      type: 'HARD_CODED_VALUE',
+      file: relPath,
+      line: fileLine,
+      property,
+      value,
+      message: 'Use a --nuraly-z-* token for z-index',
+    });
+  }
+}
+
+/** Check for hard-coded transition/animation duration values. */
+function checkTransitionDuration(value, property, fileLine, relPath, violations) {
+  if (/\b\d+(?:\.\d+)?m?s\b/.test(value) && !VAR_RE.test(value)) {
+    violations.push({
+      severity: 'ERROR',
+      type: 'HARD_CODED_VALUE',
+      file: relPath,
+      line: fileLine,
+      property,
+      value,
+      message: 'Use a --nuraly-transition-* token for timing values',
+    });
+  }
+}
+
+const TRANSITION_PROPERTIES = new Set(['transition', 'transition-duration', 'animation-duration']);
+
+/** Check that var() token references point to defined tokens. */
+function checkTokenReferences(value, property, fileLine, relPath, violations, tokenMap) {
+  const varRefs = [...value.matchAll(/var\(\s*(--nuraly-[\w-]+)\s*([,)])/g)];
+  for (const ref of varRefs) {
+    const tokenName = ref[1];
+    const hasFallback = ref[2] === ',';
+    if (tokenMap.has(tokenName)) continue;
+
+    const severity = hasFallback ? 'WARNING' : 'ERROR';
+    violations.push({
+      severity,
+      type: 'UNDEFINED_TOKEN',
+      file: relPath,
+      line: fileLine,
+      property,
+      value: tokenName,
+      message: `Token "${tokenName}" is not defined in any theme${hasFallback ? ' (has fallback)' : ''}`,
+    });
+  }
+}
+
+/** Run all checks on a single CSS declaration. */
+function checkDeclaration(property, value, fileLine, relPath, violations, tokenMap, inMediaQuery) {
+  if (SKIP_PROPERTIES.has(property)) return;
+
+  if (property.startsWith('--')) {
+    checkCustomPropertyNaming(property, value, fileLine, relPath, violations);
+    return;
+  }
+
+  if (COLOR_PROPERTIES.has(property)) {
+    checkBareColors(value, property, fileLine, relPath, violations, inMediaQuery);
+  }
+  if (THEMEABLE_PROPERTIES.has(property)) {
+    checkBareDimensions(value, property, fileLine, relPath, violations, inMediaQuery);
+  }
+  if (property === 'z-index') {
+    checkZIndex(value, property, fileLine, relPath, violations);
+  }
+  if (TRANSITION_PROPERTIES.has(property)) {
+    checkTransitionDuration(value, property, fileLine, relPath, violations);
+  }
+
+  checkTokenReferences(value, property, fileLine, relPath, violations, tokenMap);
+  checkFallbacks(value, property, fileLine, relPath, violations);
+}
 
 function detectViolations(cssBlocks, filePath, tokenMap) {
   const violations = [];
   const relPath = relative(join(ROOT, 'src/components'), filePath);
 
   for (const block of cssBlocks) {
-    let inKeyframes = false;
-    let inMediaQuery = false;
-    let braceDepth = 0;
-    let keyframeDepth = 0;
-    let mediaDepth = 0;
-    let inComment = false;
+    const commentState = { inComment: false };
+    const blockState = {
+      inKeyframes: false, inMediaQuery: false,
+      braceDepth: 0, keyframeDepth: 0, mediaDepth: 0,
+    };
 
     for (const { text: rawLine, fileLine } of block.lines) {
-      let line = rawLine;
-
-      // Handle multi-line comments
-      if (inComment) {
-        if (line.includes('*/')) {
-          line = line.substring(line.indexOf('*/') + 2);
-          inComment = false;
-        } else {
-          continue;
-        }
-      }
-
-      // Remove single-line comments
-      line = line.replaceAll(/\/\*.*?\*\//g, '');
-      if (line.includes('/*')) {
-        inComment = true;
-        line = line.substring(0, line.indexOf('/*'));
-      }
-
-      // Remove // comments (not standard CSS but used in tagged templates)
-      line = line.replace(/\/\/.*$/, '');
-
-      line = line.trim();
+      const line = stripComments(rawLine, commentState);
       if (!line) continue;
 
-      // Track @keyframes blocks
-      if (/@keyframes\b/.test(line)) {
-        inKeyframes = true;
-        keyframeDepth = braceDepth;
-      }
+      if (updateBlockState(line, blockState)) continue;
 
-      // Track @media blocks
-      if (/@media\b/.test(line)) {
-        inMediaQuery = true;
-        mediaDepth = braceDepth;
-      }
-
-      // Track brace depth
-      const opens = (line.match(/{/g) || []).length;
-      const closes = (line.match(/}/g) || []).length;
-      braceDepth += opens - closes;
-
-      // Exit keyframes/media
-      if (inKeyframes && braceDepth <= keyframeDepth) {
-        inKeyframes = false;
-      }
-      if (inMediaQuery && braceDepth <= mediaDepth) {
-        inMediaQuery = false;
-      }
-
-      // Skip @keyframes content
-      if (inKeyframes) continue;
-
-      // Skip lines that are just braces
-      if (line === '{' || line === '}') continue;
-
-      // For lines with selectors, extract inline declarations from { ... }
-      // e.g. ".badge-indicator.pink { background-color: #eb2f96; }"
-      let declarationLines = [];
-      if (CSS_SELECTOR_RE.test(line)) {
-        const braceContent = line.match(/\{([^}]+)\}/);
-        if (braceContent) {
-          // Split multiple declarations separated by ;
-          const decls = braceContent[1].split(';').filter(d => d.trim());
-          for (const decl of decls) {
-            declarationLines.push(decl.trim());
-          }
-        }
-        if (declarationLines.length === 0) continue;
-      } else if (line.startsWith('}')) {
-        continue;
-      } else {
-        declarationLines = [line];
-      }
+      const declarationLines = extractDeclarations(line);
+      if (!declarationLines) continue;
 
       for (const declLine of declarationLines) {
-      // Parse property: value declarations
-      const propMatch = declLine.match(PROPERTY_RE);
-      if (!propMatch) continue;
+        const propMatch = declLine.match(PROPERTY_RE);
+        if (!propMatch) continue;
 
-      const property = propMatch[1].toLowerCase();
-      const value = propMatch[2];
-
-      // Skip properties we never flag
-      if (SKIP_PROPERTIES.has(property)) continue;
-
-      // Skip CSS custom property definitions (--nuraly-* definitions are fine)
-      if (property.startsWith('--')) {
-        // Check for non-standard naming: --nuraly-*-local-*
-        if (/^--nuraly-.*-local-/.test(property)) {
-          violations.push({
-            severity: 'WARNING',
-            type: 'NON_STANDARD_TOKEN',
-            file: relPath,
-            line: fileLine,
-            property,
-            value,
-            message: `Non-standard local token naming "${property}" — use --nuraly-{component}-{property} pattern`,
-          });
-        }
-        continue;
+        const property = propMatch[1].toLowerCase();
+        const value = propMatch[2];
+        checkDeclaration(property, value, fileLine, relPath, violations, tokenMap, blockState.inMediaQuery);
       }
-
-      // --- Check for bare hard-coded colors ---
-      if (COLOR_PROPERTIES.has(property)) {
-        checkBareColors(value, property, fileLine, relPath, violations, inMediaQuery);
-      }
-
-      // --- Check for bare hard-coded dimensions ---
-      if (THEMEABLE_PROPERTIES.has(property)) {
-        checkBareDimensions(value, property, fileLine, relPath, violations, inMediaQuery);
-      }
-
-      // --- Check z-index ---
-      if (property === 'z-index') {
-        const zVal = value.trim();
-        if (/^\d+$/.test(zVal) && Number.parseInt(zVal) > 1 && !VAR_RE.test(value)) {
-          violations.push({
-            severity: 'ERROR',
-            type: 'HARD_CODED_VALUE',
-            file: relPath,
-            line: fileLine,
-            property,
-            value,
-            message: 'Use a --nuraly-z-* token for z-index',
-          });
-        }
-      }
-
-      // --- Check transition durations ---
-      if (property === 'transition' || property === 'transition-duration' || property === 'animation-duration') {
-        if (/\b\d+(?:\.\d+)?m?s\b/.test(value) && !VAR_RE.test(value)) {
-          violations.push({
-            severity: 'ERROR',
-            type: 'HARD_CODED_VALUE',
-            file: relPath,
-            line: fileLine,
-            property,
-            value,
-            message: 'Use a --nuraly-transition-* token for timing values',
-          });
-        }
-      }
-
-      // --- Check var() references point to defined tokens ---
-      // Match var(--token) or var(--token, fallback) — capture token and check for comma (fallback)
-      const varRefs = [...value.matchAll(/var\(\s*(--nuraly-[\w-]+)\s*([,)])/g)];
-      for (const ref of varRefs) {
-        const tokenName = ref[1];
-        const hasFallback = ref[2] === ',';
-        if (!tokenMap.has(tokenName)) {
-          // If the var() has a fallback value, it's an optional extension point — just warn
-          const severity = hasFallback ? 'WARNING' : 'ERROR';
-          violations.push({
-            severity,
-            type: 'UNDEFINED_TOKEN',
-            file: relPath,
-            line: fileLine,
-            property,
-            value: tokenName,
-            message: `Token "${tokenName}" is not defined in any theme${hasFallback ? ' (has fallback)' : ''}`,
-          });
-        }
-      }
-
-      // --- Check for hard-coded fallback values in var() ---
-      checkFallbacks(value, property, fileLine, relPath, violations);
-      } // end for declarationLines
     }
   }
 
@@ -531,35 +562,26 @@ function checkBareColors(value, property, line, file, violations, inMedia) {
   }
 }
 
+/** Check if a dimension value should be skipped (allowed patterns). */
+function shouldSkipDimension(trimmed, value, property) {
+  if (ALLOWED_KEYWORDS.has(trimmed)) return true;
+  if (/^var\(/.test(trimmed)) return true;
+  if (/^0(px|rem|em)?$/.test(trimmed)) return true;
+  if (/^[\d.]+%$/.test(trimmed)) return true;
+  if (/^calc\(/.test(trimmed) && VAR_RE.test(trimmed)) return true;
+  if (VAR_RE.test(value)) return true;
+  if (!DIMENSION_RE.test(trimmed)) return true;
+  if (property === 'border-width' && /^[012]px$/.test(trimmed)) return true;
+  if ((property === 'border' || property.startsWith('border-')) && /^[012]px\s+\w+/.test(trimmed)) return true;
+  return false;
+}
+
 function checkBareDimensions(value, property, line, file, violations, inMedia) {
   if (inMedia) return;
 
   const trimmed = value.trim();
-  if (ALLOWED_KEYWORDS.has(trimmed)) return;
+  if (shouldSkipDimension(trimmed, value, property)) return;
 
-  // Skip if value starts with var()
-  if (/^var\(/.test(trimmed)) return;
-
-  // Skip pure 0
-  if (/^0(px|rem|em)?$/.test(trimmed)) return;
-
-  // Skip percentage values
-  if (/^[\d.]+%$/.test(trimmed)) return;
-
-  // Skip calc() expressions that use tokens
-  if (/^calc\(/.test(trimmed) && VAR_RE.test(trimmed)) return;
-
-  // Skip values in shorthand that already use var()
-  if (VAR_RE.test(value)) return;
-
-  // Skip if no dimensions present
-  if (!DIMENSION_RE.test(trimmed)) return;
-
-  // Skip known safe small values: 1px borders, etc.
-  if (property === 'border-width' && /^[012]px$/.test(trimmed)) return;
-  if ((property === 'border' || property.startsWith('border-')) && /^[012]px\s+\w+/.test(trimmed)) return;
-
-  // Flag bare dimensions
   const dimMatches = [...trimmed.matchAll(/\b(\d+(?:\.\d+)?(?:px|rem|em))\b/g)];
   if (dimMatches.length > 0) {
     violations.push({
@@ -569,7 +591,7 @@ function checkBareDimensions(value, property, line, file, violations, inMedia) {
       line,
       property,
       value: trimmed,
-      message: `Bare dimension${dimMatches.length > 1 ? 's' : ''} ${dimMatches.map(m => `"${m[1]}"`).join(', ')} — use a --nuraly-* token`,
+      message: 'Bare dimension' + (dimMatches.length > 1 ? 's' : '') + ' ' + dimMatches.map(m => '"' + m[1] + '"').join(', ') + ' — use a --nuraly-* token',
     });
   }
 }
@@ -640,13 +662,46 @@ function detectCoverageGaps(tokenMap) {
 // 5. Report formatting
 // ---------------------------------------------------------------------------
 
+/** Format violations for a single severity level within a file. */
+function formatSeverityBlock(severity, fileViolations, file) {
+  const filtered = fileViolations.filter(v => v.severity === severity);
+  if (filtered.length === 0) return [];
+  return [
+    `${severity} ${file}`,
+    ...filtered.flatMap(v => [`  L${v.line}: ${v.property}: ${v.value}`, `         ${v.message}`]),
+    '',
+  ];
+}
+
+/** Format coverage gap section. */
+function formatCoverageGaps(coverageGaps) {
+  if (coverageGaps.length === 0) return [];
+  const lines = ['COVERAGE GAP'];
+  for (const gap of coverageGaps.slice(0, 20)) {
+    lines.push(`  ${gap.token}: defined in ${gap.definedIn.join(', ')}, missing in ${gap.missingIn.join(', ')}`);
+  }
+  if (coverageGaps.length > 20) {
+    lines.push(`  ... and ${coverageGaps.length - 20} more`);
+  }
+  lines.push('');
+  return lines;
+}
+
+/** Format the summary line. */
+function formatSummary(allViolations) {
+  const totalFiles = new Set(allViolations.map(v => v.file)).size;
+  const totalStyleFiles = findStyleFiles().length;
+  const totalErrors = allViolations.filter(v => v.severity === 'ERROR').length;
+  const totalWarnings = allViolations.filter(v => v.severity === 'WARNING').length;
+  return `Summary: ${totalStyleFiles} files scanned | ${totalFiles} with violations | ${totalErrors} errors | ${totalWarnings} warnings`;
+}
+
 function formatReport(allViolations, coverageGaps, format) {
   if (format === 'json') {
     return JSON.stringify({ violations: allViolations, coverageGaps }, null, 2);
   }
 
-  const lines = [];
-  lines.push('=== NuralyUI CSS Token Validation ===\n');
+  const lines = ['=== NuralyUI CSS Token Validation ===\n'];
 
   // Group violations by file
   const byFile = new Map();
@@ -655,54 +710,14 @@ function formatReport(allViolations, coverageGaps, format) {
     byFile.get(v.file).push(v);
   }
 
-  // Sort files alphabetically
-  const sortedFiles = [...byFile.keys()].sort();
-
-  for (const file of sortedFiles) {
+  for (const file of [...byFile.keys()].sort()) {
     const fileViolations = byFile.get(file);
-
-    // Group by severity for display
-    const errors = fileViolations.filter(v => v.severity === 'ERROR');
-    const warnings = fileViolations.filter(v => v.severity === 'WARNING');
-
-    if (errors.length > 0) {
-      lines.push(`ERROR ${file}`);
-      for (const v of errors) {
-        lines.push(`  L${v.line}: ${v.property}: ${v.value}`);
-        lines.push(`         ${v.message}`);
-      }
-      lines.push('');
-    }
-
-    if (warnings.length > 0) {
-      lines.push(`WARNING ${file}`);
-      for (const v of warnings) {
-        lines.push(`  L${v.line}: ${v.property}: ${v.value}`);
-        lines.push(`         ${v.message}`);
-      }
-      lines.push('');
-    }
+    lines.push(...formatSeverityBlock('ERROR', fileViolations, file));
+    lines.push(...formatSeverityBlock('WARNING', fileViolations, file));
   }
 
-  // Coverage gaps
-  if (coverageGaps.length > 0) {
-    lines.push('COVERAGE GAP');
-    for (const gap of coverageGaps.slice(0, 20)) {
-      lines.push(`  ${gap.token}: defined in ${gap.definedIn.join(', ')}, missing in ${gap.missingIn.join(', ')}`);
-    }
-    if (coverageGaps.length > 20) {
-      lines.push(`  ... and ${coverageGaps.length - 20} more`);
-    }
-    lines.push('');
-  }
-
-  // Summary
-  const totalFiles = new Set(allViolations.map(v => v.file)).size;
-  const totalStyleFiles = findStyleFiles().length;
-  const totalErrors = allViolations.filter(v => v.severity === 'ERROR').length;
-  const totalWarnings = allViolations.filter(v => v.severity === 'WARNING').length;
-
-  lines.push(`Summary: ${totalStyleFiles} files scanned | ${totalFiles} with violations | ${totalErrors} errors | ${totalWarnings} warnings`);
+  lines.push(...formatCoverageGaps(coverageGaps));
+  lines.push(formatSummary(allViolations));
 
   return lines.join('\n');
 }

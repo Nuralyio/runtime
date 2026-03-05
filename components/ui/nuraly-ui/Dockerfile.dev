@@ -1,5 +1,5 @@
 # Development Dockerfile for NuralyUI Storybook
-FROM node:latest
+FROM node:22-slim
 
 WORKDIR /app
 
