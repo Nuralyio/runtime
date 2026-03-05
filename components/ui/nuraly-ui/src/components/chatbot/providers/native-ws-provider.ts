@@ -346,8 +346,9 @@ export class NativeWebSocketProvider implements ChatbotProvider {
 
   protected getLatestResolver() {
     const keys = Array.from(this.responseResolvers.keys());
-    if (keys.length > 0) {
-      return this.responseResolvers.get(keys.at(-1)!);
+    const lastKey = keys.at(-1);
+    if (lastKey !== undefined) {
+      return this.responseResolvers.get(lastKey);
     }
     return null;
   }
