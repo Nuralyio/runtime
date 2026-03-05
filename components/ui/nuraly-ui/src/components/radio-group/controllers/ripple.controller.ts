@@ -83,7 +83,7 @@ export class RadioRippleController implements RippleController {
     target.style.animation = 'none';
     
     // Force reflow to ensure animation is cleared
-    target.offsetHeight;
+    void target.offsetHeight;
     
     // Add ripple animation using CSS custom properties
     const duration = getComputedStyle(target).getPropertyValue('--nuraly-radio-ripple-duration') || 

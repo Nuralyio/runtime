@@ -54,7 +54,7 @@ export class CollapseAnimationController extends BaseCollapseController {
     element.style.transition = `height ${this.animationDuration}ms ease-out`;
 
     // Force reflow
-    element.offsetHeight;
+    void element.offsetHeight;
 
     element.style.height = `${fullHeight}px`;
 
@@ -85,7 +85,7 @@ export class CollapseAnimationController extends BaseCollapseController {
     element.style.transition = `height ${this.animationDuration}ms ease-out`;
 
     // Force reflow
-    element.offsetHeight;
+    void element.offsetHeight;
 
     element.style.height = '0px';
 

@@ -134,7 +134,7 @@ export class FormValidationController {
    */
   validateForm(): Promise<FormValidationResult> {
     // Return existing promise if validation is in progress
-    if (this.validationPromise) {
+    if (this.validationPromise !== null) {
       return this.validationPromise;
     }
 
