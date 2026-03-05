@@ -1259,10 +1259,10 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
         inDevMode: ts?.inDevMode,
       };
       triggerActions = {
-        onActivate: (triggerId) => this.activateTrigger(triggerId),
-        onDeactivate: (triggerId) => this.deactivateTrigger(triggerId),
-        onCreateAndActivate: (nodeType, config) => this.createAndActivateTrigger(nodeType, config),
-        onToggleDevMode: (triggerId, enable) => this.toggleDevMode(triggerId, enable),
+        onActivate: (triggerId) => { void this.activateTrigger(triggerId); },
+        onDeactivate: (triggerId) => { void this.deactivateTrigger(triggerId); },
+        onCreateAndActivate: (nodeType, config) => { void this.createAndActivateTrigger(nodeType, config); },
+        onToggleDevMode: (triggerId, enable) => { void this.toggleDevMode(triggerId, enable); },
       };
     }
 
@@ -1283,7 +1283,7 @@ export class WorkflowCanvasElement extends BaseCanvasElement {
             }
           }
         },
-        onRetryNode: this.currentExecutionId ? (nodeId) => this.handleRetryNode(nodeId) : undefined,
+        onRetryNode: this.currentExecutionId ? (nodeId) => { void this.handleRetryNode(nodeId); } : undefined,
       },
       workflowId: this.workflow?.id,
       workflow: this.workflow,

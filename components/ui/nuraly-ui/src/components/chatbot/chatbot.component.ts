@@ -467,8 +467,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         onFileClick: this.handleFilePreview.bind(this)
       },
       threadSidebar: this.showThreads ? {
-        onCreateNew: async () => await this.controller?.createThread('New Chat'),
-        onSelectThread: (threadId: string) => this.controller?.switchThread(threadId)
+        onCreateNew: () => { void this.controller?.createThread('New Chat'); },
+        onSelectThread: (threadId: string) => { void this.controller?.switchThread(threadId); }
       } : undefined,
       fileUploadArea: {
         onDrop: () => {},

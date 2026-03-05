@@ -197,7 +197,7 @@ export const Email: Story = {
   `,
 };
 
-export const Number: Story = {
+export const NumberInput: Story = {
   args: {
     type: 'number',
     label: 'Number Input',

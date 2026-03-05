@@ -112,7 +112,7 @@ export interface ValidationController extends DatePickerBaseController {
  * Calendar positioning controller interface
  */
 export interface PositioningController extends DatePickerBaseController {
-  positionCalendar(): void;
+  positionCalendar(): void | Promise<void>;
   updatePosition(): void;
   
   calculateOptimalPosition(): { top: number; left: number; placement: string };
