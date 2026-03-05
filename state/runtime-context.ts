@@ -731,7 +731,7 @@ class RuntimeContext implements IRuntimeContext {
     });
 
     componentsList.forEach((component: any) => {
-      const application_id = component.application_id || component.application_id;
+      const application_id = component.application_id;
   
       if (!this.context[application_id]) {
         this.context[application_id] = {};

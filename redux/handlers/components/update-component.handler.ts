@@ -25,12 +25,7 @@ export const updateComponentHandler = (component: any, application_id: string) =
         const data = await res.json().catch(() => ({}));
         const errorMessage = data.error || `Failed to save component (${res.status})`;
 
-        // Show toast for permission errors
-        if (res.status === 403) {
-          showError(errorMessage);
-        } else {
-          showError(errorMessage);
-        }
+        showError(errorMessage);
 
         // Dispatch error event
         eventDispatcher.emit("component:save-error", {
