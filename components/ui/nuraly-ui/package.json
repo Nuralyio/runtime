@@ -1,9 +1,41 @@
 {
-  "name": "@nuralyui/workspace",
-  "private": true,
-  "version": "1.0.13",
+  "name": "@nuralyui/core",
+  "version": "1.1.0",
   "description": "A comprehensive collection of enterprise-class web components built with Lit and TypeScript",
   "type": "module",
+  "main": "dist/nuralyui.bundle.js",
+  "module": "dist/nuralyui.bundle.js",
+  "exports": {
+    ".": {
+      "import": "./dist/nuralyui.bundle.js"
+    },
+    "./bundle": {
+      "import": "./dist/nuralyui.bundle.js"
+    },
+    "./components/*": {
+      "import": "./dist/src/components/*/index.js",
+      "types": "./dist/src/components/*/index.d.ts"
+    },
+    "./components/*/bundle": {
+      "import": "./dist/src/components/*/bundle.js"
+    },
+    "./components/*/react": {
+      "import": "./dist/src/components/*/react.js",
+      "types": "./dist/src/components/*/react.d.ts"
+    }
+  },
+  "files": [
+    "dist/nuralyui.bundle.js",
+    "dist/nuralyui.bundle.js.gz",
+    "dist/src/components/*/index.js",
+    "dist/src/components/*/index.d.ts",
+    "dist/src/components/*/*.js",
+    "dist/src/components/*/*.d.ts",
+    "dist/src/components/*/bundle.js",
+    "dist/src/components/*/bundle.js.gz",
+    "README.md",
+    "LICENSE"
+  ],
   "workspaces": [
     "packages/*"
   ],
@@ -14,6 +46,9 @@
   },
   "bugs": {
     "url": "https://github.com/Nuralyio/NuralyUI/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "start": "concurrently 'npm:build:watch' 'npm:serve'",
@@ -47,6 +82,7 @@
     "validate:tokens": "node tools/validate-tokens.js",
     "validate:tokens:json": "node tools/validate-tokens.js --format json",
     "roll": "rollup -c ; ",
+    "prepublishOnly": "npm run build",
     "link": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/src/components/' + dir + ' && npm link', { stdio: 'inherit' }));\"",
     "unlink": "node -e \"const { execSync } = require('child_process'); ['button', 'file-upload', 'colorpicker', 'datepicker', 'dropdown', 'icon', 'input', 'menu', 'modal', 'radio', 'select', 'slider-input', 'tabs', 'tooltips', 'checkbox', 'table', 'collapse'].forEach(dir => execSync('cd dist/src/components/' + dir + ' && npm unlink @nuralyui/' + dir, { stdio: 'inherit' }));\""
   },
@@ -78,16 +114,27 @@
     "@lit/localize": "^0.12.2",
     "@lit/reactive-element": "^2.1.1",
     "@nanostores/persistent": "^1.2.0",
-    "@types/react": "^18.0.28",
     "dayjs": "^2.0.0-alpha.4",
     "lit": "^3.0.0",
     "lucide": "^0.552.0",
-    "mermaid": "^11.4.0",
-    "monaco-editor": "^0.55.1",
-    "monacopilot": "^1.2.12",
     "nanostores": "^0.11.4",
-    "react": "^18.2.0",
     "vanilla-colorful": "^0.7.2"
+  },
+  "peerDependencies": {
+    "monaco-editor": "^0.55.0",
+    "monacopilot": "^1.2.0",
+    "mermaid": "^11.0.0",
+    "socket.io-client": "^4.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "@types/react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "monaco-editor": { "optional": true },
+    "monacopilot": { "optional": true },
+    "mermaid": { "optional": true },
+    "socket.io-client": { "optional": true },
+    "react": { "optional": true },
+    "@types/react": { "optional": true }
   },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
