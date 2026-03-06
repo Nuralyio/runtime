@@ -530,6 +530,8 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
   protected handleCanvasMouseDown = (e: MouseEvent) => {
     if (this.disabled) return;
 
+    this.contextMenu = null;
+
     // Subclass hook (e.g. close colour picker)
     this.onCanvasMouseDownExtra(e);
 
@@ -567,6 +569,7 @@ export abstract class BaseCanvasElement extends NuralyUIBaseMixin(LitElement) im
 
   protected handleNodeMouseDown(e: CustomEvent) {
     if (this.disabled) return;
+    this.contextMenu = null;
     const { node, event } = e.detail;
 
     const isAlreadySelected = this.selectedNodeIds.has(node.id);
