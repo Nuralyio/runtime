@@ -26,7 +26,7 @@ export function renderEmptyStateTemplate(data: EmptyStateTemplateData): Template
       </div>
       <div class="empty-state-text">No nodes yet</div>
       <div class="empty-state-hint">
-        Click the + button or double-click to add nodes
+        Click the + button or right-click to add nodes
       </div>
     </div>
   `;
