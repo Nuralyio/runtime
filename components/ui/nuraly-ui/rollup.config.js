@@ -6,6 +6,7 @@
 import { terser } from 'rollup-plugin-terser';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import virtual from '@rollup/plugin-virtual';
 import gzipPlugin from 'rollup-plugin-gzip';
 import minifyHTML from 'rollup-plugin-minify-html-literals';
 import fs from 'fs';
@@ -144,4 +145,56 @@ const createConfig = (component) => ({
   ],
 });
 
-export default components.map(createConfig);
+// Unified CDN bundle: all components in a single standalone ESM file
+const createUnifiedConfig = () => {
+  const allExportsCode = components
+    .map((c) => `export * from './dist/src/components/${c}/index.js';`)
+    .join('\n');
+
+  return {
+    input: 'nuralyui-all',
+    output: {
+      file: 'dist/nuralyui.bundle.js',
+      format: 'esm',
+      inlineDynamicImports: true,
+    },
+    // Externalize heavy optional dependencies — consumers load these via import maps
+    external: (id) => (
+      id === 'monaco-editor' || id.startsWith('monaco-editor/') ||
+      id === 'monacopilot' || id.startsWith('monacopilot/') ||
+      id === 'socket.io-client' || id.startsWith('socket.io-client/') ||
+      id === 'mermaid' || id.startsWith('mermaid/')
+    ),
+    onwarn(warning) {
+      if (warning.code !== 'THIS_IS_UNDEFINED' && warning.code !== 'NAMESPACE_CONFLICT') {
+        console.error(`(!) ${warning.message}`);
+      }
+    },
+    plugins: [
+      virtual({ 'nuralyui-all': allExportsCode }),
+      replace({ 'Reflect.decorate': 'undefined', preventAssignment: true }),
+      resolve(),
+      terser({
+        ecma: 2017,
+        module: true,
+        warnings: true,
+        mangle: {
+          properties: {
+            regex: /^__/,
+          },
+        },
+      }),
+      gzipPlugin({
+        minSize: 0,
+        fileName: () => 'nuralyui.bundle.js.gz',
+      }),
+      gzipSummary(),
+    ],
+  };
+};
+
+const configs = components.map(createConfig);
+if (components.length > 0) {
+  configs.push(createUnifiedConfig());
+}
+export default configs;
