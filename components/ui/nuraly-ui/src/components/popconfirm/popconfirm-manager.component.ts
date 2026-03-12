@@ -16,10 +16,6 @@ import {
   PopconfirmItem,
 } from './popconfirm.types.js';
 
-// Import required components
-import '../icon/icon.component.js';
-import '../button/button.component.js';
-import '../label/label.component.js';
 
 /**
  * # PopconfirmManager Component
