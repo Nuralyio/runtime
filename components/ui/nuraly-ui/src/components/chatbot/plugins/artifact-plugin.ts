@@ -82,7 +82,12 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
    * block in the message text with a compact clickable placeholder card.
    */
   private processMessage(message: ChatbotMessage): void {
-    if (message.metadata?.hasArtifacts) return; // already processed
+    // If already processed, rebuild the artifact Map from stored metadata
+    // so that artifact lookups work after thread switches.
+    if (message.metadata?.hasArtifacts) {
+      this.rebuildArtifactsFromMetadata(message);
+      return;
+    }
 
     const rawText = message.text;
     if (!rawText) return;
@@ -149,9 +154,49 @@ export class ArtifactPlugin extends ChatPluginBase implements ChatbotPlugin {
           ...message.metadata,
           renderAsHtml: true,
           hasArtifacts: true,
-          artifactIds: extracted.map(a => a.id)
+          artifactIds: extracted.map(a => a.id),
+          // Preserve original text so artifacts can be rebuilt after thread switch
+          artifactOriginalText: rawText
         }
       });
+    }
+  }
+
+  /**
+   * Rebuild the artifact Map entries from a message that was already processed.
+   * This is needed after thread switches: the message text/metadata are persisted
+   * in the thread, but the in-memory artifact Map is not.
+   */
+  private rebuildArtifactsFromMetadata(message: ChatbotMessage): void {
+    const ids: string[] | undefined = message.metadata?.artifactIds;
+    if (!ids?.length) return;
+
+    // Check if artifacts are already in the Map (no work needed)
+    if (ids.every(id => this.artifacts.has(id))) return;
+
+    // Re-extract from the preserved original text
+    const originalText: string | undefined = message.metadata?.artifactOriginalText;
+    if (!originalText) return;
+
+    const fenceRegex = /```(\w*)\n([\s\S]*?)```/g;
+    let match: RegExpExecArray | null;
+    let index = 0;
+
+    while ((match = fenceRegex.exec(originalText)) !== null) {
+      const language = (match[1] || 'text').toLowerCase();
+      const content = match[2];
+      const id = `artifact-${message.id}-${index}`;
+      const title = this.extractTitle(content, language, index);
+
+      this.artifacts.set(id, {
+        id,
+        language,
+        content,
+        title,
+        messageId: message.id,
+        index
+      });
+      index++;
     }
   }
 

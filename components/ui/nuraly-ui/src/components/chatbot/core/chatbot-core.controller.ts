@@ -517,6 +517,7 @@ export class ChatbotCoreController {
    */
   public switchThread(threadId: string): void {
     this.threadHandler.switchThread(threadId);
+    this.processRestoredMessagesForPlugins();
   }
 
   /**
