@@ -71,7 +71,7 @@ import { ArtifactPlugin } from './plugins/artifact-plugin.js';
 @customElement('nr-chatbot')
 export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   static override styles = styles;
-  override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal'];
+  override requiredComponents = ['nr-input', 'nr-button', 'nr-icon', 'nr-dropdown', 'nr-select', 'nr-modal', 'nr-popconfirm'];
 
   /** Array of chat messages (synced from controller) */
   @property({type: Array}) 
@@ -208,6 +208,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @state() private isArtifactPanelOpen = false;
   @state() private selectedArtifact: ChatbotArtifact | null = null;
   @state() private isThreadSidebarOpen = true;
+  @state() private _editingThreadId?: string;
   @state() private isUrlModalOpen = false;
   @state() private urlInput = '';
   @state() private urlModalError = '';
@@ -250,6 +251,23 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       if (target) {
         const artifactId = (target as HTMLElement).dataset.artifactId;
         if (artifactId) this.handleArtifactClick(artifactId);
+      }
+    });
+
+    // Thread rename edit trigger
+    this.shadowRoot?.addEventListener('nr-thread-edit', (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.threadId) {
+        this._editingThreadId = detail.threadId;
+        this.requestUpdate();
+        // Focus the input after render
+        this.updateComplete.then(() => {
+          const input = this.shadowRoot?.querySelector('.thread-item__rename-input') as HTMLInputElement;
+          if (input) {
+            input.focus();
+            input.select();
+          }
+        });
       }
     });
 
@@ -423,7 +441,8 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       isThreadSidebarOpen: this.showThreads && this.isThreadSidebarOpen,
       threadSidebar: this.showThreads ? {
         threads: this.threads,
-        activeThreadId: this.activeThreadId
+        activeThreadId: this.activeThreadId,
+        editingThreadId: this._editingThreadId
       } : undefined,
       isDragging: false,
       enableArtifacts: this.enableArtifacts,
@@ -468,7 +487,13 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       },
       threadSidebar: this.showThreads ? {
         onCreateNew: () => { this.controller?.createThread('New Chat'); },
-        onSelectThread: (threadId: string) => { this.controller?.switchThread(threadId); }
+        onSelectThread: (threadId: string) => { this.controller?.switchThread(threadId); },
+        onDeleteThread: (threadId: string) => { this.controller?.deleteThread(threadId); },
+        onBookmarkThread: (threadId: string) => { this.controller?.bookmarkThread(threadId); },
+        onRenameThread: (threadId: string, newTitle: string) => {
+          this.controller?.renameThread(threadId, newTitle);
+          this._editingThreadId = undefined;
+        }
       } : undefined,
       fileUploadArea: {
         onDrop: () => {},

@@ -208,6 +208,7 @@ export interface ChatbotThread {
   messages: ChatbotMessage[];
   createdAt: string;
   updatedAt: string;
+  bookmarked?: boolean;
   metadata?: Record<string, any>;
 }
 

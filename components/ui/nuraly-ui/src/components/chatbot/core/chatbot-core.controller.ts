@@ -527,6 +527,20 @@ export class ChatbotCoreController {
   }
 
   /**
+   * Rename a thread
+   */
+  public renameThread(threadId: string, newTitle: string): void {
+    this.threadHandler.renameThread(threadId, newTitle);
+  }
+
+  /**
+   * Toggle bookmark on a thread
+   */
+  public bookmarkThread(threadId: string): void {
+    this.threadHandler.bookmarkThread(threadId);
+  }
+
+  /**
    * Get the currently active thread
    */
   public getCurrentThread(): ChatbotThread | undefined {

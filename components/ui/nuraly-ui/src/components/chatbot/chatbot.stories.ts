@@ -40,6 +40,8 @@ import '../dropdown/dropdown.component.js';
 import '../select/select.component.js';
 import '../tag/tag.component.js';
 import '../modal/modal.component.js';
+import '../popconfirm/popconfirm.component.js';
+import '../label/label.component.js';
 import '../document/document.component.js';
 import './chatbot.component.js';
 import type { NrChatbotElement } from './chatbot.component.js';
@@ -3268,6 +3270,141 @@ export const FlowDiagramMode: Story = {
           .showThreads=${args.showThreads}
           .boxed=${args.boxed}
           .enableArtifacts=${true}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
+/**
+ * Chatbot with bookmarked threads - Bookmark important conversations!
+ * Threads can be bookmarked, renamed, and deleted. Bookmarked threads
+ * show a filled bookmark icon that persists across interactions.
+ */
+export const WithBookmarks: Story = {
+  args: {
+    ...Default.args,
+    showThreads: true
+  },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#bookmarks-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const controller = new ChatbotCoreController({
+          provider: new MockProvider({
+            delay: 500,
+            streaming: true,
+            streamingSpeed: 5,
+            streamingInterval: 20,
+            contextualResponses: true
+          }),
+          enableThreads: true,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.threads = state.threads;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; }
+          }
+        });
+
+        chatbot.controller = controller;
+
+        // Pre-populate with sample threads, some bookmarked
+        const sampleThreads: ChatbotThread[] = [
+          {
+            id: 'bk-thread-1',
+            title: 'Project Architecture Discussion',
+            messages: [
+              { id: 'bk-m1', sender: ChatbotSender.User, text: 'How should we structure the microservices?', timestamp: new Date(Date.now() - 3600000).toISOString() },
+              { id: 'bk-m2', sender: ChatbotSender.Bot, text: 'I recommend a domain-driven design approach with bounded contexts for each service.', timestamp: new Date(Date.now() - 3500000).toISOString() }
+            ],
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+            updatedAt: new Date(Date.now() - 3500000).toISOString(),
+            bookmarked: true
+          },
+          {
+            id: 'bk-thread-2',
+            title: 'Bug Fix: Auth Token Expiry',
+            messages: [
+              { id: 'bk-m3', sender: ChatbotSender.User, text: 'Users are getting logged out randomly', timestamp: new Date(Date.now() - 7200000).toISOString() },
+              { id: 'bk-m4', sender: ChatbotSender.Bot, text: 'This could be related to token refresh timing. Let me help debug.', timestamp: new Date(Date.now() - 7100000).toISOString() }
+            ],
+            createdAt: new Date(Date.now() - 172800000).toISOString(),
+            updatedAt: new Date(Date.now() - 7100000).toISOString(),
+            bookmarked: false
+          },
+          {
+            id: 'bk-thread-3',
+            title: 'API Design Review',
+            messages: [
+              { id: 'bk-m5', sender: ChatbotSender.User, text: 'Can you review my REST API endpoints?', timestamp: new Date(Date.now() - 10800000).toISOString() },
+              { id: 'bk-m6', sender: ChatbotSender.Bot, text: 'Sure! Share the endpoint definitions and I will review them.', timestamp: new Date(Date.now() - 10700000).toISOString() }
+            ],
+            createdAt: new Date(Date.now() - 259200000).toISOString(),
+            updatedAt: new Date(Date.now() - 10700000).toISOString(),
+            bookmarked: true
+          },
+          {
+            id: 'bk-thread-4',
+            title: 'Quick Question about CSS Grid',
+            messages: [
+              { id: 'bk-m7', sender: ChatbotSender.User, text: 'What is the difference between grid-template and grid-auto?', timestamp: new Date(Date.now() - 14400000).toISOString() },
+              { id: 'bk-m8', sender: ChatbotSender.Bot, text: 'grid-template defines explicit tracks, while grid-auto defines implicit tracks created when content overflows the explicit grid.', timestamp: new Date(Date.now() - 14300000).toISOString() }
+            ],
+            createdAt: new Date(Date.now() - 345600000).toISOString(),
+            updatedAt: new Date(Date.now() - 14300000).toISOString(),
+            bookmarked: false
+          }
+        ];
+
+        controller.loadConversations(sampleThreads);
+        controller.switchThread('bk-thread-1');
+
+        // Listen to bookmark events
+        controller.on('thread:bookmarked', (detail) => {
+          console.log('Thread bookmarked:', detail);
+          const state = controller.getState();
+          chatbot.threads = state.threads;
+        });
+
+        controller.on('thread:renamed', (detail) => {
+          console.log('Thread renamed:', detail);
+          const state = controller.getState();
+          chatbot.threads = state.threads;
+        });
+
+        controller.on('thread:deleted', (threadId) => {
+          console.log('Thread deleted:', threadId);
+          const state = controller.getState();
+          chatbot.threads = state.threads;
+          chatbot.messages = state.messages;
+        });
+
+        chatbot.suggestions = [
+          { id: 'bk1', text: 'Try bookmarking a thread', enabled: true },
+          { id: 'bk2', text: 'Rename a conversation', enabled: true },
+          { id: 'bk3', text: 'Create a new thread', enabled: true }
+        ];
+        chatbot.enableThreadCreation = true;
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 900px; height: 650px;">
+        <nr-chatbot
+          id="bookmarks-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .isRTL=${args.isRTL}
+          .disabled=${args.disabled}
+          .showSendButton=${args.showSendButton}
+          .autoScroll=${args.autoScroll}
+          .showThreads=${args.showThreads}
+          .boxed=${true}
         ></nr-chatbot>
       </div>
     `;

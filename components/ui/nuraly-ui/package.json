@@ -1,6 +1,6 @@
 {
   "name": "@nuralyui/core",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A comprehensive collection of enterprise-class web components built with Lit and TypeScript",
   "type": "module",
   "main": "dist/nuralyui.bundle.js",

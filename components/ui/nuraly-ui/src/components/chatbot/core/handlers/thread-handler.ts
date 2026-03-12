@@ -97,6 +97,39 @@ export class ThreadHandler {
     this.eventBus.emit('thread:selected', thread);
   }
 
+  bookmarkThread(threadId: string): void {
+    const state = this.stateHandler.getState();
+    const thread = state.threads.find(t => t.id === threadId);
+    if (!thread) {
+      throw new Error(`Thread "${threadId}" not found`);
+    }
+
+    const bookmarked = !thread.bookmarked;
+    const newThreads = state.threads.map(t =>
+      t.id === threadId ? { ...t, bookmarked } : t
+    );
+
+    this.stateHandler.updateState({ threads: newThreads });
+    this.eventBus.emit('thread:bookmarked', { threadId, bookmarked });
+  }
+
+  renameThread(threadId: string, newTitle: string): void {
+    const state = this.stateHandler.getState();
+    const thread = state.threads.find(t => t.id === threadId);
+    if (!thread) {
+      throw new Error(`Thread "${threadId}" not found`);
+    }
+
+    const newThreads = state.threads.map(t =>
+      t.id === threadId
+        ? { ...t, title: newTitle, updatedAt: new Date().toISOString() }
+        : t
+    );
+
+    this.stateHandler.updateState({ threads: newThreads });
+    this.eventBus.emit('thread:renamed', { threadId, title: newTitle });
+  }
+
   deleteThread(threadId: string): void {
     const state = this.stateHandler.getState();
     const newThreads = state.threads.filter(t => t.id !== threadId);

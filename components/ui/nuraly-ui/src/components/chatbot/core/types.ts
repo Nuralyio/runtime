@@ -461,6 +461,8 @@ export interface ChatbotEvents {
   'thread:created': ChatbotThread;
   'thread:selected': ChatbotThread;
   'thread:deleted': string;
+  'thread:renamed': { threadId: string; title: string };
+  'thread:bookmarked': { threadId: string; bookmarked: boolean };
   'module:selected': string[];
   'provider:connected': string;
   'provider:disconnected': string;
