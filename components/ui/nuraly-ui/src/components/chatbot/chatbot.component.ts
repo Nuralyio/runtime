@@ -115,7 +115,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   /** Loading text message */
   @property({type: String}) 
-  loadingText: string = msg('Bot is typing...');
+  loadingText: string = msg('Agent is working...');
 
   /** Disable input and interactions */
   @property({type: Boolean})

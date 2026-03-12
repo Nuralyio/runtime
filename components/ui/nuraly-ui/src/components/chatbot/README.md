@@ -123,7 +123,7 @@ function ChatExample() {
 | `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | Component size |
 | `variant` | `'default' \| 'minimal' \| 'rounded'` | `'default'` | Visual variant |
 | `loadingIndicator` | `'dots' \| 'spinner' \| 'wave'` | `'dots'` | Loading animation type |
-| `loadingText` | `string` | `'Bot is typing...'` | Loading text message |
+| `loadingText` | `string` | `'Agent is working...'` | Loading text message |
 | `disabled` | `boolean` | `false` | Disable input and interactions |
 | `placeholder` | `string` | `'Type your message...'` | Input placeholder text |
 | `showSendButton` | `boolean` | `true` | Show send button |

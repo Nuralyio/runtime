@@ -11,8 +11,8 @@
   <target>عذرًا، حدث خطأ أثناء معالجة رسالتك.</target>
 </trans-unit>
 <trans-unit id="s4f2dde37d5c374e1">
-  <source>Bot is typing...</source>
-  <target>الروبوت يكتب...</target>
+  <source>Agent is working...</source>
+  <target>الوكيل يعمل...</target>
 </trans-unit>
 <trans-unit id="s5eaee60bc1bf5897">
   <source>Type your message...</source>

@@ -11,8 +11,8 @@
   <target>Désolé, il y a eu une erreur lors du traitement de votre message.</target>
 </trans-unit>
 <trans-unit id="s4f2dde37d5c374e1">
-  <source>Bot is typing...</source>
-  <target>Le bot est en train d'écrire...</target>
+  <source>Agent is working...</source>
+  <target>L'agent travaille...</target>
 </trans-unit>
 <trans-unit id="s5eaee60bc1bf5897">
   <source>Type your message...</source>
