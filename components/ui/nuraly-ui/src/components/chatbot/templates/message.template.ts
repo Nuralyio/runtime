@@ -202,7 +202,9 @@ export function renderBotTypingIndicator(
     <div class="message bot loading" part="typing-indicator">
       <div class="message__content">
         ${indicatorContent}
-        ${loadingText ? html`<span class="loading-text">${loadingText}</span>` : nothing}
+        ${loadingText ? html`<span class="loading-text">${loadingText.split('').map((char, i) =>
+          html`<span class="loading-text__char" style="animation-delay:${i * 0.04}s">${char === ' ' ? '\u00A0' : char}</span>`
+        )}</span>` : nothing}
       </div>
     </div>
   `;

@@ -690,16 +690,21 @@ export default css`
     font-style: italic;
     color: var(--chatbot-text-secondary);
     font-size: var(--chatbot-font-size-sm, 0.8125rem);
-    animation: chatbot-status-fade-in 0.2s ease-in;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 200px;
+    max-width: 280px;
+    display: inline-flex;
   }
 
-  @keyframes chatbot-status-fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .loading-text__char {
+    display: inline-block;
+    animation: chatbot-status-wave 1.2s ease-in-out infinite;
+  }
+
+  @keyframes chatbot-status-wave {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50%      { transform: translateY(-3px); opacity: 1; }
   }
 
   /* Spinner indicator (for loadingIndicator = Spinner) */
