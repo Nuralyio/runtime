@@ -393,6 +393,23 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     this.isQueryRunning = state.isProcessing || false;
     // Sync uploaded files for display
     if (state.uploadedFiles) this.uploadedFiles = state.uploadedFiles;
+
+    // Auto-select the last artifact when a new one appears
+    if (this.enableArtifacts && state.messages?.length) {
+      const lastBot = [...state.messages].reverse().find((m: any) => m.sender === 'bot');
+      const artifactIds: string[] | undefined = lastBot?.metadata?.artifactIds;
+      if (artifactIds?.length) {
+        const lastId = artifactIds[artifactIds.length - 1];
+        if (this.selectedArtifact?.id !== lastId) {
+          const plugin = this.getArtifactPlugin();
+          const artifact = plugin?.getArtifact(lastId);
+          if (artifact) {
+            this.selectedArtifact = artifact;
+            this.isArtifactPanelOpen = true;
+          }
+        }
+      }
+    }
   }
 
   private handleControllerMessageSent(_data: any): void {
