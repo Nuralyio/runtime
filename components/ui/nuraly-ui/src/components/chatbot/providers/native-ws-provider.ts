@@ -32,6 +32,10 @@ export interface NativeWebSocketMessageTypes {
   ping?: string;
   /** Type value for incoming heartbeat response (default: 'pong') */
   pong?: string;
+  /** Type value for tool/function call start (default: 'tool:call') */
+  toolCall?: string;
+  /** Type value for tool/function call end (default: 'tool:end') */
+  toolCallEnd?: string;
 }
 
 /**
@@ -84,7 +88,9 @@ const DEFAULT_MESSAGE_TYPES: Required<NativeWebSocketMessageTypes> = {
   typingStart: 'typing:start',
   typingEnd: 'typing:end',
   ping: 'ping',
-  pong: 'pong'
+  pong: 'pong',
+  toolCall: 'tool:call',
+  toolCallEnd: 'tool:end'
 };
 
 /**
@@ -147,6 +153,11 @@ export class NativeWebSocketProvider implements ChatbotProvider {
   protected ws: WebSocket | null = null;
   protected config: NativeWebSocketProviderConfig | null = null;
   protected connected: boolean = false;
+
+  /** Called when a tool/function call is detected */
+  public onToolCall?: (name: string) => void;
+  /** Called when a tool/function call ends */
+  public onToolCallEnd?: () => void;
   protected responseResolvers: Map<string, {
     resolve: (value: string) => void;
     reject: (error: Error) => void;
@@ -288,6 +299,18 @@ export class NativeWebSocketProvider implements ChatbotProvider {
 
     if (messageType === types.pong) { this.handlePong(); return; }
     if (messageType === types.ping) { this.send(types.pong, { timestamp: Date.now() }); return; }
+
+    if (messageType === types.toolCall) {
+      const toolName = data.name || data.toolName || data.function || 'unknown';
+      this.onToolCall?.(toolName);
+      this.dispatchToListeners(messageType, data);
+      return;
+    }
+    if (messageType === types.toolCallEnd) {
+      this.onToolCallEnd?.();
+      this.dispatchToListeners(messageType, data);
+      return;
+    }
 
     this.dispatchToListeners(messageType, data);
 

@@ -85,6 +85,11 @@ export class WorkflowSocketProvider implements ChatbotProvider {
   protected config: WorkflowSocketProviderConfig | null = null;
   protected connected: boolean = false;
 
+  /** Called when a workflow node starts executing */
+  public onNodeStarted?: (nodeName: string) => void;
+  /** Called when a workflow node completes */
+  public onNodeCompleted?: (nodeName: string) => void;
+
   // Session ID for this provider instance - used as threadId fallback for context memory
   protected readonly sessionId: string = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
@@ -249,9 +254,22 @@ export class WorkflowSocketProvider implements ChatbotProvider {
       }
     });
 
+    // Node started (for progress tracking)
+    this.socket.on('execution:node-started', (event: any) => {
+      const nodeName = event.data?.nodeName;
+      console.log('[WorkflowSocketProvider] Node started:', nodeName);
+      if (nodeName) {
+        this.onNodeStarted?.(nodeName);
+      }
+    });
+
     // Node completed (for progress tracking)
     this.socket.on('execution:node-completed', (event: any) => {
-      console.log('[WorkflowSocketProvider] Node completed:', event.data?.nodeName);
+      const nodeName = event.data?.nodeName;
+      console.log('[WorkflowSocketProvider] Node completed:', nodeName);
+      if (nodeName) {
+        this.onNodeCompleted?.(nodeName);
+      }
     });
   }
 

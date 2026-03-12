@@ -105,6 +105,21 @@ export interface MockProviderConfig {
    * Enable message history awareness
    */
   useHistory?: boolean;
+
+  /**
+   * Simulate tool calls before responding
+   */
+  simulateToolCalls?: boolean;
+
+  /**
+   * Tool names to simulate (default: ['search_web', 'get_weather', 'run_code'])
+   */
+  toolCallNames?: string[];
+
+  /**
+   * Delay per tool call in ms (default: 1500)
+   */
+  toolCallDelay?: number;
 }
 
 /**
@@ -141,12 +156,17 @@ export class MockProvider implements ChatbotProvider {
     streaming: true,
     fileUpload: true,
     modules: false,
-    functions: false,
+    functions: true,
   };
 
   private config: Required<MockProviderConfig>;
   private messageCount = 0;
   private connected = false;
+
+  /** Called when a tool/function call is detected */
+  public onToolCall?: (name: string) => void;
+  /** Called when a tool/function call ends */
+  public onToolCallEnd?: () => void;
 
   constructor(config: MockProviderConfig = {}) {
     this.config = {
@@ -159,6 +179,9 @@ export class MockProvider implements ChatbotProvider {
       customResponses: config.customResponses ?? [],
       errorRate: config.errorRate ?? 0,
       useHistory: config.useHistory ?? true,
+      simulateToolCalls: config.simulateToolCalls ?? false,
+      toolCallNames: config.toolCallNames ?? ['search_web', 'get_weather', 'run_code'],
+      toolCallDelay: config.toolCallDelay ?? 1500,
     };
   }
 
@@ -189,6 +212,18 @@ export class MockProvider implements ChatbotProvider {
 
     // Simulate API delay
     await this.delay(this.config.delay);
+
+    // Simulate tool calls if enabled
+    if (this.config.simulateToolCalls) {
+      const tools = this.config.toolCallNames;
+      const numCalls = 1 + Math.floor(Math.random() * Math.min(tools.length, 3));
+      for (let i = 0; i < numCalls; i++) {
+        const toolName = tools[i % tools.length];
+        this.onToolCall?.(toolName);
+        await this.delay(this.config.toolCallDelay);
+        this.onToolCallEnd?.();
+      }
+    }
 
     // Generate response
     const response = this.generateResponse(text, context);

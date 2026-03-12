@@ -689,6 +689,17 @@ export default css`
   .loading-text {
     font-style: italic;
     color: var(--chatbot-text-secondary);
+    font-size: var(--chatbot-font-size-sm, 0.8125rem);
+    animation: chatbot-status-fade-in 0.2s ease-in;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  @keyframes chatbot-status-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   /* Spinner indicator (for loadingIndicator = Spinner) */

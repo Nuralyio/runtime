@@ -204,6 +204,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Object})
   controller!: ChatbotCoreController;
 
+  @state() private statusText?: string;
   @state() private focused = false;
   @state() private isArtifactPanelOpen = false;
   @state() private selectedArtifact: ChatbotArtifact | null = null;
@@ -387,6 +388,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
     this.chatStarted = state.messages?.length > 0;
     this.isBotTyping = state.isTyping || false;
+    this.statusText = state.statusText;
     // Keep Stop button in sync with provider processing lifecycle
     this.isQueryRunning = state.isProcessing || false;
     // Sync uploaded files for display
@@ -415,7 +417,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       messages: this.messages,
       isTyping: this.isBotTyping,
       loadingIndicator: this.loadingIndicator,
-      loadingText: this.loadingText,
+      loadingText: this.statusText || this.loadingText,
       chatStarted: this.chatStarted,
       suggestions: this.suggestions,
       inputBox: {

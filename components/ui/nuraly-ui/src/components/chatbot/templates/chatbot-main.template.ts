@@ -139,7 +139,8 @@ function renderContentArea(
           data.isTyping
             ? renderBotTypingIndicator(
                 data.isTyping,
-                data.loadingIndicator || ChatbotLoadingType.Spinner
+                data.loadingIndicator || ChatbotLoadingType.Spinner,
+                data.loadingText
               )
             : nothing,
           handlers.message

@@ -935,6 +935,20 @@ export class ChatbotCoreController {
   }
 
   /**
+   * Set dynamic status text shown beside the loading indicator
+   */
+  public setStatusText(text: string): void {
+    this.updateState({ statusText: text });
+  }
+
+  /**
+   * Clear the dynamic status text
+   */
+  public clearStatusText(): void {
+    this.updateState({ statusText: undefined });
+  }
+
+  /**
    * Get context for provider calls
    */
   protected getContext(): ChatbotContext {

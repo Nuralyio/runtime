@@ -28,6 +28,10 @@ export interface SocketEventConfig {
   typingStart?: string;
   /** Event name for typing indicator end */
   typingEnd?: string;
+  /** Event name for tool/function call start */
+  toolCall?: string;
+  /** Event name for tool/function call end */
+  toolCallEnd?: string;
 }
 
 /**
@@ -65,7 +69,9 @@ const DEFAULT_EVENTS: SocketEventConfig = {
   stream: 'message:stream',
   error: 'message:error',
   typingStart: 'typing:start',
-  typingEnd: 'typing:end'
+  typingEnd: 'typing:end',
+  toolCall: 'tool:call',
+  toolCallEnd: 'tool:end'
 };
 
 /**
@@ -133,6 +139,11 @@ export class SocketProvider implements ChatbotProvider {
   protected socket: Socket | null = null;
   protected config: SocketProviderConfig | null = null;
   protected connected: boolean = false;
+
+  /** Called when a tool/function call is detected */
+  public onToolCall?: (name: string) => void;
+  /** Called when a tool/function call ends */
+  public onToolCallEnd?: () => void;
   protected responseResolvers: Map<string, {
     resolve: (value: string) => void;
     reject: (error: Error) => void;
@@ -242,6 +253,20 @@ export class SocketProvider implements ChatbotProvider {
           resolver.reject(new Error(errorMsg));
           this.responseResolvers.delete(messageId);
         }
+      });
+    }
+
+    // Tool/function call events
+    if (events.toolCall) {
+      this.socket.on(events.toolCall, (data: any) => {
+        const toolName = data.name || data.toolName || data.function || 'unknown';
+        this.onToolCall?.(toolName);
+      });
+    }
+
+    if (events.toolCallEnd) {
+      this.socket.on(events.toolCallEnd, () => {
+        this.onToolCallEnd?.();
       });
     }
   }

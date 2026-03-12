@@ -96,7 +96,8 @@ export class ProviderService {
       if (this.ui.onTypingEnd) {
         this.ui.onTypingEnd();
       }
-      
+
+      this.stateHandler.updateState({ statusText: undefined });
       this.stateHandler.setTyping(false);
       this.stateHandler.setProcessing(false);
       this.eventBus.emit('processing:end');

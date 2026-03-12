@@ -3281,6 +3281,70 @@ export const FlowDiagramMode: Story = {
  * Threads can be bookmarked, renamed, and deleted. Bookmarked threads
  * show a filled bookmark icon that persists across interactions.
  */
+/**
+ * Demonstrates dynamic tool call status text beside the loading indicator.
+ * Send a message and watch the status text cycle through simulated tool calls.
+ */
+export const WithToolCalls: Story = {
+  args: { ...Default.args },
+  render: (args) => {
+    setTimeout(() => {
+      const chatbot = document.querySelector('#tool-calls-chatbot') as any;
+      if (chatbot && !chatbot.controller) {
+        const mockProvider = new MockProvider({
+          delay: 600,
+          streaming: true,
+          streamingSpeed: 4,
+          streamingInterval: 25,
+          contextualResponses: true,
+          simulateToolCalls: true,
+          toolCallNames: ['search_web', 'get_weather', 'run_code'],
+          toolCallDelay: 1500,
+        });
+
+        const controller = new ChatbotCoreController({
+          provider: mockProvider,
+          ui: {
+            onStateChange: (state) => {
+              chatbot.messages = state.messages;
+              chatbot.isBotTyping = state.isTyping;
+              chatbot.chatStarted = state.messages.length > 0;
+            },
+            onTypingStart: () => { chatbot.isBotTyping = true; },
+            onTypingEnd: () => { chatbot.isBotTyping = false; },
+          }
+        });
+
+        // Wire tool call callbacks to controller status text
+        mockProvider.onToolCall = (name) => {
+          controller.setStatusText(`Calling ${name}...`);
+        };
+        mockProvider.onToolCallEnd = () => {
+          controller.clearStatusText();
+        };
+
+        chatbot.controller = controller;
+        chatbot.suggestions = [
+          { id: '1', text: "What's the weather like?", enabled: true },
+          { id: '2', text: 'Search for latest news', enabled: true },
+          { id: '3', text: 'Run a code snippet', enabled: true },
+        ];
+      }
+    }, 0);
+
+    return html`
+      <div style="width: 500px; height: 600px;">
+        <nr-chatbot
+          id="tool-calls-chatbot"
+          .size=${args.size}
+          .variant=${args.variant}
+          .loadingIndicator=${'spinner'}
+        ></nr-chatbot>
+      </div>
+    `;
+  }
+};
+
 export const WithBookmarks: Story = {
   args: {
     ...Default.args,

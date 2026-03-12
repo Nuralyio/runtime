@@ -26,6 +26,7 @@ export interface ChatbotState {
   suggestions: ChatbotSuggestion[];
   isTyping: boolean;
   isProcessing: boolean;
+  statusText?: string;
   currentThreadId?: string;
   metadata: Record<string, any>;
 }
@@ -59,6 +60,11 @@ export interface ChatbotUICallbacks {
    * Called when processing ends
    */
   onProcessingEnd?: () => void;
+
+  /**
+   * Called when status text changes (e.g., tool/function call names)
+   */
+  onStatusTextChange?: (text: string | undefined) => void;
 
   /**
    * Show notification to user
