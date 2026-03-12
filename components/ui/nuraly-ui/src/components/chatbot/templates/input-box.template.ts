@@ -191,7 +191,7 @@ function renderSendButton(
       part="send-button"
       type="default"
       size="small"
-      .iconRight=${data.isQueryRunning ? 'stop' : 'arrow-up'}
+      .iconRight=${data.isQueryRunning ? 'square' : 'arrow-up'}
       @click=${data.isQueryRunning ? handlers.onStop : handlers.onSend}
       @keydown=${handlers.onSendKeydown}
       aria-label="${data.isQueryRunning ? msg('Stop query') : msg('Send message')}"
