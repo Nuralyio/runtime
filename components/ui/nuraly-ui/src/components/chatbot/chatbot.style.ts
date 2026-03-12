@@ -699,12 +699,13 @@ export default css`
 
   .loading-text__char {
     display: inline-block;
-    animation: chatbot-status-wave 1.2s ease-in-out infinite;
+    animation: chatbot-status-wave 1.4s ease-in-out infinite;
+    opacity: 0.4;
   }
 
   @keyframes chatbot-status-wave {
-    0%, 100% { transform: translateY(0); opacity: 0.6; }
-    50%      { transform: translateY(-3px); opacity: 1; }
+    0%, 100% { opacity: 0.4; }
+    50%      { opacity: 1; }
   }
 
   /* Spinner indicator (for loadingIndicator = Spinner) */
