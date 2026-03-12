@@ -200,6 +200,8 @@ export default css`
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
   }
 
   .thread-sidebar__header {
