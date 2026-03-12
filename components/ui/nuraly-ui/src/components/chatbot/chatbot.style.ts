@@ -695,6 +695,7 @@ export default css`
     text-overflow: ellipsis;
     max-width: 280px;
     display: inline-flex;
+    padding-left: 0.5rem;
   }
 
   .loading-text__char {
