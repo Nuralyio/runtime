@@ -39,6 +39,9 @@ function renderArtifactContent(artifact: ChatbotArtifact): TemplateResult {
       return html`<div class="artifact-panel__rendered-md">${unsafeHTML(renderMarkdown(artifact.content))}</div>`;
     case 'html':
       return html`<div class="artifact-panel__rendered-html">${unsafeHTML(artifact.content)}</div>`;
+    case 'text':
+    case 'txt':
+      return html`<div class="artifact-panel__rendered-text">${artifact.content}</div>`;
     default:
       return html`<pre class="artifact-panel__code"><code>${artifact.content}</code></pre>`;
   }

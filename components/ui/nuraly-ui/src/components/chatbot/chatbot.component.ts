@@ -245,18 +245,13 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    
+
     // Setup controller integration
     if (this.controller) {
       this.setupControllerIntegration();
     }
 
-    if (this.enableUrlSync) {
-      this._hashChangeHandler = this.handleHashChange.bind(this);
-      window.addEventListener('hashchange', this._hashChangeHandler);
-      // On initial load, read hash and switch to that thread
-      this.handleHashChange();
-    }
+    this.setupUrlSync();
   }
 
   override firstUpdated(): void {
@@ -325,10 +320,7 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     if (this.controller) {
       this.cleanupControllerIntegration();
     }
-    if (this._hashChangeHandler) {
-      window.removeEventListener('hashchange', this._hashChangeHandler);
-      this._hashChangeHandler = undefined;
-    }
+    this.teardownUrlSync();
     this._artifactResizeCleanup?.();
     this._artifactResizeBound = false;
   }
@@ -350,6 +342,19 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         } catch {
           // no-op if controller not fully ready yet
         }
+        // Now that controller is available, resolve URL hash if enableUrlSync is on
+        if (this.enableUrlSync) {
+          this.handleHashChange();
+        }
+      }
+    }
+
+    // Handle enableUrlSync toggled after connectedCallback
+    if (changedProperties.has('enableUrlSync')) {
+      if (this.enableUrlSync) {
+        this.setupUrlSync();
+      } else {
+        this.teardownUrlSync();
       }
     }
 
@@ -412,6 +417,28 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       } finally {
         this.controllerUnsubscribes = [];
       }
+    }
+  }
+
+  /**
+   * Wire up the hashchange listener for URL sync.
+   * Safe to call multiple times — will not duplicate listeners.
+   */
+  private setupUrlSync(): void {
+    if (!this.enableUrlSync || this._hashChangeHandler) return;
+    this._hashChangeHandler = this.handleHashChange.bind(this);
+    window.addEventListener('hashchange', this._hashChangeHandler);
+    // Attempt to resolve hash immediately (will no-op if controller is not yet set)
+    this.handleHashChange();
+  }
+
+  /**
+   * Remove the hashchange listener for URL sync.
+   */
+  private teardownUrlSync(): void {
+    if (this._hashChangeHandler) {
+      window.removeEventListener('hashchange', this._hashChangeHandler);
+      this._hashChangeHandler = undefined;
     }
   }
 

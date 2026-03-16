@@ -1439,7 +1439,8 @@ export default css`
     font-size: 13px;
     line-height: 1.5;
     overflow: auto;
-    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
     color: var(--nuraly-color-chatbot-text-primary, #1f2937);
     tab-size: 2;
   }
@@ -1477,6 +1478,15 @@ export default css`
     font-size: 14px;
     line-height: 1.6;
     color: var(--nuraly-color-chatbot-text-primary, #1f2937);
+  }
+
+  .artifact-panel__rendered-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--nuraly-color-chatbot-text-primary, #1f2937);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: system-ui, -apple-system, sans-serif;
   }
 
   /* Responsive design */
