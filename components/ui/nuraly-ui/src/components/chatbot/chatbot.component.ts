@@ -157,6 +157,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   @property({type: Boolean, reflect: true})
   boxed = false;
 
+  /** Sync active thread ID to URL hash (e.g. #conversation/threadId) */
+  @property({type: Boolean})
+  enableUrlSync = false;
+
   /** Show messages area (set to false for input-only mode) */
   @property({type: Boolean})
   showMessages = true;
@@ -225,6 +229,9 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
   private _artifactResizeBound = false;
   private _artifactResizeCleanup?: () => void;
 
+  // URL hash sync handler
+  private _hashChangeHandler?: () => void;
+
   /** Convert modules to select options */
   private get moduleSelectOptions(): SelectOption[] {
     return this.modules.map(module => ({
@@ -242,6 +249,13 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     // Setup controller integration
     if (this.controller) {
       this.setupControllerIntegration();
+    }
+
+    if (this.enableUrlSync) {
+      this._hashChangeHandler = this.handleHashChange.bind(this);
+      window.addEventListener('hashchange', this._hashChangeHandler);
+      // On initial load, read hash and switch to that thread
+      this.handleHashChange();
     }
   }
 
@@ -272,7 +286,18 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       }
     });
 
-    // Keyboard support for artifact cards
+    // Selection card click delegation
+    this.shadowRoot?.addEventListener('click', (e: Event) => {
+      const selTarget = (e.target as HTMLElement).closest?.('[data-selection-value]');
+      if (selTarget) {
+        const value = (selTarget as HTMLElement).dataset.selectionValue;
+        if (value && this.controller) {
+          this.controller.sendMessage(value);
+        }
+      }
+    });
+
+    // Keyboard support for artifact cards and selection cards
     this.shadowRoot?.addEventListener('keydown', (e: Event) => {
       const ke = e as KeyboardEvent;
       if (ke.key !== 'Enter' && ke.key !== ' ') return;
@@ -281,6 +306,15 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
         ke.preventDefault();
         const artifactId = (target as HTMLElement).dataset.artifactId;
         if (artifactId) this.handleArtifactClick(artifactId);
+        return;
+      }
+      const selTarget = (ke.target as HTMLElement).closest?.('[data-selection-value]');
+      if (selTarget) {
+        ke.preventDefault();
+        const value = (selTarget as HTMLElement).dataset.selectionValue;
+        if (value && this.controller) {
+          this.controller.sendMessage(value);
+        }
       }
     });
   }
@@ -290,6 +324,10 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
 
     if (this.controller) {
       this.cleanupControllerIntegration();
+    }
+    if (this._hashChangeHandler) {
+      window.removeEventListener('hashchange', this._hashChangeHandler);
+      this._hashChangeHandler = undefined;
     }
     this._artifactResizeCleanup?.();
     this._artifactResizeBound = false;
@@ -377,6 +415,17 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     }
   }
 
+  private handleHashChange(): void {
+    const hash = window.location.hash;
+    const match = hash.match(/^#conversation\/(.+)$/);
+    if (match) {
+      const threadId = decodeURIComponent(match[1]);
+      if (threadId !== this.activeThreadId && this.controller) {
+        this.controller.switchThread(threadId);
+      }
+    }
+  }
+
   private handleControllerStateChange(state: any): void {
     // Sync controller state to component properties
     if (state.messages) this.messages = state.messages;
@@ -386,6 +435,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       this.suggestions = state.suggestions;
     }
     if (state.currentThreadId) this.activeThreadId = state.currentThreadId;
+    if (this.enableUrlSync && state.currentThreadId) {
+      const newHash = `#conversation/${encodeURIComponent(state.currentThreadId)}`;
+      if (window.location.hash !== newHash) {
+        history.replaceState(null, '', newHash);
+      }
+    }
     this.chatStarted = state.messages?.length > 0;
     this.isBotTyping = state.isTyping || false;
     this.statusText = state.statusText;
@@ -393,6 +448,17 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
     this.isQueryRunning = state.isProcessing || false;
     // Sync uploaded files for display
     if (state.uploadedFiles) this.uploadedFiles = state.uploadedFiles;
+
+    // Reset artifact panel when switching to a conversation with no artifacts
+    if (this.enableArtifacts) {
+      const hasArtifacts = state.messages?.some((m: any) =>
+        m.metadata?.artifactIds?.length > 0
+      );
+      if (!hasArtifacts) {
+        this.isArtifactPanelOpen = false;
+        this.selectedArtifact = null;
+      }
+    }
 
     // Auto-select the last artifact when a new one appears
     if (this.enableArtifacts && state.messages?.length) {
@@ -506,7 +572,12 @@ export class NrChatbotElement extends NuralyUIBaseMixin(LitElement) {
       },
       threadSidebar: this.showThreads ? {
         onCreateNew: () => { this.controller?.createThread('New Chat'); },
-        onSelectThread: (threadId: string) => { this.controller?.switchThread(threadId); },
+        onSelectThread: (threadId: string) => {
+          if (this.enableUrlSync) {
+            history.pushState(null, '', `#conversation/${encodeURIComponent(threadId)}`);
+          }
+          this.controller?.switchThread(threadId);
+        },
         onDeleteThread: (threadId: string) => { this.controller?.deleteThread(threadId); },
         onBookmarkThread: (threadId: string) => { this.controller?.bookmarkThread(threadId); },
         onRenameThread: (threadId: string, newTitle: string) => {

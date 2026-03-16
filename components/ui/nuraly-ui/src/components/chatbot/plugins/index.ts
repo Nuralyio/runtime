@@ -14,4 +14,5 @@ export { PrintJobCardPlugin, type PrintJobData } from './print-job-card-plugin.j
 export { ArtifactPlugin } from './artifact-plugin.js';
 export { JsonGraphRendererPlugin } from './json-graph-renderer-plugin.js';
 export { FlowDiagramPlugin } from './flow-diagram-plugin.js';
+export { SelectionCardPlugin, type SelectionChoiceOption, type SelectionChoiceData } from './selection-card-plugin.js';
 
