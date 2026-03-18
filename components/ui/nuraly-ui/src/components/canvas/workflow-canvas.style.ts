@@ -1373,6 +1373,32 @@ export const workflowCanvasStyles = css`
     display: none;
   }
 
+  .method-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--nuraly-spacing-1, 4px);
+    padding: var(--nuraly-spacing-1, 4px) var(--nuraly-spacing-2, 8px);
+    background: var(--nuraly-color-layer-01, #f4f4f4);
+    border: 1px solid var(--nuraly-color-border-subtle, #e0e0e0);
+    border-radius: var(--nuraly-radius-sm, 4px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+
+  .method-toggle:hover {
+    background: var(--nuraly-color-layer-02, #e0e0e0);
+  }
+
+  .method-toggle.active {
+    background: var(--nuraly-color-interactive, #0f62fe);
+    border-color: var(--nuraly-color-interactive, #0f62fe);
+  }
+
+  .method-toggle.active .method-label {
+    color: white;
+  }
+
   .method-label {
     font-family: var(--nuraly-font-family-mono, monospace);
     font-size: var(--nuraly-font-size-xs, 11px);

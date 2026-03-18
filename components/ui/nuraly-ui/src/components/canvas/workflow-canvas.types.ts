@@ -232,6 +232,8 @@ export interface DataSortOrder {
 /**
  * Node configuration - varies by node type
  */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
+
 export interface NodeConfiguration {
   [key: string]: unknown;
   // Function node
@@ -239,14 +241,14 @@ export interface NodeConfiguration {
   inputMapping?: Record<string, string>;
   outputMapping?: Record<string, string>;
   // HTTP node
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method?: HttpMethod;
   url?: string;
   headers?: Record<string, string>;
   body?: unknown;
   timeout?: number;
   // HTTP Start node (HTTP trigger)
   httpPath?: string;
-  httpMethods?: Array<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+  httpMethod?: HttpMethod;
   httpAuth?: 'none' | 'api_key' | 'bearer' | 'basic';
   httpCors?: boolean;
   httpRateLimit?: number;
@@ -844,7 +846,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     category: 'trigger',
     defaultConfig: {
       httpPath: '/webhook',
-      httpMethods: ['POST'],
+      httpMethod: 'POST',
       httpAuth: 'none',
       httpCors: true,
       httpRateLimit: 100,

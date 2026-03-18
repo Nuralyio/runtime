@@ -18,6 +18,7 @@ export function renderHttpStartFields(
   const wfId = workflowId || '{workflowId}';
   const httpPath = (config.httpPath as string) || '/webhook';
   const webhookUrl = `${window.location.origin}/api/v1/workflows/${wfId}/trigger${httpPath}`;
+  const defaultMethod = config.httpMethod || 'POST';
 
   return html`
     <div class="config-section">
@@ -54,30 +55,20 @@ export function renderHttpStartFields(
         <span class="field-description">Custom path suffix for this trigger</span>
       </div>
       <div class="config-field">
-        <label>Allowed Methods</label>
-        <div class="method-checkboxes">
-          ${['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(method => {
-            const methods = (config.httpMethods as string[]) || ['POST'];
-            const isChecked = methods.includes(method);
-            return html`
-              <label class="method-checkbox">
-                <input
-                  type="checkbox"
-                  .checked=${isChecked}
-                  @change=${(e: Event) => {
-                    const checked = (e.target as HTMLInputElement).checked;
-                    const currentMethods = (config.httpMethods as string[]) || ['POST'];
-                    const newMethods = checked
-                      ? [...currentMethods, method]
-                      : currentMethods.filter(m => m !== method);
-                    onUpdate('httpMethods', newMethods.length > 0 ? newMethods : ['POST']);
-                  }}
-                />
-                <span class="method-label">${method}</span>
-              </label>
-            `;
-          })}
-        </div>
+        <label>Allowed Method</label>
+        <nr-select
+          .value=${defaultMethod}
+          .options=${[
+            { label: 'GET', value: 'GET' },
+            { label: 'POST', value: 'POST' },
+            { label: 'PUT', value: 'PUT' },
+            { label: 'PATCH', value: 'PATCH' },
+            { label: 'DELETE', value: 'DELETE' },
+            { label: 'HEAD', value: 'HEAD' },
+            { label: 'OPTIONS', value: 'OPTIONS' }
+          ]}
+          @nr-change=${(e: CustomEvent) => onUpdate('httpMethod', e.detail.value)}
+        ></nr-select>
       </div>
       <div class="config-field">
         <label>Authentication</label>
