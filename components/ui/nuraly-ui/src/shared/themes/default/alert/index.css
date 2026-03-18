@@ -1,8 +1,0 @@
-/**
- * Default Theme - Alert Component - All Variants
- * Imports common variables and light/dark variants
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';

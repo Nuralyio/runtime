@@ -1,9 +1,0 @@
-/**
- * Default Theme - Layout Component
- * Entry point for default theme layout variables
- * Imports all layout-specific theme files (common, light, dark)
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';

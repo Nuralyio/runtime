@@ -1,8 +1,0 @@
-/**
- * Carbon Theme - Collapse Component - Entry Point
- * Imports all Carbon collapse theme files
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';
