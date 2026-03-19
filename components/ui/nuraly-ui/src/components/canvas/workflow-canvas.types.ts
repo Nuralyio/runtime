@@ -60,6 +60,8 @@ export enum WorkflowNodeType {
   SLACK_UPLOAD_FILE = 'SLACK_UPLOAD_FILE',
   // RAG nodes (continued)
   RERANKER = 'RERANKER',
+  // Shopify integration nodes
+  SHOPIFY = 'SHOPIFY',
   // Telegram integration nodes
   TELEGRAM_SEND = 'TELEGRAM_SEND',
   // Persistent trigger nodes
@@ -654,6 +656,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.SLACK_UPLOAD_FILE]: '#4A154B',
   // RAG nodes (continued)
   [WorkflowNodeType.RERANKER]: '#d946ef',
+  // Shopify integration nodes
+  [WorkflowNodeType.SHOPIFY]: '#96bf48',
   // Telegram integration nodes
   [WorkflowNodeType.TELEGRAM_SEND]: '#0088cc',
   // Persistent trigger nodes
@@ -763,6 +767,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.SLACK_UPLOAD_FILE]: 'upload',
   // RAG nodes (continued)
   [WorkflowNodeType.RERANKER]: 'arrow-up-down',
+  // Shopify integration nodes
+  [WorkflowNodeType.SHOPIFY]: 'shopping-cart',
   // Telegram integration nodes
   [WorkflowNodeType.TELEGRAM_SEND]: 'send',
   // Persistent trigger nodes
@@ -1632,6 +1638,30 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Shopify integration nodes
+  {
+    type: WorkflowNodeType.SHOPIFY,
+    name: 'Shopify',
+    description: 'Manage Shopify products, orders, customers, inventory, and fulfillments via the Admin API',
+    icon: NODE_ICONS[WorkflowNodeType.SHOPIFY],
+    color: NODE_COLORS[WorkflowNodeType.SHOPIFY],
+    category: 'shopify',
+    defaultConfig: {
+      resource: 'ORDER',
+      operation: DataOperation.LIST,
+      resourceId: '',
+      filters: '',
+      shopDomain: '',
+      accessToken: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'input', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Output' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
     },
@@ -2508,6 +2538,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'monitor',
     nodeTypes: [
       WorkflowNodeType.UI_TABLE,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'shopify',
+    name: 'Shopify',
+    icon: 'shopping-cart',
+    nodeTypes: [
+      WorkflowNodeType.SHOPIFY,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

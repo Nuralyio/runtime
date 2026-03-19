@@ -61,6 +61,8 @@ import {
   renderContextBuilderFields,
   // Safety nodes
   renderGuardrailFields,
+  // Shopify integration nodes
+  renderShopifyFields,
   // Telegram integration nodes
   renderTelegramSendFields,
   // Persistent trigger nodes
@@ -193,6 +195,10 @@ export function renderTypeFields(
     // Safety nodes
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
+
+    // Shopify integration nodes
+    case WorkflowNodeType.SHOPIFY:
+      return renderShopifyFields(config, onUpdate);
 
     // Telegram integration nodes
     case WorkflowNodeType.TELEGRAM_SEND:

@@ -47,6 +47,8 @@ export { renderVectorSearchFields } from './vector-search-fields.js';
 export { renderContextBuilderFields } from './context-builder-fields.js';
 // Safety nodes
 export { renderGuardrailFields } from './guardrail-fields.js';
+// Shopify integration nodes
+export { renderShopifyFields } from './shopify-fields.js';
 // Telegram integration nodes
 export { renderTelegramSendFields } from './telegram-send-fields.js';
 // Persistent trigger nodes
