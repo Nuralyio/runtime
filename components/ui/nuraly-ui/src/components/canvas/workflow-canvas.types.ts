@@ -78,6 +78,8 @@ export enum WorkflowNodeType {
   ZENDESK = 'ZENDESK',
   // MCP integration
   MCP = 'MCP',
+  // HubSpot CRM
+  HUBSPOT = 'HUBSPOT',
   // Display nodes
   UI_TABLE = 'UI_TABLE',
   // Annotation nodes
@@ -466,6 +468,14 @@ export interface NodeConfiguration {
   zendeskTags?: string;
   zendeskSearchQuery?: string;
   zendeskCustomFields?: string;
+  // HubSpot CRM
+  hubspotAccessToken?: string;
+  hubspotResource?: 'contact' | 'deal' | 'company' | 'ticket' | 'engagement';
+  hubspotOperation?: 'create' | 'get' | 'getAll' | 'update' | 'delete' | 'search';
+  hubspotProperties?: Record<string, any>;
+  hubspotFilterGroups?: Array<{ filters: Array<{ propertyName: string; operator: string; value: string }> }>;
+  hubspotLimit?: number;
+  hubspotAssociations?: Array<{ toObjectType: string; toObjectId: string }>;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -704,6 +714,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.ZENDESK]: '#03363d',
   // MCP integration
   [WorkflowNodeType.MCP]: '#7c3aed',
+  // HubSpot CRM
+  [WorkflowNodeType.HUBSPOT]: '#FF7A59',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: '#0891b2',
   // Annotation nodes
@@ -821,6 +833,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.ZENDESK]: 'ticket',
   // MCP integration
   [WorkflowNodeType.MCP]: 'plug',
+  // HubSpot CRM
+  [WorkflowNodeType.HUBSPOT]: 'users',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: 'table',
   // Annotation nodes
@@ -1942,6 +1956,31 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // HubSpot CRM
+  {
+    type: WorkflowNodeType.HUBSPOT,
+    name: 'HubSpot',
+    description: 'Manage contacts, deals, companies, and tickets via HubSpot CRM',
+    icon: NODE_ICONS[WorkflowNodeType.HUBSPOT],
+    color: NODE_COLORS[WorkflowNodeType.HUBSPOT],
+    category: 'crm',
+    defaultConfig: {
+      hubspotAccessToken: '',
+      hubspotResource: 'contact',
+      hubspotOperation: 'getAll',
+      hubspotProperties: {},
+      hubspotFilterGroups: [],
+      hubspotLimit: 100,
+      hubspotAssociations: [],
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   // Annotation nodes
   {
     type: WorkflowNodeType.NOTE,
@@ -2732,6 +2771,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.SLACK_LIST_CHANNELS,
       WorkflowNodeType.SLACK_ADD_REACTION,
       WorkflowNodeType.SLACK_UPLOAD_FILE,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'crm',
+    name: 'CRM',
+    icon: 'users',
+    nodeTypes: [
+      WorkflowNodeType.HUBSPOT,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

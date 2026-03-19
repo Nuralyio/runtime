@@ -75,6 +75,8 @@ import {
   renderTelegramBotFields,
   // MCP integration
   renderMcpFields,
+  // HubSpot CRM
+  renderHubspotFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -231,6 +233,10 @@ export function renderTypeFields(
     // MCP integration
     case WorkflowNodeType.MCP:
       return renderMcpFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // HubSpot CRM
+    case WorkflowNodeType.HUBSPOT:
+      return renderHubspotFields(config, onUpdate);
 
     // Display nodes
     case WorkflowNodeType.UI_TABLE:
