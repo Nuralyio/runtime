@@ -44,6 +44,7 @@ export enum WorkflowNodeType {
   // Storage nodes
   FILE_STORAGE = 'FILE_STORAGE',
   GOOGLE_CLOUD_STORAGE = 'GOOGLE_CLOUD_STORAGE',
+  S3 = 'S3',
   // RAG nodes
   EMBEDDING = 'EMBEDDING',
   DOCUMENT_LOADER = 'DOCUMENT_LOADER',
@@ -514,6 +515,17 @@ export interface NodeConfiguration {
   gitlabSourceBranch?: string;
   gitlabTargetBranch?: string;
   gitlabRef?: string;
+  // S3 node
+  s3Operation?: 'upload' | 'download' | 'list' | 'delete' | 'copy' | 'presigned_url';
+  s3Bucket?: string;
+  s3Key?: string;
+  s3Region?: string;
+  s3ContentType?: string;
+  s3Acl?: 'private' | 'public-read' | 'public-read-write' | 'authenticated-read';
+  s3PresignedExpiry?: number;
+  s3CredentialsPath?: string;
+  s3CopyDestBucket?: string;
+  s3CopyDestKey?: string;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -720,6 +732,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: '#f59e0b',
   [WorkflowNodeType.GOOGLE_CLOUD_STORAGE]: '#4285f4',
+  [WorkflowNodeType.S3]: '#FF9900',
   // RAG nodes
   [WorkflowNodeType.EMBEDDING]: '#8b5cf6',
   [WorkflowNodeType.DOCUMENT_LOADER]: '#ec4899',
@@ -851,6 +864,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: 'hard-drive',
   [WorkflowNodeType.GOOGLE_CLOUD_STORAGE]: 'cloud',
+  [WorkflowNodeType.S3]: 'cloud',
   // RAG nodes
   [WorkflowNodeType.EMBEDDING]: 'hash',
   [WorkflowNodeType.DOCUMENT_LOADER]: 'file-text',
@@ -1529,6 +1543,28 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       objectPath: '',
       serviceAccountPath: '',
       signedUrlExpiration: 3600,
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.S3,
+    name: 'AWS S3',
+    description: 'Upload, download, and manage files in Amazon S3',
+    icon: NODE_ICONS[WorkflowNodeType.S3],
+    color: NODE_COLORS[WorkflowNodeType.S3],
+    category: 'integrations',
+    defaultConfig: {
+      s3Operation: 'upload',
+      s3Bucket: '',
+      s3Key: '',
+      s3Region: 'us-east-1',
+      s3ContentType: 'auto',
     },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
@@ -2914,6 +2950,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     nodeTypes: [
       WorkflowNodeType.FILE_STORAGE,
       WorkflowNodeType.GOOGLE_CLOUD_STORAGE,
+      WorkflowNodeType.S3,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

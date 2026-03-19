@@ -39,6 +39,7 @@ export { renderDocumentGeneratorFields } from './document-generator-fields.js';
 // Storage nodes
 export { renderFileStorageFields } from './file-storage-fields.js';
 export { renderGoogleCloudStorageFields } from './google-cloud-storage-fields.js';
+export { renderS3Fields } from './s3-fields.js';
 // RAG nodes
 export { renderEmbeddingFields } from './embedding-fields.js';
 export { renderDocumentLoaderFields } from './document-loader-fields.js';
