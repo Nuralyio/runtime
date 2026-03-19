@@ -27,6 +27,7 @@ export enum WorkflowNodeType {
   TRANSFORM = 'TRANSFORM',
   SUB_WORKFLOW = 'SUB_WORKFLOW',
   EMAIL = 'EMAIL',
+  EMAIL_READER = 'EMAIL_READER',
   NOTIFICATION = 'NOTIFICATION',
   DATABASE = 'DATABASE',
   VARIABLE = 'VARIABLE',
@@ -278,7 +279,7 @@ export interface NodeConfiguration {
   maxTokens?: number;
   tools?: string[];
   // LLM node
-  provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local' | 'google';
+  provider?: 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'local' | 'google' | 'imap' | 'gmail';
   modelName?: string;
   apiUrlPath?: string;  // KV path for custom API URL (for Ollama)
   // Memory node (context memory for agents/LLM)
@@ -290,7 +291,7 @@ export interface NodeConfiguration {
   toolName?: string;
   toolConfig?: Record<string, unknown>;
   // Database/Data node
-  operation?: DataOperation;
+  operation?: DataOperation | 'LIST' | 'READ' | 'SEARCH' | 'MARK_READ' | 'MARK_UNREAD' | 'MOVE' | 'DELETE';
   dataSource?: string | null;
   entity?: string | null;
   filter?: DataFilterGroup | null;
@@ -425,6 +426,13 @@ export interface NodeConfiguration {
   dbTableName?: string;
   dbTableColumns?: Array<{ name: string; type: string; nullable?: boolean }>;
   dbPrimaryKey?: string;
+  // Email Reader node
+  folder?: string;
+  includeAttachments?: boolean;
+  searchQuery?: string;
+  host?: string;
+  port?: number;
+  tls?: boolean;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -612,6 +620,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: '#14b8a6',
   [WorkflowNodeType.SUB_WORKFLOW]: '#6366f1',
   [WorkflowNodeType.EMAIL]: '#f97316',
+  [WorkflowNodeType.EMAIL_READER]: '#06b6d4',
   [WorkflowNodeType.NOTIFICATION]: '#84cc16',
   [WorkflowNodeType.DATABASE]: '#a855f7',
   [WorkflowNodeType.VARIABLE]: '#64748b',
@@ -719,6 +728,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: 'shuffle',
   [WorkflowNodeType.SUB_WORKFLOW]: 'layers',
   [WorkflowNodeType.EMAIL]: 'mail',
+  [WorkflowNodeType.EMAIL_READER]: 'mail-open',
   [WorkflowNodeType.NOTIFICATION]: 'bell',
   [WorkflowNodeType.DATABASE]: 'database',
   [WorkflowNodeType.VARIABLE]: 'box',
@@ -1094,6 +1104,19 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: NODE_COLORS[WorkflowNodeType.EMAIL],
     category: 'action',
     defaultConfig: { to: '', cc: '', bcc: '', subject: '', body: '', bodyType: 'text', fromName: '', replyTo: '', priority: 'normal' },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
+    },
+  },
+  {
+    type: WorkflowNodeType.EMAIL_READER,
+    name: 'Email Reader',
+    description: 'Read and manage emails from Gmail or IMAP',
+    icon: NODE_ICONS[WorkflowNodeType.EMAIL_READER],
+    color: NODE_COLORS[WorkflowNodeType.EMAIL_READER],
+    category: 'action',
+    defaultConfig: { provider: 'imap', operation: 'LIST', folder: 'INBOX', limit: 10, includeAttachments: false, searchQuery: '', host: '', port: 993, tls: true },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
@@ -2392,6 +2415,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
+      WorkflowNodeType.EMAIL_READER,
       WorkflowNodeType.NOTIFICATION,
       WorkflowNodeType.DOCUMENT_GENERATOR,
     ],

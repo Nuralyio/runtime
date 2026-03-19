@@ -27,6 +27,7 @@ export { renderLoopFields } from './loop-fields.js';
 export { renderTransformFields } from './transform-fields.js';
 export { renderVariableFields } from './variable-fields.js';
 export { renderEmailFields } from './email-fields.js';
+export { renderEmailReaderFields } from './email-reader-fields.js';
 export { renderChatStartFields, renderChatOutputFields } from './chat-fields.js';
 export { renderOcrFields } from './ocr-fields.js';
 // Web nodes
