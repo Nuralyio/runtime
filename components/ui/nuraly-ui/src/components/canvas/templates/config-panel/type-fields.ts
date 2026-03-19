@@ -68,6 +68,9 @@ import {
   renderTelegramSendFields,
   // Zendesk integration nodes
   renderZendeskFields,
+  // Twilio integration nodes
+  renderTwilioSmsFields,
+  renderTwilioVoiceFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
   // MCP integration
@@ -213,6 +216,13 @@ export function renderTypeFields(
     // Zendesk integration nodes
     case WorkflowNodeType.ZENDESK:
       return renderZendeskFields(config, onUpdate);
+
+    // Twilio integration nodes
+    case WorkflowNodeType.TWILIO_SMS:
+      return renderTwilioSmsFields(config, onUpdate);
+
+    case WorkflowNodeType.TWILIO_VOICE:
+      return renderTwilioVoiceFields(config, onUpdate);
 
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:

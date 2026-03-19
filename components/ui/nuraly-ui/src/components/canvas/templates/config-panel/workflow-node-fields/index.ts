@@ -56,5 +56,7 @@ export { renderTelegramSendFields } from './telegram-send-fields.js';
 export { renderZendeskFields } from './zendesk-fields.js';
 // Persistent trigger nodes
 export { renderTelegramBotFields } from './telegram-bot-fields.js';
+// Twilio integration nodes
+export { renderTwilioSmsFields, renderTwilioVoiceFields } from './twilio-fields.js';
 // MCP integration
 export { renderMcpFields } from './mcp-fields.js';

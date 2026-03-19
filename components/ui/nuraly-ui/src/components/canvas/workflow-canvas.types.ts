@@ -27,11 +27,8 @@ export enum WorkflowNodeType {
   TRANSFORM = 'TRANSFORM',
   SUB_WORKFLOW = 'SUB_WORKFLOW',
   EMAIL = 'EMAIL',
-<<<<<<< HEAD
   EMAIL_READER = 'EMAIL_READER',
-=======
   SENDGRID = 'SENDGRID',
->>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   NOTIFICATION = 'NOTIFICATION',
   DATABASE = 'DATABASE',
   VARIABLE = 'VARIABLE',
@@ -68,6 +65,9 @@ export enum WorkflowNodeType {
   SHOPIFY = 'SHOPIFY',
   // Telegram integration nodes
   TELEGRAM_SEND = 'TELEGRAM_SEND',
+  // Twilio integration nodes
+  TWILIO_SMS = 'TWILIO_SMS',
+  TWILIO_VOICE = 'TWILIO_VOICE',
   // Persistent trigger nodes
   TELEGRAM_BOT = 'TELEGRAM_BOT',
   SLACK_SOCKET = 'SLACK_SOCKET',
@@ -410,6 +410,15 @@ export interface NodeConfiguration {
   filetype?: string;
   title?: string;
   initialComment?: string;
+  // Twilio nodes
+  twilioAccountSid?: string;
+  twilioAuthToken?: string;
+  twilioFromNumber?: string;
+  twilioToNumber?: string;
+  twilioMessageBody?: string;
+  twilioOperation?: 'send_sms' | 'make_call' | 'send_whatsapp';
+  twilioVoiceUrl?: string;
+  twilioStatusCallback?: string;
   // Reranker node
   topK?: number;
   threshold?: number;
@@ -644,11 +653,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: '#14b8a6',
   [WorkflowNodeType.SUB_WORKFLOW]: '#6366f1',
   [WorkflowNodeType.EMAIL]: '#f97316',
-<<<<<<< HEAD
   [WorkflowNodeType.EMAIL_READER]: '#06b6d4',
-=======
   [WorkflowNodeType.SENDGRID]: '#1A82E2',
->>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   [WorkflowNodeType.NOTIFICATION]: '#84cc16',
   [WorkflowNodeType.DATABASE]: '#a855f7',
   [WorkflowNodeType.VARIABLE]: '#64748b',
@@ -685,6 +691,9 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.SHOPIFY]: '#96bf48',
   // Telegram integration nodes
   [WorkflowNodeType.TELEGRAM_SEND]: '#0088cc',
+  // Twilio integration nodes
+  [WorkflowNodeType.TWILIO_SMS]: '#F22F46',
+  [WorkflowNodeType.TWILIO_VOICE]: '#F22F46',
   // Persistent trigger nodes
   [WorkflowNodeType.TELEGRAM_BOT]: '#0088cc',
   [WorkflowNodeType.SLACK_SOCKET]: '#4A154B',
@@ -761,11 +770,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: 'shuffle',
   [WorkflowNodeType.SUB_WORKFLOW]: 'layers',
   [WorkflowNodeType.EMAIL]: 'mail',
-<<<<<<< HEAD
   [WorkflowNodeType.EMAIL_READER]: 'mail-open',
-=======
   [WorkflowNodeType.SENDGRID]: 'send',
->>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   [WorkflowNodeType.NOTIFICATION]: 'bell',
   [WorkflowNodeType.DATABASE]: 'database',
   [WorkflowNodeType.VARIABLE]: 'box',
@@ -802,6 +808,9 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.SHOPIFY]: 'shopping-cart',
   // Telegram integration nodes
   [WorkflowNodeType.TELEGRAM_SEND]: 'send',
+  // Twilio integration nodes
+  [WorkflowNodeType.TWILIO_SMS]: 'message-square',
+  [WorkflowNodeType.TWILIO_VOICE]: 'phone',
   // Persistent trigger nodes
   [WorkflowNodeType.TELEGRAM_BOT]: 'send',
   [WorkflowNodeType.SLACK_SOCKET]: 'message-square',
@@ -1152,7 +1161,6 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     },
   },
   {
-<<<<<<< HEAD
     type: WorkflowNodeType.EMAIL_READER,
     name: 'Email Reader',
     description: 'Read and manage emails from Gmail or IMAP',
@@ -1163,7 +1171,9 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
-=======
+    },
+  },
+  {
     type: WorkflowNodeType.SENDGRID,
     name: 'SendGrid',
     description: 'Send email via SendGrid API',
@@ -1190,7 +1200,6 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
         { id: 'out', type: PortType.OUTPUT, label: 'Output' },
         { id: 'error', type: PortType.OUTPUT, label: 'Error' },
       ],
->>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
     },
   },
   {
@@ -1768,6 +1777,55 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       zendeskSubdomain: '',
       zendeskApiToken: '',
       zendeskEmail: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Twilio integration nodes
+  {
+    type: WorkflowNodeType.TWILIO_SMS,
+    name: 'Twilio: Send SMS',
+    description: 'Send an SMS or WhatsApp message via the Twilio API',
+    icon: NODE_ICONS[WorkflowNodeType.TWILIO_SMS],
+    color: NODE_COLORS[WorkflowNodeType.TWILIO_SMS],
+    category: 'twilio',
+    defaultConfig: {
+      twilioAccountSid: '',
+      twilioAuthToken: '',
+      twilioFromNumber: '',
+      twilioToNumber: '',
+      twilioMessageBody: '',
+      twilioOperation: 'send_sms',
+      twilioStatusCallback: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.TWILIO_VOICE,
+    name: 'Twilio: Voice Call',
+    description: 'Make a voice call via the Twilio API',
+    icon: NODE_ICONS[WorkflowNodeType.TWILIO_VOICE],
+    color: NODE_COLORS[WorkflowNodeType.TWILIO_VOICE],
+    category: 'twilio',
+    defaultConfig: {
+      twilioAccountSid: '',
+      twilioAuthToken: '',
+      twilioFromNumber: '',
+      twilioToNumber: '',
+      twilioOperation: 'make_call',
+      twilioVoiceUrl: '',
+      twilioStatusCallback: '',
     },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
@@ -2555,11 +2613,8 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
-<<<<<<< HEAD
       WorkflowNodeType.EMAIL_READER,
-=======
       WorkflowNodeType.SENDGRID,
->>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
       WorkflowNodeType.NOTIFICATION,
       WorkflowNodeType.DOCUMENT_GENERATOR,
     ],
@@ -2636,6 +2691,16 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'shopping-cart',
     nodeTypes: [
       WorkflowNodeType.SHOPIFY,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'twilio',
+    name: 'Twilio',
+    icon: 'phone',
+    nodeTypes: [
+      WorkflowNodeType.TWILIO_SMS,
+      WorkflowNodeType.TWILIO_VOICE,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
