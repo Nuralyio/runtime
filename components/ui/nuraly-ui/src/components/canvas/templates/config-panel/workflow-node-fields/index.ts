@@ -52,6 +52,8 @@ export { renderGuardrailFields } from './guardrail-fields.js';
 export { renderShopifyFields } from './shopify-fields.js';
 // Telegram integration nodes
 export { renderTelegramSendFields } from './telegram-send-fields.js';
+// Zendesk integration nodes
+export { renderZendeskFields } from './zendesk-fields.js';
 // Persistent trigger nodes
 export { renderTelegramBotFields } from './telegram-bot-fields.js';
 // MCP integration

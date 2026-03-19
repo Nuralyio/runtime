@@ -74,6 +74,8 @@ export enum WorkflowNodeType {
   DISCORD_BOT = 'DISCORD_BOT',
   WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
   CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
+  // Zendesk integration nodes
+  ZENDESK = 'ZENDESK',
   // MCP integration
   MCP = 'MCP',
   // Display nodes
@@ -440,6 +442,21 @@ export interface NodeConfiguration {
   host?: string;
   port?: number;
   tls?: boolean;
+  // Zendesk nodes
+  zendeskResource?: 'TICKET' | 'USER' | 'ORGANIZATION' | 'TICKET_COMMENT' | 'SATISFACTION_RATING';
+  zendeskOperation?: 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'LIST' | 'SEARCH';
+  zendeskSubdomain?: string;
+  zendeskEmail?: string;
+  zendeskApiToken?: string;
+  zendeskResourceId?: string;
+  zendeskSubject?: string;
+  zendeskDescription?: string;
+  zendeskPriority?: 'low' | 'normal' | 'high' | 'urgent';
+  zendeskStatus?: 'new' | 'open' | 'pending' | 'hold' | 'solved' | 'closed';
+  zendeskAssigneeId?: string;
+  zendeskTags?: string;
+  zendeskSearchQuery?: string;
+  zendeskCustomFields?: string;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -674,6 +691,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
+  // Zendesk integration nodes
+  [WorkflowNodeType.ZENDESK]: '#03363d',
   // MCP integration
   [WorkflowNodeType.MCP]: '#7c3aed',
   // Display nodes
@@ -789,6 +808,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: 'gamepad-2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
+  // Zendesk integration nodes
+  [WorkflowNodeType.ZENDESK]: 'ticket',
   // MCP integration
   [WorkflowNodeType.MCP]: 'plug',
   // Display nodes
@@ -1733,6 +1754,29 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // Zendesk integration nodes
+  {
+    type: WorkflowNodeType.ZENDESK,
+    name: 'Zendesk',
+    description: 'Manage Zendesk tickets, users, organizations, and satisfaction ratings',
+    icon: NODE_ICONS[WorkflowNodeType.ZENDESK],
+    color: NODE_COLORS[WorkflowNodeType.ZENDESK],
+    category: 'zendesk',
+    defaultConfig: {
+      zendeskResource: 'TICKET',
+      zendeskOperation: 'LIST',
+      zendeskSubdomain: '',
+      zendeskApiToken: '',
+      zendeskEmail: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   // Persistent trigger nodes
   {
     type: WorkflowNodeType.TELEGRAM_BOT,
@@ -2601,6 +2645,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'send',
     nodeTypes: [
       WorkflowNodeType.TELEGRAM_SEND,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'zendesk',
+    name: 'Zendesk',
+    icon: 'ticket',
+    nodeTypes: [
+      WorkflowNodeType.ZENDESK,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

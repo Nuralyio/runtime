@@ -66,6 +66,8 @@ import {
   renderShopifyFields,
   // Telegram integration nodes
   renderTelegramSendFields,
+  // Zendesk integration nodes
+  renderZendeskFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
   // MCP integration
@@ -207,6 +209,10 @@ export function renderTypeFields(
     // Telegram integration nodes
     case WorkflowNodeType.TELEGRAM_SEND:
       return renderTelegramSendFields(config, onUpdate);
+
+    // Zendesk integration nodes
+    case WorkflowNodeType.ZENDESK:
+      return renderZendeskFields(config, onUpdate);
 
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:
