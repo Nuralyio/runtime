@@ -25,11 +25,16 @@ export function renderDelayFields(
     </div>
     <div class="config-field">
       <label>Unit</label>
-      <nr-input
-        value=${config.unit || 'milliseconds'}
-        placeholder="milliseconds, seconds, minutes"
-        @nr-input=${(e: CustomEvent) => onUpdate('unit', e.detail.value)}
-      ></nr-input>
+      <nr-select
+        .value=${config.unit || 'milliseconds'}
+        .options=${[
+          { label: 'Milliseconds', value: 'milliseconds' },
+          { label: 'Seconds', value: 'seconds' },
+          { label: 'Minutes', value: 'minutes' },
+          { label: 'Hours', value: 'hours' }
+        ]}
+        @nr-change=${(e: CustomEvent) => onUpdate('unit', e.detail.value)}
+      ></nr-select>
     </div>
   `;
 }
