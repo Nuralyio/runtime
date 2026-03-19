@@ -48,6 +48,8 @@ export { renderVectorSearchFields } from './vector-search-fields.js';
 export { renderContextBuilderFields } from './context-builder-fields.js';
 // Safety nodes
 export { renderGuardrailFields } from './guardrail-fields.js';
+// Google Calendar integration
+export { renderGoogleCalendarFields } from './google-calendar-fields.js';
 // Shopify integration nodes
 export { renderShopifyFields } from './shopify-fields.js';
 // Telegram integration nodes

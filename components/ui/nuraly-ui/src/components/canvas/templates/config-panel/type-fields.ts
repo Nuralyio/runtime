@@ -62,6 +62,8 @@ import {
   renderContextBuilderFields,
   // Safety nodes
   renderGuardrailFields,
+  // Google Calendar integration
+  renderGoogleCalendarFields,
   // Shopify integration nodes
   renderShopifyFields,
   // Telegram integration nodes
@@ -212,6 +214,10 @@ export function renderTypeFields(
     // Safety nodes
     case WorkflowNodeType.GUARDRAIL:
       return renderGuardrailFields(config, onUpdate);
+
+    // Google Calendar integration
+    case WorkflowNodeType.GOOGLE_CALENDAR:
+      return renderGoogleCalendarFields(config, onUpdate);
 
     // Shopify integration nodes
     case WorkflowNodeType.SHOPIFY:

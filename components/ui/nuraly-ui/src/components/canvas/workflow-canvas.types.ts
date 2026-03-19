@@ -74,6 +74,8 @@ export enum WorkflowNodeType {
   DISCORD_BOT = 'DISCORD_BOT',
   WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
   CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
+  // Google Calendar integration
+  GOOGLE_CALENDAR = 'GOOGLE_CALENDAR',
   // RabbitMQ trigger
   RABBITMQ_TRIGGER = 'RABBITMQ_TRIGGER',
   // Zendesk integration nodes
@@ -465,7 +467,6 @@ export interface NodeConfiguration {
   dbTableName?: string;
   dbTableColumns?: Array<{ name: string; type: string; nullable?: boolean }>;
   dbPrimaryKey?: string;
-<<<<<<< HEAD
   // Email Reader node
   folder?: string;
   includeAttachments?: boolean;
@@ -743,6 +744,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
+  // Google Calendar integration
+  [WorkflowNodeType.GOOGLE_CALENDAR]: '#4285F4',
   // RabbitMQ trigger
   [WorkflowNodeType.RABBITMQ_TRIGGER]: '#FF6600',
   // Zendesk integration nodes
@@ -868,6 +871,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: 'gamepad-2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
+  // Google Calendar integration
+  [WorkflowNodeType.GOOGLE_CALENDAR]: 'calendar',
   // RabbitMQ trigger
   [WorkflowNodeType.RABBITMQ_TRIGGER]: 'inbox',
   // Zendesk integration nodes
@@ -1763,6 +1768,37 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       filename: '',
       content: '',
       title: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // Google Calendar integration
+  {
+    type: WorkflowNodeType.GOOGLE_CALENDAR,
+    name: 'Google Calendar',
+    description: 'Create, read, update, and delete Google Calendar events',
+    icon: NODE_ICONS[WorkflowNodeType.GOOGLE_CALENDAR],
+    color: NODE_COLORS[WorkflowNodeType.GOOGLE_CALENDAR],
+    category: 'google-calendar',
+    defaultConfig: {
+      googleCalendarCredential: '',
+      googleCalendarId: 'primary',
+      googleCalendarOperation: 'getAll',
+      googleCalendarEventSummary: '',
+      googleCalendarEventDescription: '',
+      googleCalendarEventStart: '',
+      googleCalendarEventEnd: '',
+      googleCalendarEventAttendees: '',
+      googleCalendarEventLocation: '',
+      googleCalendarTimeMin: '',
+      googleCalendarTimeMax: '',
+      googleCalendarRecurrence: '',
+      googleCalendarConferenceData: false,
     },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
@@ -2851,6 +2887,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'monitor',
     nodeTypes: [
       WorkflowNodeType.UI_TABLE,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'google-calendar',
+    name: 'Google Calendar',
+    icon: 'calendar',
+    nodeTypes: [
+      WorkflowNodeType.GOOGLE_CALENDAR,
     ],
     canvasType: CanvasType.WORKFLOW,
   },
