@@ -41,6 +41,7 @@ import {
   renderVariableFields,
   renderEmailFields,
   renderEmailReaderFields,
+  renderSendgridFields,
   renderChatStartFields,
   renderChatOutputFields,
   renderOcrFields,
@@ -136,6 +137,9 @@ export function renderTypeFields(
 
     case WorkflowNodeType.EMAIL_READER:
       return renderEmailReaderFields(config, onUpdate);
+
+    case WorkflowNodeType.SENDGRID:
+      return renderSendgridFields(config, onUpdate);
 
     case WorkflowNodeType.DEBUG:
       return renderDebugNodeFields(config, onUpdate);

@@ -27,7 +27,11 @@ export enum WorkflowNodeType {
   TRANSFORM = 'TRANSFORM',
   SUB_WORKFLOW = 'SUB_WORKFLOW',
   EMAIL = 'EMAIL',
+<<<<<<< HEAD
   EMAIL_READER = 'EMAIL_READER',
+=======
+  SENDGRID = 'SENDGRID',
+>>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   NOTIFICATION = 'NOTIFICATION',
   DATABASE = 'DATABASE',
   VARIABLE = 'VARIABLE',
@@ -623,7 +627,11 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: '#14b8a6',
   [WorkflowNodeType.SUB_WORKFLOW]: '#6366f1',
   [WorkflowNodeType.EMAIL]: '#f97316',
+<<<<<<< HEAD
   [WorkflowNodeType.EMAIL_READER]: '#06b6d4',
+=======
+  [WorkflowNodeType.SENDGRID]: '#1A82E2',
+>>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   [WorkflowNodeType.NOTIFICATION]: '#84cc16',
   [WorkflowNodeType.DATABASE]: '#a855f7',
   [WorkflowNodeType.VARIABLE]: '#64748b',
@@ -734,7 +742,11 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.TRANSFORM]: 'shuffle',
   [WorkflowNodeType.SUB_WORKFLOW]: 'layers',
   [WorkflowNodeType.EMAIL]: 'mail',
+<<<<<<< HEAD
   [WorkflowNodeType.EMAIL_READER]: 'mail-open',
+=======
+  [WorkflowNodeType.SENDGRID]: 'send',
+>>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
   [WorkflowNodeType.NOTIFICATION]: 'bell',
   [WorkflowNodeType.DATABASE]: 'database',
   [WorkflowNodeType.VARIABLE]: 'box',
@@ -1119,6 +1131,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     },
   },
   {
+<<<<<<< HEAD
     type: WorkflowNodeType.EMAIL_READER,
     name: 'Email Reader',
     description: 'Read and manage emails from Gmail or IMAP',
@@ -1129,6 +1142,34 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Output' }],
+=======
+    type: WorkflowNodeType.SENDGRID,
+    name: 'SendGrid',
+    description: 'Send email via SendGrid API',
+    icon: NODE_ICONS[WorkflowNodeType.SENDGRID],
+    color: NODE_COLORS[WorkflowNodeType.SENDGRID],
+    category: 'action',
+    defaultConfig: {
+      to: '',
+      cc: '',
+      bcc: '',
+      fromEmail: '',
+      fromName: '',
+      replyTo: '',
+      subject: '',
+      body: '',
+      contentType: 'text/html',
+      templateId: '',
+      dynamicTemplateData: '',
+      categories: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Output' },
+        { id: 'error', type: PortType.OUTPUT, label: 'Error' },
+      ],
+>>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
     },
   },
   {
@@ -2470,7 +2511,11 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
       WorkflowNodeType.EMAIL,
+<<<<<<< HEAD
       WorkflowNodeType.EMAIL_READER,
+=======
+      WorkflowNodeType.SENDGRID,
+>>>>>>> e609e6d7 (fix(all): resolve #152 — Add missing n8n node: SendGrid (Transactional Email) to canvas)
       WorkflowNodeType.NOTIFICATION,
       WorkflowNodeType.DOCUMENT_GENERATOR,
     ],
