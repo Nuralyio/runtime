@@ -75,6 +75,8 @@ import {
   renderTelegramBotFields,
   // RabbitMQ trigger
   renderRabbitMQTriggerFields,
+  // GitLab integration
+  renderGitlabFields,
   // MCP integration
   renderMcpFields,
   // HubSpot CRM
@@ -237,6 +239,10 @@ export function renderTypeFields(
     // RabbitMQ trigger
     case WorkflowNodeType.RABBITMQ_TRIGGER:
       return renderRabbitMQTriggerFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // GitLab integration
+    case WorkflowNodeType.GITLAB:
+      return renderGitlabFields(config, onUpdate);
 
     // MCP integration
     case WorkflowNodeType.MCP:

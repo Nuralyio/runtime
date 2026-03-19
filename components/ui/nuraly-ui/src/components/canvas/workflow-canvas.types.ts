@@ -78,6 +78,8 @@ export enum WorkflowNodeType {
   RABBITMQ_TRIGGER = 'RABBITMQ_TRIGGER',
   // Zendesk integration nodes
   ZENDESK = 'ZENDESK',
+  // GitLab integration
+  GITLAB = 'GITLAB',
   // MCP integration
   MCP = 'MCP',
   // HubSpot CRM
@@ -463,6 +465,7 @@ export interface NodeConfiguration {
   dbTableName?: string;
   dbTableColumns?: Array<{ name: string; type: string; nullable?: boolean }>;
   dbPrimaryKey?: string;
+<<<<<<< HEAD
   // Email Reader node
   folder?: string;
   includeAttachments?: boolean;
@@ -493,6 +496,19 @@ export interface NodeConfiguration {
   hubspotFilterGroups?: Array<{ filters: Array<{ propertyName: string; operator: string; value: string }> }>;
   hubspotLimit?: number;
   hubspotAssociations?: Array<{ toObjectType: string; toObjectId: string }>;
+  // GitLab node
+  gitlabBaseUrl?: string;
+  gitlabAccessToken?: string;
+  gitlabResource?: 'issue' | 'merge_request' | 'repository' | 'pipeline' | 'release' | 'user';
+  gitlabOperation?: 'create' | 'get' | 'getAll' | 'update' | 'delete';
+  gitlabProjectId?: string;
+  gitlabTitle?: string;
+  gitlabDescription?: string;
+  gitlabLabels?: string[];
+  gitlabAssigneeIds?: number[];
+  gitlabSourceBranch?: string;
+  gitlabTargetBranch?: string;
+  gitlabRef?: string;
   // Anchor / onClick action
   anchorLabel?: string;
   onClickAction?: 'none' | 'pan-to-anchor';
@@ -731,6 +747,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.RABBITMQ_TRIGGER]: '#FF6600',
   // Zendesk integration nodes
   [WorkflowNodeType.ZENDESK]: '#03363d',
+  // GitLab integration
+  [WorkflowNodeType.GITLAB]: '#FC6D26',
   // MCP integration
   [WorkflowNodeType.MCP]: '#7c3aed',
   // HubSpot CRM
@@ -854,6 +872,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.RABBITMQ_TRIGGER]: 'inbox',
   // Zendesk integration nodes
   [WorkflowNodeType.ZENDESK]: 'ticket',
+  // GitLab integration
+  [WorkflowNodeType.GITLAB]: 'git-merge',
   // MCP integration
   [WorkflowNodeType.MCP]: 'plug',
   // HubSpot CRM
@@ -1777,6 +1797,35 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     },
   },
   // Telegram integration nodes
+  {
+    type: WorkflowNodeType.GITLAB,
+    name: 'GitLab',
+    description: 'Manage GitLab repositories, issues, merge requests, pipelines, and releases',
+    icon: NODE_ICONS[WorkflowNodeType.GITLAB],
+    color: NODE_COLORS[WorkflowNodeType.GITLAB],
+    category: 'developer',
+    defaultConfig: {
+      gitlabBaseUrl: 'https://gitlab.com',
+      gitlabAccessToken: '',
+      gitlabResource: 'issue',
+      gitlabOperation: 'getAll',
+      gitlabProjectId: '',
+      gitlabTitle: '',
+      gitlabDescription: '',
+      gitlabLabels: [],
+      gitlabAssigneeIds: [],
+      gitlabSourceBranch: '',
+      gitlabTargetBranch: '',
+      gitlabRef: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Response' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   {
     type: WorkflowNodeType.TELEGRAM_SEND,
     name: 'Telegram: Send Message',
@@ -2870,6 +2919,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'ticket',
     nodeTypes: [
       WorkflowNodeType.JIRA,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'gitlab',
+    name: 'GitLab',
+    icon: 'git-merge',
+    nodeTypes: [
+      WorkflowNodeType.GITLAB,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

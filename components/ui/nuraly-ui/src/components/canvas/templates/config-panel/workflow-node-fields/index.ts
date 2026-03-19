@@ -60,6 +60,8 @@ export { renderTelegramBotFields } from './telegram-bot-fields.js';
 export { renderRabbitMQTriggerFields } from './rabbitmq-trigger-fields.js';
 // Twilio integration nodes
 export { renderTwilioSmsFields, renderTwilioVoiceFields } from './twilio-fields.js';
+// GitLab integration
+export { renderGitlabFields } from './gitlab-fields.js';
 // MCP integration
 export { renderMcpFields } from './mcp-fields.js';
 // HubSpot CRM
