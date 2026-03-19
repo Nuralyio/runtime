@@ -37,6 +37,7 @@ export { renderWebCrawlFields } from './web-crawl-fields.js';
 export { renderDocumentGeneratorFields } from './document-generator-fields.js';
 // Storage nodes
 export { renderFileStorageFields } from './file-storage-fields.js';
+export { renderGoogleCloudStorageFields } from './google-cloud-storage-fields.js';
 // RAG nodes
 export { renderEmbeddingFields } from './embedding-fields.js';
 export { renderDocumentLoaderFields } from './document-loader-fields.js';

@@ -42,6 +42,7 @@ export enum WorkflowNodeType {
   DOCUMENT_GENERATOR = 'DOCUMENT_GENERATOR',
   // Storage nodes
   FILE_STORAGE = 'FILE_STORAGE',
+  GOOGLE_CLOUD_STORAGE = 'GOOGLE_CLOUD_STORAGE',
   // RAG nodes
   EMBEDDING = 'EMBEDDING',
   DOCUMENT_LOADER = 'DOCUMENT_LOADER',
@@ -635,6 +636,7 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DOCUMENT_GENERATOR]: '#0284c7',
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: '#f59e0b',
+  [WorkflowNodeType.GOOGLE_CLOUD_STORAGE]: '#4285f4',
   // RAG nodes
   [WorkflowNodeType.EMBEDDING]: '#8b5cf6',
   [WorkflowNodeType.DOCUMENT_LOADER]: '#ec4899',
@@ -743,6 +745,7 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DOCUMENT_GENERATOR]: 'file-text',
   // Storage nodes
   [WorkflowNodeType.FILE_STORAGE]: 'hard-drive',
+  [WorkflowNodeType.GOOGLE_CLOUD_STORAGE]: 'cloud',
   // RAG nodes
   [WorkflowNodeType.EMBEDDING]: 'hash',
   [WorkflowNodeType.DOCUMENT_LOADER]: 'file-text',
@@ -1329,6 +1332,28 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       path: '',
       fileField: 'file',
       filenameField: 'filename',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.GOOGLE_CLOUD_STORAGE,
+    name: 'Google Cloud Storage',
+    description: 'Manage objects in Google Cloud Storage buckets',
+    icon: NODE_ICONS[WorkflowNodeType.GOOGLE_CLOUD_STORAGE],
+    color: NODE_COLORS[WorkflowNodeType.GOOGLE_CLOUD_STORAGE],
+    category: 'storage',
+    defaultConfig: {
+      operation: 'LIST',
+      bucketName: '',
+      objectPath: '',
+      serviceAccountPath: '',
+      signedUrlExpiration: 3600,
     },
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
@@ -2449,6 +2474,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'hard-drive',
     nodeTypes: [
       WorkflowNodeType.FILE_STORAGE,
+      WorkflowNodeType.GOOGLE_CLOUD_STORAGE,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

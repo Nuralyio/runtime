@@ -51,6 +51,7 @@ import {
   renderDocumentGeneratorFields,
   // Storage nodes
   renderFileStorageFields,
+  renderGoogleCloudStorageFields,
   // RAG nodes
   renderEmbeddingFields,
   renderDocumentLoaderFields,
@@ -166,6 +167,9 @@ export function renderTypeFields(
     // Storage nodes
     case WorkflowNodeType.FILE_STORAGE:
       return renderFileStorageFields(config, onUpdate);
+
+    case WorkflowNodeType.GOOGLE_CLOUD_STORAGE:
+      return renderGoogleCloudStorageFields(config, onUpdate);
 
     // RAG nodes
     case WorkflowNodeType.EMBEDDING:
