@@ -80,6 +80,8 @@ export enum WorkflowNodeType {
   MCP = 'MCP',
   // HubSpot CRM
   HUBSPOT = 'HUBSPOT',
+  // Jira integration nodes
+  JIRA = 'JIRA',
   // Display nodes
   UI_TABLE = 'UI_TABLE',
   // Annotation nodes
@@ -421,6 +423,19 @@ export interface NodeConfiguration {
   twilioOperation?: 'send_sms' | 'make_call' | 'send_whatsapp';
   twilioVoiceUrl?: string;
   twilioStatusCallback?: string;
+  // Jira node
+  jiraInstanceUrl?: string;
+  projectKey?: string;
+  issueType?: string;
+  summary?: string;
+  description?: string;
+  assignee?: string;
+  priority?: string;
+  labels?: string;
+  jqlQuery?: string;
+  transitionId?: string;
+  issueKey?: string;
+  comment?: string;
   // Reranker node
   topK?: number;
   threshold?: number;
@@ -716,6 +731,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.MCP]: '#7c3aed',
   // HubSpot CRM
   [WorkflowNodeType.HUBSPOT]: '#FF7A59',
+  // Jira integration nodes
+  [WorkflowNodeType.JIRA]: '#0052CC',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: '#0891b2',
   // Annotation nodes
@@ -835,6 +852,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.MCP]: 'plug',
   // HubSpot CRM
   [WorkflowNodeType.HUBSPOT]: 'users',
+  // Jira integration nodes
+  [WorkflowNodeType.JIRA]: 'ticket',
   // Display nodes
   [WorkflowNodeType.UI_TABLE]: 'table',
   // Annotation nodes
@@ -1981,6 +2000,37 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     },
   },
+  // Jira integration nodes
+  {
+    type: WorkflowNodeType.JIRA,
+    name: 'Jira',
+    description: 'Create, update, and manage Jira issues',
+    icon: NODE_ICONS[WorkflowNodeType.JIRA],
+    color: NODE_COLORS[WorkflowNodeType.JIRA],
+    category: 'jira',
+    defaultConfig: {
+      operation: 'createIssue',
+      jiraInstanceUrl: '',
+      projectKey: '',
+      issueType: 'Task',
+      summary: '',
+      description: '',
+      assignee: '',
+      priority: 'Medium',
+      labels: '',
+      jqlQuery: '',
+      transitionId: '',
+      issueKey: '',
+      comment: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Result' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
   // Annotation nodes
   {
     type: WorkflowNodeType.NOTE,
@@ -2780,6 +2830,15 @@ export const NODE_CATEGORIES: NodeCategory[] = [
     icon: 'users',
     nodeTypes: [
       WorkflowNodeType.HUBSPOT,
+    ],
+    canvasType: CanvasType.WORKFLOW,
+  },
+  {
+    id: 'jira',
+    name: 'Jira',
+    icon: 'ticket',
+    nodeTypes: [
+      WorkflowNodeType.JIRA,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

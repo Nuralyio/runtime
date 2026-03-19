@@ -77,6 +77,8 @@ import {
   renderMcpFields,
   // HubSpot CRM
   renderHubspotFields,
+  // Jira integration nodes
+  renderJiraFields,
 } from './workflow-node-fields.js';
 import {
   renderAgentFields,
@@ -237,6 +239,10 @@ export function renderTypeFields(
     // HubSpot CRM
     case WorkflowNodeType.HUBSPOT:
       return renderHubspotFields(config, onUpdate);
+
+    // Jira integration nodes
+    case WorkflowNodeType.JIRA:
+      return renderJiraFields(config, onUpdate);
 
     // Display nodes
     case WorkflowNodeType.UI_TABLE:

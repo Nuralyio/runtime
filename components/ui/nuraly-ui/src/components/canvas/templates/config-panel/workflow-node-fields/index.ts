@@ -62,3 +62,5 @@ export { renderTwilioSmsFields, renderTwilioVoiceFields } from './twilio-fields.
 export { renderMcpFields } from './mcp-fields.js';
 // HubSpot CRM
 export { renderHubspotFields } from './hubspot-fields.js';
+// Jira integration nodes
+export { renderJiraFields } from './jira-fields.js';
