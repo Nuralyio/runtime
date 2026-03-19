@@ -73,6 +73,8 @@ import {
   renderTwilioVoiceFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
+  // RabbitMQ trigger
+  renderRabbitMQTriggerFields,
   // MCP integration
   renderMcpFields,
   // HubSpot CRM
@@ -231,6 +233,10 @@ export function renderTypeFields(
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:
       return renderTelegramBotFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // RabbitMQ trigger
+    case WorkflowNodeType.RABBITMQ_TRIGGER:
+      return renderRabbitMQTriggerFields(config, onUpdate, triggerInfo, triggerActions);
 
     // MCP integration
     case WorkflowNodeType.MCP:

@@ -74,6 +74,8 @@ export enum WorkflowNodeType {
   DISCORD_BOT = 'DISCORD_BOT',
   WHATSAPP_WEBHOOK = 'WHATSAPP_WEBHOOK',
   CUSTOM_WEBSOCKET = 'CUSTOM_WEBSOCKET',
+  // RabbitMQ trigger
+  RABBITMQ_TRIGGER = 'RABBITMQ_TRIGGER',
   // Zendesk integration nodes
   ZENDESK = 'ZENDESK',
   // MCP integration
@@ -725,6 +727,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: '#5865F2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: '#25D366',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: '#6366f1',
+  // RabbitMQ trigger
+  [WorkflowNodeType.RABBITMQ_TRIGGER]: '#FF6600',
   // Zendesk integration nodes
   [WorkflowNodeType.ZENDESK]: '#03363d',
   // MCP integration
@@ -846,6 +850,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DISCORD_BOT]: 'gamepad-2',
   [WorkflowNodeType.WHATSAPP_WEBHOOK]: 'phone',
   [WorkflowNodeType.CUSTOM_WEBSOCKET]: 'radio',
+  // RabbitMQ trigger
+  [WorkflowNodeType.RABBITMQ_TRIGGER]: 'inbox',
   // Zendesk integration nodes
   [WorkflowNodeType.ZENDESK]: 'ticket',
   // MCP integration
@@ -1948,6 +1954,31 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     color: NODE_COLORS[WorkflowNodeType.CUSTOM_WEBSOCKET],
     category: 'trigger',
     defaultConfig: { url: '' },
+    defaultPorts: {
+      inputs: [],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Message' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  // RabbitMQ trigger
+  {
+    type: WorkflowNodeType.RABBITMQ_TRIGGER,
+    name: 'RabbitMQ Trigger',
+    description: 'Triggers workflow on new messages from a RabbitMQ queue',
+    icon: NODE_ICONS[WorkflowNodeType.RABBITMQ_TRIGGER],
+    color: NODE_COLORS[WorkflowNodeType.RABBITMQ_TRIGGER],
+    category: 'trigger',
+    defaultConfig: {
+      connectionUrl: '',
+      queueName: '',
+      exchange: '',
+      routingKey: '#',
+      autoAck: false,
+      contentType: 'application/json',
+      prefetchCount: 1,
+    },
     defaultPorts: {
       inputs: [],
       outputs: [

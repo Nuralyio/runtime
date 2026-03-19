@@ -35,7 +35,7 @@ export const VIEWPORT_ADD_NODE_OFFSET_Y = 200;
 // ==================== Trigger Polling ====================
 export const TRIGGER_POLL_INTERVAL_MS = 10_000;
 export const PERSISTENT_TRIGGER_TYPE_NAMES = [
-  'TELEGRAM_BOT', 'SLACK_SOCKET', 'DISCORD_BOT', 'WHATSAPP_WEBHOOK', 'CUSTOM_WEBSOCKET',
+  'TELEGRAM_BOT', 'SLACK_SOCKET', 'DISCORD_BOT', 'WHATSAPP_WEBHOOK', 'CUSTOM_WEBSOCKET', 'RABBITMQ_TRIGGER',
 ] as const;
 
 // ==================== Color Presets ====================
