@@ -51,6 +51,8 @@ export enum WorkflowNodeType {
   VECTOR_WRITE = 'VECTOR_WRITE',
   VECTOR_SEARCH = 'VECTOR_SEARCH',
   CONTEXT_BUILDER = 'CONTEXT_BUILDER',
+  // AI chains
+  SUMMARIZATION = 'SUMMARIZATION',
   // Safety nodes
   GUARDRAIL = 'GUARDRAIL',
   // Slack integration nodes
@@ -721,6 +723,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.VECTOR_WRITE]: '#10b981',
   [WorkflowNodeType.VECTOR_SEARCH]: '#06b6d4',
   [WorkflowNodeType.CONTEXT_BUILDER]: '#a855f7',
+  // AI chains
+  [WorkflowNodeType.SUMMARIZATION]: '#8B5CF6',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: '#ef4444',
   // Slack integration nodes
@@ -848,6 +852,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.VECTOR_WRITE]: 'database',
   [WorkflowNodeType.VECTOR_SEARCH]: 'search',
   [WorkflowNodeType.CONTEXT_BUILDER]: 'layers',
+  // AI chains
+  [WorkflowNodeType.SUMMARIZATION]: 'file-minus',
   // Safety nodes
   [WorkflowNodeType.GUARDRAIL]: 'shield',
   // Slack integration nodes
@@ -1644,6 +1650,30 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
     defaultPorts: {
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Results' }],
       outputs: [{ id: 'out', type: PortType.OUTPUT, label: 'Reranked' }],
+    },
+  },
+  // AI chains
+  {
+    type: WorkflowNodeType.SUMMARIZATION,
+    name: 'Summarize Document',
+    description: 'Summarize long text using AI with chunking strategies',
+    icon: NODE_ICONS[WorkflowNodeType.SUMMARIZATION],
+    color: NODE_COLORS[WorkflowNodeType.SUMMARIZATION],
+    category: 'action',
+    defaultConfig: {
+      inputField: 'text',
+      outputField: 'summary',
+      strategy: 'map_reduce',
+      chunkSize: 4000,
+      chunkOverlap: 200,
+      model: 'gpt-4o-mini',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Summary' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
     },
   },
   // Safety nodes
@@ -2822,6 +2852,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.SENDGRID,
       WorkflowNodeType.NOTIFICATION,
       WorkflowNodeType.DOCUMENT_GENERATOR,
+      WorkflowNodeType.SUMMARIZATION,
     ],
     canvasType: CanvasType.WORKFLOW,
   },

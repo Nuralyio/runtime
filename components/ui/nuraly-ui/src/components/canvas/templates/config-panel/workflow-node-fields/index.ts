@@ -58,6 +58,8 @@ export { renderTelegramSendFields } from './telegram-send-fields.js';
 export { renderZendeskFields } from './zendesk-fields.js';
 // Persistent trigger nodes
 export { renderTelegramBotFields } from './telegram-bot-fields.js';
+// AI chains
+export { renderSummarizationFields } from './summarization-fields.js';
 // RabbitMQ trigger
 export { renderRabbitMQTriggerFields } from './rabbitmq-trigger-fields.js';
 // Twilio integration nodes

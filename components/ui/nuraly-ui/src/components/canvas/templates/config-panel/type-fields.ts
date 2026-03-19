@@ -75,6 +75,8 @@ import {
   renderTwilioVoiceFields,
   // Persistent trigger nodes
   renderTelegramBotFields,
+  // AI chains
+  renderSummarizationFields,
   // RabbitMQ trigger
   renderRabbitMQTriggerFields,
   // GitLab integration
@@ -241,6 +243,10 @@ export function renderTypeFields(
     // Persistent trigger nodes
     case WorkflowNodeType.TELEGRAM_BOT:
       return renderTelegramBotFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // AI chains
+    case WorkflowNodeType.SUMMARIZATION:
+      return renderSummarizationFields(config, onUpdate);
 
     // RabbitMQ trigger
     case WorkflowNodeType.RABBITMQ_TRIGGER:
