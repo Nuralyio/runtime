@@ -83,6 +83,8 @@ import {
   renderGitlabFields,
   // MCP integration
   renderMcpFields,
+  // AI extraction
+  renderInformationExtractorFields,
   // HubSpot CRM
   renderHubspotFields,
   // Jira integration nodes
@@ -259,6 +261,10 @@ export function renderTypeFields(
     // MCP integration
     case WorkflowNodeType.MCP:
       return renderMcpFields(config, onUpdate, triggerInfo, triggerActions);
+
+    // AI extraction
+    case WorkflowNodeType.INFORMATION_EXTRACTOR:
+      return renderInformationExtractorFields(config, onUpdate);
 
     // HubSpot CRM
     case WorkflowNodeType.HUBSPOT:

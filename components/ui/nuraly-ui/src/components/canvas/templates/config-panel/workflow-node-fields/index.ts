@@ -68,6 +68,8 @@ export { renderTwilioSmsFields, renderTwilioVoiceFields } from './twilio-fields.
 export { renderGitlabFields } from './gitlab-fields.js';
 // MCP integration
 export { renderMcpFields } from './mcp-fields.js';
+// AI extraction
+export { renderInformationExtractorFields } from './information-extractor-fields.js';
 // HubSpot CRM
 export { renderHubspotFields } from './hubspot-fields.js';
 // Jira integration nodes

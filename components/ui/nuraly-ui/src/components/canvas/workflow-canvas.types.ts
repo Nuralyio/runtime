@@ -86,6 +86,8 @@ export enum WorkflowNodeType {
   GITLAB = 'GITLAB',
   // MCP integration
   MCP = 'MCP',
+  // AI extraction
+  INFORMATION_EXTRACTOR = 'INFORMATION_EXTRACTOR',
   // HubSpot CRM
   HUBSPOT = 'HUBSPOT',
   // Jira integration nodes
@@ -708,6 +710,8 @@ export const NODE_COLORS: Record<NodeType, string> = {
   [WorkflowNodeType.DEBUG]: '#f97316',
   [WorkflowNodeType.LLM]: '#22d3ee',
   [WorkflowNodeType.OCR]: '#0d9488',
+  // AI extraction
+  [WorkflowNodeType.INFORMATION_EXTRACTOR]: '#8B5CF6',
   // Web nodes
   [WorkflowNodeType.WEB_SEARCH]: '#3b82f6',
   [WorkflowNodeType.WEB_CRAWL]: '#6366f1',
@@ -837,6 +841,8 @@ export const NODE_ICONS: Record<NodeType, string> = {
   [WorkflowNodeType.DEBUG]: 'bug',
   [WorkflowNodeType.LLM]: 'brain',
   [WorkflowNodeType.OCR]: 'scan',
+  // AI extraction
+  [WorkflowNodeType.INFORMATION_EXTRACTOR]: 'search',
   // Web nodes
   [WorkflowNodeType.WEB_SEARCH]: 'search',
   [WorkflowNodeType.WEB_CRAWL]: 'globe',
@@ -1097,6 +1103,28 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       inputs: [{ id: 'in', type: PortType.INPUT, label: 'Image' }],
       outputs: [
         { id: 'out', type: PortType.OUTPUT, label: 'Text' },
+        { id: 'error', type: PortType.ERROR, label: 'Error' },
+      ],
+    },
+  },
+  {
+    type: WorkflowNodeType.INFORMATION_EXTRACTOR,
+    name: 'Information Extractor',
+    description: 'Extract structured data from unstructured text using AI',
+    icon: NODE_ICONS[WorkflowNodeType.INFORMATION_EXTRACTOR],
+    color: NODE_COLORS[WorkflowNodeType.INFORMATION_EXTRACTOR],
+    category: 'action',
+    defaultConfig: {
+      inputField: 'text',
+      schema: [{ name: 'field1', type: 'string', description: '', required: true }],
+      model: 'gpt-4o-mini',
+      provider: 'openai',
+      instructions: '',
+    },
+    defaultPorts: {
+      inputs: [{ id: 'in', type: PortType.INPUT, label: 'Input' }],
+      outputs: [
+        { id: 'out', type: PortType.OUTPUT, label: 'Extracted' },
         { id: 'error', type: PortType.ERROR, label: 'Error' },
       ],
     },
@@ -2844,6 +2872,7 @@ export const NODE_CATEGORIES: NodeCategory[] = [
       WorkflowNodeType.FUNCTION,
       WorkflowNodeType.HTTP,
       WorkflowNodeType.LLM,
+      WorkflowNodeType.INFORMATION_EXTRACTOR,
       WorkflowNodeType.OCR,
       WorkflowNodeType.CHAT_OUTPUT,
       WorkflowNodeType.SUB_WORKFLOW,
