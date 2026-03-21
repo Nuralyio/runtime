@@ -1,8 +1,0 @@
-/**
- * Default Theme - Input Component
- * Index file that imports common variables and both light and dark variants
- */
-
-@import './common.css';
-@import './light.css';
-@import './dark.css';
